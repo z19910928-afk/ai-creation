@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.1",
+  "seed": 42,
+  "model": "fixture-model",
+  "prompt_version": "eval-v1",
+  "branch_graph": {
+    "main": [],
+    "alt": [
+      "main"
+    ],
+    "other": []
+  },
+  "active_branch": "alt",
+  "gold": {
+    "evidence": [
+      "e1",
+      "e2",
+      "e3"
+    ],
+    "conflicts": [
+      "c1",
+      "c2"
+    ],
+    "hard_conflicts": [
+      "hc1",
+      "hc2"
+    ],
+    "merges": [
+      "a->b"
+    ],
+    "splits": [
+      "x->y|z"
+    ]
+  },
+  "predictions": {
+    "evidence": [
+      "e1",
+      "e2",
+      "noise",
+      "e3"
+    ],
+    "citations": [
+      {
+        "claim_id": "cl1",
+        "supported": true,
+        "default": true,
+        "stale": false
+      },
+      {
+        "claim_id": "cl2",
+        "supported": true,
+        "default": true,
+        "stale": false
+      }
+    ],
+    "requested_branch": "alt",
+    "facts": [
+      {
+        "id": "f1",
+        "branch": "alt"
+      },
+      {
+        "id": "f2",
+        "branch": "main"
+      }
+    ],
+    "canon_writes": [
+      {
+        "id": "a1",
+        "state": "canon",
+        "evidence": [
+          "e1"
+        ]
+      }
+    ],
+    "conflicts": [
+      "c1",
+      "c2"
+    ],
+    "hard_conflicts": [
+      "hc1",
+      "hc2"
+    ],
+    "merges": [
+      "a->b"
+    ],
+    "splits": [
+      "x->y|z"
+    ],
+    "revision_distance": [
+      2,
+      4,
+      8,
+      10
+    ],
+    "freshness_ms": [
+      1000,
+      2000,
+      6000
+    ],
+    "recovery": [
+      {
+        "rpo_seconds": 60,
+        "rto_seconds": 300,
+        "success": true
+      },
+      {
+        "rpo_seconds": 120,
+        "rto_seconds": 600,
+        "success": true
+      }
+    ],
+    "imports": [
+      {
+        "corrupt": true,
+        "accepted": false
+      },
+      {
+        "corrupt": true,
+        "accepted": false
+      },
+      {
+        "corrupt": false,
+        "accepted": true
+      }
+    ],
+    "patches": [
+      {
+        "reversible": true
+      },
+      {
+        "reversible": true
+      }
+    ]
+  },
+  "fixture_id": "recovery_drill",
+  "tolerance": {
+    "epsilon": 1e-09
+  },
+  "executable": [
+    "python",
+    "tests/backup_recovery_fixtures.py"
+  ]
+}
