@@ -260,12 +260,12 @@ def init_db() -> None:
             raise RuntimeError("schema-v1.1 migration is incomplete")
         # App-specific projections are intentionally kept separate from the
         # contract tables.  They only hold UI fields that have no v1 column
-        # (project goal/summary and entity descriptions).
+        # (project goal/summary/genre and entity descriptions).
         conn.executescript(
             """
             CREATE TABLE IF NOT EXISTS app_project_meta(
               project_id TEXT PRIMARY KEY REFERENCES project(id),
-              summary TEXT NOT NULL DEFAULT '', goal INTEGER NOT NULL DEFAULT 50000,
+              summary TEXT NOT NULL DEFAULT '', genre TEXT NOT NULL DEFAULT '', goal INTEGER NOT NULL DEFAULT 50000,
               updated_at TEXT NOT NULL
             );
             CREATE TABLE IF NOT EXISTS app_state_version(
@@ -291,6 +291,9 @@ def init_db() -> None:
             );
             """
         )
+        project_meta_columns = {row[1] for row in conn.execute("PRAGMA table_info(app_project_meta)")}
+        if "genre" not in project_meta_columns:
+            conn.execute("ALTER TABLE app_project_meta ADD COLUMN genre TEXT NOT NULL DEFAULT ''")
         ensure_seed(conn)
 
 
@@ -437,7 +440,7 @@ def chapter_rows(conn: sqlite3.Connection) -> list[dict[str, Any]]:
 
 def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
     p = conn.execute("SELECT id,name FROM project WHERE id=?", (PROJECT_ID,)).fetchone()
-    meta = conn.execute("SELECT summary,goal FROM app_project_meta WHERE project_id=?", (PROJECT_ID,)).fetchone()
+    meta = conn.execute("SELECT summary,genre,goal FROM app_project_meta WHERE project_id=?", (PROJECT_ID,)).fetchone()
     records = []
     for row in conn.execute(
         "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description,e.aliases_json FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid",
@@ -482,7 +485,7 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
         "project": {
             "id": p["id"],
             "title": p["name"],
-            "genre": "",
+            "genre": meta["genre"] if meta and "genre" in meta.keys() else "",
             "summary": meta["summary"] if meta else "",
             "goal": meta["goal"] if meta else 50000,
         },
@@ -548,14 +551,15 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
     if goal < 0 or goal > 1_000_000_000:
         raise ValueError("goal out of range")
     old_project = conn.execute("SELECT name FROM project WHERE id=?", (PROJECT_ID,)).fetchone()
-    old_meta = conn.execute("SELECT summary,goal FROM app_project_meta WHERE project_id=?", (PROJECT_ID,)).fetchone()
+    genre = bounded_text(project.get("genre") or "", 100, "project genre")
+    old_meta = conn.execute("SELECT summary,genre,goal FROM app_project_meta WHERE project_id=?", (PROJECT_ID,)).fetchone()
     conn.execute("UPDATE project SET name=? WHERE id=?", (title, PROJECT_ID))
     conn.execute(
-        "INSERT OR REPLACE INTO app_project_meta(project_id,summary,goal,updated_at) VALUES(?,?,?,?)",
-        (PROJECT_ID, summary, goal, now()),
+        "INSERT OR REPLACE INTO app_project_meta(project_id,summary,genre,goal,updated_at) VALUES(?,?,?,?,?)",
+        (PROJECT_ID, summary, genre, goal, now()),
     )
-    if old_project and (old_project["name"] != title or not old_meta or old_meta["summary"] != summary or old_meta["goal"] != goal):
-        append_event(conn, PROJECT_ID, "project.updated", {"title": title, "summary": summary, "goal": goal})
+    if old_project and (old_project["name"] != title or not old_meta or old_meta["summary"] != summary or old_meta["genre"] != genre or old_meta["goal"] != goal):
+        append_event(conn, PROJECT_ID, "project.updated", {"title": title, "summary": summary, "genre": genre, "goal": goal})
     incoming_chapters = state.get("chapters") or []
     incoming_chapter_ids = {str(c.get("id")) for c in incoming_chapters if c.get("id")}
     existing_rows = conn.execute("SELECT id FROM document_node WHERE project_id=? AND branch_id=? AND kind='chapter' AND NOT EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=document_node.id)", (PROJECT_ID, BRANCH_ID)).fetchall()
