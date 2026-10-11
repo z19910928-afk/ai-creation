@@ -28,5 +28,6 @@ jobs:
           python tests/corrupt_import_fixtures.py
           python tests/reversible_patch_fixtures.py
           python tests/backup_recovery_fixtures.py
+          python tests/runtime_continuity_fixtures.py
       - name: Evaluation fixtures
         run: python scripts/evaluation_runner.py --fixtures-dir tests/fixtures --output /tmp/moyu-evaluation.json

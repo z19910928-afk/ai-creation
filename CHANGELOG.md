@@ -1,5 +1,12 @@
 # 更新记录
 
+## 2026-10-11 · 任务卡、来源证据与独立审查
+
+- 为章节增加目标、视角、场景计划、伏笔动作、回顾、下一章简报和 hook，写作流程从任务卡开始，并在完成前执行可重复的质量审查。
+- 将记忆候选接到章节来源 span 与正典 assertion：保存原文引句、范围和哈希，正文修订后旧来源会标记为 stale。
+- 增加有界上下文预览和 AI 运行记录，报告估算 token、检索章节、来源 ID、提示/上下文哈希与延迟；不把有限召回描述成百万上下文。
+- 记录 NovelForge、MuMuAINovel、arboris-novel、Ai-Novel、91Writing 和 webnovel-writer 的 clean-room 借鉴边界、许可证注意事项、AI 写作失效模式和剩余 P2/P3 缺口，详见 [`docs/third-party-audit.md`](docs/third-party-audit.md)。
+
 ## 2026-10-11 · 全书完成与终稿闭环
 
 - 增加持久化的 `book_status`，支持“标记全书完稿”和“恢复写作”。
