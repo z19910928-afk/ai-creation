@@ -10,7 +10,20 @@
 
 严格结论是：**当前还不能称为第一梯队的 AI 长篇创作系统，也不能称为生产级写作平台。**主要原因不是界面数量，而是正典可信度、AI 运行可追溯性、上下文预算准确性、修订恢复体验和前后端功能闭环仍有关键缺口。
 
-本次没有发现新的 S0 数据恢复故障；发现 8 项 P1 功能/可信度缺口和 8 项 P2 能力缺口。P1 项未关闭前，不建议对外宣传“可靠长篇记忆”“自动连续性保证”或“完整审查门”。
+基线审查发现 8 项 P1 功能/可信度缺口和 8 项 P2 能力缺口。本轮增量修复已经关闭“无证据记忆进入正典”这一项，并补上 AI 失败运行、作者决策记录、终稿硬门和不连续摘录的多 span 证据；其余 P1 仍有部分或全部未完成，因此仍不建议对外宣传“可靠长篇记忆”“自动连续性保证”或“生产级 AI 审查”。
+
+## 增量复核结果（提交 `5b8b4a0`）
+
+以下结论针对本轮修复后的工作树，不覆盖未实现的产品能力：
+
+- **P1-01 已关闭**：`POST/PUT/PATCH /api/memory` 在 `accepted` 前要求当前版本的有效 `source_span` 和 active entity；无证据请求返回 400，带证据请求生成 assertion。`tests/strict_feature_fixtures.py` 覆盖了正反路径。
+- **P1-02 部分关闭**：AI 运行返回 `ai_run_id`，`/api/ai/decision` 记录 accepted/rejected/edited/undone，`GET /api/ai/runs/:id` 返回历史；前端采纳和清空会调用接口。正文范围级 accepted patch 和逐字符编辑差异仍未落地。
+- **P1-03 部分关闭**：Markdown 导出和完稿按钮默认被终稿阻断项锁住；作者覆盖必须填写理由，并按当前稿件指纹保存。覆盖目前是本机审计记录，尚未进入可验证的导出 manifest。
+- **P1-05 部分关闭**：记忆卡片显示摘录、章节/字符范围、source span 状态，并支持确认、拒绝、重新审查；合并/拆分、矛盾处理和 assertion 详情仍缺失。
+- **P1-06 部分关闭**：检索摘录现在返回真实的一个或多个 `source_ranges`；token 仍使用 `json_chars_div_4_upper_bound` 近似，未接入各 provider tokenizer，也未计量真实系统消息包装。
+- **P1-08 部分关闭**：provider 失败会写入 `status=failed`、错误、延迟和 token 估算；取消、队列租约、重试、结构化输出契约和费用配额仍缺失。
+
+因此，剩余未关闭的核心风险集中在 revision/diff/restore（P1-04）和中文事实检索/语义连续性（P1-07），以及上述部分关闭项的生产化深度。增量验证新增运行了 `python tests/strict_feature_fixtures.py`，并实际检查了 accepted memory 拒绝、assertion 创建、AI decision 查询和 provider 失败落库。
 
 ## 审查方法与证据
 
@@ -34,54 +47,54 @@
 - 评测 runner：返回 `passed: true`，但样例证据只有 3 条、冲突样本只有 2 条，不能代表真实中文长篇。
 - 隔离服务的 `/api/context`：预算字段返回 `max_tokens=24000`，但实际是字符数除以 4 的估算。
 - 隔离服务的 `/api/ai`：离线请求返回 `ai_run_id`，记录状态为 success/pending。
-- 隔离服务的 `POST /api/memory`：提交 `status=accepted`、无 `source_quote`、无实体时返回 HTTP 201 和“已确认”，数据库没有 source span，也没有 canon assertion。这是可复现的 P1 缺口。
+- 基线隔离服务曾允许 `POST /api/memory` 以 `status=accepted`、无 `source_quote`、无实体返回 HTTP 201；增量复核中同样请求已返回 HTTP 400，带来源和实体的请求才会创建 source span 与 canon assertion。
 - 带恶意 `Origin` 的写请求返回 403；不带 Origin 的本机脚本请求被接受，这是本地单用户边界的现状，不是身份认证。
 
 ## P1：必须优先关闭的缺口
 
-### P1-01：已确认记忆可以没有证据，也没有正典 assertion
+### P1-01：已确认记忆可以没有证据，也没有正典 assertion（已修复）
 
-证据：`server.py` 的 `/api/memory` 接口接受 `status=accepted`；`ensure_memory_assertion()` 在没有 `entity_id` 或 `source_span_id` 时直接返回 `None`。实际请求中，`POST /api/memory` 返回 `201`、`status=已确认`，但 `source_span_id=null`，数据库没有对应 assertion。
+基线证据：`server.py` 的 `/api/memory` 接口接受 `status=accepted`；`ensure_memory_assertion()` 在没有 `entity_id` 或 `source_span_id` 时直接返回 `None`。增量修复增加了 `require_memory_evidence()`，同样请求现在返回 400；只有当前 revision 的有效 source span 与 active entity 同时存在时才会落库为 accepted。
 
 影响：UI/导出会把它显示成已确认记忆，AI 工作集也会把它当作 confirmed memory，但它无法回链原文，也没有正典事实记录。这个状态违反“无证据不得进入正典”的产品原则。
 
 修复验收：接受记忆必须同时满足有效 `source_span`、实体或明确的非实体事实模型；否则只能保持 candidate，并显示缺失证据原因。增加 `unsupported_canon_rate=0` 的 API 回归测试。
 
-### P1-02：AI 运行与作者采纳动作没有闭合
+### P1-02：AI 运行与作者采纳动作没有闭合（部分修复）
 
-证据：`record_ai_run()` 固定写入 `author_decision='pending'`；前端 `adoptAI()` 只把文本追加/替换到浏览器状态，没有携带 `ai_run_id`，也没有接受、拒绝、编辑后采纳或撤销接口。
+基线证据：`record_ai_run()` 固定写入 `author_decision='pending'`；前端 `adoptAI()` 只把文本追加/替换到浏览器状态，没有携带 `ai_run_id`，也没有接受、拒绝、编辑后采纳或撤销接口。增量修复新增 `/api/ai/decision`、`GET /api/ai/runs/:id` 和 `app_ai_run_decision` 历史，并让前端采纳/清空携带运行号；正文范围级 accepted patch 和逐字符编辑差异仍未落地。
 
 影响：无法回答“哪一次模型输出进入了哪一版正文”“作者修改了多少”“被拒绝的候选是什么”。这削弱 provenance、成本统计、回放、AI 使用披露和问题追责。
 
 修复验收：生成结果返回 run；采纳/拒绝/手动编辑保存 activity、revision、response hash、author decision、accepted span；失败也要生成 failed run 和错误原因。
 
-### P1-03：终稿“检查”是提示，不是质量门
+### P1-03：终稿“检查”是提示，不是质量门（部分修复）
 
-证据：`showFinalizationCheck()` 即使 `finalizationIssues()` 返回未完成章节、未通过审查、未确认记忆或未回收伏笔，`data-export` 仍然直接调用 `markdownExport()`；“标记全书完稿”也允许作者确认后绕过问题。
+基线证据：`showFinalizationCheck()` 即使 `finalizationIssues()` 返回未完成章节、未通过审查、未确认记忆或未回收伏笔，`data-export` 仍然直接调用 `markdownExport()`；“标记全书完稿”也允许作者确认后绕过问题。增量修复让导出函数和按钮都先过 `finalGate()`；作者覆盖需要至少 8 个字符的理由，并绑定当前稿件指纹，但覆盖记录目前仍在本机而非导出 manifest。
 
 影响：产品文案会让作者以为终稿经过门禁，但实际可以导出未审查、未确认或有未回收伏笔的作品。可以保留“强制导出”选项，但必须明确标为作者覆盖，并把覆盖原因写入导出日志。
 
 修复验收：默认导出阻断 P1/P0 问题；覆盖导出需要逐项确认、理由和审计事件；导出包包含门禁快照。
 
-### P1-04：有 revision，但作者没有可用的版本回滚/差异界面
+### P1-04：有 revision，但作者没有可用的版本回滚/差异界面（部分修复）
 
-证据：章节正文修改会追加 `document_revision`，但前端没有 revision 列表、diff、恢复按钮；`/api/chapters/:id/restore` 只恢复删除 tombstone，不恢复旧正文。AI `polish` 直接替换当前正文，提示“原文可从数据库 revision 恢复”，但用户没有产品路径完成恢复。
+基线证据：章节正文修改会追加 `document_revision`，但前端没有 revision 列表、diff、恢复按钮；`/api/chapters/:id/restore` 只恢复删除 tombstone，不恢复旧正文。增量修复增加了 `/api/chapters/:id/revisions`、`/restore-revision` 和编辑器“历史版本”入口，恢复会创建新 revision 并使旧 source span stale；逐段 diff、恢复前正文预览和范围化 AI patch 仍未完成。
 
 影响：长篇写作中一次错误润色或误粘贴可能让作者无法在 UI 中找回上一版，违背作者控制和可恢复性承诺。
 
 修复验收：章节历史、逐版 diff、恢复为新 revision、恢复前预览、恢复后 source span stale 处理全部可用；AI patch 采用范围化 diff，不再整章替换。
 
-### P1-05：记忆后端有状态机，前端只有“确认”按钮
+### P1-05：记忆后端有状态机，前端只有“确认”按钮（部分修复）
 
-证据：服务端支持 candidate/accepted/rejected/stale/superseded 及 source span；前端记忆中枢只提供确认，不能查看原文引句、范围、revision、assertion、矛盾、拒绝原因、合并或重新定位。
+基线证据：服务端支持 candidate/accepted/rejected/stale/superseded 及 source span；前端记忆中枢只提供确认。增量修复已加入原文引句、章节/字符范围、revision 来源状态，以及确认、拒绝、重新审查按钮；assertion 详情、矛盾、合并/拆分和重新定位仍缺失。
 
 影响：作者无法审查证据，也无法修复“同名角色”“重复引句”“正文改写后 stale”的记忆。候选→正典的核心可信工作流在 UI 上是不完整的。
 
 修复验收：记忆详情面板显示原文和版本；支持确认、拒绝、编辑、合并/拆分、标记 stale、重新定位、查看依赖 assertion，并可跳回章节位置。
 
-### P1-06：来源范围和 token 预算的可解释性不准确
+### P1-06：来源范围和 token 预算的可解释性不准确（部分修复）
 
-证据：`ai_context()` 对检索章节把“首 700 字 + 尾 1800 字”的拼接摘录标成 `source_range: {start: 0, end: len(excerpt)}`；这不是原文连续范围。预算用 `len(JSON)/4` 估算，中文 token 化、系统提示、`<manuscript>` 包装和作者指令没有纳入实际 provider tokenizer 计数。
+基线证据：`ai_context()` 对检索章节把“首 700 字 + 尾 1800 字”的拼接摘录标成 `source_range: {start: 0, end: len(excerpt)}`；这不是原文连续范围。增量修复新增真实的 `source_ranges` 多段范围，并在预算中标注 `token_estimator=json_chars_div_4_upper_bound`；中文 token 化、系统提示、`<manuscript>` 包装和作者指令仍没有纳入实际 provider tokenizer 计数。
 
 影响：模型引用的范围可能指向错误原文；中文长篇在“估算 24,000 tokens”下实际超过模型上下文，产生截断、失败或隐性丢记忆。当前 24k 是字符近似上限，不是可靠 token hard cap。
 
@@ -95,9 +108,9 @@
 
 修复验收：先实现 SQLite FTS5/中文分词或可替换索引，再加入实体/时间/分支过滤；连续性检查输出 claim/evidence/conflict 类型、置信度和原文跳转；在真实中文 gold set 上报告 Recall/Precision 和硬冲突召回。
 
-### P1-08：模型任务没有结构化输出契约、取消、重试和失败记录
+### P1-08：模型任务没有结构化输出契约、取消、重试和失败记录（部分修复）
 
-证据：所有任务共用一个自由文本 chat completion；没有 JSON schema/patch schema、流式响应、取消、持久任务队列、重试/断点、并发租约和费用配额。provider 失败会直接返回错误，不写 failed `ai_run`。
+基线证据：所有任务共用一个自由文本 chat completion；没有 JSON schema/patch schema、流式响应、取消、持久任务队列、重试/断点、并发租约和费用配额。增量修复已让 provider 失败写入 `failed` `ai_run`，包含错误、延迟和 token 估算；其余结构化契约、取消、队列、重试和费用配额仍缺失。
 
 影响：续写、场景卡、大纲、总结和连续性审查无法机器校验或稳定回放；长请求卡住时用户无法取消，失败后没有可审计的失败记录。
 

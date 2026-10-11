@@ -88,6 +88,27 @@ def bounded_text(value: Any, limit: int, label: str) -> str:
     return text
 
 
+def memory_evidence_is_current(conn: sqlite3.Connection, source_span_id: str | None, entity_id: str | None) -> bool:
+    """Return whether a memory has both current source evidence and an entity.
+
+    A status flag supplied by the browser is not evidence.  The source span
+    and entity are checked in the current project/branch so a copied state
+    payload cannot promote an untraceable candidate into canon.
+    """
+    if not source_span_id or not entity_id:
+        return False
+    span = conn.execute(
+        "SELECT 1 FROM source_span ss JOIN document_node n ON n.id=ss.document_node_id "
+        "WHERE ss.id=? AND ss.project_id=? AND n.project_id=? AND n.branch_id=? AND ss.status='valid'",
+        (source_span_id, PROJECT_ID, PROJECT_ID, BRANCH_ID),
+    ).fetchone()
+    entity = conn.execute(
+        "SELECT 1 FROM entity WHERE id=? AND project_id=? AND status='active'",
+        (entity_id, PROJECT_ID),
+    ).fetchone()
+    return span is not None and entity is not None
+
+
 def ai_settings() -> dict[str, str]:
     """Read optional OpenAI-compatible settings without storing a secret."""
     base_url = os.environ.get("MOYU_AI_BASE_URL", "").strip().rstrip("/")
@@ -233,8 +254,13 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None) -> tuple[dict[s
     retrieved = []
     for relevance, position, item in candidates[:20]:
         body = item.get("body", "")
-        excerpt = body if len(body) <= 2600 else body[:700] + "\n…\n" + body[-1800:]
-        retrieved.append({"id": item["id"], "chapter": position + 1, "title": item["title"], "recap": item.get("recap", ""), "excerpt": excerpt, "relevance": round(relevance, 3), "source_range": {"start": 0, "end": len(excerpt)}})
+        if len(body) <= 2600:
+            excerpt = body
+            source_ranges = [{"start": 0, "end": len(body)}]
+        else:
+            excerpt = body[:700] + "\n…\n" + body[-1800:]
+            source_ranges = [{"start": 0, "end": 700}, {"start": len(body) - 1800, "end": len(body)}]
+        retrieved.append({"id": item["id"], "chapter": position + 1, "title": item["title"], "recap": item.get("recap", ""), "excerpt": excerpt, "relevance": round(relevance, 3), "source_range": source_ranges[0] if len(source_ranges) == 1 else None, "source_ranges": source_ranges})
     previous = [
         {"id": item["id"], "chapter": position + 1, "title": item["title"], "excerpt": item["body"][-3000:], "source_range": {"start": max(0, len(item["body"]) - 3000), "end": len(item["body"])}}
         for position, item in list(enumerate(state["chapters"][max(0, index - 3):index], start=max(0, index - 3)))
@@ -267,7 +293,7 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None) -> tuple[dict[s
         # Filled below after all bounded context layers are assembled.  The
         # current chapter tail, confirmed memories and setting cards count
         # toward the provider prompt just as retrieved chapters do.
-        "context_budget": {"max_tokens": context_budget, "estimated_tokens": 0, "estimated_chars": 0, "retrieval": "lexical+recency", "retrieved_count": len(retrieved), "previous_count": len(previous), "context_item_ids": context_items},
+        "context_budget": {"max_tokens": context_budget, "estimated_tokens": 0, "estimated_chars": 0, "token_estimator": "json_chars_div_4_upper_bound", "retrieval": "lexical+recency", "retrieved_count": len(retrieved), "previous_count": len(previous), "context_item_ids": context_items},
     }
     estimated_tokens = fit_context_budget(context, context_budget)
     context["context_budget"]["estimated_chars"] = min(context_budget * 4, len(json_text(context)))
@@ -354,16 +380,51 @@ def generate_ai(task: str, context: dict[str, Any], instruction: str) -> dict[st
     return {"mode": "provider", "model": config["model"], **result}
 
 
-def record_ai_run(conn: sqlite3.Connection, task: str, context: dict[str, Any], instruction: str, result: dict[str, Any], started_at: str, latency_ms: int) -> str:
+def record_ai_run(
+    conn: sqlite3.Connection,
+    task: str,
+    context: dict[str, Any],
+    instruction: str,
+    result: dict[str, Any],
+    started_at: str,
+    latency_ms: int,
+    status: str = "success",
+    error: str | None = None,
+) -> str:
+    if status not in {"success", "failed"}:
+        raise ValueError("invalid AI run status")
     context_json = json_text(context)
     run_id = uid("airun_")
     output = str(result.get("text") or "")
     context_ids = (context.get("context_budget") or {}).get("context_item_ids", [])
     conn.execute(
         "INSERT INTO ai_run(id,project_id,branch_id,mode,provider,model,model_snapshot,system_prompt_hash,prompt_hash,input_hash,output_hash,sampling_json,tool_calls_json,seed,started_at,ended_at,status,error,context_item_ids_json,token_json,latency_ms,cost_json,author_decision,consent_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        (run_id, PROJECT_ID, BRANCH_ID, result.get("mode", "offline"), result.get("mode", "offline"), result.get("model", "离线创作助手"), result.get("model", ""), hash_text(AI_TASKS[task]), hash_text(task + instruction), hash_text(context_json), hash_text(output), json_text({"temperature": 0.65 if task in {"continue", "brainstorm", "scene"} else 0.35, "max_tokens": 3000}), "[]", None, started_at, now(), "success", None, json_text(context_ids), json_text({"prompt_chars": len(context_json), "estimated_prompt_tokens": (len(context_json) + 3) // 4, "completion_chars": len(output), "completion_tokens": (len(output) + 3) // 4}), latency_ms, "{}", "pending", json_text({"author_review_required": True, "task": task})),
+        (run_id, PROJECT_ID, BRANCH_ID, result.get("mode", "offline"), result.get("mode", "offline"), result.get("model", "离线创作助手"), result.get("model", ""), hash_text(AI_TASKS[task]), hash_text(task + instruction), hash_text(context_json), hash_text(output) if output else None, json_text({"temperature": 0.65 if task in {"continue", "brainstorm", "scene"} else 0.35, "max_tokens": 3000}), "[]", None, started_at, now(), status, bounded_text(error, 2_000, "AI error") if error else None, json_text(context_ids), json_text({"prompt_chars": len(context_json), "estimated_prompt_tokens": (len(context_json) + 3) // 4, "completion_chars": len(output), "completion_tokens": (len(output) + 3) // 4}), latency_ms, "{}", "pending", json_text({"author_review_required": True, "task": task})),
     )
     return run_id
+
+
+def record_ai_decision(conn: sqlite3.Connection, run_id: str, decision: str, reason: str = "") -> dict[str, Any]:
+    """Append an author decision and update the compact ai_run projection."""
+    run_id = checked_id(run_id, "AI run id")
+    if decision not in {"accepted", "rejected", "edited", "undone"}:
+        raise ValueError("invalid AI decision")
+    row = conn.execute("SELECT id,status,output_hash FROM ai_run WHERE id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()
+    if row is None:
+        raise ValueError("AI run not found")
+    if row["status"] != "success":
+        raise ValueError("only successful AI runs can receive an author decision")
+    reason = bounded_text(reason, 2_000, "decision reason")
+    decision_id = uid("aidec_")
+    conn.execute(
+        "INSERT INTO app_ai_run_decision(id,ai_run_id,project_id,branch_id,decision,output_hash,reason,created_at,actor_id) VALUES(?,?,?,?,?,?,?,?,?)",
+        (decision_id, run_id, PROJECT_ID, BRANCH_ID, decision, row["output_hash"], reason, now(), ACTOR_ID),
+    )
+    compact = {"accepted": "accepted", "rejected": "rejected", "edited": "partial", "undone": "rejected"}[decision]
+    consent = {"author_review_required": True, "latest_decision": decision, "decision_id": decision_id, "reason": reason}
+    conn.execute("UPDATE ai_run SET author_decision=?,consent_json=? WHERE id=?", (compact, json_text(consent), run_id))
+    append_event(conn, run_id, "ai_run.decision", {"decision": decision, "reason": reason, "decision_id": decision_id})
+    return {"id": decision_id, "ai_run_id": run_id, "decision": decision, "reason": reason, "author_decision": compact}
 
 
 def review_chapter(conn: sqlite3.Connection, chapter_id: str, persist: bool = True) -> dict[str, Any]:
@@ -478,6 +539,18 @@ def init_db() -> None:
                 CHECK(stage IN ('setup','develop','payoff')), text TEXT NOT NULL,
               created_at TEXT NOT NULL, updated_at TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS app_ai_run_decision(
+              id TEXT PRIMARY KEY,
+              ai_run_id TEXT NOT NULL REFERENCES ai_run(id),
+              project_id TEXT NOT NULL REFERENCES project(id),
+              branch_id TEXT NOT NULL REFERENCES branch(id),
+              decision TEXT NOT NULL CHECK(decision IN ('accepted','rejected','edited','undone')),
+              output_hash TEXT,
+              reason TEXT NOT NULL DEFAULT '',
+              created_at TEXT NOT NULL,
+              actor_id TEXT NOT NULL REFERENCES actor(id)
+            );
+            CREATE INDEX IF NOT EXISTS idx_app_ai_run_decision_run ON app_ai_run_decision(ai_run_id, created_at);
             """
         )
         project_meta_columns = {row[1] for row in conn.execute("PRAGMA table_info(app_project_meta)")}
@@ -640,6 +713,12 @@ def ensure_memory_assertion(conn: sqlite3.Connection, memory_id: str, memory: di
         (assertion_id, PROJECT_ID, BRANCH_ID, entity_id, "has_story_fact", json_text({"name": memory.get("name", ""), "type": memory.get("type", "其他"), "note": memory.get("note", "")}), "author_plan", "canon", None, None, 1.0, None, json_text(evidence), ACTOR_ID, reviewed),
     )
     return assertion_id
+
+
+def require_memory_evidence(conn: sqlite3.Connection, status: str, source_span_id: str | None, entity_id: str | None) -> None:
+    """Do not let a browser status flag promote an untraceable fact."""
+    if status in {"accepted", "已确认"} and not memory_evidence_is_current(conn, source_span_id, entity_id):
+        raise ValueError("accepted memory requires a current source quote and an active entity")
 
 
 def create_chapter(conn: sqlite3.Connection, data: dict[str, Any], event_type: str = "chapter.created") -> str:
@@ -936,11 +1015,12 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
         for field, limit in (("source_chapter_id", 200), ("source_quote", 2_000), ("source_start", 30), ("source_end", 30), ("source_hash", 128)):
             if memory.get(field) not in (None, ""):
                 payload[field] = bounded_text(memory.get(field), limit, field)
-        status = "accepted" if memory.get("status") == "已确认" else "candidate"
+        status = "accepted" if memory.get("status") in {"已确认", "accepted"} else "candidate"
         confidence = 1.0 if status == "accepted" else 0.5
         source_span_id = source_span_for_memory(conn, memory)
         entity = conn.execute("SELECT id FROM entity WHERE project_id=? AND status='active' AND kind=? AND canonical_name=? LIMIT 1", (PROJECT_ID, str(memory.get("type") or "其他"), payload["name"])).fetchone()
         entity_id = entity["id"] if entity else None
+        require_memory_evidence(conn, status, source_span_id, entity_id)
         exists = conn.execute("SELECT 1 FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (mid, PROJECT_ID, BRANCH_ID)).fetchone()
         if exists is None and conn.execute("SELECT 1 FROM candidate_memory WHERE id=?", (mid,)).fetchone() is not None:
             raise ValueError("memory belongs to another project or branch")
@@ -1042,6 +1122,33 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json(200, {"ok": True, "db": str(DB_PATH), "schema_version": conn.execute("PRAGMA user_version").fetchone()[0]})
                 if parsed.path == "/api/ai/status":
                     return self.send_json(200, ai_public_settings())
+                if parsed.path.startswith("/api/ai/runs/"):
+                    run_id = checked_id(parsed.path.rsplit("/", 1)[-1], "AI run id")
+                    run = conn.execute("SELECT id,mode,provider,model,started_at,ended_at,status,error,context_item_ids_json,token_json,latency_ms,cost_json,author_decision,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if run is None:
+                        return self.send_json(404, {"error": "AI run not found"})
+                    result = dict(run)
+                    for key in ("context_item_ids_json", "token_json", "cost_json", "consent_json"):
+                        try:
+                            result[key[:-5] if key.endswith("_json") else key] = json.loads(result.pop(key) or ("[]" if key == "context_item_ids_json" else "{}"))
+                        except json.JSONDecodeError:
+                            result[key[:-5] if key.endswith("_json") else key] = [] if key == "context_item_ids_json" else {}
+                    result["decisions"] = [dict(row) for row in conn.execute("SELECT id,decision,output_hash,reason,created_at,actor_id FROM app_ai_run_decision WHERE ai_run_id=? AND project_id=? AND branch_id=? ORDER BY created_at", (run_id, PROJECT_ID, BRANCH_ID))]
+                    return self.send_json(200, result)
+                if parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/revisions"):
+                    chapter_id = checked_id(parsed.path.split("/")[-2], "chapter id")
+                    row = conn.execute("SELECT 1 FROM document_node WHERE id=? AND project_id=? AND branch_id=? AND kind='chapter'", (chapter_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "chapter not found"})
+                    include_body = (parse_qs(parsed.query).get("include_body") or ["0"])[0] == "1"
+                    revisions = []
+                    for revision in conn.execute("SELECT id,parent_id,content_hash,canonical_text,created_at,actor_id,operation FROM document_revision WHERE document_node_id=? AND branch_id=? ORDER BY rowid DESC", (chapter_id, BRANCH_ID)):
+                        body = bytes(revision["canonical_text"]).decode("utf-8", errors="replace")
+                        item = {"id": revision["id"], "parent_id": revision["parent_id"], "content_hash": revision["content_hash"], "created_at": revision["created_at"], "actor_id": revision["actor_id"], "operation": revision["operation"], "characters": len(body), "preview": body[:180]}
+                        if include_body:
+                            item["body"] = body
+                        revisions.append(item)
+                    return self.send_json(200, {"chapter_id": chapter_id, "revisions": revisions})
                 if parsed.path == "/api/state":
                     return self.send_json(200, state_from_db(conn))
                 if parsed.path == "/api/chapters":
@@ -1060,7 +1167,7 @@ class Handler(SimpleHTTPRequestHandler):
                 if parsed.path == "/api/context":
                     chapter_id = (parse_qs(parsed.query).get("chapter_id") or [None])[0]
                     context, _ = ai_context(conn, chapter_id)
-                    return self.send_json(200, {"project": context["project"], "current_chapter": context["current_chapter"], "budget": context["context_budget"], "previous_chapters": [{"id": item["id"], "title": item["title"], "source_range": item["source_range"]} for item in context["previous_chapters"]], "retrieved_chapters": [{"id": item["id"], "title": item["title"], "chapter": item["chapter"], "relevance": item["relevance"], "source_range": item["source_range"]} for item in context["retrieved_chapters"]], "memory": [{"id": item["id"], "name": item["name"], "source_chapter_id": item.get("source_chapter_id"), "source_span_id": item.get("source_span_id")} for item in context["confirmed_memory"]]})
+                    return self.send_json(200, {"project": context["project"], "current_chapter": context["current_chapter"], "budget": context["context_budget"], "previous_chapters": [{"id": item["id"], "title": item["title"], "source_range": item["source_range"]} for item in context["previous_chapters"]], "retrieved_chapters": [{"id": item["id"], "title": item["title"], "chapter": item["chapter"], "relevance": item["relevance"], "source_range": item["source_range"], "source_ranges": item.get("source_ranges", [item["source_range"]] if item.get("source_range") else [])} for item in context["retrieved_chapters"]], "memory": [{"id": item["id"], "name": item["name"], "source_chapter_id": item.get("source_chapter_id"), "source_span_id": item.get("source_span_id")} for item in context["confirmed_memory"]]})
                 if parsed.path == "/api/events":
                     q = parse_qs(parsed.query)
                     try:
@@ -1158,6 +1265,7 @@ class Handler(SimpleHTTPRequestHandler):
                     source_span_id = source_span_for_memory(conn, data)
                     entity = conn.execute("SELECT id FROM entity WHERE project_id=? AND status='active' AND kind=? AND canonical_name=? LIMIT 1", (PROJECT_ID, str(data.get("type") or "其他"), payload["name"])).fetchone()
                     entity_id = entity["id"] if entity else None
+                    require_memory_evidence(conn, status, source_span_id, entity_id)
                     conn.execute("INSERT INTO candidate_memory(id,project_id,branch_id,source_span_id,entity_id,kind,payload_json,status,confidence,created_at,reviewed_at,reviewed_by,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", (mid, PROJECT_ID, BRANCH_ID, source_span_id, entity_id, bounded_text(data.get("type") or "其他", 100, "memory type"), json_text(payload), status, confidence, now(), now() if status == "accepted" else None, ACTOR_ID if status == "accepted" else None, ACTOR_ID))
                     assertion_id = ensure_memory_assertion(conn, mid, {**data, **payload}, entity_id, source_span_id)
                     if assertion_id:
@@ -1174,6 +1282,24 @@ class Handler(SimpleHTTPRequestHandler):
                     conn.execute("INSERT INTO app_plot_item(id,project_id,branch_id,stage,text,created_at,updated_at) VALUES(?,?,?,?,?,?,?)", (pid, PROJECT_ID, BRANCH_ID, stage, text_value, now(), now()))
                     append_event(conn, pid, "plot.created", {"stage": stage, "text": text_value})
                     return self.send_json(201, {"id": pid, "stage": stage, "text": text_value})
+                if parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/restore-revision"):
+                    chapter_id = checked_id(parsed.path.split("/")[-2], "chapter id")
+                    revision_id = checked_id(data.get("revision_id"), "revision id")
+                    target = conn.execute("SELECT r.id,r.canonical_text FROM document_revision r JOIN document_node n ON n.id=r.document_node_id WHERE r.id=? AND r.document_node_id=? AND r.branch_id=? AND n.project_id=? AND n.branch_id=? AND n.kind='chapter'", (revision_id, chapter_id, BRANCH_ID, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if target is None:
+                        return self.send_json(404, {"error": "revision not found"})
+                    current = conn.execute("SELECT r.id FROM document_revision r WHERE r.document_node_id=? AND r.branch_id=? ORDER BY r.rowid DESC LIMIT 1", (chapter_id, BRANCH_ID)).fetchone()
+                    if current is None:
+                        return self.send_json(404, {"error": "chapter revision not found"})
+                    body = bytes(target["canonical_text"]).decode("utf-8", errors="replace")
+                    new_revision = uid("rev_")
+                    created_at = now()
+                    conn.execute("INSERT INTO document_revision(id,document_node_id,parent_id,branch_id,content_hash,canonical_text,created_at,actor_id,operation) VALUES(?,?,?,?,?,?,?,?,?)", (new_revision, chapter_id, current["id"], BRANCH_ID, hash_text(body), body.encode("utf-8"), created_at, ACTOR_ID, "restore"))
+                    conn.execute("UPDATE source_span SET status='stale' WHERE document_node_id=? AND revision_id<>? AND status='valid'", (chapter_id, new_revision))
+                    previous_head = conn.execute("SELECT head_revision FROM branch WHERE id=?", (BRANCH_ID,)).fetchone()[0]
+                    conn.execute("UPDATE branch SET head_revision=? WHERE id=?", (new_revision, BRANCH_ID))
+                    append_event(conn, chapter_id, "chapter.revision_restored", {"revision_id": revision_id, "new_revision_id": new_revision}, previous_head)
+                    return self.send_json(200, next(c for c in chapter_rows(conn) if c["id"] == chapter_id))
                 if parsed.path == "/api/events":
                     idem = bounded_text(data.get("idempotency_key"), 256, "idempotency key") if data.get("idempotency_key") is not None else None
                     if idem:
@@ -1199,9 +1325,19 @@ class Handler(SimpleHTTPRequestHandler):
                     context, _ = ai_context(conn, chapter_id)
                     started_at = now()
                     started_clock = time.perf_counter()
-                    result = generate_ai(task, context, instruction)
+                    try:
+                        result = generate_ai(task, context, instruction)
+                    except Exception as exc:
+                        latency_ms = round((time.perf_counter() - started_clock) * 1000)
+                        run_id = record_ai_run(conn, task, context, instruction, {"mode": "provider", "model": "unknown", "text": ""}, started_at, latency_ms, status="failed", error=str(exc))
+                        return self.send_json(502, {"error": "AI generation failed", "ai_run_id": run_id})
                     run_id = record_ai_run(conn, task, context, instruction, result, started_at, round((time.perf_counter() - started_clock) * 1000))
                     return self.send_json(200, {"task": task, "ai_run_id": run_id, "context": {"chapter_id": chapter_id, "memory_count": len(context["confirmed_memory"]), "previous_chapter_count": len(context["previous_chapters"]), "retrieved_count": len(context.get("retrieved_chapters", [])), "budget": context.get("context_budget")}, **result})
+                if parsed.path == "/api/ai/decision":
+                    run_id = data.get("ai_run_id")
+                    decision = bounded_text(data.get("decision"), 20, "AI decision")
+                    result = record_ai_decision(conn, run_id, decision, data.get("reason") or "")
+                    return self.send_json(201, result)
                 if parsed.path == "/api/review":
                     chapter_id = checked_id(data.get("chapter_id"), "chapter id")
                     return self.send_json(200, review_chapter(conn, chapter_id, persist=True))
@@ -1255,7 +1391,7 @@ class Handler(SimpleHTTPRequestHandler):
                     if row is None:
                         return self.send_json(404, {"error": "memory not found"})
                     payload = json.loads(row["payload_json"] or "{}")
-                    for key in ("key", "name", "source", "note"):
+                    for key in ("key", "name", "source", "note", "source_chapter_id", "source_quote"):
                         if key in data:
                             payload[key] = data[key]
                     payload["key"] = bounded_text(payload.get("key", item_id), 500, "memory key")
@@ -1269,9 +1405,13 @@ class Handler(SimpleHTTPRequestHandler):
                     confidence = 1.0 if status == "accepted" else float(data.get("confidence", row["confidence"]))
                     if not 0 <= confidence <= 1:
                         return self.send_json(400, {"error": "confidence out of range"})
-                    conn.execute("UPDATE candidate_memory SET payload_json=?,status=?,confidence=?,reviewed_at=?,reviewed_by=? WHERE id=?", (json_text(payload), status, confidence, now() if status in {"accepted", "rejected"} else None, ACTOR_ID if status in {"accepted", "rejected"} else None, item_id))
+                    source_span_id = source_span_for_memory(conn, payload) or row["source_span_id"]
+                    entity = conn.execute("SELECT id FROM entity WHERE project_id=? AND status='active' AND kind=? AND canonical_name=? LIMIT 1", (PROJECT_ID, row["kind"], payload["name"])).fetchone()
+                    entity_id = entity["id"] if entity else row["entity_id"]
+                    require_memory_evidence(conn, status, source_span_id, entity_id)
+                    conn.execute("UPDATE candidate_memory SET payload_json=?,status=?,confidence=?,source_span_id=?,entity_id=?,reviewed_at=?,reviewed_by=? WHERE id=?", (json_text(payload), status, confidence, source_span_id, entity_id, now() if status in {"accepted", "rejected"} else None, ACTOR_ID if status in {"accepted", "rejected"} else None, item_id))
                     if status == "accepted":
-                        ensure_memory_assertion(conn, item_id, {**payload, "status": "accepted"}, row["entity_id"], row["source_span_id"])
+                        ensure_memory_assertion(conn, item_id, {**payload, "status": "accepted"}, entity_id, source_span_id)
                     append_event(conn, item_id, "memory.updated", {"status": status, **payload})
                     return self.send_json(200, {"id": item_id, **payload, "status": "已确认" if status == "accepted" else "待确认" if status == "candidate" else status})
                 row = conn.execute("SELECT stage,text FROM app_plot_item WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
