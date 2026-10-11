@@ -1,0 +1,32 @@
+name: 墨屿检查
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Syntax checks
+        run: |
+          python -m py_compile server.py scripts/*.py tests/*.py
+          node --check app.js
+      - name: Contract fixtures
+        run: |
+          python tests/schema_negative_fixtures.py
+          python tests/corrupt_import_fixtures.py
+          python tests/reversible_patch_fixtures.py
+          python tests/backup_recovery_fixtures.py
+      - name: Evaluation fixtures
+        run: python scripts/evaluation_runner.py --fixtures-dir tests/fixtures --output /tmp/moyu-evaluation.json
