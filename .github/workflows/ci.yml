@@ -24,10 +24,10 @@ jobs:
           node --check app.js
       - name: Contract fixtures
         run: |
-          python tests/schema_negative_fixtures.py
-          python tests/corrupt_import_fixtures.py
-          python tests/reversible_patch_fixtures.py
-          python tests/backup_recovery_fixtures.py
-          python tests/runtime_continuity_fixtures.py
+          set -e
+          for fixture in tests/*_fixtures.py; do
+            echo "== $fixture"
+            python "$fixture"
+          done
       - name: Evaluation fixtures
         run: python scripts/evaluation_runner.py --fixtures-dir tests/fixtures --output /tmp/moyu-evaluation.json

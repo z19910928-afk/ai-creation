@@ -8,16 +8,16 @@
 
 墨屿目前的优势是“作者确认优先、来源可追溯、失败可审计、本地可恢复”的单用户写作闭环：开始创作 → 任务卡 → 生成候选 → 作者采纳 → 记忆确认 → 本章审查 → 终稿门。六个参考项目分别在结构化世界观、分层检索、角色化工作流、材料编排、流式任务控制和章节提交门上更成熟。
 
-墨屿已经吸收了六个项目中最适合当前版本的产品思路，但它不是六个项目能力的简单相加。当前仍低于参考项目集合的成熟度，关键差距集中在中文语义检索、关系/时间模型、角色化工作流、长任务控制、可视化补丁和出版协作。
+墨屿已经吸收了六个项目中最适合当前版本的产品思路，但它不是六个项目能力的简单相加。当前仍低于参考项目集合的成熟度，关键差距集中在中文语义召回、角色化工作流、长任务租约、冲突合并、出版和协作边界。
 
 ## 逐项目对照
 
 | 参考项目 | 该项目更强的能力 | 墨屿已经覆盖 | 墨屿仍缺少 | 对墨屿的判断 |
 |---|---|---|---|---|
 | **NovelForge** | 层级设定卡、关系图、多轮续写预算、审查门 | 任务卡、候选记忆、章节审查、终稿阻断、作者采纳 | 结构化设定层级、实体关系/事件图、关系变化和预算内多轮续写 | 墨屿在来源 span、stale 失效、AI 决策审计和恢复上更完整；世界观可视化较弱 |
-| **MuMuAINovel** | RTCO 分层上下文、章节/重要度记忆、SSE、重试、provider 抽象 | provider 抽象、有界上下文、章节片段、失败运行、持久化队列、取消请求 | provider 原生流式、断点续跑、重要度分层、多模型路由 | 墨屿的作者控制和审计更清晰；任务调度和上下文编排仍落后 |
+| **MuMuAINovel** | RTCO 分层上下文、章节/重要度记忆、SSE、重试、provider 抽象 | provider 抽象、有界上下文、章节片段、provider 原生 SSE 解码、输出 ledger/断点重放、失败运行、持久化队列、取消请求 | 重要度分层、多模型路由、端到端实时 worker | 墨屿的作者控制和审计更清晰；任务调度和上下文编排仍落后 |
 | **arboris-novel** | Planner → Director → Writer、任务卡、时间线、伏笔状态 | 章节任务卡、场景计划、伏笔动作、下一章简报 | 角色化 agent、场景树、时间线约束、伏笔依赖 | 墨屿有闭环骨架，但仍是单一助手工作流 |
-| **Ai-Novel** | 摘要/首尾片段、分层上下文、混合检索、重排、输出契约 | 相邻章节召回、来源 ranges、CJK FTS、记忆候选、上下文预览、结构化 JSON 契约 | embedding、dense+sparse、RRF/rerank/MMR、patch 契约 | 墨屿证据链更强；语义检索和增量编辑仍落后 |
+| **Ai-Novel** | 摘要/首尾片段、分层上下文、混合检索、重排、输出契约 | 相邻章节召回、来源 ranges、CJK FTS/BM25、recency/evidence RRF、解释检索、记忆候选、上下文预览、结构化 JSON 契约 | embedding、cross-encoder rerank/MMR、patch 契约 | 墨屿证据链和检索解释更强；语义召回和增量编辑仍落后 |
 | **91Writing** | 材料选择、提示预览、章节状态、时间线方向、备份入口 | 章节状态、候选式 AI、上下文预览、pin/omit/order、JSON/SQLite 备份恢复 | 多工作集版本、完整 prompt 回放、可视编辑历史和差异 | 墨屿后端可恢复性更强；出版编辑能力仍不够细 |
 | **webnovel-writer** | Story System、`CHAPTER_COMMIT`、投影索引、prewrite/precommit/postcommit 门、分支/what-if 方向 | 任务卡、章节审查、终稿门、revision restore、提交快照、事件记录 | 投影索引、分支隔离/合并、多人阶段性提交审计 | 墨屿已有可运行门禁，但分支和协作仍缺失 |
 
@@ -29,14 +29,14 @@
 | 章节规划 | 有目标、视角、场景计划、伏笔动作、回顾、下一章简报、hook | arboris 的 Planner/Director/Writer | 中 |
 | 世界观与人物 | 人物/地点/势力/物品设定卡，标记捕获后确认 | NovelForge 的层级卡和关系图 | 高 |
 | 记忆可信度 | candidate→author review→canon；source quote/range、entity、revision stale | NovelForge 的预览写入；MuMu 的重要度记忆 | 墨屿优势 |
-| 长上下文 | 有界召回，当前 24,000 上限，token 为字符除 4 的保守估算 | MuMu 的分层上下文、Ai-Novel 的摘要与混合检索 | 高 |
+| 长上下文 | 有界分层召回，当前 24,000 上限；CJK FTS/BM25 + recency/evidence RRF，token 为字符除 4 的保守估算 | MuMu 的分层上下文、Ai-Novel 的摘要与混合检索 | 中高 |
 | 百万上下文 | 未实现 | 六项目也不能据此证明真实百万 token 质量 | 未完成 |
 | AI 生成控制 | provider、离线模式、候选区、ai_run、结构化契约、持久队列、接受/编辑/拒绝/撤销、失败记录 | MuMu 的 SSE/重试、91Writing 的材料选择、Ai-Novel 的输出契约 | 高 |
 | 连续性审查 | 长度、状态、任务卡、实体标记、待确认记忆、重复段落 | NovelForge/webnovel-writer 的审查/提交方向 | 高 |
-| 时间线与关系 | 有时间线/关系/人物状态/剧情线 API 和故事结构页；仍无可视图谱、知识范围审查和冲突合并 | NovelForge、arboris、webnovel-writer | 中高 |
+| 时间线与关系 | 有时间线/关系/人物状态/剧情线 API，故事页提供 SVG 图谱、时间线总览和当前章节知识范围审查；仍无冲突合并和原文跳转 | NovelForge、arboris、webnovel-writer | 中 |
 | 伏笔生命周期 | setup/develop/payoff 看板，终稿检查未回收 | NovelForge/webnovel-writer 的状态与依赖方向 | 中高 |
 | 版本与恢复 | revision 列表、恢复为新 revision、SQLite 备份/恢复 | 91Writing 的备份入口、webnovel-writer 的 commit/回滚方向 | 中 |
-| AI 变更粒度 | 候选采纳和整段正文更新；没有范围级 patch/逐字符 diff | webnovel-writer 的 commit 思路、编辑器 tracked changes 方向 | 高 |
+| AI 变更粒度 | 有范围级 patch preview/apply、Unicode 范围 diff、revision/hash/CAS；仍无编辑器内逐字符审阅轨迹 | webnovel-writer 的 commit 思路、编辑器 tracked changes 方向 | 中高 |
 | 出版与协作 | JSON/Markdown，单用户本地 | 参考项目也未形成统一出版级协作闭环 | 高 |
 
 ## 目前真正领先的部分
@@ -76,7 +76,7 @@
 
 ## 2026-10-12 实现更新
 
-本文件的初始矩阵记录了上一轮对照状态。本轮已经把以下差距从“没有”提升为“可运行基础能力”：人物关系/时间线/伏笔生命周期 API 与故事结构页、人物状态/剧情线 API、材料 pin/omit/order、Prompt 契约预览、结构化 JSON 任务、buffered SSE、AI retry/取消保护、持久化 AI 队列、revision diff、CJK FTS 检索，以及 `prewrite → precommit → postcommit` 章节提交快照。上下文还新增了受限的 `retrieval_profile`，可配置预算、章节/近章窗口和记忆/设定上限，并在预览中返回 lexical/recency/evidence 分层与来源元数据。它们仍不是参考项目全部深度：关系图还不是可视化图谱，SSE 还不是 provider 原生 token stream；队列虽可重启恢复，但仍缺租约/heartbeat/进程外可靠取消；检索仍缺 embedding/RRF/rerank，出版和多人协作仍未完成。
+本文件的初始矩阵记录了上一轮对照状态。本轮已经把以下差距从“没有”提升为“可运行基础能力”：人物关系/时间线/伏笔生命周期 API 与故事结构页、SVG 关系图谱、时间线总览、人物状态知识范围审查、材料 pin/omit/order、Prompt 契约预览、结构化 JSON 任务、provider 原生 SSE 解析、带序号输出 ledger 与断点重放、AI retry/取消保护、持久化 AI 队列、revision diff、范围级 patch、CJK FTS/BM25 + recency/evidence RRF 检索、`/api/search?explain=1`，以及 `prewrite → precommit → postcommit` 章节提交快照和只读 projection doctor。上下文还新增了受限的 `retrieval_profile`，可配置预算、章节/近章窗口和记忆/设定上限，并在预览中返回 lexical/recency/evidence 分层与来源元数据。它们仍不是参考项目全部深度：检索仍缺 embedding/cross-encoder rerank/MMR，队列仍缺租约/heartbeat/进程外可靠取消，故事结构仍缺冲突合并与原文跳转，出版和多人协作仍未完成。
 
 ## 2026-10-12 可复现快照与代码证据
 
@@ -89,7 +89,7 @@
 | arboris-novel | `main` / `dd80c69bc30a80d68b375bd504c6bc308164ff9e` | clone 中没有 `LICENSE` 文件；README 的 MIT badge/文字不能替代授权文件 | `backend/app/models/memory_layer.py` 定义 knowledge、timeline event、因果/关系数据；`docs/RAG.md` 展示 embedding→检索→Prompt 拼装链路；README/服务层描述 concept→blueprint→chapter→evaluate→summary | 需要把章节蓝图、时间线、知识范围和伏笔跟踪做成可审查对象；未获书面授权前不复制代码 |
 | Ai-Novel | `dev` / `8b85b2b6f29af4c69241be7c42417dbe4795db30` | README 的 License 节明确后续补 `LICENSE`；本快照视为未授权 | `backend/app/services/search_index_service.py` 覆盖多种故事来源与 story memory；`backend/tests/test_streaming_support.py` 验证 OpenAI SSE delta/fallback；迁移中有 pgvector/vector chunks 和 rerank 配置 | 需要把 sparse 检索升级成可选 dense+sparse、RRF/rerank，并保留解释信息；测试应覆盖 provider 流式协议 |
 | 91Writing | `main` / `df3de0362e8e4028b76dffa78c5bba7b8bbd20a1` | `LICENSE` 为 MIT | `api.js` 的 `generateTextStream` 和 prompt/billing 路径；README/前端保存材料、章节状态、备份和统计入口 | 材料选择、Prompt 预览、预算提示和本地备份是轻量但高频的作者体验；概念可借鉴，代码仍不复制 |
-| webnovel-writer | `master` / `0af0c0b2fc2e4104e8a12c1d62136c6595a6a983` | `LICENSE` 为 GPL-3.0 | `README.md` 与 `docs/architecture/overview.md` 明确 accepted `CHAPTER_COMMIT` 为写后真源，`state/index/summary/memory` 为投影，`preflight`/`doctor`/dashboard 暴露运行健康；README 还记录 Embedding/Rerank 配置 | 需要将提交、投影、索引和运行健康绑定为可重试的链路；当前墨屿已有提交快照，但还没有完整 projection ledger |
+| webnovel-writer | `master` / `0af0c0b2fc2e4104e8a12c1d62136c6595a6a983` | `LICENSE` 为 GPL-3.0 | `README.md` 与 `docs/architecture/overview.md` 明确 accepted `CHAPTER_COMMIT` 为写后真源，`state/index/summary/memory` 为投影，`preflight`/`doctor`/dashboard 暴露运行健康；README 还记录 Embedding/Rerank 配置 | 需要将提交、投影、索引和运行健康绑定为可重试的链路；当前墨屿已有提交快照、AI 队列和只读 doctor，但还没有完整 projection ledger |
 
 ### 证据的可信度边界
 
@@ -104,10 +104,10 @@
 
 | 优先级 | 差距 | 六项目对照依据 | 验收条件 | 当前状态 |
 |---|---|---|---|---|
-| P0 | 范围级 AI patch + provider 原生流 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | 以 `base_revision`/内容哈希做 CAS；返回范围 diff、前后哈希、逐块序号；断线可重连；接受、拒绝、撤销均有事件 | 已补 `POST /api/chapters/:id/patch` 的 preview/apply、revision/hash/CAS、stale 标记和事件；仍缺 provider 原生 token stream/断线重连 |
-| P1 | 可解释语义检索 | MuMuAINovel ONNX embedding；Ai-Novel vector chunks/rerank；webnovel-writer Embedding/Rerank | 可选 embedding；dense+sparse RRF→rerank/MMR；实体/时间/分支硬过滤；`search/explain` 返回分层分数、source span、stale/冲突和裁剪原因 | 当前为 CJK FTS + recency/evidence 分层；无 dense/RRF/rerank |
-| P1 | 章节提交后的投影健康 | webnovel-writer `CHAPTER_COMMIT`、projection log、preflight/doctor | commit 绑定 revision/review/assertion delta；投影幂等、有状态、可重试；失败能在 UI 定位；重启后不丢队列 | 已有 `prewrite/precommit/postcommit` 快照与持久队列；缺完整 projection ledger/health API |
-| P2 | 故事结构和知识范围 | NovelForge 关系/伏笔路由；arboris timeline/knowledge；webnovel-writer 状态投影 | 实体、关系、事件、POV 可见知识范围可视化；冲突合并、原文跳转、未来信息泄漏审查有可复现结果 | 上下文已按显式时间/分支范围过滤人物状态并记录隐藏原因；已有结构 API/UI，仍缺图谱和范围审查 UI |
+| P0 | 范围级 AI patch + provider 原生流 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | 以 `base_revision`/内容哈希做 CAS；返回范围 diff、前后哈希、逐块序号；断线可重连；接受、拒绝、撤销均有事件 | 已补 `POST /api/chapters/:id/patch` 的 preview/apply、revision/hash/CAS、stale 标记和事件；provider 原生 SSE、逐块 ledger 和 `after_seq`/`Last-Event-ID` 重放已通过 fixture；仍缺进程外可靠取消 |
+| P1 | 可解释语义检索 | MuMuAINovel ONNX embedding；Ai-Novel vector chunks/rerank；webnovel-writer Embedding/Rerank | 可选 embedding；dense+sparse RRF→rerank/MMR；实体/时间/分支硬过滤；`search/explain` 返回分层分数、source span、stale/冲突和裁剪原因 | 已有 CJK FTS/BM25 + recency/evidence RRF、硬过滤、多样性限制和 explain；仍无 embedding/cross-encoder rerank/MMR |
+| P1 | 章节提交后的投影健康 | webnovel-writer `CHAPTER_COMMIT`、projection log、preflight/doctor | commit 绑定 revision/review/assertion delta；投影幂等、有状态、可重试；失败能在 UI 定位；重启后不丢队列 | 已有 `prewrite/precommit/postcommit` 快照、持久队列和只读 `/api/doctor`；仍缺完整 projection ledger、自动重建和 UI 故障定位 |
+| P2 | 故事结构和知识范围 | NovelForge 关系/伏笔路由；arboris timeline/knowledge；webnovel-writer 状态投影 | 实体、关系、事件、POV 可见知识范围可视化；冲突合并、原文跳转、未来信息泄漏审查有可复现结果 | 已有结构 API、SVG 图谱、时间线总览、知识范围审查和长篇 leakage fixture；仍缺冲突合并与原文跳转 |
 | P2 | 角色化长任务 | NovelForge workflow scheduler；arboris Planner→Director→Writer；Ai-Novel 多 agent | Planner/Director/Writer/Reviewer 使用版本化契约；节点进度、暂停、重试、恢复、成本和失败原因可审计 | 当前单助手任务卡 + 持久队列；缺多角色运行台 |
 | P3 | 出版和多人协作 | 91Writing 备份/统计；MuMu/Ai-Novel 的用户与项目边界 | DOCX/PDF/EPUB 往返、loss manifest；分支合并和权限审计；云部署认证、配额和 BYOK | 本地 JSON/Markdown/最小 EPUB；单用户定位，未完成 |
 

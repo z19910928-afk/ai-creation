@@ -32,10 +32,11 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - `GET/POST /api/records`、`PATCH/DELETE /api/records/:id`（记忆、伏笔同样支持 `/api/memory`、`/api/plot`）：最小 CRUD 投影，并为变更写入 `event_log`
 - `GET /api/events`、`POST /api/events`：查看或写入幂等事件
 - `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；支持 `retrieval_profile` 配置预算、章节召回数、近章窗口和记忆/设定上限，并返回分层计数与证据来源；`/api/ai` 支持离线结构化结果和 buffered SSE
-- `GET /api/ai/status`、`GET /api/ai/quota`、`GET /api/ai/runs/:id`、`POST /api/ai/runs/:id/retry|cancel`：查看模型/预算/运行审计并处理失败运行
+- `GET /api/ai/status`、`GET /api/ai/quota`、`GET /api/ai/runs/:id`、`GET /api/ai/runs/:id/stream?after_seq=N`、`POST /api/ai/runs/:id/retry|cancel`：查看模型/预算/运行审计，重放可恢复的 AI 输出块并处理失败运行；服务端先解码并落盘 provider 原生 SSE，再以可重连的 buffered SSE 输出，也会明确标记 JSON fallback 或离线模式
 - `POST /api/ai/queue` 或 `/api/ai` 携带 `async:true`：将请求持久化为队列任务；`GET /api/ai/queue`、`GET /api/ai/jobs/:id` 查看状态，`process|cancel|retry` 控制单个任务，`queue/drain` 恢复人工或重启后的积压任务
-- `GET /api/search?q=...`：搜索章节、设定、记忆、伏笔和时间线；结果保留来源章节与范围元数据
-- `GET /api/story-map`、`POST /api/relationships`、`POST /api/timeline`、`POST /api/foreshadow-links`：读取或写入关系、时间线、伏笔生命周期和冲突投影
+- `GET /api/search?q=...&explain=1`：搜索章节、设定、记忆、伏笔和时间线；使用 CJK FTS/BM25 与新近度、证据分数的可解释 RRF 融合，支持项目/分支、章节、实体、状态和时间硬过滤，结果保留来源章节与范围元数据；`explain=1` 返回各信号排名和过滤原因
+- `GET /api/doctor`（兼容别名 `/api/projection-health`、`/api/health/projections`）：只读检查 state/event、分支 head、搜索索引、AI 队列和章节提交投影的新鲜度、失败与缺口
+- `GET /api/story-map`、`POST /api/relationships`、`POST /api/timeline`、`POST /api/foreshadow-links`：读取或写入关系、时间线、伏笔生命周期和冲突投影；故事结构页提供关系 SVG 图谱、时间线总览和当前章节人物状态知识范围审查
 - `GET/POST/PATCH/DELETE /api/character-states`、`/api/plot-threads`：管理带时间范围、知识范围和证据链接的人物状态与剧情线
 - `GET /api/assertions`、`GET /api/assertions/:id`、`POST /api/assertions/:id/review`、`GET /api/memory/:id/evidence`：审查正典事实、冲突、依赖和失效证据
 - `GET /api/chapters/:id/revisions`、`POST /api/chapters/:id/restore-revision`、`GET /api/chapters/:id/commits`、`POST /api/chapters/:id/commit`：查看差异、恢复为新 revision，并执行章节提交阶段
@@ -63,13 +64,13 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - 上下文预算会记录裁剪原因和被省略来源；固定材料不会被静默裁剪，固定集合超出预算时请求会明确阻断
 - 人物关系、时间线、伏笔生命周期和冲突查询
 - 章节 `prewrite → precommit → postcommit` 提交快照、revision diff 与恢复前预览
-- buffered SSE 候选传输、失败运行重试和已完成运行取消保护
+- provider 原生 SSE 解析（含多行 data、心跳、`[DONE]` 与 JSON fallback）、带序号的输出 ledger、断点重放、失败运行重试和已完成运行取消保护
 - 全书完稿状态：终稿检查后可标记完成，状态持久化并支持恢复写作
 - 移动端适配
 
 ## 设计原则
 
-当前版本仍采用单用户、本地优先、Markdown 思维的工作流。AI 是显式触发的可选能力：没有配置模型时保持离线，配置后只按任务发送有界工作集，不暗中调用模型。当前已有本地持久化 AI 队列、CJK FTS5 检索、人物状态和剧情线 API；后续重点是 embedding/RRF 重排、真实 tokenizer、外部 worker 租约、DOCX/PDF、分支合并和协作权限；EPUB 当前仅提供最小导出，尚未支持完整格式往返。
+当前版本仍采用单用户、本地优先、Markdown 思维的工作流。AI 是显式触发的可选能力：没有配置模型时保持离线，配置后只按任务发送有界工作集，不暗中调用模型。当前已有本地持久化 AI 队列、CJK FTS5/BM25 + recency/evidence RRF 检索、人物状态和剧情线 API、投影健康 doctor 以及可恢复输出 ledger；后续重点是可选 embedding/rerank/MMR、真实 tokenizer、外部 worker 租约、DOCX/PDF、分支合并和协作权限；EPUB 当前仅提供最小导出，尚未支持完整格式往返。
 
 ## 长篇记忆设计（原型）
 

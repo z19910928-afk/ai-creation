@@ -36,10 +36,10 @@ GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参�
 
 | 优先级 | 要补的能力 | 对照证据 | 墨屿可验收门槛 | 当前判断 |
 |---|---|---|---|---|
-| P0 | 范围级 patch、原生流和断点 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | `base_revision`/内容哈希 CAS；逐块序号和重连；范围 diff；接受/拒绝/撤销事件可回放 | 已有 `/api/chapters/:id/patch` preview/apply、revision/hash/CAS、stale 标记和 `chapter.range_patched` 事件；仍缺原生 token stream、逐块重连和外部 worker |
-| P1 | dense+sparse 语义检索与解释 | MuMu ONNX、Ai-Novel vector/rerank、webnovel-writer Embedding/Rerank | 可选 embedding；RRF→rerank/MMR；实体/时间/分支过滤；返回分数、source span、stale/冲突、裁剪原因 | 当前 CJK FTS + recency/evidence 分层；无向量、RRF、重排 |
-| P1 | commit 后投影健康 | webnovel-writer `CHAPTER_COMMIT`/projection log/doctor | revision/review/assertion delta 绑定；幂等、失败可重试、重启不丢；UI 可定位失败投影 | 当前有 `prewrite/precommit/postcommit` 快照与持久队列，缺完整 projection ledger |
-| P2 | 知识范围、关系和时间线 | NovelForge 关系/伏笔、arboris timeline/knowledge | 图谱可视化；POV 可见范围；冲突合并；未来信息泄漏有 fixture 与 UI 解释 | 上下文已按显式时间/分支范围过滤人物状态并返回隐藏原因；已有结构 API/UI，缺图谱与范围审查 UI |
+| P0 | 范围级 patch、原生流和断点 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | `base_revision`/内容哈希 CAS；逐块序号和重连；范围 diff；接受、拒绝、撤销事件可回放 | 已有 `/api/chapters/:id/patch` preview/apply、revision/hash/CAS、stale 标记和 `chapter.range_patched` 事件；provider 原生 SSE、逐块 ledger、`after_seq`/`Last-Event-ID` 重放已通过 fixture；仍缺进程外可靠取消 |
+| P1 | dense+sparse 语义检索与解释 | MuMu ONNX、Ai-Novel vector/rerank、webnovel-writer Embedding/Rerank | 可选 embedding；RRF→rerank/MMR；实体/时间/分支过滤；返回分数、source span、stale/冲突、裁剪原因 | 已有 CJK FTS/BM25 + recency/evidence RRF、硬过滤、多样性限制和 explain；仍无 embedding/cross-encoder rerank/MMR |
+| P1 | commit 后投影健康 | webnovel-writer `CHAPTER_COMMIT`/projection log/doctor | revision/review/assertion delta 绑定；幂等、失败可重试、重启不丢；UI 可定位失败投影 | 已有 `prewrite/precommit/postcommit` 快照、持久队列和只读 `/api/doctor`；仍缺完整 projection ledger、自动重建和 UI 故障定位 |
+| P2 | 知识范围、关系和时间线 | NovelForge 关系/伏笔、arboris timeline/knowledge | 图谱可视化；POV 可见范围；冲突合并；未来信息泄漏有 fixture 与 UI 解释 | 上下文已按显式时间/分支范围过滤人物状态并返回隐藏原因；已有结构 API、SVG 图谱、时间线总览、范围审查和 leakage fixture；仍缺冲突合并与原文跳转 |
 | P2 | 角色化长任务 | NovelForge scheduler、arboris Planner→Director→Writer、Ai-Novel 多 agent | 版本化角色契约；节点进度、暂停/重试/恢复、成本和失败原因可审计 | 当前单助手任务卡和持久队列，缺多角色运行台 |
 | P3 | 出版往返与多人边界 | 91Writing 备份/统计；MuMu/Ai-Novel 用户/项目边界 | DOCX/PDF/EPUB 往返与 loss manifest；分支合并、权限、BYOK、配额和审计 | 当前本地单用户 JSON/Markdown/最小 EPUB |
 
@@ -84,9 +84,9 @@ GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参�
 
 ### 尚未关闭的 P2/P3 项
 
-1. **检索质量**：当前是 SQLite FTS5 CJK n-gram + 新近度/来源过滤；没有 embedding、中文 gold set、RRF/重排、MMR 或索引新鲜度 SLA。
-2. **长任务控制**：已有 buffered SSE、失败重试、持久化队列、defer/process/drain 和取消请求；仍没有 provider 原生流式、进程外可靠取消、断点续跑、并发租约或 heartbeat。
-3. **事实与冲突界面**：已有 candidate/assertion 数据，但尚未提供完整的 assertion 列表、矛盾合并、人物知识范围和时间线冲突修复 UI。
+1. **检索质量**：当前是 SQLite FTS5 CJK n-gram/BM25 + recency/evidence RRF、硬过滤和 explain；仍没有 embedding、cross-encoder rerank、MMR、中文 gold set 或索引新鲜度 SLA。
+2. **长任务控制**：已有 provider 原生 SSE 解析、逐块 ledger、断点重放、失败重试、持久化队列、defer/process/drain 和取消请求；仍没有进程外可靠取消、并发租约或 heartbeat。
+3. **事实与冲突界面**：已有 candidate/assertion 数据、人物知识范围审查和时间线/关系图，但尚未提供完整的 assertion 合并、冲突修复和原文跳转 UI。
 4. **导入导出**：当前提供 JSON/Markdown 和带服务端终稿门的最小 EPUB 导出；DOCX/PDF、EPUB 安全解析与格式往返，以及完整损失清单仍待实现。
 5. **部署边界**：服务面向单用户本机；没有公网认证、多人权限、加密存储、供应商留存删除证明或云端 BYOK 策略。
 6. **效果评测**：fixture 可以验证协议和拒绝路径，不能证明真实模型的长篇连贯性、风格或百万上下文效果；需要中文长篇 gold set、人工 pairwise 和成本/延迟样本。
@@ -132,6 +132,6 @@ GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参�
 
 ## 2026-10-12 增量对照
 
-根据六个项目的差距复核，当前工作树新增了故事结构 API/UI、人物状态/剧情线、材料 pin/omit/order、Prompt 契约预览、结构化离线/Provider 输出、buffered SSE、AI retry/取消保护、持久化 AI 队列、CJK FTS、assertion 证据审查/重新定位、revision diff，以及 `prewrite/precommit/postcommit` 章节提交快照。新增运行证据见 `tests/story_structure_fixtures.py`、`tests/character_state_fixtures.py`、`tests/assertion_workflow_fixtures.py`、`tests/chapter_commit_fixtures.py`、`tests/ai_contract_fixtures.py` 和 `tests/ai_queue_fixtures.py`。
+根据六个项目的差距复核，当前工作树新增了故事结构 API/UI、SVG 关系图谱、时间线总览、人物状态/知识范围审查、材料 pin/omit/order、Prompt 契约预览、结构化离线/Provider 输出、provider 原生 SSE 与 replay ledger、AI retry/取消保护、持久化 AI 队列、CJK FTS/BM25 + recency/evidence RRF、search explain、assertion 证据审查/重新定位、revision diff、范围级 patch、只读 projection doctor，以及 `prewrite/precommit/postcommit` 章节提交快照。新增运行证据见 `tests/story_structure_fixtures.py`、`tests/character_state_fixtures.py`、`tests/assertion_workflow_fixtures.py`、`tests/chapter_commit_fixtures.py`、`tests/ai_contract_fixtures.py`、`tests/ai_queue_fixtures.py`、`tests/stream_resume_fixtures.py` 和 `tests/projection_health_fixtures.py`。
 
-这些实现补上了六个项目中可直接借鉴的工作流骨架。上下文预览现在支持受限的 `retrieval_profile`，可调整预算与各层召回数量，并标出 lexical、recency、evidence 来源；这仍使用字符/4 的保守估算，不是真实 provider tokenizer。队列已经能持久化和重启恢复，但本地 daemon 没有租约/heartbeat，provider 原生流式和可靠的进程外取消仍未完成；embedding/RRF 重排、范围级 patch、出版格式、分支合并和协作权限仍是后续工程项。
+这些实现补上了六个项目中可直接借鉴的工作流骨架。上下文预览现在支持受限的 `retrieval_profile`，可调整预算与各层召回数量，并标出 lexical、recency、evidence 来源；搜索端使用可解释 RRF，但仍使用字符/4 的保守估算，不是真实 provider tokenizer。队列已经能持久化和重启恢复，provider SSE 能按序号重放；本地 daemon 仍没有租约/heartbeat，embedding/cross-encoder rerank/MMR、自动投影重建、出版格式、分支合并和协作权限仍是后续工程项。
