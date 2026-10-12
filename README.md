@@ -60,7 +60,8 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 
 记忆中枢采用“候选捕获 → 人工确认 → 相关章节回忆”的三步流程。正文里用 `【人物】名字`、`【物品】名称`、`【地点】名称`、`【伏笔】内容` 标记关键事实，应用会记录来源章节、原文引句、范围和确认状态；确认后才会建立正典 assertion，避免把模型猜测直接写进正典。上下文接口提供有界的章节召回和来源预览，并报告估算 token；当前不是百万 token 上下文，也没有宣称完整向量检索。后续可在此基础上加入 embedding、重排、实体关系图、时间线冲突检查和版本回滚。
 
-开源设计参考见 `docs/design-references.md`。
+开源设计参考见 `docs/design-references.md`；与六个参考项目的逐项功能对比见
+[`docs/comparison-six-projects-2026-10-12.md`](docs/comparison-six-projects-2026-10-12.md)。
 
 ## AI 创作助手（可选）
 
