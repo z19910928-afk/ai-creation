@@ -17,6 +17,16 @@
 - freshness SLA：正文提交到 FTS/结构化索引可读的 p50/p95 时间。
 - recovery RPO/RTO：故障后可丢失数据时间和恢复时间，发布前各至少演练一次。
 
+## 长篇知识范围评测（v1.2）
+
+`longform_knowledge_scope.json` 提供一个不依赖外部模型的可重复样本。`gold.knowledge_scope` 为当前章节、每条事实的 `available_from`（首次可用章节）、允许知情的 `entities` 和可选分支范围；`predictions.knowledge_claims` 是上下文构建器准备注入本章的事实。评测器将以下情况标记为泄漏：
+
+- `available_from` 晚于当前章节，表示提前揭示未来秘密；
+- 事实未知、缺少可验证的首次可用章节，或角色不在 `entities` 范围内；
+- 当前分支不在事实声明的 `branches` 范围内。
+
+输出 `knowledge_scope_leakage`（违规事实数 / 去重后的注入事实数）、`knowledge_scope_precision`（通过范围校验的事实数 / 注入事实数）和 `knowledge_scope_recall`（命中 `required` 事实数 / required 数）。只有声明了对应 fixture 阈值时才阻断既有 fixture；长篇发布门槛应为泄漏率 `0`、精确率 `1`，并按项目要求设置召回率。该指标检查上下文边界，不声称模型生成质量。
+
 ## 回归分层
 
 S0 数据恢复、S1 正典/分支/证据、S2 检索/连续性、S3 交互/成本。任何 S0/S1 失败阻止发布；S2 必须达到门槛；S3 记录趋势，不得冒充可靠性证明。

@@ -41,6 +41,102 @@ DEFAULT_THRESHOLDS: dict[str, Any] = {
 }
 
 
+def _knowledge_scope_metrics(gold: Mapping[str, Any], pred: Mapping[str, Any]) -> dict[str, Any]:
+    """Score long-form character knowledge without requiring a model.
+
+    A long manuscript must not leak a reveal into an earlier chapter.  A fixture
+    may describe each claim's first available chapter and the entities allowed to
+    know it.  Predictions are the claims that a context builder would expose for
+    the active chapter.  Unknown claims and entity mismatches are violations too;
+    an evaluator must not silently treat unverifiable material as safe.
+
+    The block is optional so existing S0--S3 fixtures keep their original gates.
+    It returns ``measured=False`` when no gold scope is supplied.
+    """
+    scope = gold.get("knowledge_scope")
+    if not isinstance(scope, Mapping):
+        return {"measured": False, "leakage_rate": None, "precision": None, "recall": None, "sample_count": 0, "required_count": 0, "returned_count": 0, "violations": [], "na": True}
+    current = _number(scope.get("current_chapter", scope.get("current_ordinal")))
+    claims_raw = scope.get("claims", [])
+    claims = _items(claims_raw)
+    claim_by_id: dict[str, Mapping[str, Any]] = {}
+    for item in claims:
+        if isinstance(item, Mapping):
+            claim_id = item.get("id", item.get("claim_id", item.get("key")))
+            if claim_id is not None:
+                claim_by_id[str(claim_id)] = item
+
+    required_raw = scope.get("required", scope.get("required_claims", []))
+    required = _dedupe(required_raw)
+    # When a fixture omits a required list, all claims available at the active
+    # chapter form the gold set.  This makes the metric useful for simple gold
+    # files while allowing focused retrieval tests to list a smaller set.
+    if not required and current is not None:
+        required = [claim_id for claim_id, item in claim_by_id.items() if _number(item.get("available_from", item.get("from_chapter", item.get("chapter")))) is not None and _number(item.get("available_from", item.get("from_chapter", item.get("chapter")))) <= current]
+
+    predictions = _items(pred.get("knowledge_claims", pred.get("character_knowledge", pred.get("knowledge", []))))
+    returned: list[tuple[str, str | None]] = []
+    seen: set[tuple[str, str | None]] = set()
+    violations: list[dict[str, Any]] = []
+    valid_ids: set[str] = set()
+    for item in predictions:
+        if isinstance(item, Mapping):
+            claim_id = item.get("id", item.get("claim_id", item.get("key")))
+            entity = item.get("entity_id", item.get("entity", item.get("character_id")))
+        else:
+            claim_id, entity = item, None
+        claim_key = str(claim_id) if claim_id is not None else ""
+        entity_key = str(entity) if entity is not None else None
+        dedupe_key = (claim_key, entity_key)
+        if dedupe_key in seen:
+            continue
+        seen.add(dedupe_key)
+        returned.append(dedupe_key)
+        claim = claim_by_id.get(claim_key)
+        reasons: list[str] = []
+        if claim is None:
+            reasons.append("unknown_claim")
+        else:
+            available = _number(claim.get("available_from", claim.get("from_chapter", claim.get("chapter"))))
+            if current is not None and (available is None or available > current):
+                reasons.append("future_reveal" if available is not None else "missing_availability")
+            allowed_entities = claim.get("entities", claim.get("entity_ids", claim.get("knowledge_scope")))
+            if allowed_entities is not None:
+                allowed_entity_ids = {str(value) for value in _items(allowed_entities)}
+                if entity_key is None or entity_key not in allowed_entity_ids:
+                    reasons.append("entity_scope")
+            branches = claim.get("branches", claim.get("branch_ids"))
+            active_branch = scope.get("active_branch", scope.get("branch_id"))
+            if branches is not None and active_branch is not None and str(active_branch) not in {str(value) for value in _items(branches)}:
+                reasons.append("branch_scope")
+        if reasons:
+            violations.append({"id": claim_key or None, "entity_id": entity_key, "reasons": reasons})
+        else:
+            valid_ids.add(claim_key)
+
+    required_set = set(required)
+    hits = len(required_set & valid_ids)
+    valid_count = len(returned) - len(violations)
+    leakage = _ratio(len(violations), len(returned))
+    precision = _ratio(valid_count, len(returned))
+    recall = _ratio(hits, len(required_set))
+    return {
+        "measured": True,
+        "current_chapter": current,
+        "required": required,
+        "required_count": len(required_set),
+        "returned_count": len(returned),
+        "valid_count": valid_count,
+        "hits": hits,
+        "leakage_rate": leakage,
+        "precision": precision,
+        "recall": recall,
+        "sample_count": len(returned),
+        "violations": violations,
+        "na": leakage is None or precision is None or recall is None,
+    }
+
+
 def _number(value: Any) -> float | None:
     if isinstance(value, Mapping):
         value = value.get("value", value.get("actual"))
@@ -213,6 +309,7 @@ def evaluate_fixture(fixture: Mapping[str, Any]) -> dict[str, Any]:
             errors.append(f"missing metadata: {key}")
     pred = _extract_predictions(fixture)
     gold = fixture.get("gold", {}) if isinstance(fixture.get("gold", {}), Mapping) else {}
+    knowledge_scope = _knowledge_scope_metrics(gold, pred)
     thresholds = dict(DEFAULT_THRESHOLDS)
     custom = fixture.get("thresholds", {})
     if isinstance(custom, Mapping):
@@ -221,7 +318,7 @@ def evaluate_fixture(fixture: Mapping[str, Any]) -> dict[str, Any]:
                 thresholds[key] = dict(val)
             else:
                 # Numeric thresholds are interpreted according to the metric's default direction.
-                direction = "min" if key in {"conflict_recall_hard", "reversible_patch_rate", "recovery_success_rate"} else "max"
+                direction = "min" if key in {"conflict_recall_hard", "reversible_patch_rate", "recovery_success_rate", "knowledge_scope_precision", "knowledge_scope_recall"} else "max"
                 thresholds[key] = {direction: val}
 
     # Evidence Recall/Precision at every required K. Candidate/ranking aliases are accepted.
@@ -338,6 +435,7 @@ def evaluate_fixture(fixture: Mapping[str, Any]) -> dict[str, Any]:
         "recovery": recovery,
         "corrupt_import_acceptance_rate": _metric(corrupt_rate, len(corrupt)),
         "reversible_patch_rate": _metric(reversible_rate, len(patches)),
+        "knowledge_scope": knowledge_scope,
     }
 
     # Flatten gate values so threshold names remain stable and easy to consume.
@@ -361,6 +459,9 @@ def evaluate_fixture(fixture: Mapping[str, Any]) -> dict[str, Any]:
         "rpo_p95_seconds": observed("rpo_p95_seconds", _pct(rpo, 0.95)),
         "rto_p95_seconds": observed("rto_p95_seconds", _pct(rto, 0.95)),
         "recovery_success_rate": observed("recovery_success_rate", _ratio(recovery_successes, len(recoveries))),
+        "knowledge_scope_leakage": observed("knowledge_scope_leakage", knowledge_scope.get("leakage_rate")),
+        "knowledge_scope_precision": observed("knowledge_scope_precision", knowledge_scope.get("precision")),
+        "knowledge_scope_recall": observed("knowledge_scope_recall", knowledge_scope.get("recall")),
     }
     # Reflect imported/observed values in the grouped snapshot as well.
     for metric_name in (
@@ -405,11 +506,12 @@ def evaluate_fixture(fixture: Mapping[str, Any]) -> dict[str, Any]:
             passed = False
 
     sample_count = {
-        "evidence_gold": len(gold_evidence), "evidence_returned": len(ranking), "citations": len(cited), "facts": len(facts), "conflicts": len(_items(conflicts_gold)), "revisions": len(revisions), "freshness": len(freshness), "recoveries": len(recoveries), "corrupt_imports": len(corrupt), "patches": len(patches)
+        "evidence_gold": len(gold_evidence), "evidence_returned": len(ranking), "citations": len(cited), "facts": len(facts), "conflicts": len(_items(conflicts_gold)), "revisions": len(revisions), "freshness": len(freshness), "recoveries": len(recoveries), "corrupt_imports": len(corrupt), "patches": len(patches), "knowledge_claims": knowledge_scope.get("sample_count", 0)
     }
     na_count = sum(int(v.get("na_count", 0)) for v in metrics.values() if isinstance(v, Mapping))
     na_count += sum(int(item.get("na_count", 0)) for item in evidence.values())
     na_count += sum(int(item.get("na", False)) for item in (merges, splits) if isinstance(item, Mapping))
+    na_count += int(knowledge_scope.get("na", False)) if knowledge_scope.get("measured") else 0
 
     snapshot: dict[str, Any] = {
         **metadata,
