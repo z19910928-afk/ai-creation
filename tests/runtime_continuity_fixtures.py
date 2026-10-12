@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from server import fit_context_budget  # noqa: E402
+from server import filter_character_states_for_context, fit_context_budget  # noqa: E402
 
 
 def call(port: int, method: str, path: str, payload: dict | None = None) -> dict:
@@ -50,6 +50,25 @@ def main() -> None:
         "previous_chapters": [{"excerpt": "h" * 3_000} for _ in range(3)],
     }
     assert fit_context_budget(oversized_context, 24_000) <= 24_000
+    controlled_context = {
+        "project": {"title": "pin", "summary": "s" * 1_000},
+        "story_cards": [{"id": "pinned", "description": "keep this card"}, *[
+            {"id": f"drop-{index}", "description": "x" * 600} for index in range(8)
+        ]],
+        "context_budget": {},
+        "material_controls": {"records": {"pinned": {"pin": True}}},
+    }
+    fit_context_budget(controlled_context, 600)
+    assert [item["id"] for item in controlled_context["story_cards"]] == ["pinned"]
+    assert controlled_context["context_budget"]["truncation"]["pinned"] == ["pinned"]
+    assert controlled_context["context_budget"]["truncation"]["removed"]
+    visible, filtered = filter_character_states_for_context([
+        {"id": "known", "valid_start": "chapter-1", "knowledge_scope": {"branches": ["main"]}},
+        {"id": "future", "valid_start": "chapter-8", "knowledge_scope": {"branches": ["main"]}},
+        {"id": "other-branch", "valid_start": "chapter-1", "knowledge_scope": {"branches": ["alt"]}},
+    ], 3, "main")
+    assert [item["id"] for item in visible] == ["known"]
+    assert {item["id"] for item in filtered} == {"future", "other-branch"}
     port = unused_port()
     with tempfile.TemporaryDirectory(prefix="moyu-runtime-") as tmp:
         database = Path(tmp) / "runtime.sqlite3"

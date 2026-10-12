@@ -104,11 +104,11 @@
 
 | 优先级 | 差距 | 六项目对照依据 | 验收条件 | 当前状态 |
 |---|---|---|---|---|
-| P0 | 范围级 AI patch + provider 原生流 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | 以 `base_revision`/内容哈希做 CAS；返回范围 diff、前后哈希、逐块序号；断线可重连；接受、拒绝、撤销均有事件 | 仍缺范围级 patch；已有 buffered SSE、取消保护和候选采纳 |
+| P0 | 范围级 AI patch + provider 原生流 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | 以 `base_revision`/内容哈希做 CAS；返回范围 diff、前后哈希、逐块序号；断线可重连；接受、拒绝、撤销均有事件 | 已补 `POST /api/chapters/:id/patch` 的 preview/apply、revision/hash/CAS、stale 标记和事件；仍缺 provider 原生 token stream/断线重连 |
 | P1 | 可解释语义检索 | MuMuAINovel ONNX embedding；Ai-Novel vector chunks/rerank；webnovel-writer Embedding/Rerank | 可选 embedding；dense+sparse RRF→rerank/MMR；实体/时间/分支硬过滤；`search/explain` 返回分层分数、source span、stale/冲突和裁剪原因 | 当前为 CJK FTS + recency/evidence 分层；无 dense/RRF/rerank |
 | P1 | 章节提交后的投影健康 | webnovel-writer `CHAPTER_COMMIT`、projection log、preflight/doctor | commit 绑定 revision/review/assertion delta；投影幂等、有状态、可重试；失败能在 UI 定位；重启后不丢队列 | 已有 `prewrite/precommit/postcommit` 快照与持久队列；缺完整 projection ledger/health API |
-| P2 | 故事结构和知识范围 | NovelForge 关系/伏笔路由；arboris timeline/knowledge；webnovel-writer 状态投影 | 实体、关系、事件、POV 可见知识范围可视化；冲突合并、原文跳转、未来信息泄漏审查有可复现结果 | 已有结构 API/UI、人物状态和剧情线；缺图谱和范围审查 UI |
+| P2 | 故事结构和知识范围 | NovelForge 关系/伏笔路由；arboris timeline/knowledge；webnovel-writer 状态投影 | 实体、关系、事件、POV 可见知识范围可视化；冲突合并、原文跳转、未来信息泄漏审查有可复现结果 | 上下文已按显式时间/分支范围过滤人物状态并记录隐藏原因；已有结构 API/UI，仍缺图谱和范围审查 UI |
 | P2 | 角色化长任务 | NovelForge workflow scheduler；arboris Planner→Director→Writer；Ai-Novel 多 agent | Planner/Director/Writer/Reviewer 使用版本化契约；节点进度、暂停、重试、恢复、成本和失败原因可审计 | 当前单助手任务卡 + 持久队列；缺多角色运行台 |
 | P3 | 出版和多人协作 | 91Writing 备份/统计；MuMu/Ai-Novel 的用户与项目边界 | DOCX/PDF/EPUB 往返、loss manifest；分支合并和权限审计；云部署认证、配额和 BYOK | 本地 JSON/Markdown/最小 EPUB；单用户定位，未完成 |
 
-这些验收项会进入 fixture、恢复演练和真实长篇 gold set；在证据补齐前，文档不会把“设计目标”写成“已经实现”。
+范围 patch、分支 head CAS、人物状态知识范围过滤和长篇知识范围评测已进入 fixture；其余验收项仍需恢复演练和真实长篇 gold set。在证据补齐前，文档不会把“设计目标”写成“已经实现”。

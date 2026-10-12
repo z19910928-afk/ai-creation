@@ -26,7 +26,8 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - `GET /api/health`：服务与 schema 版本
 - `GET /api/state`：读取当前作品的完整 UI 状态
 - `PUT /api/state`：事务性全量同步（请求必须带 `full_state:true` 和完整数组；省略项会写入删除/归档投影）
-- `GET /api/chapters`、`POST /api/chapters`、`PATCH /api/chapters/:id`、`DELETE /api/chapters/:id`：章节 CRUD；删除写入 `deletion_event`，正文修改会追加 `document_revision` 和 `event_log`
+- `GET /api/chapters`、`POST /api/chapters`、`PATCH /api/chapters/:id`、`DELETE /api/chapters/:id`：章节 CRUD；删除写入 `deletion_event`，正文修改会追加 `document_revision` 和 `event_log`。创建、更新、恢复、删除可在 JSON 中携带 `expected_head`（或 `X-Moyu-Branch-Expected-Head`）启用分支 head CAS，过期写入返回 409
+- `POST /api/chapters/:id/patch`：范围级候选 patch；请求携带 `start/end`（Unicode codepoint）、`replacement`、`base_revision_id` 或 `base_hash`，默认只预览 diff；加 `apply:true` 后在 CAS 校验下创建新 revision、标记旧证据 stale 并追加 `chapter.range_patched` 事件
 - `POST /api/chapters/:id/restore`、`POST /api/records/:id/restore`：恢复章节 tombstone 或归档设定并记录事件
 - `GET/POST /api/records`、`PATCH/DELETE /api/records/:id`（记忆、伏笔同样支持 `/api/memory`、`/api/plot`）：最小 CRUD 投影，并为变更写入 `event_log`
 - `GET /api/events`、`POST /api/events`：查看或写入幂等事件
@@ -59,6 +60,7 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - Markdown/EPUB 终稿导出（含 frontmatter、章节/设定/伏笔/记忆元数据和 loss manifest）与只读终稿检查
 - 有界上下文预览（估算 token、可配置检索层、来源 ID/范围）与 AI 运行记录
 - AI 材料 pin/omit/order、完整 Prompt 契约预览与结构化 JSON 任务结果
+- 上下文预算会记录裁剪原因和被省略来源；固定材料不会被静默裁剪，固定集合超出预算时请求会明确阻断
 - 人物关系、时间线、伏笔生命周期和冲突查询
 - 章节 `prewrite → precommit → postcommit` 提交快照、revision diff 与恢复前预览
 - buffered SSE 候选传输、失败运行重试和已完成运行取消保护

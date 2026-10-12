@@ -36,10 +36,10 @@ GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参�
 
 | 优先级 | 要补的能力 | 对照证据 | 墨屿可验收门槛 | 当前判断 |
 |---|---|---|---|---|
-| P0 | 范围级 patch、原生流和断点 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | `base_revision`/内容哈希 CAS；逐块序号和重连；范围 diff；接受/拒绝/撤销事件可回放 | 当前有 buffered SSE、取消保护和候选采纳，仍缺 patch/原生 token stream |
+| P0 | 范围级 patch、原生流和断点 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | `base_revision`/内容哈希 CAS；逐块序号和重连；范围 diff；接受/拒绝/撤销事件可回放 | 已有 `/api/chapters/:id/patch` preview/apply、revision/hash/CAS、stale 标记和 `chapter.range_patched` 事件；仍缺原生 token stream、逐块重连和外部 worker |
 | P1 | dense+sparse 语义检索与解释 | MuMu ONNX、Ai-Novel vector/rerank、webnovel-writer Embedding/Rerank | 可选 embedding；RRF→rerank/MMR；实体/时间/分支过滤；返回分数、source span、stale/冲突、裁剪原因 | 当前 CJK FTS + recency/evidence 分层；无向量、RRF、重排 |
 | P1 | commit 后投影健康 | webnovel-writer `CHAPTER_COMMIT`/projection log/doctor | revision/review/assertion delta 绑定；幂等、失败可重试、重启不丢；UI 可定位失败投影 | 当前有 `prewrite/precommit/postcommit` 快照与持久队列，缺完整 projection ledger |
-| P2 | 知识范围、关系和时间线 | NovelForge 关系/伏笔、arboris timeline/knowledge | 图谱可视化；POV 可见范围；冲突合并；未来信息泄漏有 fixture 与 UI 解释 | 当前有结构 API/UI、人物状态和剧情线，缺图谱与范围审查 UI |
+| P2 | 知识范围、关系和时间线 | NovelForge 关系/伏笔、arboris timeline/knowledge | 图谱可视化；POV 可见范围；冲突合并；未来信息泄漏有 fixture 与 UI 解释 | 上下文已按显式时间/分支范围过滤人物状态并返回隐藏原因；已有结构 API/UI，缺图谱与范围审查 UI |
 | P2 | 角色化长任务 | NovelForge scheduler、arboris Planner→Director→Writer、Ai-Novel 多 agent | 版本化角色契约；节点进度、暂停/重试/恢复、成本和失败原因可审计 | 当前单助手任务卡和持久队列，缺多角色运行台 |
 | P3 | 出版往返与多人边界 | 91Writing 备份/统计；MuMu/Ai-Novel 用户/项目边界 | DOCX/PDF/EPUB 往返与 loss manifest；分支合并、权限、BYOK、配额和审计 | 当前本地单用户 JSON/Markdown/最小 EPUB |
 
