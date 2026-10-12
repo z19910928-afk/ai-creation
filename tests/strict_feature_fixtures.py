@@ -70,7 +70,7 @@ def main() -> None:
         bad_status, bad = request(base, "POST", "/api/memory", {"status": "accepted", "type": "人物", "name": "沈砚"})
         assert bad_status == 400 and "source quote" in bad["error"]
         assert request(base, "POST", "/api/records", {"type": "人物", "name": "沈砚", "description": "主角"})[0] == 201
-        good_status, good = request(base, "POST", "/api/memory", {"status": "accepted", "type": "人物", "name": "沈砚", "source_chapter_id": chapter["id"], "source_quote": "【人物】沈砚"})
+        good_status, good = request(base, "POST", "/api/memory", {"status": "accepted", "type": "人物", "name": "沈砚", "source_chapter_id": chapter["id"], "source_quote": "【人物】沈砚", "source_start": 0, "source_end": len("【人物】沈砚")})
         assert good_status == 201 and good.get("assertion_id")
         persisted = request(base, "GET", "/api/state")[1]
         assert any(item.get("assertion_id") == good["assertion_id"] for item in persisted["memory"])

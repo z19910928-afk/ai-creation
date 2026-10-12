@@ -23,6 +23,7 @@ import re
 import difflib
 import sqlite3
 import sys
+import threading
 import time
 import urllib.error
 import urllib.request
@@ -70,6 +71,10 @@ AI_TASK_CONTRACTS = {
 }
 AI_DAILY_QUOTA = int(os.environ.get("MOYU_AI_DAILY_QUOTA", "0") or 0)
 AI_COST_PER_1K = float(os.environ.get("MOYU_AI_COST_PER_1K", "0") or 0)
+# The default index is deliberately lexical and local.  ``none`` keeps the
+# pre-index substring fallback available for constrained SQLite builds.
+SEARCH_INDEX_MODE = os.environ.get("MOYU_SEARCH_INDEX", "bigram").strip().lower() or "bigram"
+_SEARCH_INDEX_LOCK = threading.Lock()
 
 
 class NoAIRedirect(urllib.request.HTTPRedirectHandler):
@@ -119,7 +124,7 @@ def memory_evidence_is_current(conn: sqlite3.Connection, source_span_id: str | N
         return False
     span = conn.execute(
         "SELECT 1 FROM source_span ss JOIN document_node n ON n.id=ss.document_node_id "
-        "WHERE ss.id=? AND ss.project_id=? AND n.project_id=? AND n.branch_id=? AND ss.status='valid'",
+        "WHERE ss.id=? AND ss.project_id=? AND n.project_id=? AND n.branch_id=? AND ss.status='valid' AND NOT EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=n.id)",
         (source_span_id, PROJECT_ID, PROJECT_ID, BRANCH_ID),
     ).fetchone()
     entity = conn.execute(
@@ -230,7 +235,7 @@ def bounded_context_memory(memory: list[dict[str, Any]], limit: int = 60) -> lis
     fields = ("id", "type", "name", "source", "note", "source_chapter_id", "source_span_id", "source_quote", "source_start", "source_end", "source_hash", "source_span_status")
     result = []
     for item in memory:
-        if item.get("status") not in {"已确认", "accepted"}:
+        if item.get("status") not in {"已确认", "accepted"} or item.get("stale") or not item.get("source_span_id") or item.get("source_span_status") != "valid":
             continue
         value = {key: item.get(key, "") for key in fields}
         for key, limit_for_field in (("type", 100), ("name", 500), ("source", 500), ("note", 2_000), ("source_quote", 2_000), ("source_chapter_id", 200), ("source_span_id", 200), ("source_hash", 128), ("source_span_status", 32)):
@@ -283,10 +288,24 @@ def fit_context_budget(context: dict[str, Any], max_tokens: int) -> int:
     # the bound. The working set remains useful even when some history is omitted.
     while len(json_text(context)) > max_chars:
         removed = False
-        for key in ("plot", "story_cards", "confirmed_memory", "retrieved_chapters", "previous_chapters"):
+        for key in ("plot", "story_structure", "story_cards", "confirmed_memory", "retrieved_chapters", "previous_chapters"):
             if key == "plot":
                 for stage in ("setup", "develop", "payoff"):
                     cards = (context.get("plot") or {}).get(stage, [])
+                    if cards:
+                        cards.pop()
+                        removed = True
+                        break
+                if removed:
+                    break
+            elif key == "story_structure":
+                # Structure cards are useful but lower priority than the
+                # current chapter.  Trim the oldest card in each collection
+                # when large state/plot graphs would otherwise break the
+                # advertised provider budget.
+                structure = context.get("story_structure") or {}
+                for name in ("conflicts", "plot_threads", "character_states", "foreshadowing", "timeline", "relationships"):
+                    cards = structure.get(name) or []
                     if cards:
                         cards.pop()
                         removed = True
@@ -380,7 +399,17 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_contro
         "confirmed_memory": bounded_context_memory(state["memory"]),
         "story_cards": bounded_context_records(state["records"]),
         "plot": bounded_context_plot(state["plot"]),
-        "story_structure": {key: value[:limit] for key, value, limit in (("relationships", structure["relationships"], 80), ("timeline", structure["timeline"], 80), ("foreshadowing", structure["foreshadowing"], 80), ("conflicts", structure["conflicts"], 40))},
+        "story_structure": {
+            key: value[:limit]
+            for key, value, limit in (
+                ("relationships", structure["relationships"], 80),
+                ("timeline", structure["timeline"], 80),
+                ("foreshadowing", structure["foreshadowing"], 80),
+                ("conflicts", structure["conflicts"], 40),
+                ("character_states", structure["character_states"], 80),
+                ("plot_threads", structure["plot_threads"], 80),
+            )
+        },
         "previous_chapters": previous,
         "retrieved_chapters": retrieved,
         "current_chapter": {
@@ -558,6 +587,197 @@ def record_ai_run(
     return run_id
 
 
+def ai_result_metrics(context: dict[str, Any], output: str) -> tuple[str, str, str, str, dict[str, Any], dict[str, Any]]:
+    """Build the same bounded audit fields for synchronous and queued runs."""
+    context_json = json_text(context)
+    prompt_tokens = (len(context_json) + 3) // 4
+    completion_tokens = (len(output) + 3) // 4
+    token_data = {
+        "prompt_chars": len(context_json),
+        "estimated_prompt_tokens": prompt_tokens,
+        "completion_chars": len(output),
+        "completion_tokens": completion_tokens,
+        "estimated_total_tokens": prompt_tokens + completion_tokens,
+        "estimator": "json_chars_div_4_upper_bound",
+    }
+    cost_data = {
+        "currency": "USD",
+        "rate_per_1k_tokens": AI_COST_PER_1K,
+        "estimated_cost": round((prompt_tokens + completion_tokens) / 1000 * AI_COST_PER_1K, 8),
+    }
+    return context_json, hash_text(context_json), hash_text(output) if output else "", json_text(token_data), token_data, cost_data
+
+
+def ai_job_public(row: sqlite3.Row | dict[str, Any], include_result: bool = True) -> dict[str, Any]:
+    """Return a stable queue projection without exposing the saved prompt."""
+    item = dict(row)
+    for key in ("cancel_requested",):
+        item[key] = bool(item.get(key))
+    for key in ("result_json",):
+        raw = item.pop(key, None)
+        if include_result and raw:
+            try:
+                item["result"] = json.loads(raw)
+            except (TypeError, json.JSONDecodeError):
+                item["result"] = {}
+    # The context and instruction are intentionally omitted from list/detail
+    # projections. They remain in the local SQLite job record for the worker;
+    # this prototype does not provide at-rest encryption.
+    item.pop("context_json", None)
+    item.pop("instruction", None)
+    return item
+
+
+def create_ai_job(
+    conn: sqlite3.Connection,
+    task: str,
+    context: dict[str, Any],
+    instruction: str,
+    response_format: str,
+    max_tokens: int,
+    retry_of: str | None = None,
+) -> dict[str, Any]:
+    """Persist a queued request and its ai_run before any worker starts."""
+    contract = ai_contract(task, response_format)
+    context_json, input_hash, _, token_json, token_data, cost_data = ai_result_metrics(context, "")
+    created = now()
+    job_id = uid("aijob_")
+    run_id = uid("airun_")
+    config = ai_settings()
+    model = config["model"] or "离线创作助手"
+    consent = {
+        "author_review_required": True,
+        "task": task,
+        "response_format": response_format,
+        "chapter_id": (context.get("current_chapter") or {}).get("id"),
+        "job_id": job_id,
+        "retry_of": retry_of,
+    }
+    conn.execute(
+        "INSERT INTO ai_run(id,project_id,branch_id,mode,provider,model,model_snapshot,system_prompt_hash,prompt_hash,input_hash,output_hash,sampling_json,tool_calls_json,seed,started_at,ended_at,status,error,context_item_ids_json,token_json,latency_ms,cost_json,author_decision,consent_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        (
+            run_id, PROJECT_ID, BRANCH_ID, "queued", "queued", model, model,
+            hash_text(AI_TASKS[task]), hash_text(task + instruction), input_hash,
+            None, json_text({"temperature": 0.65 if task in {"continue", "brainstorm", "scene"} else 0.35, "max_tokens": max_tokens, "response_format": response_format}),
+            "[]", None, created, None, "queued", None,
+            json_text((context.get("context_budget") or {}).get("context_item_ids", [])), json_text(token_data), None, json_text(cost_data), "pending", json_text(consent),
+        ),
+    )
+    conn.execute(
+        "INSERT INTO app_ai_job(id,project_id,branch_id,ai_run_id,task,chapter_id,instruction,context_json,response_format,max_tokens,status,attempt,retry_of,cancel_requested,error,result_json,created_at,started_at,finished_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        (
+            job_id, PROJECT_ID, BRANCH_ID, run_id, task,
+            (context.get("current_chapter") or {}).get("id"), instruction, context_json,
+            response_format, max_tokens, "queued", 0, retry_of, 0, None, None,
+            created, None, None, created,
+        ),
+    )
+    append_event(conn, run_id, "ai_run.queued", {"job_id": job_id, "task": task, "retry_of": retry_of})
+    return {"id": job_id, "ai_run_id": run_id, "task": task, "contract": contract, "status": "queued", "created_at": created}
+
+
+def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, Any] | None, error: str | None, latency_ms: int) -> dict[str, Any]:
+    """Commit a worker outcome, discarding output when cancellation was requested."""
+    current = conn.execute("SELECT status,cancel_requested,ai_run_id FROM app_ai_job WHERE id=? AND project_id=? AND branch_id=?", (job["id"], PROJECT_ID, BRANCH_ID)).fetchone()
+    if current is None:
+        raise ValueError("AI job not found")
+    canceled = bool(current["cancel_requested"])
+    if canceled:
+        status, run_status, error_text = "canceled", "canceled", "canceled by author"
+        result_json, output, mode, model = None, "", "queued", ""
+    elif error:
+        status, run_status, error_text = "failed", "failed", bounded_text(error, 2_000, "AI error")
+        result_json = json_text({"error": error_text})
+        output = ""
+        mode, model = "provider", "unknown"
+    else:
+        status, run_status, error_text = "success", "success", None
+        result_json = json_text(result or {})
+        output = str((result or {}).get("text") or "")
+        mode, model = (result or {}).get("mode", "offline"), (result or {}).get("model", "离线创作助手")
+    context = json.loads(job["context_json"] or "{}")
+    _, _, output_hash, token_json, _, cost_data = ai_result_metrics(context, output)
+    finished = now()
+    conn.execute(
+        "UPDATE app_ai_job SET status=?,error=?,result_json=?,finished_at=?,updated_at=? WHERE id=?",
+        (status, error_text, result_json, finished, finished, job["id"]),
+    )
+    conn.execute(
+        "UPDATE ai_run SET mode=?,provider=?,model=?,model_snapshot=?,output_hash=?,ended_at=?,status=?,error=?,token_json=?,latency_ms=?,cost_json=? WHERE id=? AND project_id=? AND branch_id=?",
+        (mode, mode, model, model, output_hash or None, finished, run_status, error_text, token_json, latency_ms, json_text(cost_data), job["ai_run_id"], PROJECT_ID, BRANCH_ID),
+    )
+    append_event(conn, job["ai_run_id"], "ai_run." + status, {"job_id": job["id"], "error": error_text, "attempt": job["attempt"]})
+    payload = dict(job)
+    payload.update({"status": status, "error": error_text, "result_json": result_json, "finished_at": finished})
+    return ai_job_public(payload)
+
+
+def process_ai_job(job_id: str) -> dict[str, Any]:
+    """Run one persisted job. Claiming is atomic; generation happens outside the lock."""
+    job_id = checked_id(job_id, "AI job id")
+    with connect() as conn:
+        ensure_seed(conn)
+        conn.commit()
+        conn.execute("BEGIN IMMEDIATE")
+        row = conn.execute("SELECT * FROM app_ai_job WHERE id=? AND project_id=? AND branch_id=?", (job_id, PROJECT_ID, BRANCH_ID)).fetchone()
+        if row is None:
+            raise ValueError("AI job not found")
+        if row["status"] != "queued":
+            return ai_job_public(row)
+        if row["cancel_requested"]:
+            result = finish_ai_job(conn, row, None, None, 0)
+            return result
+        started = now()
+        attempt = int(row["attempt"] or 0) + 1
+        conn.execute("UPDATE app_ai_job SET status='running',attempt=?,started_at=?,updated_at=? WHERE id=? AND status='queued'", (attempt, started, started, job_id))
+        conn.execute("UPDATE ai_run SET status='running',started_at=? WHERE id=?", (started, row["ai_run_id"]))
+        conn.commit()
+    started_clock = time.perf_counter()
+    result: dict[str, Any] | None = None
+    error: str | None = None
+    try:
+        context = json.loads(row["context_json"] or "{}")
+        result = generate_ai(row["task"], context, row["instruction"], row["response_format"], int(row["max_tokens"]))
+    except Exception as exc:
+        error = str(exc)
+    latency = round((time.perf_counter() - started_clock) * 1000)
+    with connect() as conn:
+        ensure_seed(conn)
+        row = conn.execute("SELECT * FROM app_ai_job WHERE id=? AND project_id=? AND branch_id=?", (job_id, PROJECT_ID, BRANCH_ID)).fetchone()
+        if row is None:
+            raise ValueError("AI job not found")
+        return finish_ai_job(conn, row, result, error, latency)
+
+
+def _ai_worker(job_id: str) -> None:
+    try:
+        # The enqueueing HTTP handler still owns its SQLite connection until
+        # send_json returns.  Yield once so its context manager can commit and
+        # release the write lock before this worker claims the job.
+        time.sleep(0.05)
+        process_ai_job(job_id)
+    except Exception:
+        # The persistent row is the recovery boundary.  A subsequent drain or
+        # process call can inspect/retry the job; daemon failures never crash
+        # the HTTP service.
+        return
+
+
+def start_ai_worker(job_id: str) -> None:
+    thread = threading.Thread(target=_ai_worker, args=(job_id,), daemon=True, name="moyu-ai-worker")
+    thread.start()
+
+
+def recover_ai_jobs() -> list[str]:
+    """Recover jobs left running by a process crash and return queued IDs."""
+    with connect() as conn:
+        ensure_seed(conn)
+        t = now()
+        conn.execute("UPDATE app_ai_job SET status='queued',error='worker recovered after restart',updated_at=? WHERE status='running' AND project_id=? AND branch_id=?", (t, PROJECT_ID, BRANCH_ID))
+        conn.execute("UPDATE ai_run SET status='queued',ended_at=NULL,error='worker recovered after restart' WHERE status='running' AND project_id=? AND branch_id=?", (PROJECT_ID, BRANCH_ID))
+        return [row["id"] for row in conn.execute("SELECT id FROM app_ai_job WHERE status='queued' AND cancel_requested=0 AND project_id=? AND branch_id=? ORDER BY created_at", (PROJECT_ID, BRANCH_ID))]
+
+
 def record_ai_decision(conn: sqlite3.Connection, run_id: str, decision: str, reason: str = "") -> dict[str, Any]:
     """Append an author decision and update the compact ai_run projection."""
     run_id = checked_id(run_id, "AI run id")
@@ -608,12 +828,22 @@ def review_chapter(conn: sqlite3.Connection, chapter_id: str, persist: bool = Tr
     pending = conn.execute("SELECT COUNT(*) FROM candidate_memory WHERE project_id=? AND branch_id=? AND status='candidate' AND json_extract(payload_json,'$.source_chapter_id')=?", (PROJECT_ID, BRANCH_ID, chapter_id)).fetchone()[0]
     if pending:
         warnings.append({"code": "pending_memory", "message": f"本章仍有 {pending} 条记忆候选未确认。", "evidence": {"count": pending}})
+    stale = conn.execute(
+        """SELECT COUNT(*) FROM candidate_memory cm JOIN source_span ss ON ss.id=cm.source_span_id
+             WHERE cm.project_id=? AND cm.branch_id=? AND cm.status='accepted'
+               AND (ss.status<>'valid' OR ss.revision_id<>(SELECT r.id FROM document_revision r
+                    WHERE r.document_node_id=ss.document_node_id AND r.branch_id=cm.branch_id ORDER BY r.rowid DESC LIMIT 1))
+               AND ss.document_node_id=?""",
+        (PROJECT_ID, BRANCH_ID, chapter_id),
+    ).fetchone()[0]
+    if stale:
+        warnings.append({"code": "stale_memory_evidence", "message": f"本章有 {stale} 条已确认记忆的原文证据已失效，需要重新定位或重新审查。", "evidence": {"count": stale, "chapter_id": chapter_id}})
     paragraphs = [part.strip() for part in re.split(r"\n\s*\n", body) if part.strip()]
     duplicates = len(paragraphs) - len(set(paragraphs))
     if duplicates:
         warnings.append({"code": "duplicate_paragraph", "message": f"检测到 {duplicates} 个重复段落。", "evidence": {"duplicates": duplicates}})
     score = max(0, min(100, 100 - len(blocking) * 35 - len(warnings) * 8))
-    result = {"chapter_id": chapter_id, "status": "passed" if not blocking else "needs_revision", "score": score, "blocking": blocking, "warnings": warnings, "checked_at": now(), "checks": {"characters": chars, "paragraphs": len(paragraphs), "pending_memory": pending}}
+    result = {"chapter_id": chapter_id, "status": "passed" if not blocking else "needs_revision", "score": score, "blocking": blocking, "warnings": warnings, "checked_at": now(), "checks": {"characters": chars, "paragraphs": len(paragraphs), "pending_memory": pending, "stale_memory": stale}}
     if persist:
         conn.execute("UPDATE app_chapter_meta SET review_status=?,review_json=?,reviewed_at=?,updated_at=? WHERE chapter_id=?", (result["status"], json_text(result), result["checked_at"], now(), chapter_id))
         append_event(conn, chapter_id, "chapter.reviewed", result)
@@ -741,6 +971,54 @@ def init_db() -> None:
               updated_at TEXT NOT NULL
             );
             CREATE INDEX IF NOT EXISTS idx_chapter_commit_lookup ON app_chapter_commit(project_id, branch_id, chapter_id, created_at);
+            CREATE TABLE IF NOT EXISTS app_search_document(
+              doc_key TEXT PRIMARY KEY,
+              project_id TEXT NOT NULL REFERENCES project(id),
+              branch_id TEXT NOT NULL REFERENCES branch(id),
+              kind TEXT NOT NULL,
+              title TEXT NOT NULL DEFAULT '',
+              body TEXT NOT NULL DEFAULT '',
+              metadata_json TEXT NOT NULL DEFAULT '{}',
+              entity_ids_json TEXT NOT NULL DEFAULT '[]',
+              source_chapter_id TEXT,
+              event_time TEXT NOT NULL DEFAULT '',
+              status TEXT NOT NULL DEFAULT '',
+              updated_at TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_search_document_scope ON app_search_document(project_id, branch_id, kind, source_chapter_id, event_time);
+            CREATE VIRTUAL TABLE IF NOT EXISTS app_search_fts USING fts5(
+              doc_key UNINDEXED, kind UNINDEXED, title, body, metadata, grams,
+              tokenize='unicode61', detail='full'
+            );
+            CREATE TABLE IF NOT EXISTS app_search_index_state(
+              project_id TEXT NOT NULL REFERENCES project(id), branch_id TEXT NOT NULL REFERENCES branch(id),
+              indexed_version INTEGER NOT NULL DEFAULT -1, mode TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL,
+              PRIMARY KEY(project_id, branch_id)
+            );
+            CREATE TABLE IF NOT EXISTS app_ai_job(
+              id TEXT PRIMARY KEY,
+              project_id TEXT NOT NULL REFERENCES project(id),
+              branch_id TEXT NOT NULL REFERENCES branch(id),
+              ai_run_id TEXT NOT NULL UNIQUE REFERENCES ai_run(id),
+              task TEXT NOT NULL,
+              chapter_id TEXT REFERENCES document_node(id),
+              instruction TEXT NOT NULL DEFAULT '',
+              context_json TEXT NOT NULL DEFAULT '{}',
+              response_format TEXT NOT NULL CHECK(response_format IN ('text','json')),
+              max_tokens INTEGER NOT NULL,
+              status TEXT NOT NULL CHECK(status IN ('queued','running','success','failed','canceled')),
+              attempt INTEGER NOT NULL DEFAULT 0,
+              retry_of TEXT,
+              cancel_requested INTEGER NOT NULL DEFAULT 0 CHECK(cancel_requested IN (0,1)),
+              error TEXT,
+              result_json TEXT,
+              created_at TEXT NOT NULL,
+              started_at TEXT,
+              finished_at TEXT,
+              updated_at TEXT NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_app_ai_job_queue ON app_ai_job(project_id, branch_id, status, created_at);
+            CREATE INDEX IF NOT EXISTS idx_app_ai_job_run ON app_ai_job(ai_run_id);
             """
         )
         project_meta_columns = {row[1] for row in conn.execute("PRAGMA table_info(app_project_meta)")}
@@ -852,7 +1130,134 @@ def story_map(conn: sqlite3.Connection) -> dict[str, Any]:
         if payload.get("name") and mp.get("name") and payload.get("name") == mp.get("name"):
             continue
         conflicts.append({"id": row["id"], "entity_id": row["subject_entity_id"], "assertion": payload, "memory": mp, "memory_id": row["memory_id"], "status": row["memory_status"]})
-    return {"relationships": rels, "timeline": timeline, "foreshadowing": foreshadow, "conflicts": conflicts}
+    return {
+        "relationships": rels,
+        "timeline": timeline,
+        "foreshadowing": foreshadow,
+        "conflicts": conflicts,
+        "character_states": character_state_rows(conn),
+        "plot_threads": plot_thread_rows(conn),
+    }
+
+
+def _decode_json_value(value: Any, fallback: Any) -> Any:
+    """Decode a JSON column while keeping malformed legacy rows readable."""
+    try:
+        return json.loads(value or "")
+    except (TypeError, json.JSONDecodeError):
+        return fallback
+
+
+def _request_json_value(data: dict[str, Any], key: str, default: Any, *, object_only: bool = False,
+                       limit: int = 50_000) -> tuple[Any, str]:
+    """Read a JSON request field and return its parsed value plus canonical text."""
+    value = data.get(key, default)
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"{key} must be valid JSON") from exc
+    if object_only and not isinstance(value, dict):
+        raise ValueError(f"{key} must be an object")
+    encoded = json_text(value)
+    if len(encoded) > limit:
+        raise ValueError(f"{key} too long")
+    return value, encoded
+
+
+def character_state_rows(conn: sqlite3.Connection, entity_id: str | None = None) -> list[dict[str, Any]]:
+    """Return versioned character state with explicit entity and evidence links."""
+    clauses = ["c.project_id=?", "c.branch_id=?"]
+    params: list[Any] = [PROJECT_ID, BRANCH_ID]
+    if entity_id:
+        clauses.append("c.entity_id=?")
+        params.append(entity_id)
+    rows = conn.execute(
+        """SELECT c.id,c.project_id,c.branch_id,c.entity_id,c.attribute,c.value_json,c.event_id,
+                         c.valid_start,c.valid_end,c.knowledge_scope_json,c.source_assertion_id,
+                         e.kind entity_kind,e.canonical_name entity_name,
+                         a.state source_assertion_state
+                    FROM character_state c
+                    JOIN entity e ON e.id=c.entity_id
+                    LEFT JOIN assertion a ON a.id=c.source_assertion_id
+                   WHERE """ + " AND ".join(clauses) + " ORDER BY COALESCE(c.valid_start,''),c.id", params).fetchall()
+    result: list[dict[str, Any]] = []
+    for row in rows:
+        result.append({
+            "id": row["id"], "project_id": row["project_id"], "branch_id": row["branch_id"],
+            "entity_id": row["entity_id"], "entity_kind": row["entity_kind"], "entity_name": row["entity_name"],
+            "attribute": row["attribute"], "value": _decode_json_value(row["value_json"], None),
+            "event_id": row["event_id"], "valid_start": row["valid_start"], "valid_end": row["valid_end"],
+            "knowledge_scope": _decode_json_value(row["knowledge_scope_json"], {}),
+            "source_assertion_id": row["source_assertion_id"],
+            "source_assertion_state": row["source_assertion_state"],
+        })
+    return result
+
+
+def plot_thread_rows(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """Return structured plot threads, separate from the lightweight plot cards."""
+    rows = conn.execute(
+        "SELECT id,project_id,branch_id,status,payload_json,severity FROM plot_thread "
+        "WHERE project_id=? AND branch_id=? ORDER BY id", (PROJECT_ID, BRANCH_ID),
+    ).fetchall()
+    return [
+        {
+            "id": row["id"], "project_id": row["project_id"], "branch_id": row["branch_id"],
+            "status": row["status"], "payload": _decode_json_value(row["payload_json"], {}),
+            "severity": row["severity"],
+        }
+        for row in rows
+    ]
+
+
+def _character_state_input(conn: sqlite3.Connection, data: dict[str, Any], current: sqlite3.Row | None = None) -> dict[str, Any]:
+    """Validate a character-state mutation against the active project scope."""
+    current = current or {}
+    entity_id = checked_id(data.get("entity_id", current["entity_id"] if "entity_id" in current.keys() else None), "entity id")
+    entity = conn.execute("SELECT id FROM entity WHERE id=? AND project_id=? AND status='active'", (entity_id, PROJECT_ID)).fetchone()
+    if entity is None:
+        raise ValueError("entity not found")
+    attribute = bounded_text(data.get("attribute", current["attribute"] if "attribute" in current.keys() else ""), 200, "attribute").strip()
+    if not attribute:
+        raise ValueError("attribute required")
+    value_default = current["value_json"] if "value_json" in current.keys() else {}
+    value, value_json = _request_json_value(data, "value_json", value_default, limit=50_000)
+    scope_default = current["knowledge_scope_json"] if "knowledge_scope_json" in current.keys() else {}
+    scope, scope_json = _request_json_value(data, "knowledge_scope_json", scope_default, object_only=True, limit=10_000)
+    event_id = data.get("event_id", current["event_id"] if "event_id" in current.keys() else None)
+    if event_id:
+        event_id = checked_id(event_id, "event id")
+        if conn.execute("SELECT 1 FROM event_log WHERE id=? AND project_id=? AND branch_id=?", (event_id, PROJECT_ID, BRANCH_ID)).fetchone() is None:
+            raise ValueError("event not found")
+    assertion_id = data.get("source_assertion_id", current["source_assertion_id"] if "source_assertion_id" in current.keys() else None)
+    if assertion_id:
+        assertion_id = checked_id(assertion_id, "source assertion id")
+        if conn.execute("SELECT 1 FROM assertion WHERE id=? AND project_id=? AND branch_id=?", (assertion_id, PROJECT_ID, BRANCH_ID)).fetchone() is None:
+            raise ValueError("source assertion not found")
+    valid_start = data.get("valid_start", current["valid_start"] if "valid_start" in current.keys() else None)
+    valid_end = data.get("valid_end", current["valid_end"] if "valid_end" in current.keys() else None)
+    valid_start = bounded_text(valid_start, 100, "valid_start") if valid_start not in (None, "") else None
+    valid_end = bounded_text(valid_end, 100, "valid_end") if valid_end not in (None, "") else None
+    return {
+        "entity_id": entity_id, "attribute": attribute, "value": value, "value_json": value_json,
+        "event_id": event_id, "valid_start": valid_start, "valid_end": valid_end,
+        "knowledge_scope": scope, "knowledge_scope_json": scope_json, "source_assertion_id": assertion_id,
+    }
+
+
+def _plot_thread_input(data: dict[str, Any], current: sqlite3.Row | None = None) -> dict[str, Any]:
+    """Validate a plot-thread mutation and keep payload JSON typed at the API edge."""
+    current = current or {}
+    status = bounded_text(data.get("status", current["status"] if "status" in current.keys() else "open"), 30, "thread status")
+    if status not in {"open", "paid_off", "abandoned", "invalidated"}:
+        raise ValueError("invalid plot thread status")
+    payload_default = current["payload_json"] if "payload_json" in current.keys() else {}
+    payload, payload_json = _request_json_value(data, "payload_json", payload_default, object_only=True, limit=100_000)
+    severity = bounded_text(data.get("severity", current["severity"] if "severity" in current.keys() else "medium"), 30, "severity").strip()
+    if not severity:
+        raise ValueError("severity required")
+    return {"status": status, "payload": payload, "payload_json": payload_json, "severity": severity}
 
 
 def _search_excerpt(text: Any, query: str, limit: int = 320) -> str:
@@ -874,17 +1279,190 @@ def _search_excerpt(text: Any, query: str, limit: int = 320) -> str:
     return value
 
 
-def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50) -> list[dict[str, Any]]:
+def _search_grams(text: Any) -> str:
+    """Build deterministic CJK bigram/trigram tokens for SQLite FTS5.
+
+    SQLite's built-in unicode61 tokenizer treats a Chinese sentence as a run
+    of individual characters, so a query such as ``雾港回声`` cannot be
+    matched reliably as a phrase.  Indexing overlapping 2--4 character grams
+    keeps this dependency-free while still allowing short Chinese names such
+    as ``沈砚`` to be found. Latin words are retained as normal tokens.
+    """
+    value = str(text or "")
+    tokens: list[str] = []
+    for sequence in re.findall(r"[\u4e00-\u9fff]+", value):
+        length = len(sequence)
+        if length == 1:
+            tokens.append(sequence)
+            continue
+        for size in range(2, min(4, length) + 1):
+            tokens.extend(sequence[index:index + size] for index in range(length - size + 1))
+    tokens.extend(token.casefold() for token in re.findall(r"[A-Za-z0-9_]{2,}", value))
+    # Keep the index compact for long chapters while preserving order for
+    # stable tests and reproducible ranking.
+    return " ".join(dict.fromkeys(tokens))
+
+
+def _fts_query(query: str) -> str:
+    """Return a safe AND expression for the local FTS5 gram column."""
+    parts: list[str] = []
+    for sequence in re.findall(r"[\u4e00-\u9fff]+", str(query or "")):
+        if len(sequence) >= 2:
+            parts.extend(sequence[index:index + 2] for index in range(len(sequence) - 1))
+        elif sequence:
+            parts.append(sequence)
+    parts.extend(token.casefold() for token in re.findall(r"[A-Za-z0-9_]{2,}", str(query or "")))
+    # FTS syntax is escaped by quoting each token.  Requiring all bigrams
+    # avoids returning a document that only contains one half of a name.
+    return " AND ".join('grams:"' + token.replace('"', '""') + '"' for token in dict.fromkeys(parts))
+
+
+def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+    """Project chapters and story metadata into one searchable local corpus."""
+    entities = []
+    for row in conn.execute(
+        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description "
+        "FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id "
+        "WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid", (PROJECT_ID,)
+    ):
+        entities.append(dict(row))
+    entity_names = [(item["id"], str(item["canonical_name"] or "")) for item in entities if item.get("canonical_name")]
+    documents: list[dict[str, Any]] = []
+
+    def scoped_key(kind: str, item_id: Any) -> str:
+        return f"{PROJECT_ID}:{BRANCH_ID}:{kind}:{item_id}"
+
+    def put(kind: str, item_id: Any, title: Any, body: Any, *, metadata: dict[str, Any] | None = None,
+            entity_ids: list[str] | None = None, source_chapter_id: str | None = None,
+            event_time: str = "", status: str = "") -> None:
+        metadata = metadata or {}
+        title_text, body_text = str(title or ""), str(body or "")
+        metadata_text = " ".join(str(value) for value in metadata.values() if value not in (None, "", []))
+        # Two megabytes is the API body limit; indexing a bounded projection
+        # prevents a single imported chapter from monopolising FTS memory.
+        body_text = body_text[:2_000_000]
+        documents.append({
+            "doc_key": scoped_key(kind, item_id), "kind": kind, "title": title_text,
+            "body": body_text, "metadata": metadata_text,
+            "metadata_json": json_text(metadata), "entity_ids": sorted(set(entity_ids or [])),
+            "source_chapter_id": source_chapter_id, "event_time": str(event_time or ""), "status": str(status or ""),
+        })
+
+    for chapter in chapter_rows(conn):
+        chapter_entity_ids = [entity_id for entity_id, name in entity_names if name and name in chapter.get("body", "")]
+        put("chapter", chapter["id"], chapter["title"], chapter.get("body", ""),
+            metadata={"goal": chapter.get("chapter_goal", ""), "recap": chapter.get("recap", ""), "hook": chapter.get("hook", "")},
+            entity_ids=chapter_entity_ids, source_chapter_id=chapter["id"], status=chapter.get("status", ""))
+    for entity in entities:
+        put("setting", entity["id"], f"{entity['kind']} · {entity['canonical_name']}", entity.get("description", ""),
+            metadata={"kind": entity["kind"], "name": entity["canonical_name"]}, entity_ids=[entity["id"]])
+    for row in conn.execute(
+        "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.entity_id,cm.source_span_id,ss.document_node_id source_chapter_id,ss.quote source_quote "
+        "FROM candidate_memory cm LEFT JOIN source_span ss ON ss.id=cm.source_span_id "
+        "WHERE cm.project_id=? AND cm.branch_id=? AND cm.status IN ('candidate','accepted') ORDER BY cm.rowid", (PROJECT_ID, BRANCH_ID)
+    ):
+        try:
+            payload = json.loads(row["payload_json"] or "{}")
+        except (TypeError, json.JSONDecodeError):
+            payload = {}
+        name = payload.get("name") or payload.get("text") or row["id"]
+        body = " · ".join(str(part) for part in (payload.get("note", ""), payload.get("source", ""), payload.get("source_quote") or row["source_quote"] or "") if part)
+        put("memory", row["id"], name, body, metadata={"type": row["kind"], "key": payload.get("key", ""), "name": name},
+            entity_ids=[row["entity_id"]] if row["entity_id"] else [], source_chapter_id=payload.get("source_chapter_id") or row["source_chapter_id"], status="已确认" if row["status"] == "accepted" else "待确认")
+    for row in conn.execute(
+        "SELECT p.id,p.stage,p.text,fl.chapter_id,fl.kind link_kind,fl.note FROM app_plot_item p "
+        "LEFT JOIN app_foreshadow_link fl ON fl.plot_id=p.id AND fl.project_id=p.project_id AND fl.branch_id=p.branch_id "
+        "WHERE p.project_id=? AND p.branch_id=? ORDER BY p.rowid,fl.created_at", (PROJECT_ID, BRANCH_ID)
+    ):
+        body = " · ".join(str(part) for part in (row["text"], row["note"] or "", row["link_kind"] or "") if part)
+        put("foreshadow", row["id"], f"伏笔 · {row['stage']}", body, metadata={"stage": row["stage"]}, source_chapter_id=row["chapter_id"])
+    for row in conn.execute(
+        "SELECT id,title,event_time,chapter_id,entity_ids_json,summary,status FROM app_timeline_event "
+        "WHERE project_id=? AND branch_id=? ORDER BY ordinal,event_time,created_at", (PROJECT_ID, BRANCH_ID)
+    ):
+        try:
+            event_entities = json.loads(row["entity_ids_json"] or "[]")
+        except (TypeError, json.JSONDecodeError):
+            event_entities = []
+        put("timeline", row["id"], row["title"], row["summary"], metadata={"event_time": row["event_time"], "status": row["status"]},
+            entity_ids=event_entities, source_chapter_id=row["chapter_id"], event_time=row["event_time"], status=row["status"])
+    return documents
+
+
+def refresh_search_index(conn: sqlite3.Connection) -> str:
+    """Refresh the local n-gram FTS projection after a state version changes."""
+    mode = SEARCH_INDEX_MODE if SEARCH_INDEX_MODE in {"bigram", "fts", "none"} else "bigram"
+    if mode == "none":
+        return mode
+    version_row = conn.execute("SELECT version FROM app_state_version WHERE project_id=?", (PROJECT_ID,)).fetchone()
+    version = int(version_row["version"] if version_row else 0)
+    previous = conn.execute("SELECT indexed_version,mode FROM app_search_index_state WHERE project_id=? AND branch_id=?", (PROJECT_ID, BRANCH_ID)).fetchone()
+    if previous and int(previous["indexed_version"]) == version and previous["mode"] == mode:
+        return mode
+    with _SEARCH_INDEX_LOCK:
+        documents = _search_documents(conn)
+        old_keys = [row["doc_key"] for row in conn.execute("SELECT doc_key FROM app_search_document WHERE project_id=? AND branch_id=?", (PROJECT_ID, BRANCH_ID))]
+        # FTS5 is a global virtual table. Delete only this branch's documents;
+        # a second project must never invalidate another project's index.
+        for old_key in old_keys:
+            conn.execute("DELETE FROM app_search_fts WHERE doc_key=?", (old_key,))
+        conn.execute("DELETE FROM app_search_document WHERE project_id=? AND branch_id=?", (PROJECT_ID, BRANCH_ID))
+        for item in documents:
+            conn.execute(
+                "INSERT INTO app_search_document(doc_key,project_id,branch_id,kind,title,body,metadata_json,entity_ids_json,source_chapter_id,event_time,status,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)",
+                (item["doc_key"], PROJECT_ID, BRANCH_ID, item["kind"], item["title"], item["body"], item["metadata_json"], json_text(item["entity_ids"]), item["source_chapter_id"], item["event_time"], item["status"], now()),
+            )
+            conn.execute("INSERT INTO app_search_fts(doc_key,kind,title,body,metadata,grams) VALUES(?,?,?,?,?,?)", (item["doc_key"], item["kind"], item["title"], item["body"], item["metadata"], _search_grams(" ".join((item["title"], item["body"], item["metadata"])))) )
+        conn.execute("INSERT INTO app_search_index_state(project_id,branch_id,indexed_version,mode,updated_at) VALUES(?,?,?,?,?) ON CONFLICT(project_id,branch_id) DO UPDATE SET indexed_version=excluded.indexed_version,mode=excluded.mode,updated_at=excluded.updated_at", (PROJECT_ID, BRANCH_ID, version, mode, now()))
+    return mode
+
+
+def _fts_search(conn: sqlite3.Connection, query: str, filters: dict[str, str]) -> tuple[dict[str, int], str]:
+    mode = refresh_search_index(conn)
+    if mode == "none":
+        return {}, mode
+    expression = _fts_query(query)
+    if not expression:
+        return {}, mode
+    predicates = ["d.project_id=?", "d.branch_id=?", "app_search_fts MATCH ?"]
+    params: list[Any] = [PROJECT_ID, BRANCH_ID, expression]
+    if filters.get("kind"):
+        predicates.append("d.kind=?"); params.append(filters["kind"])
+    if filters.get("chapter_id"):
+        predicates.append("d.source_chapter_id=?"); params.append(filters["chapter_id"])
+    if filters.get("entity_id"):
+        predicates.append("EXISTS (SELECT 1 FROM json_each(d.entity_ids_json) WHERE json_each.value=?)"); params.append(filters["entity_id"])
+    if filters.get("time_from"):
+        predicates.append("d.event_time>=?"); params.append(filters["time_from"])
+    if filters.get("time_to"):
+        predicates.append("d.event_time<=?"); params.append(filters["time_to"])
+    if filters.get("status"):
+        predicates.append("d.status=?"); params.append(filters["status"])
+    rows = conn.execute("SELECT d.doc_key FROM app_search_fts JOIN app_search_document d ON d.doc_key=app_search_fts.doc_key WHERE " + " AND ".join(predicates) + " ORDER BY bm25(app_search_fts,8.0,3.0,1.0,6.0),d.doc_key", params).fetchall()
+    return {row["doc_key"]: max(1, len(rows) - index) for index, row in enumerate(rows)}, mode
+
+
+def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: dict[str, str] | None = None) -> list[dict[str, Any]]:
     """Search the author's working set with stable, source-aware results.
 
-    This intentionally uses bounded SQLite projections and Python's Unicode
-    ``casefold`` matching.  It is a dependable lexical fallback while the
-    larger semantic retrieval pipeline is still being built; callers receive
-    enough source metadata to open or audit the originating chapter.
+    The default path uses a local SQLite FTS5 CJK n-gram projection and keeps
+    Python's Unicode ``casefold`` matching as a deterministic fallback. It is
+    lexical retrieval, not an embedding or semantic similarity claim; callers
+    receive enough source metadata to open or audit the originating chapter.
     """
     needle = str(query or "").strip()
     if not needle:
         return []
+    filters = {str(key): str(value).strip() for key, value in (filters or {}).items() if str(value).strip()}
+    fts_hits, index_mode = _fts_search(conn, needle, filters)
+    indexed_meta: dict[str, dict[str, Any]] = {}
+    if index_mode != "none":
+        for row in conn.execute("SELECT doc_key,entity_ids_json,event_time,status,source_chapter_id FROM app_search_document WHERE project_id=? AND branch_id=?", (PROJECT_ID, BRANCH_ID)):
+            try:
+                entity_ids = json.loads(row["entity_ids_json"] or "[]")
+            except (TypeError, json.JSONDecodeError):
+                entity_ids = []
+            indexed_meta[row["doc_key"]] = {"entity_ids": entity_ids, "event_time": row["event_time"], "status": row["status"], "source_chapter_id": row["source_chapter_id"]}
     folded = needle.casefold()
     found: list[dict[str, Any]] = []
     chapter_titles = {row["id"]: row["title"] for row in conn.execute(
@@ -897,9 +1475,27 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50) -> list[d
         title_text = str(title or "")
         body_text = str(text or "")
         searchable = " ".join((title_text, body_text, str(score_text or "")))
-        if folded not in searchable.casefold():
+        doc_key = f"{PROJECT_ID}:{BRANCH_ID}:{kind}:{item_id}"
+        index_metadata = indexed_meta.get(doc_key) or {}
+        for key, value in index_metadata.items():
+            extra.setdefault(key, value)
+        literal_match = folded in searchable.casefold()
+        if not literal_match and doc_key not in fts_hits:
             return
-        score = 2 if folded in title_text.casefold() else 1
+        if filters.get("kind") and kind != filters["kind"]:
+            return
+        if filters.get("chapter_id") and source_chapter_id != filters["chapter_id"]:
+            return
+        if filters.get("entity_id") and filters["entity_id"] not in {str(value) for value in (extra.get("entity_ids") or [])}:
+            return
+        if filters.get("status") and str(extra.get("status", "")) != filters["status"]:
+            return
+        event_time = str(extra.get("event_time", ""))
+        if filters.get("time_from") and (not event_time or event_time < filters["time_from"]):
+            return
+        if filters.get("time_to") and (not event_time or event_time > filters["time_to"]):
+            return
+        score = max(fts_hits.get(doc_key, 0), 2 if folded in title_text.casefold() else 1)
         found.append({
             "type": kind,
             "id": str(item_id),
@@ -908,6 +1504,7 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50) -> list[d
             "source_chapter_id": source_chapter_id,
             "source_chapter_title": source_chapter_title or (chapter_titles.get(source_chapter_id) if source_chapter_id else None),
             "score": score,
+            "index_mode": index_mode,
             **extra,
         })
 
@@ -1062,7 +1659,45 @@ def create_chapter_commit(conn: sqlite3.Connection, chapter_id: str, stage: str,
     return result
 
 
-def epub_bytes(conn: sqlite3.Connection) -> tuple[bytes, dict[str, Any]]:
+def export_finalization_issues(conn: sqlite3.Connection) -> list[str]:
+    """Enforce the same publication gate for direct API exports as the UI."""
+    state = state_from_db(conn)
+    project = state.get("project") or {}
+    issues: list[str] = []
+    if not str(project.get("title") or "").strip() or project.get("title") == "未命名长篇":
+        issues.append("作品还没有正式标题。")
+    if not str(project.get("summary") or "").strip():
+        issues.append("还没有填写一句话简介。")
+    chapters = list(state.get("chapters") or [])
+    export_chapters = list(chapters)
+    if export_chapters and export_chapters[-1].get("status") == "草稿" and not str(export_chapters[-1].get("body") or "").strip():
+        export_chapters = export_chapters[:-1]
+    if not export_chapters:
+        issues.append("作品没有可导出的章节正文。")
+    for index, chapter in enumerate(export_chapters):
+        body = str(chapter.get("body") or "")
+        if not body.strip():
+            issues.append(f"第 {index + 1} 章《{chapter.get('title') or '未命名'}》没有正文。")
+        if chapter.get("status") != "完成":
+            issues.append(f"第 {index + 1} 章《{chapter.get('title') or '未命名'}》尚未归档。")
+        if len(re.sub(r"\s", "", body)) < 60:
+            issues.append(f"第 {index + 1} 章《{chapter.get('title') or '未命名'}》正文少于 60 字。")
+        if chapter.get("review_status") != "passed":
+            issues.append(f"第 {index + 1} 章《{chapter.get('title') or '未命名'}》尚未通过本章审查。")
+    pending = [
+        memory for memory in state.get("memory") or []
+        if memory.get("status") not in {"已拒绝", "rejected", "superseded"}
+        and (memory.get("status") != "已确认" or memory.get("stale") or memory.get("source_span_status") != "valid")
+    ]
+    if pending:
+        issues.append(f"有 {len(pending)} 条记忆尚未确认或证据已失效。")
+    open_plot = sum(len(state.get("plot", {}).get(stage) or []) for stage in ("setup", "develop"))
+    if open_plot:
+        issues.append(f"还有 {open_plot} 条伏笔处于未回收状态。")
+    return issues
+
+
+def epub_bytes(conn: sqlite3.Connection, author_override: str = "") -> tuple[bytes, dict[str, Any]]:
     """Build a minimal EPUB 3 package with an explicit loss manifest."""
     state = state_from_db(conn)
     title = str(state.get("project", {}).get("title") or "未命名长篇")
@@ -1078,6 +1713,8 @@ def epub_bytes(conn: sqlite3.Connection) -> tuple[bytes, dict[str, Any]]:
         {"feature": "ai_provenance", "status": "partial", "detail": "AI 运行记录仍留在本地 SQLite，不嵌入正文。"},
     ]
     manifest = {"format": "moyu-epub-v1", "title": title, "chapter_count": len(chapters), "loss_manifest": loss_manifest, "generated_at": now()}
+    if author_override:
+        manifest["author_override"] = {"reason": author_override[:2_000], "recorded_by": ACTOR_ID, "recorded_at": now()}
     files: dict[str, bytes] = {
         "mimetype": b"application/epub+zip",
         "META-INF/container.xml": b'<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/package.opf" media-type="application/oebps-package+xml"/></rootfiles></container>',
@@ -1153,12 +1790,32 @@ def source_span_for_memory(conn: sqlite3.Connection, memory: dict[str, Any]) -> 
     if row is None:
         return None
     body = bytes(row["canonical_text"]).decode("utf-8", errors="replace")
-    start = body.find(quote)
+    raw_start = memory.get("source_start", memory.get("source_start_codepoint"))
+    raw_end = memory.get("source_end", memory.get("source_end_codepoint"))
+    try:
+        explicit_start = int(raw_start) if raw_start not in (None, "") else None
+        explicit_end = int(raw_end) if raw_end not in (None, "") else None
+    except (TypeError, ValueError):
+        return None
+    if explicit_start is not None or explicit_end is not None:
+        if explicit_start is None or explicit_end is None or explicit_start < 0 or explicit_end < explicit_start or body[explicit_start:explicit_end] != quote:
+            return None
+        start = explicit_start
+    else:
+        matches = [match.start() for match in re.finditer(re.escape(quote), body)]
+        if len(matches) != 1:
+            # A repeated quote must be anchored by an explicit character range;
+            # silently binding the first occurrence creates false canon facts.
+            return None
+        start = matches[0]
     if start < 0:
         return None
     end = start + len(quote)
     digest = hash_text(quote)
-    existing = conn.execute("SELECT id FROM source_span WHERE revision_id=? AND document_node_id=? AND quote_hash=? AND status='valid' LIMIT 1", (row["revision_id"], chapter_id, digest)).fetchone()
+    supplied_hash = str(memory.get("source_hash") or "").strip()
+    if supplied_hash and supplied_hash != digest:
+        return None
+    existing = conn.execute("SELECT id FROM source_span WHERE revision_id=? AND document_node_id=? AND quote_hash=? AND start_codepoint=? AND end_codepoint=? AND status='valid' LIMIT 1", (row["revision_id"], chapter_id, digest, start, end)).fetchone()
     if existing:
         return existing["id"]
     before = body[max(0, start - 32):start]
@@ -1175,19 +1832,229 @@ def ensure_memory_assertion(conn: sqlite3.Connection, memory_id: str, memory: di
     if not entity_id or not source_span_id or memory.get("status") not in {"已确认", "accepted"}:
         return None
     evidence = [{"candidate_memory_id": memory_id, "source_span_id": source_span_id}]
+    object_json = json_text({"name": memory.get("name", ""), "type": memory.get("type", "其他"), "note": memory.get("note", "")})
     existing = conn.execute(
-        "SELECT id FROM assertion WHERE project_id=? AND branch_id=? AND subject_entity_id=? AND state='canon' AND evidence_json LIKE ? LIMIT 1",
-        (PROJECT_ID, BRANCH_ID, entity_id, f'%"candidate_memory_id":"{memory_id}"%'),
+        """SELECT id,state FROM assertion
+             WHERE project_id=? AND branch_id=? AND subject_entity_id=?
+               AND EXISTS (SELECT 1 FROM json_each(assertion.evidence_json) e
+                           WHERE json_extract(e.value,'$.candidate_memory_id')=?)
+             ORDER BY CASE state WHEN 'canon' THEN 0 WHEN 'candidate' THEN 1 ELSE 2 END, reviewed_at DESC
+             LIMIT 1""",
+        (PROJECT_ID, BRANCH_ID, entity_id, memory_id),
     ).fetchone()
-    if existing:
+    if existing and existing["state"] in {"candidate", "canon"}:
+        # A repaired current span can re-anchor an existing canon assertion;
+        # the author action that promoted the memory is the review event.
+        reviewed_at = now()
+        previous_state = existing["state"]
+        next_state = "canon"
+        conn.execute("UPDATE assertion SET object_json=?,evidence_json=?,state=?,reviewed_by=?,reviewed_at=? WHERE id=? AND project_id=? AND branch_id=?", (object_json, json_text(evidence), next_state, ACTOR_ID, reviewed_at, existing["id"], PROJECT_ID, BRANCH_ID))
+        if previous_state != next_state:
+            append_event(conn, existing["id"], "assertion.reviewed", {"previous_state": previous_state, "state": next_state, "reason": "memory re-anchored and accepted"})
         return existing["id"]
     assertion_id = uid("asrt_")
     reviewed = now()
     conn.execute(
         "INSERT INTO assertion(id,project_id,branch_id,subject_entity_id,predicate,object_json,epistemic_mode,state,valid_start,valid_end,confidence,supersedes_id,evidence_json,reviewed_by,reviewed_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        (assertion_id, PROJECT_ID, BRANCH_ID, entity_id, "has_story_fact", json_text({"name": memory.get("name", ""), "type": memory.get("type", "其他"), "note": memory.get("note", "")}), "author_plan", "canon", None, None, 1.0, None, json_text(evidence), ACTOR_ID, reviewed),
+        (assertion_id, PROJECT_ID, BRANCH_ID, entity_id, "has_story_fact", object_json, "author_plan", "canon", None, None, 1.0, existing["id"] if existing and existing["state"] in {"contradicted", "superseded", "retracted"} else None, json_text(evidence), ACTOR_ID, reviewed),
     )
     return assertion_id
+
+
+def transition_memory_assertions(conn: sqlite3.Connection, memory_id: str, memory_status: str, reason: str = "") -> None:
+    """Keep dependent assertions out of canon when their memory is withdrawn."""
+    target = {"rejected": "retracted", "superseded": "superseded", "stale": "candidate", "candidate": "candidate"}.get(memory_status)
+    if target is None:
+        return
+    dependent_assertions = conn.execute(
+        """SELECT a.id,a.state FROM assertion a
+             WHERE a.project_id=? AND a.branch_id=? AND a.state='canon'
+               AND EXISTS (SELECT 1 FROM json_each(a.evidence_json) e
+                           WHERE json_extract(e.value,'$.candidate_memory_id')=?)""",
+        (PROJECT_ID, BRANCH_ID, memory_id),
+    ).fetchall()
+    for dependent in dependent_assertions:
+        conn.execute("UPDATE assertion SET state=?,reviewed_by=?,reviewed_at=? WHERE id=?", (target, ACTOR_ID, now(), dependent["id"]))
+        append_event(conn, dependent["id"], "assertion.reviewed", {
+            "previous_state": dependent["state"], "state": target,
+            "reason": reason or f"memory status changed to {memory_status}",
+        })
+
+
+def _json_object(value: Any, fallback: Any) -> Any:
+    """Decode a JSON column without allowing malformed legacy rows to break audits."""
+    try:
+        parsed = json.loads(value or "")
+    except (TypeError, json.JSONDecodeError):
+        return fallback
+    return parsed
+
+
+def assertion_detail(conn: sqlite3.Connection, assertion_id: str, *, include_conflicts: bool = True) -> dict[str, Any] | None:
+    """Build a source-aware assertion record for author review.
+
+    Assertions are projections over source spans and candidate memories.  The
+    detail response deliberately exposes every dependency and computes stale
+    reasons instead of making the author infer them from a status badge.
+    """
+    row = conn.execute(
+        """SELECT a.id,a.project_id,a.branch_id,a.subject_entity_id,a.predicate,a.object_json,
+                  a.epistemic_mode,a.state,a.valid_start,a.valid_end,a.confidence,a.supersedes_id,
+                  a.evidence_json,a.reviewed_by,a.reviewed_at,
+                  e.kind subject_kind,e.canonical_name subject_name
+             FROM assertion a JOIN entity e ON e.id=a.subject_entity_id
+            WHERE a.id=? AND a.project_id=? AND a.branch_id=?""",
+        (assertion_id, PROJECT_ID, BRANCH_ID),
+    ).fetchone()
+    if row is None:
+        return None
+    object_value = _json_object(row["object_json"], {})
+    evidence_rows = _json_object(row["evidence_json"], [])
+    if not isinstance(evidence_rows, list):
+        evidence_rows = []
+    evidence: list[dict[str, Any]] = []
+    stale_reasons: list[str] = []
+    for raw in evidence_rows:
+        item = dict(raw) if isinstance(raw, dict) else {"value": raw}
+        memory_id = item.get("candidate_memory_id")
+        span_id = item.get("source_span_id")
+        memory_row = None
+        span_row = None
+        if memory_id:
+            memory_row = conn.execute(
+                "SELECT id,kind,payload_json,status,confidence,source_span_id,created_at,reviewed_at FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?",
+                (str(memory_id), PROJECT_ID, BRANCH_ID),
+            ).fetchone()
+        if span_id:
+            span_row = conn.execute(
+                """SELECT ss.id,ss.revision_id,ss.document_node_id,ss.start_codepoint,ss.end_codepoint,
+                          ss.start_utf8,ss.end_utf8,ss.quote,ss.quote_hash,ss.anchor_before,ss.anchor_after,
+                          ss.status,ss.external_uri,ss.snapshot_hash,ss.snapshot_at,n.title chapter_title,
+                          (SELECT r2.id FROM document_revision r2 WHERE r2.document_node_id=ss.document_node_id
+                             AND r2.branch_id=? ORDER BY r2.rowid DESC LIMIT 1) current_revision_id
+                     FROM source_span ss JOIN document_node n ON n.id=ss.document_node_id
+                    WHERE ss.id=? AND ss.project_id=? AND n.project_id=? AND n.branch_id=?
+                      AND NOT EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=n.id)""",
+                (BRANCH_ID, str(span_id), PROJECT_ID, PROJECT_ID, BRANCH_ID),
+            ).fetchone()
+        memory_payload = _json_object(memory_row["payload_json"], {}) if memory_row else {}
+        span = dict(span_row) if span_row else None
+        current = bool(span_row and span_row["status"] == "valid" and span_row["revision_id"] == span_row["current_revision_id"])
+        reasons: list[str] = []
+        if not memory_id and not span_id:
+            reasons.append("unsupported_evidence")
+        if not span_id:
+            reasons.append("source_span_missing")
+        if memory_id and memory_row is None:
+            reasons.append("candidate_memory_missing")
+        if span_id and span_row is None:
+            reasons.append("source_span_missing")
+        elif span_row and span_row["status"] != "valid":
+            reasons.append(f"source_span_{span_row['status']}")
+        elif span_row and span_row["revision_id"] != span_row["current_revision_id"]:
+            reasons.append("source_revision_outdated")
+        if memory_row and memory_row["status"] != "accepted":
+            reasons.append(f"memory_{memory_row['status']}")
+        if reasons:
+            stale_reasons.extend(reasons)
+        evidence.append({
+            **item,
+            "candidate_memory": ({
+                "id": memory_row["id"], "kind": memory_row["kind"], "status": memory_row["status"],
+                "confidence": memory_row["confidence"], "payload": memory_payload,
+                "created_at": memory_row["created_at"], "reviewed_at": memory_row["reviewed_at"],
+            } if memory_row else None),
+            "source_span": ({
+                **span, "current": current,
+            } if span else None),
+            "stale": bool(reasons),
+            "stale_reasons": reasons,
+        })
+    conflicts: list[dict[str, Any]] = []
+    if include_conflicts:
+        for other in conn.execute(
+            """SELECT id,predicate,object_json,epistemic_mode,state,confidence,reviewed_at
+                 FROM assertion WHERE project_id=? AND branch_id=? AND subject_entity_id=?
+                   AND state='canon' AND id<>? ORDER BY reviewed_at DESC""",
+            (PROJECT_ID, BRANCH_ID, row["subject_entity_id"], assertion_id),
+        ):
+            other_object = _json_object(other["object_json"], {})
+            if other["predicate"] != row["predicate"] or other_object != object_value:
+                conflicts.append({"id": other["id"], "predicate": other["predicate"], "object": other_object,
+                                  "epistemic_mode": other["epistemic_mode"], "state": other["state"],
+                                  "confidence": other["confidence"], "reviewed_at": other["reviewed_at"]})
+    dependents = [dict(item) for item in conn.execute(
+        "SELECT id,attribute,value_json,event_id,valid_start,valid_end,knowledge_scope_json FROM character_state WHERE source_assertion_id=? AND project_id=? AND branch_id=?",
+        (assertion_id, PROJECT_ID, BRANCH_ID),
+    )]
+    stale_reasons = sorted(set(stale_reasons))
+    return {
+        "id": row["id"], "project_id": row["project_id"], "branch_id": row["branch_id"],
+        "subject": {"id": row["subject_entity_id"], "kind": row["subject_kind"], "name": row["subject_name"]},
+        "predicate": row["predicate"], "object": object_value, "epistemic_mode": row["epistemic_mode"],
+        "state": row["state"], "valid_start": row["valid_start"], "valid_end": row["valid_end"],
+        "confidence": row["confidence"], "supersedes_id": row["supersedes_id"],
+        "reviewed_by": row["reviewed_by"], "reviewed_at": row["reviewed_at"],
+        "evidence": evidence, "stale": bool(stale_reasons), "stale_reasons": stale_reasons,
+        "review_required": row["state"] == "canon" and bool(stale_reasons),
+        "conflicts": conflicts, "dependents": dependents,
+    }
+
+
+def assertion_rows(conn: sqlite3.Connection, state: str | None = None, entity_id: str | None = None,
+                   memory_id: str | None = None, stale_only: bool = False) -> list[dict[str, Any]]:
+    """Return compact assertion cards while retaining computed stale state."""
+    clauses = ["a.project_id=?", "a.branch_id=?"]
+    params: list[Any] = [PROJECT_ID, BRANCH_ID]
+    if state:
+        clauses.append("a.state=?"); params.append(state)
+    if entity_id:
+        clauses.append("a.subject_entity_id=?"); params.append(entity_id)
+    if memory_id:
+        clauses.append("EXISTS (SELECT 1 FROM json_each(a.evidence_json) e WHERE json_extract(e.value,'$.candidate_memory_id')=?)"); params.append(memory_id)
+    rows = conn.execute(
+        "SELECT a.id FROM assertion a WHERE " + " AND ".join(clauses) + " ORDER BY COALESCE(a.reviewed_at,a.id) DESC",
+        params,
+    ).fetchall()
+    result = []
+    for item in rows:
+        detail = assertion_detail(conn, item["id"], include_conflicts=False)
+        if detail is not None and (not stale_only or detail["stale"]):
+            result.append({key: detail[key] for key in ("id", "subject", "predicate", "object", "epistemic_mode", "state", "confidence", "reviewed_by", "reviewed_at", "stale", "stale_reasons", "review_required")})
+    return result
+
+
+def memory_detail(conn: sqlite3.Connection, memory_id: str) -> dict[str, Any] | None:
+    row = conn.execute(
+        """SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.confidence,cm.created_at,cm.reviewed_at,
+                  cm.reviewed_by,cm.created_by,cm.source_span_id,ss.quote source_quote,
+                  ss.start_codepoint source_start,ss.end_codepoint source_end,ss.quote_hash source_hash,
+                  ss.status source_span_status,ss.revision_id source_revision_id,ss.document_node_id source_chapter_id,
+                  (SELECT r2.id FROM document_revision r2 WHERE r2.document_node_id=ss.document_node_id
+                    AND r2.branch_id=cm.branch_id ORDER BY r2.rowid DESC LIMIT 1) current_revision_id,
+                  EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=ss.document_node_id) deleted_source
+             FROM candidate_memory cm LEFT JOIN source_span ss ON ss.id=cm.source_span_id
+            WHERE cm.id=? AND cm.project_id=? AND cm.branch_id=?""",
+        (memory_id, PROJECT_ID, BRANCH_ID),
+    ).fetchone()
+    if row is None:
+        return None
+    payload = _json_object(row["payload_json"], {})
+    stale = bool(row["source_span_id"] and (row["source_span_status"] != "valid" or row["source_revision_id"] != row["current_revision_id"] or row["deleted_source"]))
+    assertions = assertion_rows(conn, memory_id=memory_id)
+    return {
+        "id": row["id"], "key": payload.get("key", row["id"]), "type": row["kind"],
+        "name": payload.get("name", payload.get("text", "")), "source": payload.get("source", ""),
+        "status": "已确认" if row["status"] == "accepted" else "已拒绝" if row["status"] == "rejected" else row["status"],
+        "status_raw": row["status"], "confidence": "已确认" if row["status"] == "accepted" else "候选",
+        "confidence_score": row["confidence"], "note": payload.get("note", ""),
+        "source_chapter_id": payload.get("source_chapter_id") or row["source_chapter_id"],
+        "source_quote": payload.get("source_quote") or row["source_quote"] or "",
+        "source_start": row["source_start"], "source_end": row["source_end"], "source_hash": row["source_hash"],
+        "source_span_id": row["source_span_id"], "source_span_status": row["source_span_status"], "stale": stale,
+        "assertion_id": assertions[0]["id"] if assertions else None, "reviewed_by": row["reviewed_by"],
+        "created_by": row["created_by"], "created_at": row["created_at"], "approved_at": row["reviewed_at"] if row["status"] == "accepted" else None,
+    }
 
 
 def require_memory_evidence(conn: sqlite3.Connection, status: str, source_span_id: str | None, entity_id: str | None) -> None:
@@ -1321,12 +2188,16 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
         records.append({"id": row["id"], "type": row["kind"], "name": row["canonical_name"], "description": desc})
     memory = []
     for row in conn.execute(
-        "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.confidence,cm.created_at,cm.reviewed_at,cm.source_span_id,"
+        "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.confidence,cm.created_at,cm.reviewed_at,cm.reviewed_by,cm.created_by,cm.source_span_id,"
         "(SELECT a.id FROM assertion a WHERE a.project_id=cm.project_id AND a.branch_id=cm.branch_id AND a.state='canon' AND a.evidence_json LIKE '%\"candidate_memory_id\":\"' || cm.id || '\"%' LIMIT 1) assertion_id,"
-        "ss.quote source_quote,ss.start_codepoint source_start,ss.end_codepoint source_end,ss.quote_hash source_hash,ss.status source_span_status,ss.document_node_id source_chapter_id FROM candidate_memory cm LEFT JOIN source_span ss ON ss.id=cm.source_span_id WHERE cm.project_id=? AND cm.branch_id=? AND cm.status IN ('candidate','accepted') ORDER BY cm.rowid",
+        "ss.quote source_quote,ss.start_codepoint source_start,ss.end_codepoint source_end,ss.quote_hash source_hash,ss.status source_span_status,ss.revision_id source_revision_id,ss.document_node_id source_chapter_id,"
+        "(SELECT r2.id FROM document_revision r2 WHERE r2.document_node_id=ss.document_node_id AND r2.branch_id=cm.branch_id ORDER BY r2.rowid DESC LIMIT 1) current_revision_id,"
+        "EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=ss.document_node_id) deleted_source "
+        "FROM candidate_memory cm LEFT JOIN source_span ss ON ss.id=cm.source_span_id WHERE cm.project_id=? AND cm.branch_id=? AND cm.status IN ('candidate','accepted','rejected','stale','superseded') ORDER BY cm.rowid",
         (PROJECT_ID, BRANCH_ID),
     ):
         payload = json.loads(row["payload_json"] or "{}")
+        span_stale = bool(row["source_span_id"] and (row["source_span_status"] != "valid" or row["source_revision_id"] != row["current_revision_id"] or row["deleted_source"]))
         memory.append(
             {
                 "id": row["id"],
@@ -1334,8 +2205,9 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
                 "type": row["kind"],
                 "name": payload.get("name", payload.get("text", "")),
                 "source": payload.get("source", ""),
-                "status": "已确认" if row["status"] == "accepted" else "待确认",
+                "status": "已确认" if row["status"] == "accepted" else "已拒绝" if row["status"] == "rejected" else row["status"],
                 "confidence": "已确认" if row["status"] == "accepted" else "候选",
+                "confidence_score": row["confidence"],
                 "note": payload.get("note", "由章节标记自动捕获，确认后才进入正式记忆。"),
                 "source_chapter_id": payload.get("source_chapter_id") or row["source_chapter_id"],
                 "source_quote": payload.get("source_quote") or row["source_quote"] or "",
@@ -1344,8 +2216,12 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
                 "source_hash": row["source_hash"],
                 "source_span_id": row["source_span_id"],
                 "source_span_status": row["source_span_status"],
+                "stale": span_stale,
                 "assertion_id": row["assertion_id"],
                 "approved_at": row["reviewed_at"] if row["status"] == "accepted" else None,
+                "reviewed_by": row["reviewed_by"],
+                "created_by": row["created_by"],
+                "created_at": row["created_at"],
             }
         )
     plot = {"setup": [], "develop": [], "payoff": []}
@@ -1486,6 +2362,7 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
     for old in conn.execute("SELECT id FROM candidate_memory WHERE project_id=? AND branch_id=? AND status IN ('candidate','accepted')", (PROJECT_ID, BRANCH_ID)).fetchall():
         if old["id"] not in incoming_memory_ids:
             conn.execute("UPDATE candidate_memory SET status='rejected',reviewed_at=?,reviewed_by=? WHERE id=?", (now(), ACTOR_ID, old["id"]))
+            transition_memory_assertions(conn, old["id"], "rejected", "omitted by full state sync")
             append_event(conn, old["id"], "memory.rejected", {"reason": "omitted by full state sync"})
     for memory in incoming_memory:
         mid = checked_id(memory.get("id") or uid("mem_"), "memory id")
@@ -1493,7 +2370,14 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
         for field, limit in (("source_chapter_id", 200), ("source_quote", 2_000), ("source_start", 30), ("source_end", 30), ("source_hash", 128)):
             if memory.get(field) not in (None, ""):
                 payload[field] = bounded_text(memory.get(field), limit, field)
-        status = "accepted" if memory.get("status") in {"已确认", "accepted"} else "candidate"
+        incoming_status = memory.get("status")
+        status = (
+            "accepted" if incoming_status in {"已确认", "accepted"}
+            else "rejected" if incoming_status in {"已拒绝", "rejected"}
+            else "stale" if incoming_status == "stale"
+            else "superseded" if incoming_status == "superseded"
+            else "candidate"
+        )
         confidence = 1.0 if status == "accepted" else 0.5
         source_span_id = source_span_for_memory(conn, memory)
         entity = conn.execute("SELECT id FROM entity WHERE project_id=? AND status='active' AND kind=? AND canonical_name=? LIMIT 1", (PROJECT_ID, str(memory.get("type") or "其他"), payload["name"])).fetchone()
@@ -1502,10 +2386,17 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
         exists = conn.execute("SELECT 1 FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (mid, PROJECT_ID, BRANCH_ID)).fetchone()
         if exists is None and conn.execute("SELECT 1 FROM candidate_memory WHERE id=?", (mid,)).fetchone() is not None:
             raise ValueError("memory belongs to another project or branch")
+        existing_memory = conn.execute("SELECT status,kind,payload_json FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (mid, PROJECT_ID, BRANCH_ID)).fetchone()
+        if existing_memory and existing_memory["status"] == "accepted" and status == "accepted":
+            previous_payload = _json_object(existing_memory["payload_json"], {})
+            if previous_payload.get("name") != payload["name"] or str(memory.get("type") or "其他") != str(existing_memory["kind"] or "其他"):
+                raise ValueError("accepted memory identity is immutable; mark it candidate before changing the name")
         if exists is None:
             conn.execute("INSERT INTO candidate_memory(id,project_id,branch_id,source_span_id,entity_id,kind,payload_json,status,confidence,created_at,reviewed_at,reviewed_by,created_by) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)", (mid, PROJECT_ID, BRANCH_ID, source_span_id, entity_id, str(memory.get("type") or "其他"), json_text(payload), status, confidence, now(), now() if status == "accepted" else None, ACTOR_ID if status == "accepted" else None, ACTOR_ID))
-        elif status == "accepted":
-            conn.execute("UPDATE candidate_memory SET status='accepted',confidence=1,source_span_id=COALESCE(?,source_span_id),entity_id=COALESCE(?,entity_id),payload_json=?,reviewed_at=?,reviewed_by=? WHERE id=?", (source_span_id, entity_id, json_text(payload), now(), ACTOR_ID, mid))
+        else:
+            conn.execute("UPDATE candidate_memory SET status=?,confidence=?,source_span_id=COALESCE(?,source_span_id),entity_id=?,payload_json=?,reviewed_at=?,reviewed_by=? WHERE id=?", (status, 1.0 if status == "accepted" else confidence, source_span_id, entity_id, json_text(payload), now() if status in {"accepted", "rejected", "stale", "superseded"} else None, ACTOR_ID if status in {"accepted", "rejected", "stale", "superseded"} else None, mid))
+            if status != "accepted":
+                transition_memory_assertions(conn, mid, status, f"memory status changed to {status} during full state sync")
         assertion_id = ensure_memory_assertion(conn, mid, {**memory, **payload}, entity_id, source_span_id)
         if assertion_id:
             payload["assertion_id"] = assertion_id
@@ -1626,6 +2517,26 @@ class Handler(SimpleHTTPRequestHandler):
                 ensure_seed(conn)
                 if parsed.path == "/api/health":
                     return self.send_json(200, {"ok": True, "db": str(DB_PATH), "schema_version": conn.execute("PRAGMA user_version").fetchone()[0]})
+                if parsed.path == "/api/ai/queue":
+                    query = parse_qs(parsed.query)
+                    status_filter = (query.get("status") or [""])[0]
+                    if status_filter and status_filter not in {"queued", "running", "success", "failed", "canceled"}:
+                        return self.send_json(400, {"error": "invalid queue status"})
+                    try:
+                        limit = min(max(int((query.get("limit") or ["50"])[0]), 1), 200)
+                    except (TypeError, ValueError):
+                        return self.send_json(400, {"error": "limit must be an integer"})
+                    where = "project_id=? AND branch_id=?" + (" AND status=?" if status_filter else "")
+                    params: list[Any] = [PROJECT_ID, BRANCH_ID] + ([status_filter] if status_filter else []) + [limit]
+                    rows = conn.execute(f"SELECT id,project_id,branch_id,ai_run_id,task,chapter_id,response_format,max_tokens,status,attempt,retry_of,cancel_requested,error,result_json,created_at,started_at,finished_at,updated_at FROM app_ai_job WHERE {where} ORDER BY created_at DESC LIMIT ?", params).fetchall()
+                    counts = {row["status"]: row["count"] for row in conn.execute("SELECT status,COUNT(*) count FROM app_ai_job WHERE project_id=? AND branch_id=? GROUP BY status", (PROJECT_ID, BRANCH_ID))}
+                    return self.send_json(200, {"jobs": [ai_job_public(row) for row in rows], "counts": counts})
+                if parsed.path.startswith("/api/ai/jobs/"):
+                    job_id = checked_id(parsed.path.rsplit("/", 1)[-1], "AI job id")
+                    row = conn.execute("SELECT id,project_id,branch_id,ai_run_id,task,chapter_id,response_format,max_tokens,status,attempt,retry_of,cancel_requested,error,result_json,created_at,started_at,finished_at,updated_at FROM app_ai_job WHERE id=? AND project_id=? AND branch_id=?", (job_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "AI job not found"})
+                    return self.send_json(200, ai_job_public(row))
                 if parsed.path == "/api/ai/status":
                     return self.send_json(200, ai_public_settings())
                 if parsed.path == "/api/ai/quota":
@@ -1643,6 +2554,22 @@ class Handler(SimpleHTTPRequestHandler):
                             result[key[:-5] if key.endswith("_json") else key] = [] if key == "context_item_ids_json" else {}
                     result["decisions"] = [dict(row) for row in conn.execute("SELECT id,decision,output_hash,reason,created_at,actor_id FROM app_ai_run_decision WHERE ai_run_id=? AND project_id=? AND branch_id=? ORDER BY created_at", (run_id, PROJECT_ID, BRANCH_ID))]
                     return self.send_json(200, result)
+                if parsed.path == "/api/assertions":
+                    query = parse_qs(parsed.query)
+                    requested_state = (query.get("state") or [None])[0]
+                    if requested_state and requested_state not in {"candidate", "canon", "contradicted", "superseded", "retracted"}:
+                        return self.send_json(400, {"error": "invalid assertion state"})
+                    entity_id = (query.get("entity_id") or [None])[0]
+                    memory_id = (query.get("memory_id") or [None])[0]
+                    stale_only = (query.get("stale_only") or ["0"])[0] == "1"
+                    rows = assertion_rows(conn, requested_state, entity_id, memory_id, stale_only)
+                    return self.send_json(200, {"assertions": rows, "count": len(rows), "filters": {"state": requested_state, "entity_id": entity_id, "memory_id": memory_id, "stale_only": stale_only}})
+                if parsed.path.startswith("/api/assertions/"):
+                    assertion_id = checked_id(parsed.path.rsplit("/", 1)[-1], "assertion id")
+                    detail = assertion_detail(conn, assertion_id)
+                    if detail is None:
+                        return self.send_json(404, {"error": "assertion not found"})
+                    return self.send_json(200, detail)
                 if parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/revisions"):
                     chapter_id = checked_id(parsed.path.split("/")[-2], "chapter id")
                     row = conn.execute("SELECT 1 FROM document_node WHERE id=? AND project_id=? AND branch_id=? AND kind='chapter'", (chapter_id, PROJECT_ID, BRANCH_ID)).fetchone()
@@ -1675,10 +2602,63 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json(200, {"records": state_from_db(conn)["records"]})
                 if parsed.path == "/api/memory":
                     return self.send_json(200, {"memory": state_from_db(conn)["memory"]})
+                if parsed.path.startswith("/api/memory/") and parsed.path.endswith("/evidence"):
+                    memory_id = checked_id(parsed.path.split("/")[-2], "memory id")
+                    if conn.execute("SELECT 1 FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (memory_id, PROJECT_ID, BRANCH_ID)).fetchone() is None:
+                        return self.send_json(404, {"error": "memory not found"})
+                    assertion_ids = [row["id"] for row in conn.execute(
+                        "SELECT DISTINCT a.id FROM assertion a JOIN json_each(a.evidence_json) e ON json_extract(e.value,'$.candidate_memory_id')=? WHERE a.project_id=? AND a.branch_id=? ORDER BY a.reviewed_at DESC",
+                        (memory_id, PROJECT_ID, BRANCH_ID),
+                    )]
+                    if not assertion_ids:
+                        return self.send_json(200, {"memory_id": memory_id, "assertions": [], "evidence": []})
+                    assertion_cards = []
+                    evidence = []
+                    for assertion_id in assertion_ids:
+                        detail = assertion_detail(conn, assertion_id)
+                        if detail:
+                            assertion_cards.append({"id": detail["id"], "state": detail["state"], "stale": detail["stale"], "reviewed_at": detail["reviewed_at"]})
+                            evidence.extend([{**item, "assertion_id": detail["id"]} for item in detail["evidence"]])
+                    return self.send_json(200, {"memory_id": memory_id, "assertions": assertion_cards, "evidence": evidence})
+                if parsed.path.startswith("/api/memory/"):
+                    memory_id = checked_id(parsed.path.rsplit("/", 1)[-1], "memory id")
+                    memory = memory_detail(conn, memory_id)
+                    if memory is None:
+                        return self.send_json(404, {"error": "memory not found"})
+                    assertion_rows_for_memory = assertion_rows(conn, memory_id=memory_id)
+                    evidence = []
+                    for assertion_row in assertion_rows_for_memory:
+                        detail = assertion_detail(conn, assertion_row["id"])
+                        if detail:
+                            evidence.extend([{**item, "assertion_id": detail["id"]} for item in detail["evidence"]])
+                    return self.send_json(200, {"memory": memory, "assertions": assertion_rows_for_memory, "evidence": evidence})
                 if parsed.path == "/api/plot":
                     return self.send_json(200, {"plot": state_from_db(conn)["plot"]})
+                if parsed.path in {"/api/character-states", "/api/story/character-states"}:
+                    entity_id = (parse_qs(parsed.query).get("entity_id") or [None])[0]
+                    if entity_id:
+                        entity_id = checked_id(entity_id, "entity id")
+                    rows = character_state_rows(conn, entity_id)
+                    return self.send_json(200, {"character_states": rows, "count": len(rows), "entity_id": entity_id})
+                if parsed.path.startswith("/api/character-states/") or parsed.path.startswith("/api/story/character-states/"):
+                    state_id = checked_id(parsed.path.rsplit("/", 1)[-1], "character state id")
+                    rows = character_state_rows(conn)
+                    item = next((row for row in rows if row["id"] == state_id), None)
+                    if item is None:
+                        return self.send_json(404, {"error": "character state not found"})
+                    return self.send_json(200, item)
+                if parsed.path in {"/api/plot-threads", "/api/story/plot-threads"}:
+                    rows = plot_thread_rows(conn)
+                    return self.send_json(200, {"plot_threads": rows, "count": len(rows)})
+                if parsed.path.startswith("/api/plot-threads/") or parsed.path.startswith("/api/story/plot-threads/"):
+                    thread_id = checked_id(parsed.path.rsplit("/", 1)[-1], "plot thread id")
+                    item = next((row for row in plot_thread_rows(conn) if row["id"] == thread_id), None)
+                    if item is None:
+                        return self.send_json(404, {"error": "plot thread not found"})
+                    return self.send_json(200, item)
                 if parsed.path == "/api/search":
-                    query = (parse_qs(parsed.query).get("q") or [""])[0].strip()
+                    query_params = parse_qs(parsed.query)
+                    query = (query_params.get("q") or [""])[0].strip()
                     if not query:
                         return self.send_json(400, {"error": "q is required"})
                     if len(query) > 200:
@@ -1689,9 +2669,17 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json(400, {"error": "limit must be an integer"})
                     if limit < 1 or limit > 200:
                         return self.send_json(400, {"error": "limit must be between 1 and 200"})
-                    return self.send_json(200, {"query": query, "limit": limit, "results": search_rows(conn, query, limit)})
+                    filters = {key: (query_params.get(key) or [""])[0].strip() for key in ("kind", "chapter_id", "entity_id", "status", "time_from", "time_to")}
+                    if any(len(value) > 200 for value in filters.values()):
+                        return self.send_json(400, {"error": "search filter too long"})
+                    effective_mode = SEARCH_INDEX_MODE if SEARCH_INDEX_MODE in {"bigram", "fts", "none"} else "bigram"
+                    return self.send_json(200, {"query": query, "limit": limit, "filters": filters, "index_mode": effective_mode, "results": search_rows(conn, query, limit, filters)})
                 if parsed.path == "/api/export/epub":
-                    raw, manifest = epub_bytes(conn)
+                    export_override = self.headers.get("X-Moyu-Export-Override", "").strip()
+                    export_issues = export_finalization_issues(conn)
+                    if export_issues and len(export_override) < 8:
+                        return self.send_json(409, {"error": "export blocked by finalization gate", "issues": export_issues, "override_required": True})
+                    raw, manifest = epub_bytes(conn, export_override)
                     title = re.sub(r"[^A-Za-z0-9._-]+", "_", str(manifest["title"])).strip("._") or "moyu-book"
                     return self.send_bytes(200, raw, "application/epub+zip", f"{title}.epub")
                 if parsed.path == "/api/export/manifest":
@@ -1729,7 +2717,7 @@ class Handler(SimpleHTTPRequestHandler):
                         limit = max(1, min(500, int((q.get("limit") or [100])[0])))
                     except (TypeError, ValueError):
                         return self.send_json(400, {"error": "limit must be an integer"})
-                    rows = [dict(r) for r in conn.execute("SELECT * FROM event_log WHERE project_id=? ORDER BY rowid DESC LIMIT ?", (PROJECT_ID, limit))]
+                    rows = [dict(r) for r in conn.execute("SELECT * FROM event_log WHERE project_id=? AND branch_id=? ORDER BY rowid DESC LIMIT ?", (PROJECT_ID, BRANCH_ID, limit))]
                     for row in rows:
                         row["payload_json"] = json.loads(row["payload_json"])
                     return self.send_json(200, {"events": rows})
@@ -1811,7 +2799,7 @@ class Handler(SimpleHTTPRequestHandler):
                     mid = checked_id(data.get("id") or uid("mem_"), "memory id")
                     status = "accepted" if data.get("status") in {"accepted", "已确认"} else "candidate"
                     payload = {"key": bounded_text(data.get("key", mid), 500, "memory key"), "name": bounded_text(data.get("name", data.get("text", "")), 500, "memory name"), "source": bounded_text(data.get("source", ""), 500, "memory source"), "note": bounded_text(data.get("note", ""), 20_000, "memory note")}
-                    for field, limit in (("source_chapter_id", 200), ("source_quote", 2_000)):
+                    for field, limit in (("source_chapter_id", 200), ("source_quote", 2_000), ("source_start", 30), ("source_end", 30), ("source_hash", 128)):
                         if data.get(field) not in (None, ""):
                             payload[field] = bounded_text(data.get(field), limit, field)
                     confidence = 1.0 if status == "accepted" else float(data.get("confidence") or 0.5)
@@ -1827,6 +2815,55 @@ class Handler(SimpleHTTPRequestHandler):
                         payload["assertion_id"] = assertion_id
                     append_event(conn, mid, "memory.created", payload)
                     return self.send_json(201, {"id": mid, **payload, "status": "已确认" if status == "accepted" else "待确认"})
+                if parsed.path.startswith("/api/memory/") and parsed.path.endswith("/reanchor"):
+                    memory_id = checked_id(parsed.path.split("/")[-2], "memory id")
+                    row = conn.execute("SELECT kind,payload_json,status,confidence,source_span_id,entity_id FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (memory_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "memory not found"})
+                    payload = _json_object(row["payload_json"], {})
+                    if not isinstance(payload, dict):
+                        payload = {}
+                    for field, limit in (("source_chapter_id", 200), ("source_quote", 2_000), ("source_start", 30), ("source_end", 30), ("source_hash", 128)):
+                        if field in data:
+                            payload[field] = bounded_text(data[field], limit, field)
+                    if not str(payload.get("source_chapter_id") or "").strip() or not str(payload.get("source_quote") or "").strip():
+                        return self.send_json(400, {"error": "reanchor requires source_chapter_id and source_quote"})
+                    source_span_id = source_span_for_memory(conn, payload)
+                    if source_span_id is None:
+                        return self.send_json(409, {"error": "current chapter does not contain a uniquely anchored quote; provide source_start and source_end"})
+                    requested_status = data.get("status")
+                    status = row["status"] if requested_status is None and row["status"] == "accepted" else str(requested_status or "candidate")
+                    status = {"已确认": "accepted", "已拒绝": "rejected", "待确认": "candidate"}.get(status, status)
+                    if status not in {"candidate", "accepted", "rejected", "stale", "superseded"}:
+                        return self.send_json(400, {"error": "invalid memory status"})
+                    entity_id = row["entity_id"]
+                    require_memory_evidence(conn, status, source_span_id, entity_id)
+                    conn.execute("UPDATE candidate_memory SET payload_json=?,source_span_id=?,status=?,confidence=?,reviewed_at=?,reviewed_by=? WHERE id=? AND project_id=? AND branch_id=?", (json_text(payload), source_span_id, status, 1.0 if status == "accepted" else row["confidence"], now() if status in {"accepted", "rejected"} else None, ACTOR_ID if status in {"accepted", "rejected"} else None, memory_id, PROJECT_ID, BRANCH_ID))
+                    assertion_id = ensure_memory_assertion(conn, memory_id, {**payload, "status": status}, entity_id, source_span_id) if status == "accepted" else None
+                    if status != "accepted":
+                        transition_memory_assertions(conn, memory_id, status, f"memory re-anchored with status {status}")
+                    if assertion_id:
+                        payload["assertion_id"] = assertion_id
+                    append_event(conn, memory_id, "memory.reanchored", {"old_source_span_id": row["source_span_id"], "new_source_span_id": source_span_id, "status": status})
+                    return self.send_json(200, memory_detail(conn, memory_id) or {"id": memory_id})
+                if parsed.path in {"/api/character-states", "/api/story/character-states"}:
+                    state_id = checked_id(data.get("id") or uid("cstate_"), "character state id")
+                    values = _character_state_input(conn, data)
+                    conn.execute(
+                        "INSERT INTO character_state(id,project_id,branch_id,entity_id,attribute,value_json,event_id,valid_start,valid_end,knowledge_scope_json,source_assertion_id) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+                        (state_id, PROJECT_ID, BRANCH_ID, values["entity_id"], values["attribute"], values["value_json"], values["event_id"], values["valid_start"], values["valid_end"], values["knowledge_scope_json"], values["source_assertion_id"]),
+                    )
+                    append_event(conn, state_id, "character_state.created", {"entity_id": values["entity_id"], "attribute": values["attribute"]})
+                    return self.send_json(201, next(row for row in character_state_rows(conn) if row["id"] == state_id))
+                if parsed.path in {"/api/plot-threads", "/api/story/plot-threads"}:
+                    thread_id = checked_id(data.get("id") or uid("thread_"), "plot thread id")
+                    values = _plot_thread_input(data)
+                    conn.execute(
+                        "INSERT INTO plot_thread(id,project_id,branch_id,status,payload_json,severity) VALUES(?,?,?,?,?,?)",
+                        (thread_id, PROJECT_ID, BRANCH_ID, values["status"], values["payload_json"], values["severity"]),
+                    )
+                    append_event(conn, thread_id, "plot_thread.created", {"status": values["status"], "severity": values["severity"]})
+                    return self.send_json(201, next(row for row in plot_thread_rows(conn) if row["id"] == thread_id))
                 if parsed.path == "/api/plot":
                     stage = str(data.get("stage") or "setup")
                     if stage not in {"setup", "develop", "payoff"}:
@@ -1928,7 +2965,36 @@ class Handler(SimpleHTTPRequestHandler):
                     aggregate = checked_id(data.get("aggregate_id") or uid("agg_"), "aggregate id")
                     event_id = append_event(conn, aggregate, bounded_text(data.get("event_type") or "app.event", 100, "event type"), data.get("payload") or {}, data.get("expected_head"), str(idem) if idem else None)
                     return self.send_json(201, {"id": event_id, "idempotent": False})
-                if parsed.path == "/api/ai":
+                if parsed.path.startswith("/api/assertions/") and parsed.path.endswith("/review"):
+                    assertion_id = checked_id(parsed.path.split("/")[-2], "assertion id")
+                    row = conn.execute("SELECT id,state FROM assertion WHERE id=? AND project_id=? AND branch_id=?", (assertion_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "assertion not found"})
+                    requested = str(data.get("state") or data.get("decision") or "").strip().lower()
+                    aliases = {"accept": "canon", "accepted": "canon", "confirm": "canon", "canon": "canon", "contradict": "contradicted", "contradicted": "contradicted", "retract": "retracted", "retracted": "retracted", "supersede": "superseded", "superseded": "superseded", "candidate": "candidate", "needs_review": "candidate"}
+                    next_state = aliases.get(requested)
+                    if next_state is None:
+                        return self.send_json(400, {"error": "review state must be canon, candidate, contradicted, superseded, or retracted"})
+                    allowed_transitions = {
+                        "candidate": {"candidate", "canon", "contradicted", "superseded", "retracted"},
+                        "canon": {"canon", "candidate", "contradicted", "superseded", "retracted"},
+                        "contradicted": {"contradicted", "candidate"},
+                        "superseded": {"superseded", "candidate"},
+                        "retracted": {"retracted", "candidate"},
+                    }
+                    if next_state not in allowed_transitions.get(row["state"], set()):
+                        return self.send_json(409, {"error": f"invalid assertion transition: {row['state']} -> {next_state}"})
+                    detail = assertion_detail(conn, assertion_id)
+                    if next_state == "canon" and (not detail["evidence"] or detail["stale"]):
+                        return self.send_json(409, {"error": "cannot canonize an assertion with missing or stale evidence", "assertion": detail})
+                    reason = bounded_text(data.get("reason") or data.get("review_note") or "", 2_000, "review reason")
+                    reviewed_at = now()
+                    conn.execute("UPDATE assertion SET state=?,reviewed_by=?,reviewed_at=? WHERE id=? AND project_id=? AND branch_id=?", (next_state, ACTOR_ID, reviewed_at, assertion_id, PROJECT_ID, BRANCH_ID))
+                    append_event(conn, assertion_id, "assertion.reviewed", {"previous_state": row["state"], "state": next_state, "reason": reason, "stale": detail["stale"], "stale_reasons": detail["stale_reasons"]})
+                    result = assertion_detail(conn, assertion_id)
+                    result["review_reason"] = reason
+                    return self.send_json(200, result)
+                if parsed.path in {"/api/ai", "/api/ai/queue"}:
                     task = bounded_text(data.get("task"), 40, "AI task")
                     if task not in AI_TASKS:
                         return self.send_json(400, {"error": "unsupported AI task"})
@@ -1938,6 +3004,8 @@ class Handler(SimpleHTTPRequestHandler):
                     instruction = bounded_text(data.get("instruction") or "", 2_000, "AI instruction")
                     response_format = bounded_text(data.get("response_format") or "text", 10, "response format")
                     stream_requested = bool(data.get("stream"))
+                    async_requested = parsed.path == "/api/ai/queue" or bool(data.get("async") or data.get("enqueue"))
+                    defer_requested = bool(data.get("defer") or data.get("manual"))
                     contract = ai_contract(task, response_format)
                     max_tokens = int(data.get("max_tokens") or 3000)
                     if max_tokens < 128 or max_tokens > 12000:
@@ -1947,6 +3015,15 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json(429, {"error": "daily AI quota exhausted", "quota": quota})
                     material_controls = data.get("material_controls") if isinstance(data.get("material_controls"), dict) else None
                     context, _ = ai_context(conn, chapter_id, material_controls)
+                    if async_requested:
+                        queued = create_ai_job(conn, task, context, instruction, response_format, max_tokens)
+                        # Make the row visible to a worker before starting the
+                        # daemon thread.  The normal context manager commit is
+                        # retained for callers that do not use this branch.
+                        conn.commit()
+                        if not defer_requested:
+                            start_ai_worker(queued["id"])
+                        return self.send_json(202, {**queued, "streaming": False, "stream_requested": stream_requested, "auto_started": not defer_requested, "context": {"chapter_id": chapter_id, "memory_count": len(context["confirmed_memory"]), "previous_chapter_count": len(context["previous_chapters"]), "retrieved_count": len(context.get("retrieved_chapters", [])), "budget": context.get("context_budget")}, "quota": ai_quota_snapshot(conn)})
                     started_at = now()
                     started_clock = time.perf_counter()
                     try:
@@ -1973,6 +3050,55 @@ class Handler(SimpleHTTPRequestHandler):
                     controls = data.get("material_controls") if isinstance(data.get("material_controls"), dict) else None
                     context, _ = ai_context(conn, chapter_id, controls)
                     return self.send_json(200, ai_prompt_preview(task, context, instruction, data.get("response_format")))
+                if parsed.path == "/api/ai/queue/drain":
+                    limit = min(max(int(data.get("limit") or 1), 1), 20)
+                    ids = [row["id"] for row in conn.execute("SELECT id FROM app_ai_job WHERE project_id=? AND branch_id=? AND status='queued' AND cancel_requested=0 ORDER BY created_at LIMIT ?", (PROJECT_ID, BRANCH_ID, limit))]
+                    results = []
+                    conn.commit()
+                    for job_id in ids:
+                        try:
+                            results.append(process_ai_job(job_id))
+                        except ValueError as exc:
+                            results.append({"id": job_id, "status": "failed", "error": str(exc)})
+                    return self.send_json(200, {"processed": len(results), "jobs": results})
+                if parsed.path.startswith("/api/ai/jobs/") and parsed.path.endswith("/process"):
+                    job_id = checked_id(parsed.path.split("/")[-2], "AI job id")
+                    conn.commit()
+                    result = process_ai_job(job_id)
+                    return self.send_json(200, result)
+                if parsed.path.startswith("/api/ai/jobs/") and parsed.path.endswith("/cancel"):
+                    job_id = checked_id(parsed.path.split("/")[-2], "AI job id")
+                    row = conn.execute("SELECT j.id,j.ai_run_id,j.status,j.cancel_requested,r.consent_json FROM app_ai_job j JOIN ai_run r ON r.id=j.ai_run_id WHERE j.id=? AND j.project_id=? AND j.branch_id=?", (job_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "AI job not found"})
+                    if row["status"] in {"success", "failed", "canceled"}:
+                        return self.send_json(409, {"error": "AI job is already finished", "status": row["status"]})
+                    if row["status"] == "queued":
+                        finished = now()
+                        conn.execute("UPDATE app_ai_job SET status='canceled',cancel_requested=1,error=?,finished_at=?,updated_at=? WHERE id=? AND status='queued'", ("canceled by author", finished, finished, job_id))
+                        consent = json.loads(row["consent_json"] or "{}")
+                        consent["cancel_requested"] = True
+                        conn.execute("UPDATE ai_run SET status='canceled',ended_at=?,error=?,consent_json=? WHERE id=? AND project_id=? AND branch_id=?", (finished, "canceled by author", json_text(consent), row["ai_run_id"], PROJECT_ID, BRANCH_ID))
+                        append_event(conn, row["ai_run_id"], "ai_run.canceled", {"job_id": job_id, "reason": data.get("reason") or "author requested"})
+                        return self.send_json(200, {"id": job_id, "ai_run_id": row["ai_run_id"], "status": "canceled"})
+                    consent = json.loads(row["consent_json"] or "{}")
+                    consent["cancel_requested"] = True
+                    conn.execute("UPDATE app_ai_job SET cancel_requested=1,error=?,updated_at=? WHERE id=? AND status='running'", ("cancellation requested", now(), job_id))
+                    conn.execute("UPDATE ai_run SET consent_json=? WHERE id=? AND project_id=? AND branch_id=?", (json_text(consent), row["ai_run_id"], PROJECT_ID, BRANCH_ID))
+                    append_event(conn, row["ai_run_id"], "ai_run.cancel_requested", {"job_id": job_id, "reason": data.get("reason") or "author requested"})
+                    return self.send_json(202, {"id": job_id, "ai_run_id": row["ai_run_id"], "status": "running", "cancel_requested": True})
+                if parsed.path.startswith("/api/ai/jobs/") and parsed.path.endswith("/retry"):
+                    job_id = checked_id(parsed.path.split("/")[-2], "AI job id")
+                    row = conn.execute("SELECT * FROM app_ai_job WHERE id=? AND project_id=? AND branch_id=?", (job_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "AI job not found"})
+                    if row["status"] not in {"failed", "canceled"}:
+                        return self.send_json(409, {"error": "only failed or canceled AI jobs can be retried", "status": row["status"]})
+                    context = json.loads(row["context_json"] or "{}")
+                    queued = create_ai_job(conn, row["task"], context, row["instruction"], row["response_format"], int(row["max_tokens"]), retry_of=row["ai_run_id"])
+                    conn.commit()
+                    start_ai_worker(queued["id"])
+                    return self.send_json(202, {**queued, "retry_of": row["ai_run_id"]})
                 if parsed.path.startswith("/api/ai/runs/") and parsed.path.endswith("/cancel"):
                     run_id = checked_id(parsed.path.split("/")[-2], "AI run id")
                     row = conn.execute("SELECT status,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()
@@ -1982,6 +3108,15 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json(409, {"error": "AI run is already finished", "status": row["status"]})
                     consent = json.loads(row["consent_json"] or "{}")
                     consent["cancel_requested"] = True
+                    job = conn.execute("SELECT id,status FROM app_ai_job WHERE ai_run_id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if job is not None and job["status"] == "running":
+                        conn.execute("UPDATE app_ai_job SET cancel_requested=1,error=?,updated_at=? WHERE id=?", ("cancellation requested", now(), job["id"]))
+                        conn.execute("UPDATE ai_run SET consent_json=? WHERE id=?", (json_text(consent), run_id))
+                        append_event(conn, run_id, "ai_run.cancel_requested", {"reason": data.get("reason") or "author requested", "job_id": job["id"]})
+                        return self.send_json(202, {"ai_run_id": run_id, "status": "running", "cancel_requested": True})
+                    if job is not None and job["status"] == "queued":
+                        finished = now()
+                        conn.execute("UPDATE app_ai_job SET status='canceled',cancel_requested=1,error=?,finished_at=?,updated_at=? WHERE id=?", ("canceled by author", finished, finished, job["id"]))
                     conn.execute("UPDATE ai_run SET status=?,ended_at=?,error=?,consent_json=? WHERE id=?", ("canceled", now(), "canceled by author", json_text(consent), run_id))
                     append_event(conn, run_id, "ai_run.canceled", {"reason": data.get("reason") or "author requested"})
                     return self.send_json(200, {"ai_run_id": run_id, "status": "canceled"})
@@ -2034,7 +3169,7 @@ class Handler(SimpleHTTPRequestHandler):
         if not self.csrf_ok():
             return self.send_json(403, {"error": "cross-site request blocked"})
         parsed = urlparse(self.path)
-        if not any(parsed.path.startswith(prefix) for prefix in ("/api/chapters/", "/api/records/", "/api/memory/", "/api/plot/")):
+        if not any(parsed.path.startswith(prefix) for prefix in ("/api/chapters/", "/api/records/", "/api/memory/", "/api/plot/", "/api/character-states/", "/api/story/character-states/", "/api/plot-threads/", "/api/story/plot-threads/", "/api/story/relationships/", "/api/relationships/", "/api/story/timeline/", "/api/timeline/", "/api/story/foreshadow-links/", "/api/foreshadow-links/")):
             return self.send_json(404, {"error": "not found"})
         try:
             item_id = checked_id(parsed.path.rsplit("/", 1)[-1])
@@ -2044,6 +3179,87 @@ class Handler(SimpleHTTPRequestHandler):
             data = self.read_json()
             with connect() as conn:
                 ensure_seed(conn)
+                if parsed.path.startswith("/api/character-states/") or parsed.path.startswith("/api/story/character-states/"):
+                    row = conn.execute("SELECT * FROM character_state WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "character state not found"})
+                    values = _character_state_input(conn, data, row)
+                    conn.execute(
+                        "UPDATE character_state SET entity_id=?,attribute=?,value_json=?,event_id=?,valid_start=?,valid_end=?,knowledge_scope_json=?,source_assertion_id=? WHERE id=? AND project_id=? AND branch_id=?",
+                        (values["entity_id"], values["attribute"], values["value_json"], values["event_id"], values["valid_start"], values["valid_end"], values["knowledge_scope_json"], values["source_assertion_id"], item_id, PROJECT_ID, BRANCH_ID),
+                    )
+                    append_event(conn, item_id, "character_state.updated", {"entity_id": values["entity_id"], "attribute": values["attribute"]})
+                    return self.send_json(200, next(item for item in character_state_rows(conn) if item["id"] == item_id))
+                if parsed.path.startswith("/api/plot-threads/") or parsed.path.startswith("/api/story/plot-threads/"):
+                    row = conn.execute("SELECT * FROM plot_thread WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "plot thread not found"})
+                    values = _plot_thread_input(data, row)
+                    conn.execute("UPDATE plot_thread SET status=?,payload_json=?,severity=? WHERE id=? AND project_id=? AND branch_id=?", (values["status"], values["payload_json"], values["severity"], item_id, PROJECT_ID, BRANCH_ID))
+                    append_event(conn, item_id, "plot_thread.updated", {"status": values["status"], "severity": values["severity"]})
+                    return self.send_json(200, next(item for item in plot_thread_rows(conn) if item["id"] == item_id))
+                if (parsed.path.startswith("/api/story/relationships/") or parsed.path.startswith("/api/relationships/")):
+                    row = conn.execute("SELECT from_entity_id,to_entity_id,relation_type,note,status FROM app_story_relation WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "relationship not found"})
+                    source = checked_id(data.get("from_entity_id", row["from_entity_id"]), "from entity id")
+                    target = checked_id(data.get("to_entity_id", row["to_entity_id"]), "to entity id")
+                    if source == target:
+                        return self.send_json(400, {"error": "relationship endpoints must differ"})
+                    entities = conn.execute("SELECT id FROM entity WHERE project_id=? AND status='active' AND id IN (?,?)", (PROJECT_ID, source, target)).fetchall()
+                    if len(entities) != 2:
+                        return self.send_json(404, {"error": "entity not found"})
+                    relation_type = bounded_text(data.get("relation_type", row["relation_type"]), 100, "relation type")
+                    note = bounded_text(data.get("note", row["note"]), 20_000, "relation note")
+                    status = bounded_text(data.get("status", row["status"]), 30, "relationship status")
+                    conn.execute("UPDATE app_story_relation SET from_entity_id=?,to_entity_id=?,relation_type=?,note=?,status=?,updated_at=? WHERE id=?", (source, target, relation_type, note, status, now(), item_id))
+                    append_event(conn, item_id, "story.relationship.updated", {"from_entity_id": source, "to_entity_id": target, "relation_type": relation_type})
+                    return self.send_json(200, next(x for x in story_map(conn)["relationships"] if x["id"] == item_id))
+                if (parsed.path.startswith("/api/story/timeline/") or parsed.path.startswith("/api/timeline/")):
+                    row = conn.execute("SELECT title,event_time,chapter_id,entity_ids_json,summary,status,ordinal FROM app_timeline_event WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "timeline event not found"})
+                    title = bounded_text(data.get("title", row["title"]), 500, "event title").strip()
+                    if not title:
+                        return self.send_json(400, {"error": "event title required"})
+                    chapter_id = data.get("chapter_id", row["chapter_id"])
+                    if chapter_id:
+                        chapter_id = checked_id(chapter_id, "chapter id")
+                        if conn.execute("SELECT 1 FROM document_node WHERE id=? AND project_id=? AND branch_id=? AND kind='chapter'", (chapter_id, PROJECT_ID, BRANCH_ID)).fetchone() is None:
+                            return self.send_json(404, {"error": "chapter not found"})
+                    entities = data.get("entity_ids")
+                    if entities is None:
+                        entities = json.loads(row["entity_ids_json"] or "[]")
+                    if not isinstance(entities, list) or any(not isinstance(x, str) for x in entities):
+                        return self.send_json(400, {"error": "entity_ids must be an array"})
+                    entities = [checked_id(x, "entity id") for x in entities]
+                    if entities and conn.execute(f"SELECT COUNT(*) FROM entity WHERE project_id=? AND status='active' AND id IN ({','.join('?' for _ in entities)})", (PROJECT_ID, *entities)).fetchone()[0] != len(set(entities)):
+                        return self.send_json(404, {"error": "entity not found"})
+                    ordinal = int(data.get("ordinal", row["ordinal"]))
+                    if ordinal < 0 or ordinal > 1_000_000:
+                        return self.send_json(400, {"error": "invalid ordinal"})
+                    conn.execute("UPDATE app_timeline_event SET title=?,event_time=?,chapter_id=?,entity_ids_json=?,summary=?,status=?,ordinal=?,updated_at=? WHERE id=?", (title, bounded_text(data.get("event_time", row["event_time"]), 100, "event time"), chapter_id, json_text(entities), bounded_text(data.get("summary", row["summary"]), 20_000, "event summary"), bounded_text(data.get("status", row["status"]), 30, "event status"), ordinal, now(), item_id))
+                    append_event(conn, item_id, "story.timeline.updated", {"title": title})
+                    return self.send_json(200, next(x for x in story_map(conn)["timeline"] if x["id"] == item_id))
+                if (parsed.path.startswith("/api/story/foreshadow-links/") or parsed.path.startswith("/api/foreshadow-links/")):
+                    row = conn.execute("SELECT plot_id,chapter_id,kind,note FROM app_foreshadow_link WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "foreshadow link not found"})
+                    pid = checked_id(data.get("plot_id", row["plot_id"]), "plot id")
+                    if conn.execute("SELECT 1 FROM app_plot_item WHERE id=? AND project_id=? AND branch_id=?", (pid, PROJECT_ID, BRANCH_ID)).fetchone() is None:
+                        return self.send_json(404, {"error": "plot item not found"})
+                    kind = str(data.get("kind", row["kind"]))
+                    if kind not in {"plant", "develop", "payoff"}:
+                        return self.send_json(400, {"error": "invalid foreshadow kind"})
+                    chapter_id = data.get("chapter_id", row["chapter_id"])
+                    if chapter_id:
+                        chapter_id = checked_id(chapter_id, "chapter id")
+                        if conn.execute("SELECT 1 FROM document_node WHERE id=? AND project_id=? AND branch_id=? AND kind='chapter'", (chapter_id, PROJECT_ID, BRANCH_ID)).fetchone() is None:
+                            return self.send_json(404, {"error": "chapter not found"})
+                    note = bounded_text(data.get("note", row["note"]), 20_000, "foreshadow note")
+                    conn.execute("UPDATE app_foreshadow_link SET plot_id=?,chapter_id=?,kind=?,note=?,updated_at=? WHERE id=?", (pid, chapter_id, kind, note, now(), item_id))
+                    append_event(conn, item_id, "story.foreshadow_link.updated", {"plot_id": pid, "kind": kind})
+                    return self.send_json(200, next(x for x in story_map(conn)["foreshadowing"] if x["id"] == item_id))
                 if parsed.path.startswith("/api/chapters/"):
                     if not update_chapter(conn, item_id, data):
                         return self.send_json(404, {"error": "chapter not found"})
@@ -2064,7 +3280,10 @@ class Handler(SimpleHTTPRequestHandler):
                     if row is None:
                         return self.send_json(404, {"error": "memory not found"})
                     payload = json.loads(row["payload_json"] or "{}")
-                    for key in ("key", "name", "source", "note", "source_chapter_id", "source_quote"):
+                    previous_payload = dict(payload) if isinstance(payload, dict) else {}
+                    if not isinstance(payload, dict):
+                        payload = {}
+                    for key in ("key", "name", "source", "note", "source_chapter_id", "source_quote", "source_start", "source_end", "source_hash"):
                         if key in data:
                             payload[key] = data[key]
                     payload["key"] = bounded_text(payload.get("key", item_id), 500, "memory key")
@@ -2078,15 +3297,31 @@ class Handler(SimpleHTTPRequestHandler):
                     confidence = 1.0 if status == "accepted" else float(data.get("confidence", row["confidence"]))
                     if not 0 <= confidence <= 1:
                         return self.send_json(400, {"error": "confidence out of range"})
-                    source_span_id = source_span_for_memory(conn, payload) or row["source_span_id"]
+                    source_fields_changed = any(field in data for field in ("source_chapter_id", "source_quote", "source_start", "source_end", "source_hash"))
+                    resolved_span_id = source_span_for_memory(conn, payload)
+                    if source_fields_changed:
+                        if status == "accepted" and resolved_span_id is None:
+                            return self.send_json(409, {"error": "accepted memory evidence must match a current uniquely anchored quote"})
+                        source_span_id = resolved_span_id
+                    else:
+                        source_span_id = resolved_span_id or row["source_span_id"]
                     entity = conn.execute("SELECT id FROM entity WHERE project_id=? AND status='active' AND kind=? AND canonical_name=? LIMIT 1", (PROJECT_ID, row["kind"], payload["name"])).fetchone()
-                    entity_id = entity["id"] if entity else row["entity_id"]
+                    subject_changed = payload["name"] != previous_payload.get("name", "")
+                    if subject_changed:
+                        if status == "accepted":
+                            return self.send_json(409, {"error": "accepted memory identity is immutable; mark it candidate before changing the name, then review it again"})
+                        entity_id = entity["id"] if entity else None
+                    else:
+                        entity_id = row["entity_id"]
                     require_memory_evidence(conn, status, source_span_id, entity_id)
                     conn.execute("UPDATE candidate_memory SET payload_json=?,status=?,confidence=?,source_span_id=?,entity_id=?,reviewed_at=?,reviewed_by=? WHERE id=?", (json_text(payload), status, confidence, source_span_id, entity_id, now() if status in {"accepted", "rejected"} else None, ACTOR_ID if status in {"accepted", "rejected"} else None, item_id))
                     if status == "accepted":
                         ensure_memory_assertion(conn, item_id, {**payload, "status": "accepted"}, entity_id, source_span_id)
-                    append_event(conn, item_id, "memory.updated", {"status": status, **payload})
-                    return self.send_json(200, {"id": item_id, **payload, "status": "已确认" if status == "accepted" else "待确认" if status == "candidate" else status})
+                    else:
+                        transition_memory_assertions(conn, item_id, status, f"memory status changed to {status}")
+                    review_reason = bounded_text(data.get("reason") or data.get("review_note") or "", 2_000, "memory review reason")
+                    append_event(conn, item_id, "memory.updated", {"status": status, "previous_status": row["status"], "reason": review_reason, **payload})
+                    return self.send_json(200, memory_detail(conn, item_id) or {"id": item_id, **payload, "status": status})
                 row = conn.execute("SELECT stage,text FROM app_plot_item WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
                 if row is None:
                     return self.send_json(404, {"error": "plot item not found"})
@@ -2107,7 +3342,7 @@ class Handler(SimpleHTTPRequestHandler):
         if not self.csrf_ok():
             return self.send_json(403, {"error": "cross-site request blocked"})
         parsed = urlparse(self.path)
-        if not any(parsed.path.startswith(prefix) for prefix in ("/api/chapters/", "/api/records/", "/api/memory/", "/api/plot/")):
+        if not any(parsed.path.startswith(prefix) for prefix in ("/api/chapters/", "/api/records/", "/api/memory/", "/api/plot/", "/api/character-states/", "/api/story/character-states/", "/api/plot-threads/", "/api/story/plot-threads/", "/api/story/relationships/", "/api/relationships/", "/api/story/timeline/", "/api/timeline/", "/api/story/foreshadow-links/", "/api/foreshadow-links/")):
             return self.send_json(404, {"error": "not found"})
         try:
             item_id = checked_id(parsed.path.rsplit("/", 1)[-1])
@@ -2118,6 +3353,41 @@ class Handler(SimpleHTTPRequestHandler):
             reason = str(data.get("reason") or "deleted by author")
             with connect() as conn:
                 ensure_seed(conn)
+                if parsed.path.startswith("/api/character-states/") or parsed.path.startswith("/api/story/character-states/"):
+                    row = conn.execute("SELECT id FROM character_state WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "character state not found"})
+                    conn.execute("DELETE FROM character_state WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID))
+                    append_event(conn, item_id, "character_state.deleted", {"reason": bounded_text(data.get("reason") or "deleted by author", 2_000, "delete reason")})
+                    return self.send_json(200, {"deleted": item_id})
+                if parsed.path.startswith("/api/plot-threads/") or parsed.path.startswith("/api/story/plot-threads/"):
+                    row = conn.execute("SELECT id FROM plot_thread WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "plot thread not found"})
+                    conn.execute("DELETE FROM plot_thread WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID))
+                    append_event(conn, item_id, "plot_thread.deleted", {"reason": bounded_text(data.get("reason") or "deleted by author", 2_000, "delete reason")})
+                    return self.send_json(200, {"deleted": item_id})
+                if (parsed.path.startswith("/api/story/relationships/") or parsed.path.startswith("/api/relationships/")):
+                    row = conn.execute("SELECT id FROM app_story_relation WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "relationship not found"})
+                    conn.execute("DELETE FROM app_story_relation WHERE id=?", (item_id,))
+                    append_event(conn, item_id, "story.relationship.deleted", {"reason": reason})
+                    return self.send_json(200, {"deleted": item_id})
+                if (parsed.path.startswith("/api/story/timeline/") or parsed.path.startswith("/api/timeline/")):
+                    row = conn.execute("SELECT id FROM app_timeline_event WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "timeline event not found"})
+                    conn.execute("DELETE FROM app_timeline_event WHERE id=?", (item_id,))
+                    append_event(conn, item_id, "story.timeline.deleted", {"reason": reason})
+                    return self.send_json(200, {"deleted": item_id})
+                if (parsed.path.startswith("/api/story/foreshadow-links/") or parsed.path.startswith("/api/foreshadow-links/")):
+                    row = conn.execute("SELECT id FROM app_foreshadow_link WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    if row is None:
+                        return self.send_json(404, {"error": "foreshadow link not found"})
+                    conn.execute("DELETE FROM app_foreshadow_link WHERE id=?", (item_id,))
+                    append_event(conn, item_id, "story.foreshadow_link.deleted", {"reason": reason})
+                    return self.send_json(200, {"deleted": item_id})
                 if parsed.path.startswith("/api/records/"):
                     row = conn.execute("SELECT id FROM entity WHERE id=? AND project_id=? AND status<>'archived'", (item_id, PROJECT_ID)).fetchone()
                     if row is None:
@@ -2126,10 +3396,11 @@ class Handler(SimpleHTTPRequestHandler):
                     append_event(conn, item_id, "entity.archived", {"reason": reason})
                     return self.send_json(200, {"deleted": item_id})
                 if parsed.path.startswith("/api/memory/"):
-                    row = conn.execute("SELECT id FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    row = conn.execute("SELECT id,status FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (item_id, PROJECT_ID, BRANCH_ID)).fetchone()
                     if row is None:
                         return self.send_json(404, {"error": "memory not found"})
                     conn.execute("UPDATE candidate_memory SET status='rejected',reviewed_at=?,reviewed_by=? WHERE id=?", (now(), ACTOR_ID, item_id))
+                    transition_memory_assertions(conn, item_id, "rejected", reason or "memory deleted by author")
                     append_event(conn, item_id, "memory.rejected", {"reason": reason})
                     return self.send_json(200, {"deleted": item_id})
                 if parsed.path.startswith("/api/plot/"):
@@ -2166,6 +3437,11 @@ class Handler(SimpleHTTPRequestHandler):
 
 def main() -> None:
     init_db()
+    # Resume durable jobs left by a previous process.  Jobs are still bounded
+    # by the local daemon lifetime; a real deployment should use an external
+    # worker and lease/heartbeat protocol.
+    for queued_job_id in recover_ai_jobs():
+        start_ai_worker(queued_job_id)
     server = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"墨屿 SQLite service listening on http://{HOST}:{PORT}")
     print(f"database: {DB_PATH}")

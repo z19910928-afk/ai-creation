@@ -9,6 +9,7 @@ import subprocess
 import tempfile
 import time
 import urllib.request
+import urllib.error
 import zipfile
 import io
 from pathlib import Path
@@ -32,12 +33,20 @@ def main() -> None:
                 time.sleep(0.05)
         with urllib.request.urlopen(base + "/api/state", timeout=3) as response:
             chapter = json.load(response)["chapters"][0]
-        with urllib.request.urlopen(base + "/api/export/epub", timeout=5) as response:
+        try:
+            urllib.request.urlopen(base + "/api/export/epub", timeout=5)
+        except urllib.error.HTTPError as exc:
+            assert exc.code == 409
+        else:
+            raise AssertionError("unreviewed export unexpectedly passed")
+        override_request = urllib.request.Request(base + "/api/export/epub", headers={"X-Moyu-Export-Override": "fixture verifies author override"})
+        with urllib.request.urlopen(override_request, timeout=5) as response:
             epub = response.read()
         with zipfile.ZipFile(io.BytesIO(epub)) as archive:
             assert archive.read("mimetype") == b"application/epub+zip"
             manifest = json.loads(archive.read("META-INF/moyu-export-manifest.json"))
             assert manifest["loss_manifest"]
+            assert manifest["author_override"]["reason"].startswith("fixture")
         payload = json.dumps({"task": "scene", "chapter_id": chapter["id"], "response_format": "json"}).encode()
         request = urllib.request.Request(base + "/api/ai", method="POST", data=payload, headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(request, timeout=5) as response:

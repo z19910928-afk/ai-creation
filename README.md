@@ -32,10 +32,13 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - `GET /api/events`、`POST /api/events`：查看或写入幂等事件
 - `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；`/api/ai` 支持离线结构化结果和 buffered SSE
 - `GET /api/ai/status`、`GET /api/ai/quota`、`GET /api/ai/runs/:id`、`POST /api/ai/runs/:id/retry|cancel`：查看模型/预算/运行审计并处理失败运行
+- `POST /api/ai/queue` 或 `/api/ai` 携带 `async:true`：将请求持久化为队列任务；`GET /api/ai/queue`、`GET /api/ai/jobs/:id` 查看状态，`process|cancel|retry` 控制单个任务，`queue/drain` 恢复人工或重启后的积压任务
 - `GET /api/search?q=...`：搜索章节、设定、记忆、伏笔和时间线；结果保留来源章节与范围元数据
 - `GET /api/story-map`、`POST /api/relationships`、`POST /api/timeline`、`POST /api/foreshadow-links`：读取或写入关系、时间线、伏笔生命周期和冲突投影
+- `GET/POST/PATCH/DELETE /api/character-states`、`/api/plot-threads`：管理带时间范围、知识范围和证据链接的人物状态与剧情线
+- `GET /api/assertions`、`GET /api/assertions/:id`、`POST /api/assertions/:id/review`、`GET /api/memory/:id/evidence`：审查正典事实、冲突、依赖和失效证据
 - `GET /api/chapters/:id/revisions`、`POST /api/chapters/:id/restore-revision`、`GET /api/chapters/:id/commits`、`POST /api/chapters/:id/commit`：查看差异、恢复为新 revision，并执行章节提交阶段
-- `GET /api/export/epub`、`GET /api/export/manifest`：导出最小 EPUB 及支持范围/损失清单
+- `GET /api/export/epub`、`GET /api/export/manifest`：导出最小 EPUB 及支持范围/损失清单；EPUB 直连也受终稿门保护，作者覆盖需带 `X-Moyu-Export-Override`
 
 伏笔投影的 `DELETE /api/plot/:id` 是不可恢复的投影删除；章节和设定则使用上面的 restore 路径。
 
@@ -64,7 +67,7 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 
 ## 设计原则
 
-当前版本仍采用单用户、本地优先、Markdown 思维的工作流。AI 是显式触发的可选能力：没有配置模型时保持离线，配置后只按任务发送有界工作集，不暗中调用模型。后续重点是 DOCX/PDF、中文语义检索、真实 tokenizer、异步队列、分支合并和协作权限；EPUB 当前仅提供最小导出，尚未支持完整格式往返。
+当前版本仍采用单用户、本地优先、Markdown 思维的工作流。AI 是显式触发的可选能力：没有配置模型时保持离线，配置后只按任务发送有界工作集，不暗中调用模型。当前已有本地持久化 AI 队列、CJK FTS5 检索、人物状态和剧情线 API；后续重点是 embedding/RRF 重排、真实 tokenizer、外部 worker 租约、DOCX/PDF、分支合并和协作权限；EPUB 当前仅提供最小导出，尚未支持完整格式往返。
 
 ## 长篇记忆设计（原型）
 
@@ -81,7 +84,7 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 
 具体操作：进入“章节 + AI 写作”后，先填本章目标、视角、场景计划和章节出口；写作过程中可点“上下文预览”查看本次工作集的估算 token、近章/召回章节和记忆来源。点击“生成候选”后先编辑结果，只有点“采纳”才会追加或替换正文。每次生成都会得到 `ai_run_id`，采纳或清空候选会尝试写入后端决策接口；旧服务没有该接口时会写入本机审计记录，接口失败不会丢失候选。正文中的 `【人物】`、`【物品】`、`【地点】`、`【伏笔】` 标记会出现在“记忆中枢”，卡片显示原文摘录、章节/字符范围和来源状态，可确认、拒绝或重新审查；来源缺失时不要把候选当成正典。编辑器的“历史版本”可以查看 revision 并恢复为新版本，恢复后旧来源片段会要求重新确认。写完后点“审查本章”，再点“完成本章，写下一章”。
 
-顶部“终稿检查”是导出的硬门：未完成章节、未通过审查、未确认记忆、未回收伏笔和明显空稿会阻断 Markdown 终稿导出，直接调用导出函数也会再次检查。作者确实要带着问题交付时，可以点击“作者覆盖并记录原因”，填写至少 8 个字符的理由；理由与当前稿件指纹一起保存在本机，稿件发生变化后需要重新覆盖。JSON 备份仍可用于保留工作稿，不绕过终稿门。
+顶部“终稿检查”是导出的硬门：未完成章节、未通过审查、未确认记忆、失效证据、未回收伏笔和明显空稿会阻断 Markdown/EPUB 终稿导出，直接调用 EPUB API 也会再次检查。作者确实要带着问题交付时，可以点击“作者覆盖并记录原因”，填写至少 8 个字符的理由；理由与当前稿件指纹一起保存在本机，EPUB 包内也会写入覆盖记录，稿件发生变化后需要重新覆盖。JSON 备份仍可用于保留工作稿，不绕过终稿门。
 
 如需接入 OpenAI 兼容接口，请在启动前配置环境变量：
 

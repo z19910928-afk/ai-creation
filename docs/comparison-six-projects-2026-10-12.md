@@ -15,11 +15,11 @@
 | 参考项目 | 该项目更强的能力 | 墨屿已经覆盖 | 墨屿仍缺少 | 对墨屿的判断 |
 |---|---|---|---|---|
 | **NovelForge** | 层级设定卡、关系图、多轮续写预算、审查门 | 任务卡、候选记忆、章节审查、终稿阻断、作者采纳 | 结构化设定层级、实体关系/事件图、关系变化和预算内多轮续写 | 墨屿在来源 span、stale 失效、AI 决策审计和恢复上更完整；世界观可视化较弱 |
-| **MuMuAINovel** | RTCO 分层上下文、章节/重要度记忆、SSE、重试、provider 抽象 | provider 抽象、有界上下文、章节片段、失败运行记录 | 流式输出、取消、断点续跑、重试、重要度分层、多模型路由 | 墨屿的作者控制和审计更清晰；生成任务控制和上下文编排落后 |
+| **MuMuAINovel** | RTCO 分层上下文、章节/重要度记忆、SSE、重试、provider 抽象 | provider 抽象、有界上下文、章节片段、失败运行、持久化队列、取消请求 | provider 原生流式、断点续跑、重要度分层、多模型路由 | 墨屿的作者控制和审计更清晰；任务调度和上下文编排仍落后 |
 | **arboris-novel** | Planner → Director → Writer、任务卡、时间线、伏笔状态 | 章节任务卡、场景计划、伏笔动作、下一章简报 | 角色化 agent、场景树、时间线约束、伏笔依赖 | 墨屿有闭环骨架，但仍是单一助手工作流 |
-| **Ai-Novel** | 摘要/首尾片段、分层上下文、混合检索、重排、输出契约 | 相邻章节召回、来源 ranges、记忆候选、上下文预览 | 中文 FTS/embedding、dense+sparse、RRF/rerank/MMR、结构化 JSON/patch 契约 | 墨屿证据链更强；检索质量和模型输出可校验性落后 |
-| **91Writing** | 材料选择、提示预览、章节状态、时间线方向、备份入口 | 章节状态、候选式 AI、上下文预览、JSON/SQLite 备份恢复 | pin/omit/排序材料、完整 prompt contract、可视编辑历史和差异 | 墨屿后端可恢复性更强；作者对本次生成材料的控制还不够细 |
-| **webnovel-writer** | Story System、`CHAPTER_COMMIT`、投影索引、prewrite/precommit/postcommit 门、分支/what-if 方向 | 任务卡、章节审查、终稿门、revision restore、事件记录 | 提交状态机、投影索引、分支隔离/合并、阶段性提交审计 | 墨屿已有门禁雏形，但缺少真正的章节提交生命周期 |
+| **Ai-Novel** | 摘要/首尾片段、分层上下文、混合检索、重排、输出契约 | 相邻章节召回、来源 ranges、CJK FTS、记忆候选、上下文预览、结构化 JSON 契约 | embedding、dense+sparse、RRF/rerank/MMR、patch 契约 | 墨屿证据链更强；语义检索和增量编辑仍落后 |
+| **91Writing** | 材料选择、提示预览、章节状态、时间线方向、备份入口 | 章节状态、候选式 AI、上下文预览、pin/omit/order、JSON/SQLite 备份恢复 | 多工作集版本、完整 prompt 回放、可视编辑历史和差异 | 墨屿后端可恢复性更强；出版编辑能力仍不够细 |
+| **webnovel-writer** | Story System、`CHAPTER_COMMIT`、投影索引、prewrite/precommit/postcommit 门、分支/what-if 方向 | 任务卡、章节审查、终稿门、revision restore、提交快照、事件记录 | 投影索引、分支隔离/合并、多人阶段性提交审计 | 墨屿已有可运行门禁，但分支和协作仍缺失 |
 
 ## 横向能力矩阵
 
@@ -31,9 +31,9 @@
 | 记忆可信度 | candidate→author review→canon；source quote/range、entity、revision stale | NovelForge 的预览写入；MuMu 的重要度记忆 | 墨屿优势 |
 | 长上下文 | 有界召回，当前 24,000 上限，token 为字符除 4 的保守估算 | MuMu 的分层上下文、Ai-Novel 的摘要与混合检索 | 高 |
 | 百万上下文 | 未实现 | 六项目也不能据此证明真实百万 token 质量 | 未完成 |
-| AI 生成控制 | provider、离线模式、候选区、ai_run、接受/编辑/拒绝/撤销、失败记录 | MuMu 的 SSE/重试、91Writing 的材料选择、Ai-Novel 的输出契约 | 高 |
+| AI 生成控制 | provider、离线模式、候选区、ai_run、结构化契约、持久队列、接受/编辑/拒绝/撤销、失败记录 | MuMu 的 SSE/重试、91Writing 的材料选择、Ai-Novel 的输出契约 | 高 |
 | 连续性审查 | 长度、状态、任务卡、实体标记、待确认记忆、重复段落 | NovelForge/webnovel-writer 的审查/提交方向 | 高 |
-| 时间线与关系 | 无完整时间线、关系图、人物知识范围或冲突合并 | NovelForge、arboris、webnovel-writer | 高 |
+| 时间线与关系 | 有时间线/关系/人物状态/剧情线 API 和故事结构页；仍无可视图谱、知识范围审查和冲突合并 | NovelForge、arboris、webnovel-writer | 中高 |
 | 伏笔生命周期 | setup/develop/payoff 看板，终稿检查未回收 | NovelForge/webnovel-writer 的状态与依赖方向 | 中高 |
 | 版本与恢复 | revision 列表、恢复为新 revision、SQLite 备份/恢复 | 91Writing 的备份入口、webnovel-writer 的 commit/回滚方向 | 中 |
 | AI 变更粒度 | 候选采纳和整段正文更新；没有范围级 patch/逐字符 diff | webnovel-writer 的 commit 思路、编辑器 tracked changes 方向 | 高 |
@@ -76,4 +76,4 @@
 
 ## 2026-10-12 实现更新
 
-本文件的初始矩阵记录了上一轮对照状态。本轮已经把以下差距从“没有”提升为“可运行基础能力”：人物关系/时间线/伏笔生命周期 API 与故事结构页、材料 pin/omit/order、Prompt 契约预览、结构化 JSON 任务、buffered SSE、AI retry/取消保护、revision diff、跨资料词面搜索，以及 `prewrite → precommit → postcommit` 章节提交快照。它们仍不是参考项目全部深度：关系图还不是可编辑图谱，SSE 还不是 provider 原生 token stream，提交状态还没有分支合并和异步队列，检索仍缺中文 FTS/embedding/rerank，出版和多人协作仍未完成。
+本文件的初始矩阵记录了上一轮对照状态。本轮已经把以下差距从“没有”提升为“可运行基础能力”：人物关系/时间线/伏笔生命周期 API 与故事结构页、人物状态/剧情线 API、材料 pin/omit/order、Prompt 契约预览、结构化 JSON 任务、buffered SSE、AI retry/取消保护、持久化 AI 队列、revision diff、CJK FTS 检索，以及 `prewrite → precommit → postcommit` 章节提交快照。它们仍不是参考项目全部深度：关系图还不是可视化图谱，SSE 还不是 provider 原生 token stream；队列虽可重启恢复，但仍缺租约/heartbeat/进程外可靠取消；检索仍缺 embedding/RRF/rerank，出版和多人协作仍未完成。

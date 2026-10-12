@@ -18,7 +18,7 @@
 
 - **P1-01 已关闭**：`POST/PUT/PATCH /api/memory` 在 `accepted` 前要求当前版本的有效 `source_span` 和 active entity；无证据请求返回 400，带证据请求生成 assertion。`tests/strict_feature_fixtures.py` 覆盖了正反路径。
 - **P1-02 部分关闭**：AI 运行返回 `ai_run_id`，`/api/ai/decision` 记录 accepted/rejected/edited/undone，`GET /api/ai/runs/:id` 返回历史；前端采纳和清空会调用接口。正文范围级 accepted patch 和逐字符编辑差异仍未落地。
-- **P1-03 部分关闭**：Markdown/最小 EPUB 导出和完稿按钮默认被终稿阻断项锁住；作者覆盖必须填写理由，并按当前稿件指纹保存。导出 manifest 已明确纯文本、版式和 AI provenance 的损失边界，但覆盖记录仍主要保存在本机。
+- **P1-03 部分关闭**：Markdown/最小 EPUB 导出和完稿按钮默认被终稿阻断项锁住；作者覆盖必须填写理由，并按当前稿件指纹保存。EPUB API 也会拒绝未通过终稿门的直连请求，带覆盖理由时把记录写入包内 manifest。导出 manifest 已明确纯文本、版式和 AI provenance 的损失边界；Markdown 覆盖记录仍主要保存在本机。
 - **P1-04 部分关闭**：章节 revision 列表、正文/统一 diff、恢复前预览和恢复为新 revision 已接入；范围级 patch、协作合并和更细粒度 tracked changes 仍缺失。
 - **P1-05 部分关闭**：记忆卡片显示摘录、章节/字符范围、source span 状态，并支持确认、拒绝、重新审查；合并/拆分、矛盾处理和 assertion 详情仍缺失。
 - **P1-06 部分关闭**：检索摘录现在返回真实的一个或多个 `source_ranges`；token 仍使用 `json_chars_div_4_upper_bound` 近似，未接入各 provider tokenizer，也未计量真实系统消息包装。
@@ -71,7 +71,7 @@
 
 ### P1-03：终稿“检查”是提示，不是质量门（部分修复）
 
-基线证据：`showFinalizationCheck()` 即使 `finalizationIssues()` 返回未完成章节、未通过审查、未确认记忆或未回收伏笔，`data-export` 仍然直接调用 `markdownExport()`；“标记全书完稿”也允许作者确认后绕过问题。增量修复让导出函数和按钮都先过 `finalGate()`；作者覆盖需要至少 8 个字符的理由，并绑定当前稿件指纹，但覆盖记录目前仍在本机而非导出 manifest。
+基线证据：`showFinalizationCheck()` 即使 `finalizationIssues()` 返回未完成章节、未通过审查、未确认记忆或未回收伏笔，`data-export` 仍然直接调用 `markdownExport()`；“标记全书完稿”也允许作者确认后绕过问题。增量修复让导出函数和按钮都先过 `finalGate()`，服务端 EPUB 也执行同一类检查；作者覆盖需要至少 8 个字符的理由，并绑定当前稿件指纹，EPUB 覆盖记录会写入导出 manifest。
 
 影响：产品文案会让作者以为终稿经过门禁，但实际可以导出未审查、未确认或有未回收伏笔的作品。可以保留“强制导出”选项，但必须明确标为作者覆盖，并把覆盖原因写入导出日志。
 
@@ -87,11 +87,11 @@
 
 ### P1-05：记忆后端有状态机，前端只有“确认”按钮（部分修复）
 
-基线证据：服务端支持 candidate/accepted/rejected/stale/superseded 及 source span；前端记忆中枢只提供确认。增量修复已加入原文引句、章节/字符范围、revision 来源状态，以及确认、拒绝、重新审查按钮；assertion 详情、矛盾、合并/拆分和重新定位仍缺失。
+基线证据：服务端支持 candidate/accepted/rejected/stale/superseded 及 source span；增量修复已加入原文引句、章节/字符范围、revision 来源状态、assertion 详情、矛盾、重新定位和审查状态机；合并/拆分仍缺失。
 
-影响：作者无法审查证据，也无法修复“同名角色”“重复引句”“正文改写后 stale”的记忆。候选→正典的核心可信工作流在 UI 上是不完整的。
+影响：作者仍需处理“同名角色”和重复事实的合并，但现在可以查看证据、识别正文改写后的 stale，并通过显式范围重新定位后再确认。
 
-修复验收：记忆详情面板显示原文和版本；支持确认、拒绝、编辑、合并/拆分、标记 stale、重新定位、查看依赖 assertion，并可跳回章节位置。
+修复验收：记忆详情面板显示原文和版本；支持确认、拒绝、重新审查、重新定位、查看依赖 assertion，并阻断 stale 证据重新 canon 化。
 
 ### P1-06：来源范围和 token 预算的可解释性不准确（部分修复）
 
@@ -103,15 +103,15 @@
 
 ### P1-07：检索和连续性检查仍是原型级
 
-证据：检索实现是章节全文上的简单词项命中 + 新近度；没有中文 FTS/别名、dense+sparse、RRF/rerank/MMR、实体/时间/分支硬过滤。`/api/review` 是长度、状态、任务卡、标记实体、候选记忆和重复段落规则，不能发现人物状态、时间线、角色知识越界或伏笔提前揭示。
+证据：检索已使用本地 SQLite FTS5 CJK n-gram，并支持 kind、chapter、entity、status、时间范围过滤；仍没有 embedding、dense+sparse、RRF/rerank/MMR、别名质量基准或真实 gold set。`/api/review` 是长度、状态、任务卡、标记实体、候选记忆和重复段落规则，不能发现人物状态、时间线、角色知识越界或伏笔提前揭示。
 
 影响：书一长，关键事实可能召回不到；“连续性检查”名称会让用户误以为已完成语义事实核查。
 
-修复验收：先实现 SQLite FTS5/中文分词或可替换索引，再加入实体/时间/分支过滤；连续性检查输出 claim/evidence/conflict 类型、置信度和原文跳转；在真实中文 gold set 上报告 Recall/Precision 和硬冲突召回。
+修复验收：继续补别名、可替换 embedding、RRF/rerank/MMR 和索引新鲜度 SLA；连续性检查输出 claim/evidence/conflict 类型、置信度和原文跳转；在真实中文 gold set 上报告 Recall/Precision 和硬冲突召回。
 
 ### P1-08：模型任务的生产化控制仍不完整（部分修复）
 
-基线证据：所有任务共用一个自由文本 chat completion；没有 JSON schema/patch schema、流式响应、取消、持久任务队列、重试/断点、并发租约和费用配额。增量修复已加入按任务的结构化 JSON 契约、buffered SSE、失败运行、重试接口和 token 估算；provider 原生流式、真实取消、持久队列、断点续跑、并发租约和费用配额仍缺失。
+基线证据：早期版本所有任务共用一个自由文本 chat completion。当前已加入按任务的结构化 JSON 契约、buffered SSE、失败运行、持久队列、defer/process/drain、重试、取消请求和 token/cost 估算；provider 原生流式、租约/heartbeat、断点续跑、进程外可靠取消和按任务配额仍缺失。
 
 影响：续写、场景卡、大纲、总结和连续性审查无法机器校验或稳定回放；长请求卡住时用户无法取消，失败后没有可审计的失败记录。
 
@@ -126,7 +126,7 @@
 | 材料选择与 prompt 预览 | 有上下文预览、pin/omit/order 和契约预览 | 91Writing、Ai-Novel | 材料集合尚未版本化，完整 prompt 回放和多工作集管理仍缺 |
 | 流式生成 | buffered SSE（模型完成后分块） | MuMuAINovel、Arrows | 无 provider 原生增量、暂停、续传和并行候选 |
 | 伏笔生命周期 | 三列静态看板 | NovelForge、webnovel-writer | 前端不能移动、编辑、回收证据或依赖排序 |
-| 全文搜索 | 后端有界 Unicode 词面搜索，覆盖章节/设定/记忆/伏笔/时间线并返回来源 | 成熟编辑器/FTS | 仍无 SQLite FTS5、中文分词、语义召回和排序评测 |
+| 全文搜索 | SQLite FTS5 CJK n-gram，覆盖章节/设定/记忆/伏笔/时间线，支持实体/时间/status 过滤并返回来源 | 成熟编辑器/FTS | 仍无 embedding、RRF/rerank/MMR 和真实排序评测 |
 | 出版互操作 | JSON/Markdown/最小 EPUB | Scrivener/成熟编辑器 | 无 DOCX/PDF、EPUB 往返、版式预检和完整损失报告 |
 | 项目/分支 | 环境变量固定一个 project/branch | webnovel-writer/知识库产品 | 无项目切换、分支创建、合并和 what-if 隔离界面 |
 | 协作与权限 | 明确单用户 | Yjs/Tiptap 等 | 无账户、同步、评论、快照权限；只能保持本地产品定位 |
@@ -175,11 +175,11 @@
 - **任务传输**：增加 buffered SSE（`stream=true`）、失败运行的 retry 接口和完成任务的取消保护；SSE 当前在服务端完成模型调用后分块发送，尚未接入 provider 原生 token stream。
 - **版本与提交**：revision API 增加正文/统一 diff；章节新增 `prewrite`、`precommit`、`postcommit` 提交记录，并绑定 revision、review 和快照计数。
 - **出版导出**：新增最小 EPUB 3 导出和 `moyu-export-manifest.json`；Markdown frontmatter 同样写入 loss manifest，明确纯文本、版式和 AI provenance 的支持边界。
-- **全文搜索**：新增 `/api/search`，覆盖章节、设定、候选/已确认记忆、伏笔和时间线，并返回来源章节/范围；当前仍是 Unicode 词面匹配，不是中文 FTS 或语义检索。
-- **回归证据**：新增 `tests/story_structure_fixtures.py`、`tests/chapter_commit_fixtures.py`、`tests/ai_contract_fixtures.py`、`tests/search_fixtures.py`，并保留既有严格功能、恢复和损坏导入测试。
+- **全文搜索**：新增 `/api/search`，使用 SQLite FTS5 CJK n-gram 覆盖章节、设定、候选/已确认记忆、伏笔和时间线，并返回来源章节/范围；保留 substring fallback，但仍不是 embedding 语义检索。
+- **回归证据**：新增 `tests/story_structure_fixtures.py`、`tests/chapter_commit_fixtures.py`、`tests/ai_contract_fixtures.py`、`tests/ai_queue_fixtures.py`、`tests/assertion_workflow_fixtures.py`、`tests/character_state_fixtures.py`、`tests/search_fixtures.py`，并保留既有严格功能、恢复和损坏导入测试。
 
-这轮关闭了材料编排、结构化输出、故事结构基础模型、章节提交阶段和版本差异的原型缺口，但仍不能宣称第一梯队生产能力。剩余关键项是中文 FTS/embedding/RRF 重排与真实 gold set、provider 原生流式/异步队列/断点取消、范围级正文 patch、DOCX/PDF 与 EPUB 往返、分支合并、多人权限以及真实模型长篇评测。
-5. P1-07：实现中文 FTS + 实体/时间/分支过滤，再做真实中文长篇 gold set。
+这轮关闭了材料编排、结构化输出、故事结构基础模型、章节提交阶段、版本差异、中文 FTS 基础索引和可恢复 AI 队列的原型缺口，但仍不能宣称第一梯队生产能力。队列任务持久化为 `app_ai_job`，支持 queued/running/success/failed/canceled、defer/process/drain、重启恢复和取消请求；worker 是本地 daemon，provider 调用仍无 heartbeat、租约、原生 token 流或进程外可靠取消。剩余关键项是 embedding/RRF 重排与真实 gold set、范围级正文 patch、DOCX/PDF 与 EPUB 往返、分支合并、多人权限以及真实模型长篇评测。
+5. P1-07：补 embedding/RRF/rerank 和真实中文长篇 gold set，继续校验 FTS 新鲜度。
 6. P2 功能按作者价值排序：伏笔 DAG 深化、流式取消、多格式出版和协作权限；材料选择器、时间线/关系图已有基础原型，仍需完善。
 
 本报告与 `docs/third-party-audit.md` 配套使用。若文档描述与运行证据冲突，以当前代码、可复现请求和测试输出为准。
