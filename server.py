@@ -666,25 +666,6 @@ def _provider_text(value: Any) -> str:
     return ""
 
 
-def _validate_provider_text(text: str, response_format: str) -> dict[str, Any] | None:
-    if not isinstance(text, str) or not text.strip():
-        raise ValueError("AI returned no text")
-    parsed_json = None
-    if response_format == "json":
-        try:
-            parsed_json = json.loads(text)
-        except json.JSONDecodeError:
-            raise ValueError("AI structured output is not valid JSON") from None
-        if not isinstance(parsed_json, dict):
-            raise ValueError("AI structured output must be a JSON object")
-        required = ai_contract("scene", "json").get("schema", {}).get("required", [])
-        # The caller performs task-specific required-field validation below;
-        # this helper only centralizes the JSON shape check.
-        if not isinstance(required, list):
-            raise ValueError("AI structured output schema is invalid")
-    return parsed_json
-
-
 def _provider_json_result(data: Any, response_format: str, task: str) -> dict[str, Any]:
     """Normalize a non-streaming or stream-fallback provider response."""
     if not isinstance(data, dict):
@@ -1051,7 +1032,7 @@ def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, 
         mode, model = "provider", "unknown"
     else:
         status, run_status, error_text = "success", "success", None
-        result_json = json_text(result or {})
+        result_json = json_text({key: value for key, value in (result or {}).items() if key != "_chunks"})
         output = str((result or {}).get("text") or "")
         mode, model = (result or {}).get("mode", "offline"), (result or {}).get("model", "离线创作助手")
     context = json.loads(job["context_json"] or "{}")
@@ -3288,7 +3269,39 @@ class Handler(SimpleHTTPRequestHandler):
                 if parsed.path == "/api/ai/quota":
                     return self.send_json(200, ai_quota_snapshot(conn))
                 if parsed.path.startswith("/api/ai/runs/"):
-                    run_id = checked_id(parsed.path.rsplit("/", 1)[-1], "AI run id")
+                    run_tail = parsed.path[len("/api/ai/runs/"):]
+                    if run_tail.endswith("/stream"):
+                        run_id = checked_id(run_tail[:-len("/stream")].rstrip("/"), "AI run id")
+                        run = conn.execute("SELECT id,status,error,model,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                        if run is None:
+                            return self.send_json(404, {"error": "AI run not found"})
+                        query = parse_qs(parsed.query)
+                        raw_after = (query.get("after_seq") or [None])[0]
+                        if raw_after is None:
+                            raw_after = self.headers.get("Last-Event-ID") or "0"
+                        try:
+                            after_seq = int(raw_after)
+                        except (TypeError, ValueError):
+                            return self.send_json(400, {"error": "after_seq must be an integer"})
+                        if after_seq < 0:
+                            after_seq = 0
+                        try:
+                            limit = min(max(int((query.get("limit") or ["2000"])[0]), 1), 2000)
+                        except (TypeError, ValueError):
+                            return self.send_json(400, {"error": "limit must be an integer"})
+                        chunks = conn.execute("SELECT seq,text,provider_event_id FROM app_ai_chunk WHERE ai_run_id=? AND project_id=? AND branch_id=? AND seq>? ORDER BY seq LIMIT ?", (run_id, PROJECT_ID, BRANCH_ID, after_seq, limit)).fetchall()
+                        last_seq = conn.execute("SELECT COALESCE(MAX(seq),0) FROM app_ai_chunk WHERE ai_run_id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()[0]
+                        try:
+                            consent = json.loads(run["consent_json"] or "{}")
+                        except json.JSONDecodeError:
+                            consent = {}
+                        events: list[tuple[str, Any] | tuple[str, Any, int]] = [("run", {"ai_run_id": run_id, "task": consent.get("task"), "status": run["status"], "streaming": "ledger_replay", "after_seq": after_seq, "last_seq": last_seq, "replayable": bool(last_seq), "resume": f"/api/ai/runs/{run_id}/stream"})]
+                        for chunk in chunks:
+                            events.append(("delta", {"ai_run_id": run_id, "seq": chunk["seq"], "text": chunk["text"], "provider_event_id": chunk["provider_event_id"], "replay": True}, int(chunk["seq"])))
+                        if run["status"] in {"success", "failed", "canceled"} and (not chunks or int(chunks[-1]["seq"]) >= last_seq):
+                            events.append(("done", {"ai_run_id": run_id, "status": run["status"], "error": run["error"], "last_seq": last_seq, "complete": run["status"] == "success"}))
+                        return self.send_sse(events)
+                    run_id = checked_id(run_tail.rsplit("/", 1)[-1], "AI run id")
                     run = conn.execute("SELECT id,mode,provider,model,started_at,ended_at,status,error,context_item_ids_json,token_json,latency_ms,cost_json,author_decision,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()
                     if run is None:
                         return self.send_json(404, {"error": "AI run not found"})
@@ -3299,6 +3312,8 @@ class Handler(SimpleHTTPRequestHandler):
                         except json.JSONDecodeError:
                             result[key[:-5] if key.endswith("_json") else key] = [] if key == "context_item_ids_json" else {}
                     result["decisions"] = [dict(row) for row in conn.execute("SELECT id,decision,output_hash,reason,created_at,actor_id FROM app_ai_run_decision WHERE ai_run_id=? AND project_id=? AND branch_id=? ORDER BY created_at", (run_id, PROJECT_ID, BRANCH_ID))]
+                    chunk_summary = conn.execute("SELECT COUNT(*) count,COALESCE(MAX(seq),0) last_seq FROM app_ai_chunk WHERE ai_run_id=? AND project_id=? AND branch_id=?", (run_id, PROJECT_ID, BRANCH_ID)).fetchone()
+                    result["stream"] = {"chunk_count": int(chunk_summary["count"]), "last_seq": int(chunk_summary["last_seq"]), "replayable": bool(chunk_summary["count"]), "resume": f"/api/ai/runs/{run_id}/stream"}
                     return self.send_json(200, result)
                 if parsed.path == "/api/assertions":
                     query = parse_qs(parsed.query)
