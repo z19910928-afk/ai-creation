@@ -60,7 +60,16 @@ def main() -> None:
             assert archive.read("mimetype") == b"application/epub+zip"
             manifest = json.loads(archive.read("META-INF/moyu-export-manifest.json"))
             assert manifest["loss_manifest"]
+            assert manifest["manifest_version"] == 2
+            assert len(manifest["source_sha256"]) == 64
+            assert manifest["chapter_count"] == len(manifest["chapters"])
+            assert all(len(chapter["body_sha256"]) == 64 for chapter in manifest["chapters"])
             assert manifest["author_override"]["reason"].startswith("fixture")
+        with urllib.request.urlopen(base + "/api/export/manifest", timeout=5) as response:
+            api_manifest = json.load(response)
+        assert api_manifest["source_sha256"] == manifest["source_sha256"]
+        assert api_manifest["finalization"]["allowed"] is False
+        assert api_manifest["finalization"]["issues"]
         payload = json.dumps({"task": "scene", "chapter_id": chapter["id"], "response_format": "json"}).encode()
         request = urllib.request.Request(base + "/api/ai", method="POST", data=payload, headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(request, timeout=5) as response:

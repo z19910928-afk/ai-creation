@@ -1751,24 +1751,79 @@ def export_finalization_issues(conn: sqlite3.Connection) -> list[str]:
     return issues
 
 
-def epub_bytes(conn: sqlite3.Connection, author_override: str = "") -> tuple[bytes, dict[str, Any]]:
-    """Build a minimal EPUB 3 package with an explicit loss manifest."""
-    state = state_from_db(conn)
-    title = str(state.get("project", {}).get("title") or "未命名长篇")
-    safe_title = re.sub(r"[^A-Za-z0-9._-]+", "_", title).strip("._") or "moyu-book"
+def export_manifest_for_state(state: dict[str, Any], author_override: str = "", finalization_issues: list[str] | None = None) -> dict[str, Any]:
+    """Return a stable, auditable manifest for the current publication source.
+
+    Per-chapter hashes let an importer or reviewer detect source drift without
+    comparing the entire EPUB byte stream (which contains a generated time).
+    ``source_sha256`` excludes generated and override metadata, so it identifies
+    the manuscript represented by this export.
+    """
+    project = state.get("project") or {}
+    title = str(project.get("title") or "未命名长篇")
     chapters = list(state.get("chapters") or [])
-    # Match the browser's final export rule: an automatically created empty
-    # draft at the end is a workspace placeholder, not a book chapter.
+    # The browser treats an automatically created empty draft at the end as a
+    # workspace placeholder rather than a book chapter.
     if chapters and chapters[-1].get("status") == "草稿" and not str(chapters[-1].get("body") or "").strip():
         chapters = chapters[:-1]
+    chapter_manifest = []
+    for index, chapter in enumerate(chapters, start=1):
+        body = str(chapter.get("body") or "")
+        chapter_manifest.append({
+            "number": index,
+            "id": chapter.get("id"),
+            "title": str(chapter.get("title") or f"第 {index} 章"),
+            "status": chapter.get("status"),
+            "review_status": chapter.get("review_status"),
+            "revision_id": chapter.get("revision_id"),
+            "body_sha256": hash_text(body),
+            "body_codepoints": len(body),
+            "body_non_whitespace": len(re.sub(r"\s", "", body)),
+        })
+    source = {
+        "project": {
+            "title": title,
+            "genre": project.get("genre") or "",
+            "summary": project.get("summary") or "",
+            "goal": project.get("goal") or 0,
+            "book_status": project.get("book_status") or "writing",
+        },
+        "chapters": chapter_manifest,
+    }
     loss_manifest = [
         {"feature": "rich_media", "status": "unsupported", "detail": "当前状态模型只导出纯文本与基本章节元数据。"},
         {"feature": "docx_pdf_layout", "status": "unsupported", "detail": "EPUB 不包含 DOCX/PDF 版式和分页信息。"},
         {"feature": "ai_provenance", "status": "partial", "detail": "AI 运行记录仍留在本地 SQLite，不嵌入正文。"},
     ]
-    manifest = {"format": "moyu-epub-v1", "title": title, "chapter_count": len(chapters), "loss_manifest": loss_manifest, "generated_at": now()}
+    issues = list(finalization_issues or [])
+    manifest = {
+        "format": "moyu-epub-v1",
+        "manifest_version": 2,
+        "project_id": PROJECT_ID,
+        "branch_id": BRANCH_ID,
+        "title": title,
+        "chapter_count": len(chapters),
+        "chapters": chapter_manifest,
+        "source_sha256": hash_text(json_text(source)),
+        "finalization": {"allowed": not issues, "issues": issues},
+        "loss_manifest": loss_manifest,
+        "generated_at": now(),
+    }
     if author_override:
         manifest["author_override"] = {"reason": author_override[:2_000], "recorded_by": ACTOR_ID, "recorded_at": now()}
+    return manifest
+
+
+def epub_bytes(conn: sqlite3.Connection, author_override: str = "") -> tuple[bytes, dict[str, Any]]:
+    """Build a minimal EPUB 3 package with an explicit loss manifest."""
+    state = state_from_db(conn)
+    title = str(state.get("project", {}).get("title") or "未命名长篇")
+    chapters = list(state.get("chapters") or [])
+    # Match the browser's final export rule: an automatically created empty
+    # draft at the end is a workspace placeholder, not a book chapter.
+    if chapters and chapters[-1].get("status") == "草稿" and not str(chapters[-1].get("body") or "").strip():
+        chapters = chapters[:-1]
+    manifest = export_manifest_for_state(state, author_override, export_finalization_issues(conn))
     files: dict[str, bytes] = {
         "mimetype": b"application/epub+zip",
         "META-INF/container.xml": b'<?xml version="1.0" encoding="UTF-8"?><container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/package.opf" media-type="application/oebps-package+xml"/></rootfiles></container>',
