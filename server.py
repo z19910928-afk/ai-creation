@@ -113,6 +113,44 @@ def bounded_text(value: Any, limit: int, label: str) -> str:
     return text
 
 
+CONTEXT_PROFILE_DEFAULTS = {
+    "max_tokens": 24_000,
+    "chapter_top_k": 20,
+    "recent_window": 3,
+    "memory_top_k": 60,
+    "record_top_k": 40,
+}
+CONTEXT_PROFILE_LIMITS = {
+    "max_tokens": (4_000, 64_000),
+    "chapter_top_k": (0, 50),
+    "recent_window": (0, 10),
+    "memory_top_k": (0, 120),
+    "record_top_k": (0, 80),
+}
+
+
+def normalize_context_profile(raw: Any = None) -> dict[str, int]:
+    """Normalize a bounded retrieval profile without promising a million-token window."""
+    if raw is None:
+        return dict(CONTEXT_PROFILE_DEFAULTS)
+    if not isinstance(raw, dict):
+        raise ValueError("retrieval_profile must be an object")
+    profile = dict(CONTEXT_PROFILE_DEFAULTS)
+    unknown = set(raw) - set(CONTEXT_PROFILE_DEFAULTS)
+    if unknown:
+        raise ValueError(f"unsupported retrieval_profile field: {sorted(unknown)[0]}")
+    for key, value in raw.items():
+        if isinstance(value, bool):
+            raise ValueError(f"retrieval_profile.{key} must be an integer")
+        try:
+            number = int(value)
+        except (TypeError, ValueError):
+            raise ValueError(f"retrieval_profile.{key} must be an integer") from None
+        lower, upper = CONTEXT_PROFILE_LIMITS[key]
+        profile[key] = max(lower, min(upper, number))
+    return profile
+
+
 def memory_evidence_is_current(conn: sqlite3.Connection, source_span_id: str | None, entity_id: str | None) -> bool:
     """Return whether a memory has both current source evidence and an entity.
 
@@ -353,7 +391,8 @@ def _apply_material_controls(context: dict[str, Any], controls: dict[str, Any] |
     return context
 
 
-def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_controls: dict[str, Any] | None = None) -> tuple[dict[str, Any], dict[str, Any] | None]:
+def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_controls: dict[str, Any] | None = None, retrieval_profile: dict[str, Any] | None = None) -> tuple[dict[str, Any], dict[str, Any] | None]:
+    profile = normalize_context_profile(retrieval_profile)
     state = state_from_db(conn)
     chapter = next((item for item in state["chapters"] if item["id"] == chapter_id), None)
     if chapter_id and chapter is None:
@@ -371,7 +410,7 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_contro
     candidates = [(score(item, position), position, item) for position, item in enumerate(state["chapters"][:index])]
     candidates.sort(key=lambda entry: (-entry[0], -entry[1]))
     retrieved = []
-    for relevance, position, item in candidates[:20]:
+    for relevance, position, item in candidates[:profile["chapter_top_k"]]:
         body = item.get("body", "")
         if len(body) <= 2600:
             excerpt = body
@@ -379,15 +418,22 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_contro
         else:
             excerpt = body[:700] + "\n…\n" + body[-1800:]
             source_ranges = [{"start": 0, "end": 700}, {"start": len(body) - 1800, "end": len(body)}]
-        retrieved.append({"id": item["id"], "chapter": position + 1, "title": item["title"], "recap": item.get("recap", ""), "excerpt": excerpt, "relevance": round(relevance, 3), "source_range": source_ranges[0] if len(source_ranges) == 1 else None, "source_ranges": source_ranges})
+        retrieved.append({"id": item["id"], "chapter": position + 1, "title": item["title"], "recap": item.get("recap", ""), "excerpt": excerpt, "relevance": round(relevance, 3), "retrieval_layer": "lexical", "evidence": {"source_chapter_id": item["id"], "source_ranges": source_ranges}, "source_range": source_ranges[0] if len(source_ranges) == 1 else None, "source_ranges": source_ranges})
     previous = [
-        {"id": item["id"], "chapter": position + 1, "title": item["title"], "excerpt": item["body"][-3000:], "source_range": {"start": max(0, len(item["body"]) - 3000), "end": len(item["body"])}}
-        for position, item in list(enumerate(state["chapters"][max(0, index - 3):index], start=max(0, index - 3)))
+        {"id": item["id"], "chapter": position + 1, "title": item["title"], "excerpt": item["body"][-3000:], "retrieval_layer": "recency", "evidence": {"source_chapter_id": item["id"], "source_ranges": [{"start": max(0, len(item["body"]) - 3000), "end": len(item["body"])}]}, "source_range": {"start": max(0, len(item["body"]) - 3000), "end": len(item["body"])}}
+        for position, item in list(enumerate(state["chapters"][max(0, index - profile["recent_window"]):index], start=max(0, index - profile["recent_window"])))
     ]
     # A recent chapter can be both a lexical hit and part of the fixed
     # previous-three window. Keep one stable ID in telemetry and previews.
     context_items = list(dict.fromkeys([item["id"] for item in retrieved] + [item["id"] for item in previous]))
-    context_budget = 24_000
+    confirmed_memory = bounded_context_memory(state["memory"], profile["memory_top_k"])
+    story_cards = bounded_context_records(state["records"], profile["record_top_k"])
+    for item in confirmed_memory:
+        item["retrieval_layer"] = "evidence"
+        item["evidence"] = {"source_chapter_id": item.get("source_chapter_id"), "source_span_id": item.get("source_span_id"), "source_range": {"start": item.get("source_start"), "end": item.get("source_end")}}
+    for item in story_cards:
+        item["retrieval_layer"] = "record"
+    context_budget = profile["max_tokens"]
     structure = story_map(conn)
     context = {
         "project": {
@@ -396,8 +442,8 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_contro
             "goal": state["project"]["goal"],
             "genre": state["project"].get("genre", ""),
         },
-        "confirmed_memory": bounded_context_memory(state["memory"]),
-        "story_cards": bounded_context_records(state["records"]),
+        "confirmed_memory": confirmed_memory,
+        "story_cards": story_cards,
         "plot": bounded_context_plot(state["plot"]),
         "story_structure": {
             key: value[:limit]
@@ -424,7 +470,7 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_contro
         # Filled below after all bounded context layers are assembled.  The
         # current chapter tail, confirmed memories and setting cards count
         # toward the provider prompt just as retrieved chapters do.
-        "context_budget": {"max_tokens": context_budget, "estimated_tokens": 0, "estimated_chars": 0, "token_estimator": "json_chars_div_4_upper_bound", "retrieval": "lexical+recency", "retrieved_count": len(retrieved), "previous_count": len(previous), "context_item_ids": context_items},
+        "context_budget": {"max_tokens": context_budget, "estimated_tokens": 0, "estimated_chars": 0, "token_estimator": "json_chars_div_4_upper_bound", "retrieval": "lexical+recency+evidence", "profile": profile, "retrieved_count": len(retrieved), "previous_count": len(previous), "retrieval_tiers": {"lexical": len(retrieved), "recency": len(previous), "evidence": len(confirmed_memory), "record": len(story_cards)}, "context_item_ids": context_items},
     }
     estimated_tokens = fit_context_budget(context, context_budget)
     context["context_budget"]["estimated_chars"] = min(context_budget * 4, len(json_text(context)))
@@ -441,6 +487,14 @@ def ai_context(conn: sqlite3.Connection, chapter_id: str | None, material_contro
     context["context_budget"]["estimated_chars"] = min(context_budget * 4, len(json_text(context)))
     context["context_budget"]["estimated_tokens"] = min(context_budget, estimated_tokens)
     context["context_budget"]["context_item_ids"] = list(dict.fromkeys(item["id"] for item in context.get("retrieved_chapters", []) + context.get("previous_chapters", [])))
+    context["context_budget"]["retrieved_count"] = len(context.get("retrieved_chapters", []))
+    context["context_budget"]["previous_count"] = len(context.get("previous_chapters", []))
+    context["context_budget"]["retrieval_tiers"] = {
+        "lexical": sum(1 for item in context.get("retrieved_chapters", []) if item.get("retrieval_layer") == "lexical"),
+        "recency": sum(1 for item in context.get("previous_chapters", []) if item.get("retrieval_layer") == "recency"),
+        "evidence": sum(1 for item in context.get("confirmed_memory", []) if item.get("retrieval_layer") == "evidence"),
+        "record": sum(1 for item in context.get("story_cards", []) if item.get("retrieval_layer") == "record"),
+    }
     return context, chapter
 
 
@@ -2701,16 +2755,28 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json(400, {"error": "chapter_id is required"})
                     return self.send_json(200, review_chapter(conn, chapter_id, persist=False))
                 if parsed.path == "/api/context":
-                    chapter_id = (parse_qs(parsed.query).get("chapter_id") or [None])[0]
+                    query = parse_qs(parsed.query)
+                    chapter_id = (query.get("chapter_id") or [None])[0]
                     controls = None
-                    raw_controls = (parse_qs(parsed.query).get("materials") or [None])[0]
+                    raw_controls = (query.get("materials") or [None])[0]
                     if raw_controls:
                         try:
                             controls = json.loads(raw_controls)
                         except json.JSONDecodeError:
                             return self.send_json(400, {"error": "materials must be valid JSON"})
-                    context, _ = ai_context(conn, chapter_id, controls)
-                    return self.send_json(200, {"project": context["project"], "current_chapter": context["current_chapter"], "budget": context["context_budget"], "story_structure": context.get("story_structure", {}), "previous_chapters": [{"id": item["id"], "title": item["title"], "source_range": item["source_range"]} for item in context["previous_chapters"]], "retrieved_chapters": [{"id": item["id"], "title": item["title"], "chapter": item["chapter"], "relevance": item["relevance"], "source_range": item["source_range"], "source_ranges": item.get("source_ranges", [item["source_range"]] if item.get("source_range") else [])} for item in context["retrieved_chapters"]], "records": [{"id": item["id"], "name": item["name"], "type": item.get("type")} for item in context.get("story_cards", [])], "memory": [{"id": item["id"], "name": item["name"], "source_chapter_id": item.get("source_chapter_id"), "source_span_id": item.get("source_span_id")} for item in context["confirmed_memory"]]})
+                    profile = None
+                    raw_profile = (query.get("retrieval_profile") or query.get("profile") or [None])[0]
+                    if raw_profile:
+                        try:
+                            profile = json.loads(raw_profile)
+                        except json.JSONDecodeError:
+                            return self.send_json(400, {"error": "retrieval_profile must be valid JSON"})
+                    try:
+                        profile = normalize_context_profile(profile)
+                        context, _ = ai_context(conn, chapter_id, controls, profile)
+                    except ValueError as exc:
+                        return self.send_json(400, {"error": str(exc)})
+                    return self.send_json(200, {"project": context["project"], "current_chapter": context["current_chapter"], "budget": context["context_budget"], "story_structure": context.get("story_structure", {}), "previous_chapters": [{"id": item["id"], "title": item["title"], "retrieval_layer": item.get("retrieval_layer"), "evidence": item.get("evidence"), "source_range": item["source_range"]} for item in context["previous_chapters"]], "retrieved_chapters": [{"id": item["id"], "title": item["title"], "chapter": item["chapter"], "relevance": item["relevance"], "retrieval_layer": item.get("retrieval_layer"), "evidence": item.get("evidence"), "source_range": item["source_range"], "source_ranges": item.get("source_ranges", [item["source_range"]] if item.get("source_range") else [])} for item in context["retrieved_chapters"]], "records": [{"id": item["id"], "name": item["name"], "type": item.get("type"), "retrieval_layer": item.get("retrieval_layer")} for item in context.get("story_cards", [])], "memory": [{"id": item["id"], "name": item["name"], "source_chapter_id": item.get("source_chapter_id"), "source_span_id": item.get("source_span_id"), "retrieval_layer": item.get("retrieval_layer"), "evidence": item.get("evidence")} for item in context["confirmed_memory"]]})
                 if parsed.path == "/api/events":
                     q = parse_qs(parsed.query)
                     try:
@@ -3014,7 +3080,12 @@ class Handler(SimpleHTTPRequestHandler):
                     if quota["enforced"] and quota["remaining_runs"] <= 0 and ai_settings()["base_url"]:
                         return self.send_json(429, {"error": "daily AI quota exhausted", "quota": quota})
                     material_controls = data.get("material_controls") if isinstance(data.get("material_controls"), dict) else None
-                    context, _ = ai_context(conn, chapter_id, material_controls)
+                    retrieval_profile = data.get("retrieval_profile", data.get("context_profile"))
+                    try:
+                        retrieval_profile = normalize_context_profile(retrieval_profile)
+                        context, _ = ai_context(conn, chapter_id, material_controls, retrieval_profile)
+                    except ValueError as exc:
+                        return self.send_json(400, {"error": str(exc)})
                     if async_requested:
                         queued = create_ai_job(conn, task, context, instruction, response_format, max_tokens)
                         # Make the row visible to a worker before starting the
@@ -3048,7 +3119,12 @@ class Handler(SimpleHTTPRequestHandler):
                     chapter_id = checked_id(data.get("chapter_id"), "chapter id") if data.get("chapter_id") is not None else None
                     instruction = bounded_text(data.get("instruction") or "", 2_000, "AI instruction")
                     controls = data.get("material_controls") if isinstance(data.get("material_controls"), dict) else None
-                    context, _ = ai_context(conn, chapter_id, controls)
+                    retrieval_profile = data.get("retrieval_profile", data.get("context_profile"))
+                    try:
+                        retrieval_profile = normalize_context_profile(retrieval_profile)
+                        context, _ = ai_context(conn, chapter_id, controls, retrieval_profile)
+                    except ValueError as exc:
+                        return self.send_json(400, {"error": str(exc)})
                     return self.send_json(200, ai_prompt_preview(task, context, instruction, data.get("response_format")))
                 if parsed.path == "/api/ai/queue/drain":
                     limit = min(max(int(data.get("limit") or 1), 1), 20)

@@ -96,4 +96,4 @@ GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参�
 
 根据六个项目的差距复核，当前工作树新增了故事结构 API/UI、人物状态/剧情线、材料 pin/omit/order、Prompt 契约预览、结构化离线/Provider 输出、buffered SSE、AI retry/取消保护、持久化 AI 队列、CJK FTS、assertion 证据审查/重新定位、revision diff，以及 `prewrite/precommit/postcommit` 章节提交快照。新增运行证据见 `tests/story_structure_fixtures.py`、`tests/character_state_fixtures.py`、`tests/assertion_workflow_fixtures.py`、`tests/chapter_commit_fixtures.py`、`tests/ai_contract_fixtures.py` 和 `tests/ai_queue_fixtures.py`。
 
-这些实现补上了六个项目中可直接借鉴的工作流骨架。队列已经能持久化和重启恢复，但本地 daemon 没有租约/heartbeat，provider 原生流式和可靠的进程外取消仍未完成；embedding/RRF 重排、真实 tokenizer、范围级 patch、出版格式、分支合并和协作权限仍是后续工程项。
+这些实现补上了六个项目中可直接借鉴的工作流骨架。上下文预览现在支持受限的 `retrieval_profile`，可调整预算与各层召回数量，并标出 lexical、recency、evidence 来源；这仍使用字符/4 的保守估算，不是真实 provider tokenizer。队列已经能持久化和重启恢复，但本地 daemon 没有租约/heartbeat，provider 原生流式和可靠的进程外取消仍未完成；embedding/RRF 重排、范围级 patch、出版格式、分支合并和协作权限仍是后续工程项。

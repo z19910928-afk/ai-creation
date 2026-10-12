@@ -30,7 +30,7 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - `POST /api/chapters/:id/restore`、`POST /api/records/:id/restore`：恢复章节 tombstone 或归档设定并记录事件
 - `GET/POST /api/records`、`PATCH/DELETE /api/records/:id`（记忆、伏笔同样支持 `/api/memory`、`/api/plot`）：最小 CRUD 投影，并为变更写入 `event_log`
 - `GET /api/events`、`POST /api/events`：查看或写入幂等事件
-- `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；`/api/ai` 支持离线结构化结果和 buffered SSE
+- `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；支持 `retrieval_profile` 配置预算、章节召回数、近章窗口和记忆/设定上限，并返回分层计数与证据来源；`/api/ai` 支持离线结构化结果和 buffered SSE
 - `GET /api/ai/status`、`GET /api/ai/quota`、`GET /api/ai/runs/:id`、`POST /api/ai/runs/:id/retry|cancel`：查看模型/预算/运行审计并处理失败运行
 - `POST /api/ai/queue` 或 `/api/ai` 携带 `async:true`：将请求持久化为队列任务；`GET /api/ai/queue`、`GET /api/ai/jobs/:id` 查看状态，`process|cancel|retry` 控制单个任务，`queue/drain` 恢复人工或重启后的积压任务
 - `GET /api/search?q=...`：搜索章节、设定、记忆、伏笔和时间线；结果保留来源章节与范围元数据
@@ -57,7 +57,7 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - 全文搜索
 - JSON 导入/导出备份
 - Markdown/EPUB 终稿导出（含 frontmatter、章节/设定/伏笔/记忆元数据和 loss manifest）与只读终稿检查
-- 有界上下文预览（估算 token、检索章节、来源 ID/范围）与 AI 运行记录
+- 有界上下文预览（估算 token、可配置检索层、来源 ID/范围）与 AI 运行记录
 - AI 材料 pin/omit/order、完整 Prompt 契约预览与结构化 JSON 任务结果
 - 人物关系、时间线、伏笔生命周期和冲突查询
 - 章节 `prewrite → precommit → postcommit` 提交快照、revision diff 与恢复前预览

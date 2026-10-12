@@ -76,4 +76,4 @@
 
 ## 2026-10-12 实现更新
 
-本文件的初始矩阵记录了上一轮对照状态。本轮已经把以下差距从“没有”提升为“可运行基础能力”：人物关系/时间线/伏笔生命周期 API 与故事结构页、人物状态/剧情线 API、材料 pin/omit/order、Prompt 契约预览、结构化 JSON 任务、buffered SSE、AI retry/取消保护、持久化 AI 队列、revision diff、CJK FTS 检索，以及 `prewrite → precommit → postcommit` 章节提交快照。它们仍不是参考项目全部深度：关系图还不是可视化图谱，SSE 还不是 provider 原生 token stream；队列虽可重启恢复，但仍缺租约/heartbeat/进程外可靠取消；检索仍缺 embedding/RRF/rerank，出版和多人协作仍未完成。
+本文件的初始矩阵记录了上一轮对照状态。本轮已经把以下差距从“没有”提升为“可运行基础能力”：人物关系/时间线/伏笔生命周期 API 与故事结构页、人物状态/剧情线 API、材料 pin/omit/order、Prompt 契约预览、结构化 JSON 任务、buffered SSE、AI retry/取消保护、持久化 AI 队列、revision diff、CJK FTS 检索，以及 `prewrite → precommit → postcommit` 章节提交快照。上下文还新增了受限的 `retrieval_profile`，可配置预算、章节/近章窗口和记忆/设定上限，并在预览中返回 lexical/recency/evidence 分层与来源元数据。它们仍不是参考项目全部深度：关系图还不是可视化图谱，SSE 还不是 provider 原生 token stream；队列虽可重启恢复，但仍缺租约/heartbeat/进程外可靠取消；检索仍缺 embedding/RRF/rerank，出版和多人协作仍未完成。

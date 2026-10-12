@@ -170,7 +170,7 @@
 本轮按六个参考项目的差距继续补齐了可运行能力：
 
 - **故事结构 API/UI**：人物关系、时间线事件、伏笔 plant/develop/payoff 链接和冲突查询统一由 `/api/story-map` 提供，前端增加“故事结构”入口。
-- **材料控制**：上下文预览支持 pin/omit/order，生成请求携带材料控制，Prompt 契约可预览；上下文返回设定卡、来源范围和故事结构。
+- **材料控制**：上下文预览支持 pin/omit/order 和受限 `retrieval_profile`（预算、章节/近章窗口、记忆/设定上限），生成请求携带材料控制，Prompt 契约可预览；上下文返回分层计数、证据来源、设定卡、来源范围和故事结构。
 - **结构化 AI 契约**：outline、scene、summary、check、brainstorm 有稳定 JSON 契约；离线模式也返回相同结构，provider JSON 会先解析校验。
 - **任务传输**：增加 buffered SSE（`stream=true`）、失败运行的 retry 接口和完成任务的取消保护；SSE 当前在服务端完成模型调用后分块发送，尚未接入 provider 原生 token stream。
 - **版本与提交**：revision API 增加正文/统一 diff；章节新增 `prewrite`、`precommit`、`postcommit` 提交记录，并绑定 revision、review 和快照计数。

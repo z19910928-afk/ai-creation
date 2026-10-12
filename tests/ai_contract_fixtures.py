@@ -10,6 +10,7 @@ import tempfile
 import time
 import urllib.request
 import urllib.error
+import urllib.parse
 import zipfile
 import io
 from pathlib import Path
@@ -33,6 +34,19 @@ def main() -> None:
                 time.sleep(0.05)
         with urllib.request.urlopen(base + "/api/state", timeout=3) as response:
             chapter = json.load(response)["chapters"][0]
+        profile = urllib.parse.quote(json.dumps({"max_tokens": 4_000, "chapter_top_k": 0, "recent_window": 0, "memory_top_k": 0, "record_top_k": 0}))
+        with urllib.request.urlopen(base + f"/api/context?chapter_id={chapter['id']}&retrieval_profile={profile}", timeout=5) as response:
+            context = json.load(response)
+        assert context["budget"]["profile"]["max_tokens"] == 4_000
+        assert context["budget"]["retrieval_tiers"]["lexical"] == 0
+        assert context["budget"]["retrieval_tiers"]["recency"] == 0
+        bad_profile = urllib.parse.quote(json.dumps({"unknown": 1}))
+        try:
+            urllib.request.urlopen(base + f"/api/context?chapter_id={chapter['id']}&retrieval_profile={bad_profile}", timeout=5)
+        except urllib.error.HTTPError as exc:
+            assert exc.code == 400
+        else:
+            raise AssertionError("invalid retrieval profile unexpectedly passed")
         try:
             urllib.request.urlopen(base + "/api/export/epub", timeout=5)
         except urllib.error.HTTPError as exc:
