@@ -30,6 +30,12 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - `POST /api/chapters/:id/restore`、`POST /api/records/:id/restore`：恢复章节 tombstone 或归档设定并记录事件
 - `GET/POST /api/records`、`PATCH/DELETE /api/records/:id`（记忆、伏笔同样支持 `/api/memory`、`/api/plot`）：最小 CRUD 投影，并为变更写入 `event_log`
 - `GET /api/events`、`POST /api/events`：查看或写入幂等事件
+- `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；`/api/ai` 支持离线结构化结果和 buffered SSE
+- `GET /api/ai/status`、`GET /api/ai/quota`、`GET /api/ai/runs/:id`、`POST /api/ai/runs/:id/retry|cancel`：查看模型/预算/运行审计并处理失败运行
+- `GET /api/search?q=...`：搜索章节、设定、记忆、伏笔和时间线；结果保留来源章节与范围元数据
+- `GET /api/story-map`、`POST /api/relationships`、`POST /api/timeline`、`POST /api/foreshadow-links`：读取或写入关系、时间线、伏笔生命周期和冲突投影
+- `GET /api/chapters/:id/revisions`、`POST /api/chapters/:id/restore-revision`、`GET /api/chapters/:id/commits`、`POST /api/chapters/:id/commit`：查看差异、恢复为新 revision，并执行章节提交阶段
+- `GET /api/export/epub`、`GET /api/export/manifest`：导出最小 EPUB 及支持范围/损失清单
 
 伏笔投影的 `DELETE /api/plot/:id` 是不可恢复的投影删除；章节和设定则使用上面的 restore 路径。
 
@@ -47,18 +53,22 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 - 情节与伏笔看板
 - 全文搜索
 - JSON 导入/导出备份
-- Markdown 终稿导出（frontmatter、章节/设定/伏笔/记忆元数据）与只读终稿检查
+- Markdown/EPUB 终稿导出（含 frontmatter、章节/设定/伏笔/记忆元数据和 loss manifest）与只读终稿检查
 - 有界上下文预览（估算 token、检索章节、来源 ID/范围）与 AI 运行记录
+- AI 材料 pin/omit/order、完整 Prompt 契约预览与结构化 JSON 任务结果
+- 人物关系、时间线、伏笔生命周期和冲突查询
+- 章节 `prewrite → precommit → postcommit` 提交快照、revision diff 与恢复前预览
+- buffered SSE 候选传输、失败运行重试和已完成运行取消保护
 - 全书完稿状态：终稿检查后可标记完成，状态持久化并支持恢复写作
 - 移动端适配
 
 ## 设计原则
 
-第一版采用单用户、本地优先、Markdown 思维的轻量工作流。AI 是显式触发的可选能力：没有配置模型时保持离线，配置后只按任务发送有界工作集，不暗中调用模型。后续可增加 DOCX/PDF 导出、版本历史、时间线和更完整的检索增强。
+当前版本仍采用单用户、本地优先、Markdown 思维的工作流。AI 是显式触发的可选能力：没有配置模型时保持离线，配置后只按任务发送有界工作集，不暗中调用模型。后续重点是 DOCX/PDF、中文语义检索、真实 tokenizer、异步队列、分支合并和协作权限；EPUB 当前仅提供最小导出，尚未支持完整格式往返。
 
 ## 长篇记忆设计（原型）
 
-记忆中枢采用“候选捕获 → 人工确认 → 相关章节回忆”的三步流程。正文里用 `【人物】名字`、`【物品】名称`、`【地点】名称`、`【伏笔】内容` 标记关键事实，应用会记录来源章节、原文引句、范围和确认状态；确认后才会建立正典 assertion，避免把模型猜测直接写进正典。上下文接口提供有界的章节召回和来源预览，并报告估算 token；当前不是百万 token 上下文，也没有宣称完整向量检索。后续可在此基础上加入 embedding、重排、实体关系图、时间线冲突检查和版本回滚。
+记忆中枢采用“候选捕获 → 人工确认 → 相关章节回忆”的三步流程。正文里用 `【人物】名字`、`【物品】名称`、`【地点】名称`、`【伏笔】内容` 标记关键事实，应用会记录来源章节、原文引句、范围和确认状态；确认后才会建立正典 assertion，避免把模型猜测直接写进正典。上下文接口提供有界的章节召回、材料选择、故事结构和来源预览，并报告估算 token；当前不是百万 token 上下文，也没有宣称完整向量检索。后续可在此基础上加入 embedding、重排、实体时间硬过滤和真实长篇评测。
 
 开源设计参考见 `docs/design-references.md`；与六个参考项目的逐项功能对比见
 [`docs/comparison-six-projects-2026-10-12.md`](docs/comparison-six-projects-2026-10-12.md)。

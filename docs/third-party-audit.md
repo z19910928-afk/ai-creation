@@ -47,9 +47,9 @@ GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参�
 ### 尚未关闭的 P2/P3 项
 
 1. **检索质量**：当前是有界词项/新近度检索；没有 embedding、中文 FTS 基准、RRF/重排、MMR 或索引新鲜度 SLA。
-2. **长任务控制**：没有流式取消、持久化队列、断点续跑、并发租约或按任务的费用/配额上限。
+2. **长任务控制**：已有 buffered SSE、失败重试和完成任务取消保护；仍没有 provider 原生流式、真实取消、持久化队列、断点续跑、并发租约或按任务的费用/配额上限。
 3. **事实与冲突界面**：已有 candidate/assertion 数据，但尚未提供完整的 assertion 列表、矛盾合并、人物知识范围和时间线冲突修复 UI。
-4. **导入导出**：当前重点是 JSON/Markdown；DOCX、EPUB、PDF 的安全解析、格式往返和损失清单仍待实现。
+4. **导入导出**：当前提供 JSON/Markdown 和最小 EPUB 导出；DOCX/PDF、EPUB 安全解析与格式往返，以及完整损失清单仍待实现。
 5. **部署边界**：服务面向单用户本机；没有公网认证、多人权限、加密存储、供应商留存删除证明或云端 BYOK 策略。
 6. **效果评测**：fixture 可以验证协议和拒绝路径，不能证明真实模型的长篇连贯性、风格或百万上下文效果；需要中文长篇 gold set、人工 pairwise 和成本/延迟样本。
 
@@ -91,3 +91,9 @@ GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参�
 | 真实长篇效果 | gold set、人工评审、成本/延迟 | 尚未完成，不能宣称通过 |
 
 本文件随实现变化更新；若审查报告与运行证据冲突，以可重复测试和当前 commit 为准。任何“百万上下文”“自动保证一致性”“已通过第三方认证”的表述都不属于当前版本承诺。
+
+## 2026-10-12 增量对照
+
+根据六个项目的差距复核，当前工作树新增了故事结构 API/UI、材料 pin/omit/order、Prompt 契约预览、结构化离线/Provider 输出、buffered SSE、AI retry/取消保护、revision diff，以及 `prewrite/precommit/postcommit` 章节提交快照。新增运行证据见 `tests/story_structure_fixtures.py`、`tests/chapter_commit_fixtures.py` 和 `tests/ai_contract_fixtures.py`。
+
+这些实现补上了六个项目中可直接借鉴的工作流骨架，但中文语义检索、真实 tokenizer、provider 原生流式、异步队列、范围级 patch、出版格式、分支合并和协作权限仍是后续工程项。

@@ -72,8 +72,14 @@ def main() -> None:
         assert request(base, "POST", "/api/records", {"type": "人物", "name": "沈砚", "description": "主角"})[0] == 201
         good_status, good = request(base, "POST", "/api/memory", {"status": "accepted", "type": "人物", "name": "沈砚", "source_chapter_id": chapter["id"], "source_quote": "【人物】沈砚"})
         assert good_status == 201 and good.get("assertion_id")
+        persisted = request(base, "GET", "/api/state")[1]
+        assert any(item.get("assertion_id") == good["assertion_id"] for item in persisted["memory"])
         ai_status, ai = request(base, "POST", "/api/ai", {"task": "continue", "chapter_id": chapter["id"]})
         assert ai_status == 200 and ai.get("ai_run_id")
+        preview_status, preview = request(base, "POST", "/api/ai/prompt-preview", {"task": "continue", "chapter_id": chapter["id"], "material_controls": {"chapters": {chapter["id"]: {"pin": True, "order": 1}}}})
+        assert preview_status == 200 and preview.get("contract") and preview.get("estimated_tokens", 0) > 0
+        context_status, context = request(base, "GET", f"/api/context?chapter_id={chapter['id']}")
+        assert context_status == 200 and "records" in context and "memory" in context
         decision_status, decision = request(base, "POST", "/api/ai/decision", {"ai_run_id": ai["ai_run_id"], "decision": "accepted", "reason": "作者核对通过"})
         assert decision_status == 201 and decision["author_decision"] == "accepted"
         audit_status, audit = request(base, "GET", f"/api/ai/runs/{ai['ai_run_id']}")
@@ -81,6 +87,8 @@ def main() -> None:
         assert request(base, "PATCH", f"/api/chapters/{chapter['id']}", {"body": body + "\nsecond revision"})[0] == 200
         history_status, history = request(base, "GET", f"/api/chapters/{chapter['id']}/revisions")
         assert history_status == 200 and len(history["revisions"]) >= 2
+        diff_status, diff = request(base, "GET", f"/api/chapters/{chapter['id']}/revisions?include_body=1&diff=1")
+        assert diff_status == 200 and all("body" in item and "diff" in item for item in diff["revisions"])
         restored_status, restored = request(base, "POST", f"/api/chapters/{chapter['id']}/restore-revision", {"revision_id": history["revisions"][-1]["id"]})
         assert restored_status == 200 and "把故事写在这里" in restored["body"]
     finally:

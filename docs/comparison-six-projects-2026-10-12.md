@@ -58,7 +58,7 @@
 2. **章节提交层**：实现 prewrite、precommit、postcommit 和 `CHAPTER_COMMIT` 类状态机，把审查、记忆变更、revision 和导出快照绑定起来。
 3. **AI 任务层**：SSE 流式输出、取消、重试、断点续跑、队列租约、费用/配额和结构化 JSON/patch schema。
 4. **故事结构层**：实体关系图、人物状态/知识范围、时间线、伏笔依赖 DAG、冲突合并与原文跳转。
-5. **编辑与出版层**：范围级 AI patch、可视 diff、pin/omit/order 材料选择、DOCX/EPUB/PDF 和导出损失报告。
+5. **编辑与出版层**：范围级 AI patch、可视 diff、pin/omit/order 材料选择、DOCX/PDF、EPUB 往返和完整导出损失报告。
 
 ## 诚实的成熟度判断
 
@@ -73,3 +73,7 @@
 | 可信的单用户本地 AI 写作原型 | 是 |
 
 参考项目版本、许可证和借鉴边界见 [`docs/third-party-audit.md`](third-party-audit.md)；运行级缺口与测试证据见 [`docs/strict-feature-audit-2026-10-11.md`](strict-feature-audit-2026-10-11.md)。
+
+## 2026-10-12 实现更新
+
+本文件的初始矩阵记录了上一轮对照状态。本轮已经把以下差距从“没有”提升为“可运行基础能力”：人物关系/时间线/伏笔生命周期 API 与故事结构页、材料 pin/omit/order、Prompt 契约预览、结构化 JSON 任务、buffered SSE、AI retry/取消保护、revision diff、跨资料词面搜索，以及 `prewrite → precommit → postcommit` 章节提交快照。它们仍不是参考项目全部深度：关系图还不是可编辑图谱，SSE 还不是 provider 原生 token stream，提交状态还没有分支合并和异步队列，检索仍缺中文 FTS/embedding/rerank，出版和多人协作仍未完成。

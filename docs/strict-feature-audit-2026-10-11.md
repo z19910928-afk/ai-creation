@@ -18,12 +18,13 @@
 
 - **P1-01 已关闭**：`POST/PUT/PATCH /api/memory` 在 `accepted` 前要求当前版本的有效 `source_span` 和 active entity；无证据请求返回 400，带证据请求生成 assertion。`tests/strict_feature_fixtures.py` 覆盖了正反路径。
 - **P1-02 部分关闭**：AI 运行返回 `ai_run_id`，`/api/ai/decision` 记录 accepted/rejected/edited/undone，`GET /api/ai/runs/:id` 返回历史；前端采纳和清空会调用接口。正文范围级 accepted patch 和逐字符编辑差异仍未落地。
-- **P1-03 部分关闭**：Markdown 导出和完稿按钮默认被终稿阻断项锁住；作者覆盖必须填写理由，并按当前稿件指纹保存。覆盖目前是本机审计记录，尚未进入可验证的导出 manifest。
+- **P1-03 部分关闭**：Markdown/最小 EPUB 导出和完稿按钮默认被终稿阻断项锁住；作者覆盖必须填写理由，并按当前稿件指纹保存。导出 manifest 已明确纯文本、版式和 AI provenance 的损失边界，但覆盖记录仍主要保存在本机。
+- **P1-04 部分关闭**：章节 revision 列表、正文/统一 diff、恢复前预览和恢复为新 revision 已接入；范围级 patch、协作合并和更细粒度 tracked changes 仍缺失。
 - **P1-05 部分关闭**：记忆卡片显示摘录、章节/字符范围、source span 状态，并支持确认、拒绝、重新审查；合并/拆分、矛盾处理和 assertion 详情仍缺失。
 - **P1-06 部分关闭**：检索摘录现在返回真实的一个或多个 `source_ranges`；token 仍使用 `json_chars_div_4_upper_bound` 近似，未接入各 provider tokenizer，也未计量真实系统消息包装。
-- **P1-08 部分关闭**：provider 失败会写入 `status=failed`、错误、延迟和 token 估算；取消、队列租约、重试、结构化输出契约和费用配额仍缺失。
+- **P1-08 部分关闭**：provider 失败会写入 `status=failed`、错误、延迟和 token 估算；当前已有按任务结构化输出契约、buffered SSE、重试接口、完成任务取消保护、全局日配额和成本估算，provider 原生流式、真实取消、队列租约、断点续跑和按任务配额仍缺失。
 
-因此，剩余未关闭的核心风险集中在 revision/diff/restore（P1-04）和中文事实检索/语义连续性（P1-07），以及上述部分关闭项的生产化深度。增量验证新增运行了 `python tests/strict_feature_fixtures.py`，并实际检查了 accepted memory 拒绝、assertion 创建、AI decision 查询和 provider 失败落库。
+因此，剩余未关闭的核心风险集中在范围级变更/协作合并和中文事实检索/语义连续性（P1-07），以及上述部分关闭项的生产化深度。增量验证新增运行了 `python tests/strict_feature_fixtures.py`，并实际检查了 accepted memory 拒绝、assertion 创建、AI decision 查询和 provider 失败落库。
 
 ## 审查方法与证据
 
@@ -108,9 +109,9 @@
 
 修复验收：先实现 SQLite FTS5/中文分词或可替换索引，再加入实体/时间/分支过滤；连续性检查输出 claim/evidence/conflict 类型、置信度和原文跳转；在真实中文 gold set 上报告 Recall/Precision 和硬冲突召回。
 
-### P1-08：模型任务没有结构化输出契约、取消、重试和失败记录（部分修复）
+### P1-08：模型任务的生产化控制仍不完整（部分修复）
 
-基线证据：所有任务共用一个自由文本 chat completion；没有 JSON schema/patch schema、流式响应、取消、持久任务队列、重试/断点、并发租约和费用配额。增量修复已让 provider 失败写入 `failed` `ai_run`，包含错误、延迟和 token 估算；其余结构化契约、取消、队列、重试和费用配额仍缺失。
+基线证据：所有任务共用一个自由文本 chat completion；没有 JSON schema/patch schema、流式响应、取消、持久任务队列、重试/断点、并发租约和费用配额。增量修复已加入按任务的结构化 JSON 契约、buffered SSE、失败运行、重试接口和 token 估算；provider 原生流式、真实取消、持久队列、断点续跑、并发租约和费用配额仍缺失。
 
 影响：续写、场景卡、大纲、总结和连续性审查无法机器校验或稳定回放；长请求卡住时用户无法取消，失败后没有可审计的失败记录。
 
@@ -122,11 +123,11 @@
 |---|---|---|---|
 | 设定关系图/事件图 | 只有设定卡 | NovelForge、STARC | 无关系、立场、动态和时态可视化 |
 | 规划→场景→写作→审查 | 有任务卡和多任务下拉 | arboris、webnovel-writer | 没有角色化 agent、场景树和 commit 门 |
-| 材料选择与 prompt 预览 | 有上下文预览 | 91Writing、Ai-Novel | 作者不能 pin/omit/排序材料，不能查看完整 prompt contract |
-| 流式生成 | 无 | MuMuAINovel、Arrows | 无增量输出、暂停、续传和并行候选 |
+| 材料选择与 prompt 预览 | 有上下文预览、pin/omit/order 和契约预览 | 91Writing、Ai-Novel | 材料集合尚未版本化，完整 prompt 回放和多工作集管理仍缺 |
+| 流式生成 | buffered SSE（模型完成后分块） | MuMuAINovel、Arrows | 无 provider 原生增量、暂停、续传和并行候选 |
 | 伏笔生命周期 | 三列静态看板 | NovelForge、webnovel-writer | 前端不能移动、编辑、回收证据或依赖排序 |
-| 全文搜索 | 浏览器 substring | 成熟编辑器/FTS | 不搜记忆、伏笔、时间线和来源，中文召回弱 |
-| 出版互操作 | JSON/Markdown | Scrivener/成熟编辑器 | 无 DOCX/EPUB/PDF、版式预检和往返损失报告 |
+| 全文搜索 | 后端有界 Unicode 词面搜索，覆盖章节/设定/记忆/伏笔/时间线并返回来源 | 成熟编辑器/FTS | 仍无 SQLite FTS5、中文分词、语义召回和排序评测 |
+| 出版互操作 | JSON/Markdown/最小 EPUB | Scrivener/成熟编辑器 | 无 DOCX/PDF、EPUB 往返、版式预检和完整损失报告 |
 | 项目/分支 | 环境变量固定一个 project/branch | webnovel-writer/知识库产品 | 无项目切换、分支创建、合并和 what-if 隔离界面 |
 | 协作与权限 | 明确单用户 | Yjs/Tiptap 等 | 无账户、同步、评论、快照权限；只能保持本地产品定位 |
 | 长篇质量评测 | fixture 协议通过 | LongMemEval/自建 gold set | 样本过小，没有真实模型、人工 pairwise、成本/延迟趋势 |
@@ -146,7 +147,7 @@
 
 - 单用户、本地优先的可运行小说编辑原型。
 - 有限上下文召回和来源字段原型。
-- 候选式 AI 输出、章节基础规则检查、JSON/Markdown 导出。
+- 候选式 AI 输出、章节基础规则检查、JSON/Markdown/最小 EPUB 导出。
 - SQLite 备份、损坏拒绝和恢复 fixture 已通过。
 
 ### 当前不能宣称
@@ -163,7 +164,22 @@
 2. P1-02/P1-08：把 AI run、候选、采纳、拒绝、失败和 revision 串成可回放状态机。
 3. P1-03/P1-04：把终稿门和 revision/diff/恢复变成真正可执行的产品能力。
 4. P1-05/P1-06：做证据详情、真实多 span、准确预算和 stale 修复界面。
+
+## Implementation update — 2026-10-12
+
+本轮按六个参考项目的差距继续补齐了可运行能力：
+
+- **故事结构 API/UI**：人物关系、时间线事件、伏笔 plant/develop/payoff 链接和冲突查询统一由 `/api/story-map` 提供，前端增加“故事结构”入口。
+- **材料控制**：上下文预览支持 pin/omit/order，生成请求携带材料控制，Prompt 契约可预览；上下文返回设定卡、来源范围和故事结构。
+- **结构化 AI 契约**：outline、scene、summary、check、brainstorm 有稳定 JSON 契约；离线模式也返回相同结构，provider JSON 会先解析校验。
+- **任务传输**：增加 buffered SSE（`stream=true`）、失败运行的 retry 接口和完成任务的取消保护；SSE 当前在服务端完成模型调用后分块发送，尚未接入 provider 原生 token stream。
+- **版本与提交**：revision API 增加正文/统一 diff；章节新增 `prewrite`、`precommit`、`postcommit` 提交记录，并绑定 revision、review 和快照计数。
+- **出版导出**：新增最小 EPUB 3 导出和 `moyu-export-manifest.json`；Markdown frontmatter 同样写入 loss manifest，明确纯文本、版式和 AI provenance 的支持边界。
+- **全文搜索**：新增 `/api/search`，覆盖章节、设定、候选/已确认记忆、伏笔和时间线，并返回来源章节/范围；当前仍是 Unicode 词面匹配，不是中文 FTS 或语义检索。
+- **回归证据**：新增 `tests/story_structure_fixtures.py`、`tests/chapter_commit_fixtures.py`、`tests/ai_contract_fixtures.py`、`tests/search_fixtures.py`，并保留既有严格功能、恢复和损坏导入测试。
+
+这轮关闭了材料编排、结构化输出、故事结构基础模型、章节提交阶段和版本差异的原型缺口，但仍不能宣称第一梯队生产能力。剩余关键项是中文 FTS/embedding/RRF 重排与真实 gold set、provider 原生流式/异步队列/断点取消、范围级正文 patch、DOCX/PDF 与 EPUB 往返、分支合并、多人权限以及真实模型长篇评测。
 5. P1-07：实现中文 FTS + 实体/时间/分支过滤，再做真实中文长篇 gold set。
-6. P2 功能按作者价值排序：材料选择器、伏笔 DAG、时间线/关系图、流式取消、多格式出版。
+6. P2 功能按作者价值排序：伏笔 DAG 深化、流式取消、多格式出版和协作权限；材料选择器、时间线/关系图已有基础原型，仍需完善。
 
 本报告与 `docs/third-party-audit.md` 配套使用。若文档描述与运行证据冲突，以当前代码、可复现请求和测试输出为准。
