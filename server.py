@@ -651,7 +651,173 @@ def offline_structured(task: str, context: dict[str, Any], instruction: str) -> 
     return {"content": offline_ai(task, context, instruction)}
 
 
-def call_ai_provider(config: dict[str, str], task: str, context: dict[str, Any], instruction: str, response_format: str = "text", max_tokens: int = 3000) -> dict[str, Any]:
+def _provider_text(value: Any) -> str:
+    """Extract content from the common OpenAI-compatible SSE delta shapes."""
+    if isinstance(value, str):
+        return value
+    if isinstance(value, list):
+        parts: list[str] = []
+        for item in value:
+            if isinstance(item, str):
+                parts.append(item)
+            elif isinstance(item, dict) and isinstance(item.get("text"), str):
+                parts.append(item["text"])
+        return "".join(parts)
+    return ""
+
+
+def _validate_provider_text(text: str, response_format: str) -> dict[str, Any] | None:
+    if not isinstance(text, str) or not text.strip():
+        raise ValueError("AI returned no text")
+    parsed_json = None
+    if response_format == "json":
+        try:
+            parsed_json = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError("AI structured output is not valid JSON") from None
+        if not isinstance(parsed_json, dict):
+            raise ValueError("AI structured output must be a JSON object")
+        required = ai_contract("scene", "json").get("schema", {}).get("required", [])
+        # The caller performs task-specific required-field validation below;
+        # this helper only centralizes the JSON shape check.
+        if not isinstance(required, list):
+            raise ValueError("AI structured output schema is invalid")
+    return parsed_json
+
+
+def _provider_json_result(data: Any, response_format: str, task: str) -> dict[str, Any]:
+    """Normalize a non-streaming or stream-fallback provider response."""
+    if not isinstance(data, dict):
+        raise ValueError("AI provider returned an invalid response")
+    choices = data.get("choices")
+    if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
+        raise ValueError("AI provider returned an invalid response")
+    choice = choices[0]
+    message = choice.get("message") if isinstance(choice.get("message"), dict) else {}
+    text = _provider_text(message.get("content")) or _provider_text(choice.get("text"))
+    if not text.strip():
+        raise ValueError("AI returned no text")
+    parsed_json = None
+    if response_format == "json":
+        try:
+            parsed_json = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError("AI structured output is not valid JSON") from None
+        if not isinstance(parsed_json, dict):
+            raise ValueError("AI structured output must be a JSON object")
+        required = ai_contract(task, response_format).get("schema", {}).get("required", [])
+        missing = [field for field in required if field not in parsed_json]
+        if missing:
+            raise ValueError("AI structured output missing required fields: " + ", ".join(missing))
+    finish_reason = choice.get("finish_reason")
+    return {"text": text, "structured": parsed_json, "response_format": response_format,
+            "truncated": finish_reason not in {None, "stop"}, "finish_reason": finish_reason or "unknown"}
+
+
+def _provider_sse_result(response: Any, task: str, response_format: str, max_bytes: int = 2_000_000) -> dict[str, Any]:
+    """Decode an OpenAI-compatible SSE response without assuming one event per read.
+
+    ``HTTPResponse.readline`` handles TCP chunk boundaries while this parser
+    handles multi-line data fields, comments, ``[DONE]`` and providers that
+    omit an event id.  Every non-empty text delta receives a deterministic
+    local sequence; the provider id is retained when available.
+    """
+    events: list[dict[str, Any]] = []
+    data_lines: list[str] = []
+    event_id = ""
+    event_name = "message"
+    total = 0
+    saw_done = False
+    finish_reason: str | None = None
+
+    def dispatch() -> None:
+        nonlocal data_lines, event_id, event_name, saw_done, finish_reason
+        if not data_lines:
+            event_id, event_name = "", "message"
+            return
+        raw = "\n".join(data_lines).strip()
+        provider_id = event_id
+        data_lines, event_id, event_name = [], "", "message"
+        if raw == "[DONE]":
+            saw_done = True
+            return
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError:
+            raise ValueError("AI provider SSE data is not valid JSON") from None
+        if not isinstance(payload, dict):
+            raise ValueError("AI provider SSE event must be a JSON object")
+        provider_id = provider_id or str(payload.get("id") or "")
+        choices = payload.get("choices")
+        if not isinstance(choices, list) or not choices:
+            # Usage-only events are valid and do not produce a text chunk.
+            return
+        choice = choices[0] if isinstance(choices[0], dict) else {}
+        delta = choice.get("delta") if isinstance(choice.get("delta"), dict) else {}
+        text = _provider_text(delta.get("content")) or _provider_text(delta.get("text"))
+        if not text:
+            text = _provider_text(choice.get("text"))
+        if choice.get("finish_reason") is not None:
+            finish_reason = str(choice.get("finish_reason"))
+        if text:
+            events.append({"text": text, "provider_event_id": provider_id,
+                           "event": event_name, "payload_hash": hash_text(raw)})
+
+    while True:
+        line = response.readline(64 * 1024)
+        if not line:
+            break
+        total += len(line)
+        if total > max_bytes:
+            raise ValueError("AI provider SSE response too large")
+        try:
+            text_line = line.decode("utf-8")
+        except UnicodeDecodeError:
+            raise ValueError("AI provider SSE is not valid UTF-8") from None
+        text_line = text_line.rstrip("\r\n")
+        if text_line == "":
+            dispatch()
+            continue
+        if text_line.startswith(":"):
+            continue
+        field, separator, value = text_line.partition(":")
+        if not separator:
+            # SSE permits a field without a colon; its value is empty.  An
+            # unknown field is ignored, preserving compatibility with vendor
+            # heartbeats while still rejecting malformed JSON data events.
+            continue
+        if value.startswith(" "):
+            value = value[1:]
+        if field == "data":
+            data_lines.append(value)
+        elif field == "id":
+            event_id = value
+        elif field == "event":
+            event_name = value or "message"
+    dispatch()
+    if not events:
+        raise ValueError("AI provider SSE returned no text")
+    text = "".join(item["text"] for item in events)
+    parsed_json = None
+    if response_format == "json":
+        try:
+            parsed_json = json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError("AI structured output is not valid JSON") from None
+        if not isinstance(parsed_json, dict):
+            raise ValueError("AI structured output must be a JSON object")
+        required = ai_contract(task, response_format).get("schema", {}).get("required", [])
+        missing = [field for field in required if field not in parsed_json]
+        if missing:
+            raise ValueError("AI structured output missing required fields: " + ", ".join(missing))
+    return {"text": text, "structured": parsed_json, "response_format": response_format,
+            "truncated": finish_reason not in {None, "stop"} and not saw_done,
+            "finish_reason": finish_reason or ("stop" if saw_done else "unknown"),
+            "_chunks": events, "stream_transport": "provider_native_sse",
+            "provider_sse_complete": saw_done}
+
+
+def call_ai_provider(config: dict[str, str], task: str, context: dict[str, Any], instruction: str, response_format: str = "text", max_tokens: int = 3000, stream: bool = False) -> dict[str, Any]:
     # Validate at the provider boundary too: retry and other non-HTTP callers
     # must not bypass the public task contract.
     ai_contract(task, response_format)
@@ -670,46 +836,42 @@ def call_ai_provider(config: dict[str, str], task: str, context: dict[str, Any],
         "temperature": 0.65 if task in {"continue", "brainstorm", "scene"} else 0.35,
         "max_tokens": max_tokens,
     }
+    if stream:
+        payload["stream"] = True
     if response_format == "json":
         payload["response_format"] = {"type": "json_object"}
     request = urllib.request.Request(
         config["base_url"] + "/chat/completions",
         json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        {"Content-Type": "application/json", "Accept": "application/json", **({"Authorization": "Bearer " + config["api_key"]} if config["api_key"] else {})},
+        {"Content-Type": "application/json", "Accept": "text/event-stream" if stream else "application/json", **({"Authorization": "Bearer " + config["api_key"]} if config["api_key"] else {})},
     )
     try:
         with urllib.request.build_opener(NoAIRedirect()).open(request, timeout=90) as response:
-            raw = response.read(2_000_001)
-        if len(raw) > 2_000_000:
-            raise ValueError("AI response too large")
-        data = json.loads(raw)
-        choice = data.get("choices", [])[0]
-        message = choice.get("message", {})
-        text = message.get("content", "")
-        if isinstance(text, list):
-            text = "".join(part.get("text", "") for part in text if isinstance(part, dict))
-        if not isinstance(text, str) or not text.strip():
-            raise ValueError("AI returned no text")
+            content_type = response.headers.get_content_type()
+            if stream and content_type == "text/event-stream":
+                result = _provider_sse_result(response, task, response_format)
+                text = result["text"]
+            else:
+                raw = response.read(2_000_001)
+                if len(raw) > 2_000_000:
+                    raise ValueError("AI response too large")
+                try:
+                    data = json.loads(raw)
+                except json.JSONDecodeError:
+                    raise ValueError("AI provider returned invalid JSON") from None
+                result = _provider_json_result(data, response_format, task)
+                text = result["text"]
+                if stream:
+                    result["_chunks"] = [{"text": text, "provider_event_id": "", "event": "json-fallback", "payload_hash": hash_text(raw.decode("utf-8", errors="replace"))}]
+                    result["stream_transport"] = "provider_json_fallback"
         if config["api_key"]:
             text = text.replace(config["api_key"], "[密钥已隐藏]")
-        finish_reason = choice.get("finish_reason")
-        parsed_json = None
-        if response_format == "json":
-            try:
-                parsed_json = json.loads(text)
-            except json.JSONDecodeError:
-                raise ValueError("AI structured output is not valid JSON") from None
-            if not isinstance(parsed_json, dict):
-                raise ValueError("AI structured output must be a JSON object")
-            # JSON mode is a task contract, not merely a request for any
-            # parseable object.  Reject provider responses that omit required
-            # fields so the caller never treats an incomplete outline,
-            # continuity report, or scene card as a valid result.
-            required = ai_contract(task, response_format).get("schema", {}).get("required", [])
-            missing = [field for field in required if field not in parsed_json]
-            if missing:
-                raise ValueError("AI structured output missing required fields: " + ", ".join(missing))
-        return {"text": text, "structured": parsed_json, "response_format": response_format, "truncated": finish_reason not in {None, "stop"}, "finish_reason": finish_reason or "unknown"}
+        result["text"] = text
+        # API-key scrubbing must also cover the ledger chunks, while keeping
+        # the result public shape free from the private parser fields later.
+        if "_chunks" in result:
+            result["_chunks"] = [{**chunk, "text": str(chunk.get("text") or "").replace(config["api_key"], "[密钥已隐藏]")} for chunk in result["_chunks"]]
+        return result
     except urllib.error.HTTPError as exc:
         raise ValueError(f"AI provider returned HTTP {exc.code}") from None
     except (urllib.error.URLError, TimeoutError, OSError):
@@ -718,14 +880,39 @@ def call_ai_provider(config: dict[str, str], task: str, context: dict[str, Any],
         raise ValueError("AI provider returned an invalid response") from None
 
 
-def generate_ai(task: str, context: dict[str, Any], instruction: str, response_format: str = "text", max_tokens: int = 3000) -> dict[str, Any]:
+def _local_chunk_records(text: str, chunk_size: int = 800) -> list[dict[str, Any]]:
+    return [{"text": text[offset:offset + chunk_size], "provider_event_id": "", "event": "local", "payload_hash": hash_text(text[offset:offset + chunk_size])}
+            for offset in range(0, len(text), chunk_size) if text[offset:offset + chunk_size]]
+
+
+def persist_ai_chunks(conn: sqlite3.Connection, run_id: str, text: str, chunks: list[dict[str, Any]] | None = None) -> dict[str, Any]:
+    """Persist replayable output chunks for both native streams and queue jobs."""
+    chunks = chunks or _local_chunk_records(text)
+    # A provider may emit metadata-only events; only text contributes to the
+    # replay ledger.  If a parser returned no usable chunks, preserve the
+    # complete output as one deterministic local chunk.
+    chunks = [item for item in chunks if isinstance(item, dict) and isinstance(item.get("text"), str) and item.get("text")]
+    if not chunks and text:
+        chunks = _local_chunk_records(text)
+    cumulative = ""
+    for seq, item in enumerate(chunks, start=1):
+        piece = str(item.get("text") or "")
+        cumulative += piece
+        conn.execute(
+            "INSERT OR IGNORE INTO app_ai_chunk(id,project_id,branch_id,ai_run_id,seq,text,provider_event_id,event_name,payload_hash,cumulative_hash,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
+            (uid("aichunk_"), PROJECT_ID, BRANCH_ID, run_id, seq, piece, bounded_text(item.get("provider_event_id") or "", 512, "provider event id"), bounded_text(item.get("event") or "message", 80, "provider event name"), bounded_text(item.get("payload_hash") or hash_text(piece), 128, "provider payload hash"), hash_text(cumulative), now()),
+        )
+    return {"chunk_count": len(chunks), "last_seq": len(chunks), "output_hash": hash_text(cumulative) if chunks else None, "replayable": bool(chunks)}
+
+
+def generate_ai(task: str, context: dict[str, Any], instruction: str, response_format: str = "text", max_tokens: int = 3000, stream: bool = False) -> dict[str, Any]:
     ai_contract(task, response_format)
     config = ai_settings()
     if not config["base_url"] or not config["model"]:
         structured = offline_structured(task, context, instruction) if response_format == "json" else None
         text = json.dumps(structured, ensure_ascii=False) if structured is not None else offline_ai(task, context, instruction)
-        return {"mode": "offline", "model": "离线创作助手", "text": text, "structured": structured, "response_format": response_format, "truncated": False, "finish_reason": "offline"}
-    result = call_ai_provider(config, task, context, instruction, response_format, max_tokens)
+        return {"mode": "offline", "model": "离线创作助手", "text": text, "structured": structured, "response_format": response_format, "truncated": False, "finish_reason": "offline", "_chunks": _local_chunk_records(text) if stream else [], "stream_transport": "offline_buffered" if stream else "none"}
+    result = call_ai_provider(config, task, context, instruction, response_format, max_tokens, stream=stream)
     return {"mode": "provider", "model": config["model"], **result}
 
 
@@ -878,6 +1065,8 @@ def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, 
         "UPDATE ai_run SET mode=?,provider=?,model=?,model_snapshot=?,output_hash=?,ended_at=?,status=?,error=?,token_json=?,latency_ms=?,cost_json=? WHERE id=? AND project_id=? AND branch_id=?",
         (mode, mode, model, model, output_hash or None, finished, run_status, error_text, token_json, latency_ms, json_text(cost_data), job["ai_run_id"], PROJECT_ID, BRANCH_ID),
     )
+    if output:
+        persist_ai_chunks(conn, job["ai_run_id"], output, (result or {}).get("_chunks"))
     append_event(conn, job["ai_run_id"], "ai_run." + status, {"job_id": job["id"], "error": error_text, "attempt": job["attempt"]})
     payload = dict(job)
     payload.update({"status": status, "error": error_text, "result_json": result_json, "finished_at": finished})
@@ -1192,6 +1381,21 @@ def init_db() -> None:
             );
             CREATE INDEX IF NOT EXISTS idx_app_ai_job_queue ON app_ai_job(project_id, branch_id, status, created_at);
             CREATE INDEX IF NOT EXISTS idx_app_ai_job_run ON app_ai_job(ai_run_id);
+            CREATE TABLE IF NOT EXISTS app_ai_chunk(
+              id TEXT PRIMARY KEY,
+              project_id TEXT NOT NULL REFERENCES project(id),
+              branch_id TEXT NOT NULL REFERENCES branch(id),
+              ai_run_id TEXT NOT NULL REFERENCES ai_run(id),
+              seq INTEGER NOT NULL CHECK(seq > 0),
+              text TEXT NOT NULL,
+              provider_event_id TEXT NOT NULL DEFAULT '',
+              event_name TEXT NOT NULL DEFAULT 'message',
+              payload_hash TEXT NOT NULL,
+              cumulative_hash TEXT NOT NULL,
+              created_at TEXT NOT NULL,
+              UNIQUE(ai_run_id, seq)
+            );
+            CREATE INDEX IF NOT EXISTS idx_app_ai_chunk_run ON app_ai_chunk(project_id, branch_id, ai_run_id, seq);
             """
         )
         project_meta_columns = {row[1] for row in conn.execute("PRAGMA table_info(app_project_meta)")}
@@ -1494,7 +1698,7 @@ def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     """Project chapters and story metadata into one searchable local corpus."""
     entities = []
     for row in conn.execute(
-        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description "
+        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description,COALESCE(m.updated_at,'') updated_at "
         "FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id "
         "WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid", (PROJECT_ID,)
     ):
@@ -1507,8 +1711,14 @@ def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
 
     def put(kind: str, item_id: Any, title: Any, body: Any, *, metadata: dict[str, Any] | None = None,
             entity_ids: list[str] | None = None, source_chapter_id: str | None = None,
-            event_time: str = "", status: str = "") -> None:
-        metadata = metadata or {}
+            event_time: str = "", status: str = "", recency_at: str = "", evidence_score: float = 0,
+            evidence: str = "") -> None:
+        metadata = dict(metadata or {})
+        # Keep explainable rank signals in the same bounded projection as the
+        # FTS document. This avoids a second dependency or a hidden side table.
+        metadata.setdefault("recency_at", recency_at)
+        metadata.setdefault("evidence_score", evidence_score)
+        metadata.setdefault("evidence", evidence)
         title_text, body_text = str(title or ""), str(body or "")
         metadata_text = " ".join(str(value) for value in metadata.values() if value not in (None, "", []))
         # Two megabytes is the API body limit; indexing a bounded projection
@@ -1525,12 +1735,14 @@ def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         chapter_entity_ids = [entity_id for entity_id, name in entity_names if name and name in chapter.get("body", "")]
         put("chapter", chapter["id"], chapter["title"], chapter.get("body", ""),
             metadata={"goal": chapter.get("chapter_goal", ""), "recap": chapter.get("recap", ""), "hook": chapter.get("hook", "")},
-            entity_ids=chapter_entity_ids, source_chapter_id=chapter["id"], status=chapter.get("status", ""))
+            entity_ids=chapter_entity_ids, source_chapter_id=chapter["id"], status=chapter.get("status", ""),
+            recency_at=chapter.get("updated", ""), evidence_score=1, evidence="chapter_body")
     for entity in entities:
         put("setting", entity["id"], f"{entity['kind']} · {entity['canonical_name']}", entity.get("description", ""),
-            metadata={"kind": entity["kind"], "name": entity["canonical_name"]}, entity_ids=[entity["id"]])
+            metadata={"kind": entity["kind"], "name": entity["canonical_name"]}, entity_ids=[entity["id"]],
+            recency_at=entity.get("updated_at", ""), evidence_score=1, evidence="entity_card")
     for row in conn.execute(
-        "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.entity_id,cm.source_span_id,ss.document_node_id source_chapter_id,ss.quote source_quote "
+        "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.entity_id,cm.source_span_id,cm.created_at,ss.document_node_id source_chapter_id,ss.quote source_quote "
         "FROM candidate_memory cm LEFT JOIN source_span ss ON ss.id=cm.source_span_id "
         "WHERE cm.project_id=? AND cm.branch_id=? AND cm.status IN ('candidate','accepted') ORDER BY cm.rowid", (PROJECT_ID, BRANCH_ID)
     ):
@@ -1540,17 +1752,21 @@ def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
             payload = {}
         name = payload.get("name") or payload.get("text") or row["id"]
         body = " · ".join(str(part) for part in (payload.get("note", ""), payload.get("source", ""), payload.get("source_quote") or row["source_quote"] or "") if part)
-        put("memory", row["id"], name, body, metadata={"type": row["kind"], "key": payload.get("key", ""), "name": name},
-            entity_ids=[row["entity_id"]] if row["entity_id"] else [], source_chapter_id=payload.get("source_chapter_id") or row["source_chapter_id"], status="已确认" if row["status"] == "accepted" else "待确认")
+        source_span_id = row["source_span_id"]
+        put("memory", row["id"], name, body, metadata={"type": row["kind"], "key": payload.get("key", ""), "name": name, "source_span_id": source_span_id or ""},
+            entity_ids=[row["entity_id"]] if row["entity_id"] else [], source_chapter_id=payload.get("source_chapter_id") or row["source_chapter_id"],
+            status="已确认" if row["status"] == "accepted" else "待确认", recency_at=row["created_at"] if "created_at" in row.keys() else "",
+            evidence_score=3 if source_span_id and row["status"] == "accepted" else (2 if source_span_id else 1), evidence="source_span" if source_span_id else "memory_note")
     for row in conn.execute(
-        "SELECT p.id,p.stage,p.text,fl.chapter_id,fl.kind link_kind,fl.note FROM app_plot_item p "
+        "SELECT p.id,p.stage,p.text,p.updated_at,fl.chapter_id,fl.kind link_kind,fl.note FROM app_plot_item p "
         "LEFT JOIN app_foreshadow_link fl ON fl.plot_id=p.id AND fl.project_id=p.project_id AND fl.branch_id=p.branch_id "
         "WHERE p.project_id=? AND p.branch_id=? ORDER BY p.rowid,fl.created_at", (PROJECT_ID, BRANCH_ID)
     ):
         body = " · ".join(str(part) for part in (row["text"], row["note"] or "", row["link_kind"] or "") if part)
-        put("foreshadow", row["id"], f"伏笔 · {row['stage']}", body, metadata={"stage": row["stage"]}, source_chapter_id=row["chapter_id"])
+        put("foreshadow", row["id"], f"伏笔 · {row['stage']}", body, metadata={"stage": row["stage"]}, source_chapter_id=row["chapter_id"],
+            recency_at=row["updated_at"], evidence_score=2 if row["chapter_id"] else 1, evidence="foreshadow_link" if row["chapter_id"] else "plot_card")
     for row in conn.execute(
-        "SELECT id,title,event_time,chapter_id,entity_ids_json,summary,status FROM app_timeline_event "
+        "SELECT id,title,event_time,chapter_id,entity_ids_json,summary,status,created_at FROM app_timeline_event "
         "WHERE project_id=? AND branch_id=? ORDER BY ordinal,event_time,created_at", (PROJECT_ID, BRANCH_ID)
     ):
         try:
@@ -1558,7 +1774,8 @@ def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
         except (TypeError, json.JSONDecodeError):
             event_entities = []
         put("timeline", row["id"], row["title"], row["summary"], metadata={"event_time": row["event_time"], "status": row["status"]},
-            entity_ids=event_entities, source_chapter_id=row["chapter_id"], event_time=row["event_time"], status=row["status"])
+            entity_ids=event_entities, source_chapter_id=row["chapter_id"], event_time=row["event_time"], status=row["status"],
+            recency_at=row["created_at"], evidence_score=2 if row["chapter_id"] else 1, evidence="timeline_event")
     return documents
 
 
@@ -1590,7 +1807,7 @@ def refresh_search_index(conn: sqlite3.Connection) -> str:
     return mode
 
 
-def _fts_search(conn: sqlite3.Connection, query: str, filters: dict[str, str]) -> tuple[dict[str, int], str]:
+def _fts_search(conn: sqlite3.Connection, query: str, filters: dict[str, str]) -> tuple[dict[str, dict[str, Any]], str]:
     mode = refresh_search_index(conn)
     if mode == "none":
         return {}, mode
@@ -1611,11 +1828,11 @@ def _fts_search(conn: sqlite3.Connection, query: str, filters: dict[str, str]) -
         predicates.append("d.event_time<=?"); params.append(filters["time_to"])
     if filters.get("status"):
         predicates.append("d.status=?"); params.append(filters["status"])
-    rows = conn.execute("SELECT d.doc_key FROM app_search_fts JOIN app_search_document d ON d.doc_key=app_search_fts.doc_key WHERE " + " AND ".join(predicates) + " ORDER BY bm25(app_search_fts,8.0,3.0,1.0,6.0),d.doc_key", params).fetchall()
-    return {row["doc_key"]: max(1, len(rows) - index) for index, row in enumerate(rows)}, mode
+    rows = conn.execute("SELECT d.doc_key,bm25(app_search_fts,8.0,3.0,1.0,6.0) bm25_score FROM app_search_fts JOIN app_search_document d ON d.doc_key=app_search_fts.doc_key WHERE " + " AND ".join(predicates) + " ORDER BY bm25_score,d.doc_key", params).fetchall()
+    return {row["doc_key"]: {"rank": index + 1, "bm25": round(float(row["bm25_score"]), 8)} for index, row in enumerate(rows)}, mode
 
 
-def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: dict[str, str] | None = None) -> list[dict[str, Any]]:
+def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: dict[str, str] | None = None, explain: bool = False) -> list[dict[str, Any]]:
     """Search the author's working set with stable, source-aware results.
 
     The default path uses a local SQLite FTS5 CJK n-gram projection and keeps
@@ -1630,12 +1847,20 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: 
     fts_hits, index_mode = _fts_search(conn, needle, filters)
     indexed_meta: dict[str, dict[str, Any]] = {}
     if index_mode != "none":
-        for row in conn.execute("SELECT doc_key,entity_ids_json,event_time,status,source_chapter_id FROM app_search_document WHERE project_id=? AND branch_id=?", (PROJECT_ID, BRANCH_ID)):
+        for row in conn.execute("SELECT doc_key,entity_ids_json,event_time,status,source_chapter_id,metadata_json FROM app_search_document WHERE project_id=? AND branch_id=?", (PROJECT_ID, BRANCH_ID)):
             try:
                 entity_ids = json.loads(row["entity_ids_json"] or "[]")
             except (TypeError, json.JSONDecodeError):
                 entity_ids = []
-            indexed_meta[row["doc_key"]] = {"entity_ids": entity_ids, "event_time": row["event_time"], "status": row["status"], "source_chapter_id": row["source_chapter_id"]}
+            try:
+                metadata = json.loads(row["metadata_json"] or "{}")
+            except (TypeError, json.JSONDecodeError):
+                metadata = {}
+            indexed_meta[row["doc_key"]] = {
+                "entity_ids": entity_ids, "event_time": row["event_time"], "status": row["status"],
+                "source_chapter_id": row["source_chapter_id"], "recency_at": str(metadata.get("recency_at") or ""),
+                "evidence_score": float(metadata.get("evidence_score") or 0), "evidence": str(metadata.get("evidence") or ""),
+            }
     folded = needle.casefold()
     found: list[dict[str, Any]] = []
     chapter_titles = {row["id"]: row["title"] for row in conn.execute(
@@ -1668,7 +1893,7 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: 
             return
         if filters.get("time_to") and (not event_time or event_time > filters["time_to"]):
             return
-        score = max(fts_hits.get(doc_key, 0), 2 if folded in title_text.casefold() else 1)
+        lexical = fts_hits.get(doc_key) or {}
         found.append({
             "type": kind,
             "id": str(item_id),
@@ -1676,8 +1901,13 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: 
             "text": _search_excerpt(body_text or title_text, needle),
             "source_chapter_id": source_chapter_id,
             "source_chapter_title": source_chapter_title or (chapter_titles.get(source_chapter_id) if source_chapter_id else None),
-            "score": score,
+            "score": 0,
             "index_mode": index_mode,
+            "_lexical_rank": int(lexical.get("rank") or 0),
+            "_bm25": lexical.get("bm25"),
+            "_recency_at": str(extra.get("recency_at") or ""),
+            "_evidence_score": float(extra.get("evidence_score") or 0),
+            "_evidence": str(extra.get("evidence") or ""),
             **extra,
         })
 
@@ -1739,9 +1969,65 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: 
         add("timeline", row["id"], row["title"], text, source_chapter_id=row["chapter_id"],
             score_text=row["title"], event_time=row["event_time"], status=row["status"], ordinal=row["ordinal"])
 
-    # Prefer title hits, then preserve insertion order across source types.
-    found.sort(key=lambda item: -int(item.get("score", 0)))
-    return found[: max(1, min(200, int(limit)))]
+    if not found:
+        return []
+    # A bounded reciprocal-rank fusion combines lexical BM25 with two signals
+    # that remain explainable to an author: recency and evidence quality.
+    # Ranks are computed over the filtered candidate set, so hard filters are
+    # applied before any score can influence the result.
+    fts_count = len(fts_hits)
+    insertion_order = {id(item): index for index, item in enumerate(found)}
+    for item in found:
+        if not item["_lexical_rank"]:
+            item["_lexical_rank"] = fts_count + insertion_order[id(item)] + 1
+    recency_order = sorted(found, key=lambda item: (bool(item["_recency_at"]), item["_recency_at"], -insertion_order[id(item)]), reverse=True)
+    evidence_order = sorted(found, key=lambda item: (item["_evidence_score"], bool(item.get("source_chapter_id")), -insertion_order[id(item)]), reverse=True)
+    recency_ranks = {id(item): index + 1 for index, item in enumerate(recency_order)}
+    evidence_ranks = {id(item): index + 1 for index, item in enumerate(evidence_order)}
+    rrf_k = 60
+    weights = {"lexical": 0.65, "recency": 0.20, "evidence": 0.15}
+    for item in found:
+        ranks = {"lexical": item["_lexical_rank"], "recency": recency_ranks[id(item)], "evidence": evidence_ranks[id(item)]}
+        fused = sum(weights[name] / (rrf_k + rank) for name, rank in ranks.items())
+        item["score"] = round(fused * 10_000, 6)
+        if explain:
+            item["explain"] = {
+                "method": "rrf",
+                "rrf_k": rrf_k,
+                "weights": weights,
+                "ranks": ranks,
+                "signals": {"bm25": item["_bm25"], "recency_at": item["_recency_at"], "evidence_score": item["_evidence_score"], "evidence": item["_evidence"]},
+                "hard_filters": filters,
+                "scope": {"project_id": PROJECT_ID, "branch_id": BRANCH_ID, "source_chapter_id": item.get("source_chapter_id"), "entity_ids": item.get("entity_ids", [])},
+            }
+    ranked = sorted(found, key=lambda item: (-float(item["score"]), insertion_order[id(item)]))
+    requested = max(1, min(200, int(limit)))
+    # Lightweight source diversity prevents a single chapter/type from
+    # consuming the complete result window while preserving a deterministic
+    # second pass when there are too few distinct sources.
+    source_cap = max(2, (requested + 2) // 3)
+    type_cap = max(5, (requested + 1) // 2)
+    selected: list[dict[str, Any]] = []
+    source_counts: dict[str, int] = {}
+    type_counts: dict[str, int] = {}
+    deferred: list[dict[str, Any]] = []
+    for item in ranked:
+        source = str(item.get("source_chapter_id") or f"{item['type']}:{item['id']}")
+        kind = str(item["type"])
+        if source_counts.get(source, 0) >= source_cap or type_counts.get(kind, 0) >= type_cap:
+            deferred.append(item)
+            continue
+        selected.append(item); source_counts[source] = source_counts.get(source, 0) + 1; type_counts[kind] = type_counts.get(kind, 0) + 1
+        if len(selected) >= requested:
+            break
+    if len(selected) < requested:
+        selected.extend(deferred[: requested - len(selected)])
+    for item in selected:
+        if explain:
+            item["explain"]["diversity"] = {"source_key": str(item.get("source_chapter_id") or f"{item['type']}:{item['id']}"), "source_cap": source_cap, "type_cap": type_cap}
+        for key in ("_lexical_rank", "_bm25", "_recency_at", "_evidence_score", "_evidence"):
+            item.pop(key, None)
+    return selected
 
 
 def chapter_commit_rows(conn: sqlite3.Connection, chapter_id: str) -> list[dict[str, Any]]:
@@ -2514,6 +2800,193 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
     }
 
 
+def projection_health(conn: sqlite3.Connection) -> dict[str, Any]:
+    """Report whether the durable story projections agree with their source.
+
+    This is intentionally read-only.  A doctor request must not refresh the
+    search index or alter a queued job; it gives the UI enough evidence to
+    decide whether a retry/rebuild is needed.  ``ok`` describes consistency,
+    while ``status`` also distinguishes a disabled or degraded projection.
+    """
+
+    issues: list[dict[str, Any]] = []
+
+    def issue(code: str, severity: str, message: str, **details: Any) -> None:
+        item: dict[str, Any] = {"code": code, "severity": severity, "message": message}
+        if details:
+            item["details"] = details
+        issues.append(item)
+
+    state_row = conn.execute(
+        "SELECT version FROM app_state_version WHERE project_id=?", (PROJECT_ID,)
+    ).fetchone()
+    state_version = int(state_row["version"] if state_row else 0)
+    event_count = int(
+        conn.execute("SELECT COUNT(*) FROM event_log WHERE project_id=?", (PROJECT_ID,)).fetchone()[0]
+    )
+    if state_version != event_count:
+        issue(
+            "state_version_event_count_mismatch",
+            "error",
+            "state version does not match the append-only event count",
+            state_version=state_version,
+            event_count=event_count,
+        )
+
+    branch = conn.execute(
+        "SELECT id,head_revision,status FROM branch WHERE id=? AND project_id=?",
+        (BRANCH_ID, PROJECT_ID),
+    ).fetchone()
+    branch_head = branch["head_revision"] if branch else None
+    branch_status = branch["status"] if branch else "missing"
+    if branch is None:
+        issue("branch_missing", "error", "active branch is missing", branch_id=BRANCH_ID)
+    elif branch_status != "active":
+        issue("branch_not_active", "warning", "active branch is not marked active", status=branch_status)
+    if branch_head:
+        head_row = conn.execute(
+            "SELECT id,document_node_id,branch_id FROM document_revision WHERE id=?",
+            (branch_head,),
+        ).fetchone()
+        if head_row is None:
+            issue("branch_head_missing", "error", "branch head points to a missing revision", head_revision=branch_head)
+        elif head_row["branch_id"] != BRANCH_ID:
+            issue("branch_head_scope_mismatch", "error", "branch head points to another branch", head_revision=branch_head, revision_branch=head_row["branch_id"])
+
+    # The local search projection is versioned against app_state_version.  Do
+    # not call refresh_search_index here: health checks must remain read-only.
+    configured_mode = SEARCH_INDEX_MODE if SEARCH_INDEX_MODE in {"bigram", "fts", "none"} else "bigram"
+    search_row = conn.execute(
+        "SELECT indexed_version,mode,updated_at FROM app_search_index_state WHERE project_id=? AND branch_id=?",
+        (PROJECT_ID, BRANCH_ID),
+    ).fetchone()
+    indexed_documents = int(
+        conn.execute(
+            "SELECT COUNT(*) FROM app_search_document WHERE project_id=? AND branch_id=?",
+            (PROJECT_ID, BRANCH_ID),
+        ).fetchone()[0]
+    )
+    expected_documents = len(_search_documents(conn)) if configured_mode != "none" else 0
+    if configured_mode == "none":
+        index_status = "disabled"
+        index_lag = 0
+    elif search_row is None:
+        index_status = "missing"
+        index_lag = state_version
+        issue("search_index_missing", "warning", "search index has no checkpoint for this branch", state_version=state_version)
+    else:
+        indexed_version = int(search_row["indexed_version"])
+        index_lag = max(0, state_version - indexed_version)
+        index_status = "current" if indexed_version == state_version and search_row["mode"] == configured_mode and indexed_documents == expected_documents else "stale"
+        if index_status != "current":
+            issue(
+                "search_index_stale",
+                "warning",
+                "search projection is behind the durable story state",
+                indexed_version=indexed_version,
+                state_version=state_version,
+                indexed_mode=search_row["mode"],
+                configured_mode=configured_mode,
+                indexed_documents=indexed_documents,
+                expected_documents=expected_documents,
+            )
+
+    checkpoint_rows = [dict(row) for row in conn.execute(
+        "SELECT index_name,source_revision,index_version,model,status,last_error,updated_at FROM index_checkpoint WHERE project_id=? ORDER BY index_name",
+        (PROJECT_ID,),
+    )]
+    for checkpoint in checkpoint_rows:
+        if checkpoint["status"] in {"failed", "rebuilding", "stale"}:
+            issue(
+                "index_checkpoint_not_current",
+                "error" if checkpoint["status"] == "failed" else "warning",
+                "an index checkpoint is not current",
+                index_name=checkpoint["index_name"],
+                status=checkpoint["status"],
+                last_error=checkpoint["last_error"],
+            )
+        if branch_head and checkpoint["source_revision"] and checkpoint["source_revision"] != branch_head and checkpoint["status"] == "current":
+            issue(
+                "index_checkpoint_revision_mismatch",
+                "warning",
+                "current index checkpoint was built from an older branch revision",
+                index_name=checkpoint["index_name"],
+                source_revision=checkpoint["source_revision"],
+                branch_head=branch_head,
+            )
+
+    job_counts = {
+        row["status"]: int(row["count"])
+        for row in conn.execute(
+            "SELECT status,COUNT(*) count FROM app_ai_job WHERE project_id=? AND branch_id=? GROUP BY status",
+            (PROJECT_ID, BRANCH_ID),
+        )
+    }
+    pending_jobs = job_counts.get("queued", 0) + job_counts.get("running", 0)
+    failed_jobs = job_counts.get("failed", 0)
+    if failed_jobs:
+        issue("ai_jobs_failed", "warning", "AI queue contains failed jobs", failed=failed_jobs)
+
+    commits = [dict(row) for row in conn.execute(
+        "SELECT c.id,c.chapter_id,c.stage,c.status,c.revision_id,c.created_at,c.updated_at,n.title "
+        "FROM app_chapter_commit c JOIN document_node n ON n.id=c.chapter_id "
+        "WHERE c.project_id=? AND c.branch_id=? ORDER BY c.rowid DESC",
+        (PROJECT_ID, BRANCH_ID),
+    )]
+    latest_by_chapter: dict[str, dict[str, Any]] = {}
+    stage_order = {"prewrite": 1, "precommit": 2, "postcommit": 3}
+    for row in commits:
+        latest_by_chapter.setdefault(row["chapter_id"], row)
+        if row["revision_id"] and conn.execute(
+            "SELECT 1 FROM document_revision WHERE id=? AND document_node_id=? AND branch_id=?",
+            (row["revision_id"], row["chapter_id"], BRANCH_ID),
+        ).fetchone() is None:
+            issue("commit_revision_missing", "error", "chapter commit points to a missing or out-of-scope revision", commit_id=row["id"], chapter_id=row["chapter_id"], revision_id=row["revision_id"])
+    for chapter_id in {row["chapter_id"] for row in commits}:
+        rows = [row for row in commits if row["chapter_id"] == chapter_id]
+        passed = {row["stage"] for row in rows if row["status"] in {"passed", "overridden"}}
+        for stage, prerequisite in (("precommit", "prewrite"), ("postcommit", "precommit")):
+            if stage in passed and prerequisite not in passed:
+                issue("commit_stage_gap", "error", "chapter commit stages are out of order", chapter_id=chapter_id, stage=stage, missing=prerequisite)
+        latest = latest_by_chapter[chapter_id]
+        current = conn.execute(
+            "SELECT r.id FROM document_revision r WHERE r.document_node_id=? AND r.branch_id=? ORDER BY r.rowid DESC LIMIT 1",
+            (chapter_id, BRANCH_ID),
+        ).fetchone()
+        if latest["stage"] == "postcommit" and current and latest["revision_id"] != current["id"]:
+            issue("commit_projection_stale", "warning", "chapter changed after its latest postcommit snapshot", chapter_id=chapter_id, committed_revision=latest["revision_id"], current_revision=current["id"])
+
+    latest_commit = commits[0] if commits else None
+    return {
+        "ok": not any(item["severity"] == "error" for item in issues),
+        "status": "healthy" if not issues else ("degraded" if not any(item["severity"] == "error" for item in issues) else "inconsistent"),
+        "project_id": PROJECT_ID,
+        "branch": {"id": BRANCH_ID, "status": branch_status, "head_revision": branch_head},
+        "state": {"version": state_version, "event_count": event_count},
+        "search_index": {
+            "status": index_status,
+            "mode": configured_mode,
+            "indexed_version": int(search_row["indexed_version"]) if search_row else None,
+            "state_version": state_version,
+            "lag": index_lag,
+            "indexed_documents": indexed_documents,
+            "expected_documents": expected_documents,
+            "updated_at": search_row["updated_at"] if search_row else None,
+        },
+        "index_checkpoints": checkpoint_rows,
+        "ai_queue": {"pending": pending_jobs, "failed": failed_jobs, "counts": job_counts},
+        "commit": {
+            "count": len(commits),
+            "latest": latest_commit,
+            "chapters": [
+                {"chapter_id": chapter_id, "title": latest_by_chapter[chapter_id]["title"], "stage": latest_by_chapter[chapter_id]["stage"], "status": latest_by_chapter[chapter_id]["status"], "revision_id": latest_by_chapter[chapter_id]["revision_id"]}
+                for chapter_id in latest_by_chapter
+            ],
+        },
+        "issues": issues,
+    }
+
+
 def update_chapter(conn: sqlite3.Connection, chapter_id: str, data: dict[str, Any], expected_head: object = _UNSET) -> bool:
     check_expected_branch_head(conn, expected_head)
     row = conn.execute(
@@ -2711,7 +3184,7 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(raw)
 
-    def send_sse(self, events: list[tuple[str, Any]]) -> None:
+    def send_sse(self, events: list[tuple[str, Any] | tuple[str, Any, int]]) -> None:
         """Send a replayable SSE envelope for clients that want incremental UI updates.
 
         The current standard-library adapter buffers the provider response before
@@ -2724,8 +3197,12 @@ class Handler(SimpleHTTPRequestHandler):
         self.send_header("Cache-Control", "no-cache")
         self.send_header("Connection", "close")
         self.end_headers()
-        for event, payload in events:
+        for item in events:
+            event, payload = item[0], item[1]
+            event_id = item[2] if len(item) > 2 else None
             raw = json.dumps(payload, ensure_ascii=False)
+            if event_id is not None:
+                self.wfile.write(f"id: {int(event_id)}\n".encode("ascii"))
             self.wfile.write(f"event: {event}\ndata: {raw}\n\n".encode("utf-8"))
             self.wfile.flush()
 
@@ -2784,6 +3261,8 @@ class Handler(SimpleHTTPRequestHandler):
                 ensure_seed(conn)
                 if parsed.path == "/api/health":
                     return self.send_json(200, {"ok": True, "db": str(DB_PATH), "schema_version": conn.execute("PRAGMA user_version").fetchone()[0]})
+                if parsed.path in {"/api/doctor", "/api/projection-health", "/api/health/projections"}:
+                    return self.send_json(200, projection_health(conn))
                 if parsed.path == "/api/ai/queue":
                     query = parse_qs(parsed.query)
                     status_filter = (query.get("status") or [""])[0]
@@ -2939,8 +3418,9 @@ class Handler(SimpleHTTPRequestHandler):
                     filters = {key: (query_params.get(key) or [""])[0].strip() for key in ("kind", "chapter_id", "entity_id", "status", "time_from", "time_to")}
                     if any(len(value) > 200 for value in filters.values()):
                         return self.send_json(400, {"error": "search filter too long"})
+                    explain_requested = (query_params.get("explain") or ["0"])[0].strip().lower() in {"1", "true", "yes"}
                     effective_mode = SEARCH_INDEX_MODE if SEARCH_INDEX_MODE in {"bigram", "fts", "none"} else "bigram"
-                    return self.send_json(200, {"query": query, "limit": limit, "filters": filters, "index_mode": effective_mode, "results": search_rows(conn, query, limit, filters)})
+                    return self.send_json(200, {"query": query, "limit": limit, "filters": filters, "explain": explain_requested, "index_mode": effective_mode, "results": search_rows(conn, query, limit, filters, explain_requested)})
                 if parsed.path == "/api/export/epub":
                     export_override = self.headers.get("X-Moyu-Export-Override", "").strip()
                     export_issues = export_finalization_issues(conn)
@@ -3435,20 +3915,26 @@ class Handler(SimpleHTTPRequestHandler):
                     started_at = now()
                     started_clock = time.perf_counter()
                     try:
-                        result = generate_ai(task, context, instruction, response_format, max_tokens)
+                        result = generate_ai(task, context, instruction, response_format, max_tokens, stream=stream_requested)
                     except Exception as exc:
                         latency_ms = round((time.perf_counter() - started_clock) * 1000)
                         run_id = record_ai_run(conn, task, context, instruction, {"mode": "provider", "model": "unknown", "text": ""}, started_at, latency_ms, status="failed", error=str(exc), response_format=response_format, max_tokens=max_tokens)
                         return self.send_json(502, {"error": "AI generation failed", "ai_run_id": run_id, "contract": contract})
                     run_id = record_ai_run(conn, task, context, instruction, result, started_at, round((time.perf_counter() - started_clock) * 1000), response_format=response_format, max_tokens=max_tokens)
+                    stream_info = persist_ai_chunks(conn, run_id, str(result.get("text") or ""), result.get("_chunks")) if result.get("text") else {"chunk_count": 0, "last_seq": 0, "replayable": False}
+                    # Commit the ledger before writing the response.  If a
+                    # browser disconnects while receiving SSE, it can still
+                    # reconnect and replay the committed chunks.
+                    conn.commit()
                     if stream_requested:
                         text_value = str(result.get("text") or "")
-                        events: list[tuple[str, Any]] = [("run", {"ai_run_id": run_id, "task": task, "contract": contract, "streaming": "buffered_sse"})]
-                        for offset in range(0, len(text_value), 800):
-                            events.append(("delta", {"ai_run_id": run_id, "text": text_value[offset:offset + 800]}))
-                        events.append(("done", {"ai_run_id": run_id, "status": "success", "response_format": response_format, "structured": result.get("structured"), "quota": ai_quota_snapshot(conn)}))
+                        events: list[tuple[str, Any] | tuple[str, Any, int]] = [("run", {"ai_run_id": run_id, "task": task, "contract": contract, "streaming": result.get("stream_transport", "buffered_sse"), "replayable": stream_info["replayable"], "last_seq": stream_info["last_seq"], "resume": f"/api/ai/runs/{run_id}/stream"})]
+                        for chunk in conn.execute("SELECT seq,text,provider_event_id FROM app_ai_chunk WHERE ai_run_id=? AND project_id=? AND branch_id=? ORDER BY seq", (run_id, PROJECT_ID, BRANCH_ID)):
+                            events.append(("delta", {"ai_run_id": run_id, "seq": chunk["seq"], "text": chunk["text"], "provider_event_id": chunk["provider_event_id"], "replayable": True}, int(chunk["seq"])))
+                        events.append(("done", {"ai_run_id": run_id, "status": "success", "response_format": response_format, "structured": result.get("structured"), "last_seq": stream_info["last_seq"], "resume": f"/api/ai/runs/{run_id}/stream", "quota": ai_quota_snapshot(conn)}))
                         return self.send_sse(events)
-                    return self.send_json(200, {"task": task, "ai_run_id": run_id, "contract": contract, "streaming": False, "stream_requested": stream_requested, "quota": ai_quota_snapshot(conn), "context": {"chapter_id": chapter_id, "memory_count": len(context["confirmed_memory"]), "previous_chapter_count": len(context["previous_chapters"]), "retrieved_count": len(context.get("retrieved_chapters", [])), "budget": context.get("context_budget")}, **result})
+                    public_result = {key: value for key, value in result.items() if key != "_chunks"}
+                    return self.send_json(200, {"task": task, "ai_run_id": run_id, "contract": contract, "streaming": False, "stream_requested": stream_requested, "stream": stream_info, "quota": ai_quota_snapshot(conn), "context": {"chapter_id": chapter_id, "memory_count": len(context["confirmed_memory"]), "previous_chapter_count": len(context["previous_chapters"]), "retrieved_count": len(context.get("retrieved_chapters", [])), "budget": context.get("context_budget")}, **public_result})
                 if parsed.path == "/api/ai/prompt-preview":
                     task = bounded_text(data.get("task"), 40, "AI task")
                     if task not in AI_TASKS:

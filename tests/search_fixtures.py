@@ -44,9 +44,12 @@ def main() -> None:
         call("/api/timeline", "POST", {"title": "北塔钟响", "summary": "雾港第一次听见钟声", "event_time": "0003-02-01", "chapter_id": chapter["id"]})
         call("/api/foreshadow-links", "POST", {"plot_id": plot["id"], "chapter_id": chapter["id"], "kind": "plant"})
 
-        def search(term: str, **filters: str) -> list[dict]:
+        def search_payload(term: str, **filters: str) -> dict:
             path = "/api/search?" + urllib.parse.urlencode({"q": term, "limit": 20, **filters})
-            return call(path)["results"]
+            return call(path)
+
+        def search(term: str, **filters: str) -> list[dict]:
+            return search_payload(term, **filters)["results"]
 
         assert any(item["type"] == "chapter" and item["source_chapter_id"] == chapter["id"] for item in search("雾港回声"))
         assert any(item["type"] == "setting" for item in search("北塔"))
@@ -60,6 +63,17 @@ def main() -> None:
         assert all(item["type"] == "setting" for item in search("北塔", entity_id=record["id"]))
         assert any(item["type"] == "timeline" for item in search("钟声", time_from="0003-01-01", time_to="0003-12-31", kind="timeline"))
         assert not search("钟声", time_from="0004-01-01", kind="timeline")
+        explained = search_payload("沈砚", explain="1")
+        assert explained["explain"] is True
+        assert explained["results"]
+        for item in explained["results"]:
+            detail = item["explain"]
+            assert detail["method"] == "rrf"
+            assert set(detail["ranks"]) == {"lexical", "recency", "evidence"}
+            assert detail["scope"]["project_id"] == "default-project"
+            assert detail["scope"]["branch_id"] == "main"
+        chapter_only = search_payload("钟声", chapter_id=chapter["id"], explain="1")
+        assert chapter_only["results"] and all(item["source_chapter_id"] == chapter["id"] for item in chapter_only["results"])
     finally:
         process.terminate()
         process.wait(timeout=3)
