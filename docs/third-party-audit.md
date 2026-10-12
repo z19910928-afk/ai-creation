@@ -10,14 +10,52 @@
 
 | 项目 | 对照快照 | 许可证/注意事项 | 借鉴主题 |
 |---|---|---|---|
-| [NovelForge](https://github.com/RhythmicWave/NovelForge) | v0.9.8，`a485814` | AGPL-3.0，并带商业托管条款；不复制实现 | 设定卡层级、预览后写入记忆、关系图、审查门和多轮续写预算 |
-| [MuMuAINovel](https://github.com/xiamuceer-j/MuMuAINovel) | main，`99f0aec` | GPL-3.0；不复制实现 | RTCO 分层上下文、章节/重要度记忆、SSE 重试、provider 抽象 |
-| [arboris-novel](https://github.com/t59688/arboris-novel) | v1.1.3，`dd80c69` | 仓库未发现 LICENSE；README 的 MIT 文字不足以替代许可文件 | Planner→Director→Writer、任务卡、时间线和伏笔状态 |
-| [Ai-Novel](https://github.com/inliver233/Ai-Novel) | dev，`8b85b2b` | 该快照未发现 LICENSE；不能把其他分支的 MIT 说明当作本快照授权 | 章节上下文编排、摘要/首尾片段、混合检索、输出契约 |
-| [91Writing](https://github.com/ponysb/91Writing) | HEAD，`df3de03` | MIT；仍需保留上游版权和许可证声明（本项目未复制代码） | 材料选择、提示预览、章节状态、时间线和备份入口 |
-| [webnovel-writer](https://github.com/lingfengQAQ/webnovel-writer) | v6 分支 | GPL-3.0；不复制实现 | Story System、`CHAPTER_COMMIT`、投影索引、prewrite/precommit/postcommit 门 |
+| [NovelForge](https://github.com/RhythmicWave/NovelForge) | `main`，`a485814411546b3980df0a1696a0fb6a043d56ce`（v0.9.8） | 根目录 `LICENSE` 为 AGPL-3.0；不复制实现 | 设定卡层级、预览后写入记忆、关系图、审查门和多轮续写预算 |
+| [MuMuAINovel](https://github.com/xiamuceer-j/MuMuAINovel) | `main`，`99f0aec6ce3b1c65652d20007be930ebba6a6d20` | 根目录 `LICENSE` 为 GPL-3.0；不复制实现 | RTCO 分层上下文、章节/重要度记忆、SSE 重试、provider 抽象 |
+| [arboris-novel](https://github.com/t59688/arboris-novel) | `main`，`dd80c69bc30a80d68b375bd504c6bc308164ff9e` | 固定 clone 未发现 `LICENSE`；README 的 MIT badge/文字不足以替代许可文件 | Planner→Director→Writer、任务卡、时间线和伏笔状态 |
+| [Ai-Novel](https://github.com/inliver233/Ai-Novel) | `dev`，`8b85b2b6f29af4c69241be7c42417dbe4795db30` | 该快照未发现 `LICENSE`；README License 节写明后续补充，不能把其他分支的 MIT 说明当作本快照授权 | 章节上下文编排、摘要/首尾片段、混合检索、输出契约 |
+| [91Writing](https://github.com/ponysb/91Writing) | `main`，`df3de0362e8e4028b76dffa78c5bba7b8bbd20a1` | 根目录 `LICENSE` 为 MIT；本项目未复制代码 | 材料选择、提示预览、章节状态、时间线和备份入口 |
+| [webnovel-writer](https://github.com/lingfengQAQ/webnovel-writer) | `master`，`0af0c0b2fc2e4104e8a12c1d62136c6595a6a983` | 根目录 `LICENSE` 为 GPL-3.0；不复制实现 | Story System、`CHAPTER_COMMIT`、投影索引、prewrite/precommit/postcommit 门 |
 
 GPL/AGPL 项目的架构想法可以作为公开事实和一般工程经验参考，但其实现、文本、模板和提示词不能直接移植到本项目的 MIT 代码中。对未明确许可的快照采取“不复制”的处理，若未来需要代码级依赖，先取得书面授权并隔离许可证义务。
+
+## 代码路径级复核证据
+
+本节把“项目支持某能力”的判断收敛到固定 commit 中的路径。证据来自 2026-10-12 的只读 clone；路径用于复核入口，不代表上游功能已经达到生产 SLA。
+
+| 项目 | 复核到的实现/测试路径 | 观察到的能力 | 复核限制 |
+|---|---|---|---|
+| NovelForge | `backend/app/services/workflow/engine/scheduler.py`、`backend/app/api/endpoints/ai.py`、`backend/app/api/endpoints/knowledge.py`、`backend/app/api/endpoints/foreshadow.py` | 工作流运行队列有优先级、启动和取消；AI endpoint 使用 `StreamingResponse`/SSE；知识库与伏笔是独立 API | 路径存在不等于多轮长任务稳定；本审查未替它运行压力和故障注入 |
+| MuMuAINovel | `backend/app/api/chapters.py`、`backend/app/api/foreshadows.py`、`backend/scripts/export_embedding_onnx.py` | 章节路由组合 SSE、memory、foreshadow、局部重生成；伏笔有 plant/resolve；embedding 可导出为 ONNX | 需要运行其依赖服务才能验证端到端；GPL 实现不进入墨屿 |
+| arboris-novel | `backend/app/models/memory_layer.py`、`docs/RAG.md`、README/服务层的 blueprint 流程 | 模型层有 knowledge/timeline/因果事件；文档给出 embedding→检索→Prompt 链路；流程覆盖 concept/blueprint/chapter/evaluate/summary | 固定快照没有 LICENSE 文件；文档设计与实际运行覆盖率未在本审查中证明 |
+| Ai-Novel | `backend/app/services/search_index_service.py`、`backend/tests/test_streaming_support.py`、pgvector/vector chunks 与 rerank 迁移 | 搜索索引覆盖章节、设定和 story memory；测试解析 OpenAI SSE delta/fallback；数据库演进包含向量块和 rerank 配置 | 需要完整 Postgres/向量依赖；本审查不把迁移存在当作检索质量证明 |
+| 91Writing | `api.js` 的 `generateTextStream`、prompt/billing 路径及前端材料/备份状态 | 流式续写、提示输入、token/账单估算和本地材料工作集在同一前端链路 | MIT 只允许在遵守版权/许可条件下借鉴代码；墨屿只借鉴交互概念 |
+| webnovel-writer | `README.md`、`docs/architecture/overview.md` | accepted `CHAPTER_COMMIT` 是写后真源；state/index/summary/memory 是投影；`preflight`、`doctor`、dashboard 显示运行健康；支持 Embedding/Rerank 配置 | GPL 代码、文档文本和提示词不能移植；本审查未验证其真实重建时间和并发行为 |
+
+### 差距优先级（以作者风险排序）
+
+| 优先级 | 要补的能力 | 对照证据 | 墨屿可验收门槛 | 当前判断 |
+|---|---|---|---|---|
+| P0 | 范围级 patch、原生流和断点 | MuMuAINovel/91Writing 的流式与局部重写；NovelForge 的 SSE | `base_revision`/内容哈希 CAS；逐块序号和重连；范围 diff；接受/拒绝/撤销事件可回放 | 当前有 buffered SSE、取消保护和候选采纳，仍缺 patch/原生 token stream |
+| P1 | dense+sparse 语义检索与解释 | MuMu ONNX、Ai-Novel vector/rerank、webnovel-writer Embedding/Rerank | 可选 embedding；RRF→rerank/MMR；实体/时间/分支过滤；返回分数、source span、stale/冲突、裁剪原因 | 当前 CJK FTS + recency/evidence 分层；无向量、RRF、重排 |
+| P1 | commit 后投影健康 | webnovel-writer `CHAPTER_COMMIT`/projection log/doctor | revision/review/assertion delta 绑定；幂等、失败可重试、重启不丢；UI 可定位失败投影 | 当前有 `prewrite/precommit/postcommit` 快照与持久队列，缺完整 projection ledger |
+| P2 | 知识范围、关系和时间线 | NovelForge 关系/伏笔、arboris timeline/knowledge | 图谱可视化；POV 可见范围；冲突合并；未来信息泄漏有 fixture 与 UI 解释 | 当前有结构 API/UI、人物状态和剧情线，缺图谱与范围审查 UI |
+| P2 | 角色化长任务 | NovelForge scheduler、arboris Planner→Director→Writer、Ai-Novel 多 agent | 版本化角色契约；节点进度、暂停/重试/恢复、成本和失败原因可审计 | 当前单助手任务卡和持久队列，缺多角色运行台 |
+| P3 | 出版往返与多人边界 | 91Writing 备份/统计；MuMu/Ai-Novel 用户/项目边界 | DOCX/PDF/EPUB 往返与 loss manifest；分支合并、权限、BYOK、配额和审计 | 当前本地单用户 JSON/Markdown/最小 EPUB |
+
+上述门槛用于后续实现、fixture 和长篇 gold set；在证据补齐前，不把“有接口/有表/有文档”写成“已经通过”。
+
+## Clean-room 实施规则
+
+本项目的实现边界固定如下：
+
+1. 只提取公开的产品概念、失败模式和接口契约，不复制上游源码、提示词、模板、测试文本、品牌素材或数据库迁移。
+2. AGPL/GPL 项目只作为架构观察对象；不复制其代码，不静态链接，不把其文件改名后放入本仓库。若未来需要依赖，先取得书面授权、隔离依赖并重新做许可证审查。
+3. MIT 项目也不自动授权“照搬功能实现”；若发生代码级借鉴，必须保留版权与许可证、记录文件来源，并经维护者确认后再合并。本轮没有复制 91Writing 代码。
+4. 未明确许可的 arboris-novel、Ai-Novel 快照按“不复制”处理。README 的 badge、口头声明或未来计划不能替代随 commit 提供的 `LICENSE`。
+5. 墨屿的 `server.py`、`app.js`、fixture 和文档均独立编写；相似的 HTTP/SQLite/SSE 术语属于通用技术，不构成代码派生证明。每个上游差距都要落成自己的数据契约、负向测试和恢复证据。
+
+当上游 commit、许可证或依赖发生变化时，先更新本文件和 `docs/comparison-six-projects-2026-10-12.md`，再决定是否继续借鉴；不得用旧快照为新代码背书。
 
 ## 本轮清洁室实现
 
