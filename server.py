@@ -4054,7 +4054,9 @@ class Handler(SimpleHTTPRequestHandler):
                         run_id = record_ai_run(conn, task, context, instruction, {"mode": "provider", "model": "unknown", "text": ""}, started_at, round((time.perf_counter()-started_clock)*1000), status="failed", error=str(exc), response_format=response_format)
                         return self.send_json(502, {"error": "AI retry failed", "ai_run_id": run_id, "retry_of": original})
                     run_id = record_ai_run(conn, task, context, instruction, result, started_at, round((time.perf_counter()-started_clock)*1000), response_format=response_format)
-                    return self.send_json(200, {"task": task, "ai_run_id": run_id, "retry_of": original, **result})
+                    stream_info = persist_ai_chunks(conn, run_id, str(result.get("text") or ""), result.get("_chunks")) if result.get("text") else {"chunk_count": 0, "last_seq": 0, "replayable": False}
+                    public_result = {key: value for key, value in result.items() if key != "_chunks"}
+                    return self.send_json(200, {"task": task, "ai_run_id": run_id, "retry_of": original, "stream": stream_info, **public_result})
                 if parsed.path == "/api/ai/decision":
                     run_id = data.get("ai_run_id")
                     decision = bounded_text(data.get("decision"), 20, "AI decision")
