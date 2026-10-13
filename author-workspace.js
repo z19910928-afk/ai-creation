@@ -617,6 +617,10 @@ function authorRenderSettings(){
   if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)
    throw new Error('设置页面已更新，请重新打开设置');
   authorSettings=result.settings||result;
+  const status=form.querySelector('#modelProbeStatus');
+  if(status)status.textContent=authorProbeDescription(authorSettings.last_probe,authorSettings.model)||
+   (authorSettings.configured||String(authorSettings.base_url||'').trim()&&String(authorSettings.model||'').trim()
+    ?'设置已保存，尚未验证默认模型响应':'尚未配置模型');
   form.querySelector('#modelKey').value='';await loadAIStatus();
   if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)
    throw new Error('设置页面已更新，请重新打开设置');
