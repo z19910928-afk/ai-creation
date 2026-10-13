@@ -253,10 +253,17 @@ def prepare_chat_request(
         raise ProviderError("模型参数设置无效。", code="invalid_configuration")
     if parameters is not None and not isinstance(parameters, Mapping):
         raise ProviderError("模型参数必须为对象。", code="invalid_request")
-    effective = {"temperature": 0.65 if task in {"continue", "brainstorm", "scene"} else 0.35,
-                 **defaults, **by_task.get(task, {}), **(parameters or {})}
-    if "temperature" in config and "temperature" not in (parameters or {}) and "temperature" not in by_task.get(task, {}):
-        effective["temperature"] = config["temperature"]
+    effective = {
+        "temperature": config.get(
+            "temperature", 0.65 if task in {"continue", "brainstorm", "scene"} else 0.35),
+    }
+    for layer in (defaults, by_task.get(task, {}), parameters or {}):
+        # These are two representations of one setting. A more specific layer
+        # replaces both so an inherited switch cannot contradict its new effort.
+        if "thinking" in layer or "reasoning_effort" in layer:
+            effective.pop("thinking", None)
+            effective.pop("reasoning_effort", None)
+        effective.update(layer)
     allowed = {"temperature", "top_p", "presence_penalty", "frequency_penalty", "seed",
                "stop", "reasoning_effort", "thinking"}
     unknown = set(effective) - allowed

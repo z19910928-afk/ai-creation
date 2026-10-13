@@ -1380,6 +1380,166 @@ class EvaluationTests(unittest.TestCase):
         self.assertFalse(result["pilot_evidence_complete"])
         self.assertLess(result["judging"]["pairs_with_two_complete_judges"], len(pairs))
 
+    def test_record_human_ratings_imports_desktop_export_without_provider_calls(self) -> None:
+        self.generated()
+        blind = evaluation.blind_pairs(self.plan, self.out)
+        pair = blind["pairs"][0]
+        source = self.out / "desktop-author-ratings.json"
+        evaluation.write_json(source, {
+            "source": "desktop-chrome",
+            "desktop_run_id": "desktop-eval-fixture",
+            "ratings": [{
+                "pair_id": pair["id"], "reviewer_id": "author-01", "winner": "A",
+                "adoptable_A": True, "adoptable_B": False,
+                "edit_seconds_A": 12.5, "edit_seconds_B": 20,
+                "hard_violations": [], "notes": "离线桌面端 fixture。",
+            }],
+        })
+        before = len(self.calls)
+        with patch.object(evaluation, "call_chat_completion") as transport:
+            payload = evaluation.record_human_ratings(self.plan, self.out, source)
+        transport.assert_not_called()
+        self.assertEqual(len(self.calls), before)
+        self.assertEqual(payload["protocol"], evaluation.HUMAN_RATINGS_VERSION)
+        saved = evaluation.read_json(self.out / "human-ratings.json")
+        self.assertEqual(saved["plan_sha256"], evaluation.sha(self.plan))
+        self.assertEqual(saved["source"], "desktop-chrome")
+        self.assertEqual(len(saved["ratings"]), 1)
+        report = evaluation.report(self.plan, self.out)
+        author = report["author_efficiency"]
+        self.assertEqual(author["status"], "measured")
+        self.assertEqual(author["ratings"], 1)
+        self.assertEqual(author["reviewers"], 1)
+        self.assertEqual(author["adoption_rate"], 0.5)
+        self.assertEqual(author["edit_seconds"]["median"], 16.25)
+        self.assertEqual(author["edit_seconds"]["p95"], 19.625)
+        self.assertTrue(report["acceptance_gates"]["actual_author_efficiency_measured"])
+        self.assertFalse(report["pilot_quality_passed"])
+        self.assertIn("作者实际采纳率 50.0%", (self.out / "report.md").read_text())
+
+    def test_record_human_ratings_rejects_unknown_duplicate_and_conflicting_rows(self) -> None:
+        self.generated()
+        blind = evaluation.blind_pairs(self.plan, self.out)
+        pair = blind["pairs"][0]
+        base = {
+            "pair_id": pair["id"], "reviewer_id": "author-01", "winner": "tie",
+            "adoptable_A": True, "adoptable_B": None,
+            "edit_seconds_A": 3, "edit_seconds_B": None,
+            "hard_violations": [], "notes": "",
+        }
+        duplicate = self.out / "duplicate-ratings.json"
+        evaluation.write_json(duplicate, [base, dict(base)])
+        with self.assertRaisesRegex(ValueError, "不能重复"):
+            evaluation.record_human_ratings(self.plan, self.out, duplicate)
+        self.assertFalse((self.out / "human-ratings.json").exists())
+
+        unknown = self.out / "unknown-ratings.json"
+        evaluation.write_json(unknown, [{**base, "pair_id": "pair_missing"}])
+        with self.assertRaisesRegex(ValueError, "pair_id"):
+            evaluation.record_human_ratings(self.plan, self.out, unknown)
+
+        first = self.out / "first-ratings.json"
+        evaluation.write_json(first, [base])
+        evaluation.record_human_ratings(self.plan, self.out, first)
+        before = (self.out / "human-ratings.json").read_bytes()
+        conflict = self.out / "conflict-ratings.json"
+        evaluation.write_json(conflict, [{**base, "winner": "A"}])
+        with self.assertRaisesRegex(ValueError, "不同记录"):
+            evaluation.record_human_ratings(self.plan, self.out, conflict)
+        self.assertEqual((self.out / "human-ratings.json").read_bytes(), before)
+
+    def test_record_human_ratings_cli_is_offline_and_merges_idempotently(self) -> None:
+        self.generated()
+        blind = evaluation.blind_pairs(self.plan, self.out)
+        rows = [{
+            "pair_id": blind["pairs"][0]["id"], "reviewer_id": "author-01",
+            "winner": "A", "adoptable_A": True, "adoptable_B": False,
+            "edit_seconds_A": 4, "edit_seconds_B": 5,
+            "hard_violations": [], "notes": "",
+        }]
+        source = self.out / "cli-ratings.json"
+        evaluation.write_json(source, {"ratings": rows})
+        with patch.object(evaluation, "call_chat_completion") as transport, \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            status = evaluation.main([
+                "record-human", "--output-dir", str(self.out),
+                "--plan", str(self.plan_path), "--ratings", str(source),
+            ])
+        transport.assert_not_called()
+        self.assertEqual(status, 0)
+        self.assertIn('"ratings": 1', output.getvalue())
+        # Re-importing the exact export is idempotent and does not duplicate rows.
+        with patch.object(evaluation, "call_chat_completion") as transport:
+            evaluation.record_human_ratings(self.plan, self.out, source)
+        transport.assert_not_called()
+        self.assertEqual(len(evaluation.read_json(self.out / "human-ratings.json")["ratings"]), 1)
+
+    def test_record_human_ratings_rejects_changed_blind_text_and_saved_snapshot(self) -> None:
+        self.generated()
+        blind = evaluation.blind_pairs(self.plan, self.out)
+        pair = blind["pairs"][0]
+        source = self.out / "snapshot-ratings.json"
+        evaluation.write_json(source, [{
+            "pair_id": pair["id"], "reviewer_id": "author-01",
+            "adoptable_A": True, "adoptable_B": False,
+            "edit_seconds_A": 4, "edit_seconds_B": 5,
+        }])
+        original = copy.deepcopy(blind)
+        blind["pairs"][0]["A"] += "匿名文本已变化。"
+        evaluation.write_json(self.out / "blind-pairs.json", blind)
+        with self.assertRaisesRegex(ValueError, "文本已变化"):
+            evaluation.record_human_ratings(self.plan, self.out, source)
+        self.assertFalse((self.out / "human-ratings.json").exists())
+
+        evaluation.write_json(self.out / "blind-pairs.json", original)
+        evaluation.record_human_ratings(self.plan, self.out, source)
+        evaluation.report(self.plan, self.out)
+        rating_before = (self.out / "human-ratings.json").read_bytes()
+        report_before = (self.out / "report.json").read_bytes()
+        mapping = next(item for item in evaluation.read_json(self.out / "blind-key-private.json")
+                       if item["id"] == pair["id"])
+        sample_path = self.out / "samples" / (mapping["A_sample"] + ".json")
+        sample = evaluation.read_json(sample_path)
+        sample["result"]["text"] += "新"
+        evaluation.write_json(sample_path, sample)
+        original["pairs"][0]["A"] = sample["result"]["text"]
+        evaluation.write_json(self.out / "blind-pairs.json", original)
+        with self.assertRaisesRegex(ValueError, "快照已变化"):
+            evaluation.report(self.plan, self.out)
+        self.assertEqual((self.out / "human-ratings.json").read_bytes(), rating_before)
+        self.assertEqual((self.out / "report.json").read_bytes(), report_before)
+
+    def test_record_human_ratings_invalid_field_types_do_not_save_partial_records(self) -> None:
+        self.generated()
+        blind = evaluation.blind_pairs(self.plan, self.out)
+        base = {"pair_id": blind["pairs"][0]["id"], "reviewer_id": "author-01",
+                "adoptable_A": True}
+        source = self.out / "invalid-types-ratings.json"
+        for changes in ({"winner": []}, {"winner": {}}, {"edit_seconds_A": True},
+                        {"edit_seconds_A": -1}, {"edit_seconds_A": 10 ** 400},
+                        {"adoptable_A": 1}, {"hard_violations": {}}):
+            with self.subTest(changes=changes):
+                evaluation.write_json(source, [{**base, **changes}])
+                with self.assertRaises(ValueError):
+                    evaluation.record_human_ratings(self.plan, self.out, source)
+                self.assertFalse((self.out / "human-ratings.json").exists())
+
+    def test_human_efficiency_requires_both_adoption_and_edit_time(self) -> None:
+        self.generated()
+        blind = evaluation.blind_pairs(self.plan, self.out)
+        source = self.out / "partial-ratings.json"
+        evaluation.write_json(source, [{
+            "pair_id": blind["pairs"][0]["id"], "reviewer_id": "author-01",
+            "adoptable_A": True,
+        }])
+        evaluation.record_human_ratings(self.plan, self.out, source)
+        result = evaluation.report(self.plan, self.out)
+        self.assertEqual(result["author_efficiency"]["status"], "partial")
+        self.assertEqual(result["author_efficiency"]["adoption_rate"], 1)
+        self.assertIsNone(result["author_efficiency"]["edit_seconds"])
+        self.assertFalse(result["acceptance_gates"]["actual_author_efficiency_measured"])
+        self.assertFalse(result["first_tier_proven"])
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

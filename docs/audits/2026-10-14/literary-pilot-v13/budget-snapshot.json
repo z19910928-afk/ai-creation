@@ -1,0 +1,26 @@
+{
+  "protocol": "moyu-literary-budget-snapshot-v1",
+  "as_of": "2026-10-14",
+  "scope": "文学真实请求累计账本；未知用量不计为零，换目录不重置全局闸门。",
+  "current_run": {
+    "run_id": "0da6087e71c44e2baba73ae41b35b739",
+    "requests_reserved": 2,
+    "trusted_complete_tokens": 4495,
+    "requests_without_trusted_complete_usage": 0,
+    "currency_cost": "unmeasured"
+  },
+  "cumulative": {
+    "requests_reserved": 37,
+    "trusted_complete_tokens": 73118,
+    "requests_without_trusted_complete_usage": 10,
+    "currency_cost": "unmeasured"
+  },
+  "global_stop_gate": {
+    "max_requests": 60,
+    "reported_tokens_stop_threshold": 180000
+  },
+  "remaining_by_known_usage": {
+    "requests": 23,
+    "reported_tokens": 106882
+  }
+}

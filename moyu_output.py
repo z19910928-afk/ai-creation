@@ -115,7 +115,14 @@ _LINE_WRITING_META_RE = re.compile(
     r")",
 )
 _LINE_ENGLISH_META_RE = re.compile(
-    r"^\s*(?:We need to|The user (?:asks|wants|requested))\b",
+    r"^\s*(?:"
+    r"We need to|The user (?:asks|wants|requested)|"
+    r"Let me (?:understand|analy[sz]e) (?:the|this) (?:task|request|prompt)|"
+    r"Let me plan (?:the|this) (?:scene|story|continuation|response)|"
+    r"Let me think (?:about|through) (?:the|this) (?:task|request|prompt|scene|story)|"
+    r"Let me (?:check|count) (?:the|my) (?:word|character) count|"
+    r"Wait,? I need to (?:check|count) (?:the|my) (?:word|character) count"
+    r")\b",
     re.IGNORECASE,
 )
 _DIALOGUE_PREFIX = frozenset({

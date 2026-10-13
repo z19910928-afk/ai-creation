@@ -145,8 +145,23 @@ python3 scripts/literary_evaluation.py plan --output-dir /absolute/path/to/new-r
 python3 scripts/literary_evaluation.py generate --output-dir /absolute/path/to/new-run --max-new-requests 2 --execute-paid
 python3 scripts/literary_evaluation.py blind --output-dir /absolute/path/to/new-run
 python3 scripts/literary_evaluation.py judge --output-dir /absolute/path/to/new-run --judge-model JUDGE_ONE --judge-model JUDGE_TWO --execute-paid
+python3 scripts/literary_evaluation.py record-human \
+  --output-dir /absolute/path/to/new-run \
+  --ratings /absolute/path/to/desktop-ratings.json
 python3 scripts/literary_evaluation.py report --output-dir /absolute/path/to/new-run
 ```
+
+`record-human` 用于把电脑端作者完成的匿名评分离线导入评测目录。输入可以直接是评分数组，也可以是包含
+`ratings`（兼容 `human_ratings`）数组的 JSON 对象；对象可附带 `source`、`desktop_run_id` 和
+`recorded_at` 等来源信息。导入前必须已经生成 `blind-pairs.json` 和私有匿名映射，脚本会校验
+`pair_id`、评审人、重复记录和方案指纹，并拒绝覆盖同一评审人对同一候选的冲突记录。该命令不调用模型、
+不读取密钥、不产生外部请求，结果原子写入运行目录的 `human-ratings.json`，同时绑定匿名文本快照；
+候选正文或匿名映射变化后不会继续沿用旧评分。重复导入相同文件是幂等的。
+
+之后执行 `report` 会读取 `human-ratings.json`，生成总体及按方法的作者采纳率、修改时间中位数和 P95、
+记录条数与评审人数；同时有采纳和修改时间记录时才标记为“已测”，只有一类数据时标记为“部分”，
+没有导入时仍显示“未测”。这些统计只反映作者实际使用记录，不改变文学质量闸门、事实违规率或
+`first_tier_proven` 结论，也不能把桌面端页面已打开或评分模板已生成当成真实作者效率证据。
 
 更改题目、模型、参数或流式设置时，在首次调用前修订方案并使用新目录。为所有方法统一设置 `"writer_stream": true` 可启用分段回复；不能把改变后的请求混到原运行中。
 
@@ -159,6 +174,7 @@ python3 scripts/literary_evaluation.py report --output-dir /absolute/path/to/new
 - `blind-review.md`、`blind-pairs.json`：匿名对照。
 - `blind-key-private.json`：单独的方法映射，不交给评审，Git 已忽略，不提交到公开仓库。
 - `human-ratings-template.json`：作者采纳和修改时间记录模板。
+- `human-ratings.json`：通过 `record-human` 离线导入并校验后的作者评分；不包含模型密钥。
 - `grades/`、`report.json`、`report.md`：评判、证据闸和统计范围。
 - `reconciliations/`：异常中断恢复前的原始账本和候选检查点，保留恢复原因和禁止重试记录。
 

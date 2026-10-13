@@ -33,6 +33,7 @@ from moyu_provider import (
 )
 
 PLAN_VERSION = "moyu-literary-v1"
+HUMAN_RATINGS_VERSION = "moyu-literary-human-ratings-v1"
 CRITERIA = ("continuity", "character_motivation", "causality", "style", "task_fit")
 TASK_INSTRUCTIONS = {
     "continue": "续写当前场景，保持人物、因果和视角。只输出候选正文。",
@@ -817,6 +818,284 @@ def blind_pairs(plan: dict[str, Any], out: Path) -> dict[str, Any]:
     return result
 
 
+def _human_ratings_container(raw: Any, plan: dict[str, Any]) -> tuple[list[Any], dict[str, Any]]:
+    """Read a desktop export without interpreting it as model evidence.
+
+    The desktop can export either the template list directly or an object
+    containing ``ratings``/``human_ratings`` plus optional provenance.  Only
+    the rating rows are admitted to the canonical file; arbitrary export
+    metadata is not copied into the evaluation report.
+    """
+    if isinstance(raw, list):
+        return raw, {}
+    if not isinstance(raw, dict):
+        raise ValueError("作者评测导入必须是评分数组或包含 ratings 的对象。")
+    ratings = raw.get("ratings")
+    if ratings is None:
+        ratings = raw.get("human_ratings")
+    if not isinstance(ratings, list):
+        raise ValueError("作者评测导入缺少 ratings 数组。")
+    protocol = raw.get("protocol")
+    if protocol is not None and protocol != HUMAN_RATINGS_VERSION:
+        raise ValueError("作者评测导入协议版本无效。")
+    plan_sha256 = raw.get("plan_sha256")
+    if plan_sha256 is not None and plan_sha256 != sha(plan):
+        raise ValueError("作者评测导入与当前固定方案指纹不一致。")
+    return ratings, {
+        key: raw[key] for key in ("source", "desktop_run_id", "recorded_at")
+        if key in raw
+    }
+
+
+def _optional_nonnegative_number(value: Any, field: str) -> int | float | None:
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"{field}必须是非负数字或空值。")
+    try:
+        finite = math.isfinite(value)
+    except OverflowError:
+        finite = False
+    if not finite or value < 0:
+        raise ValueError(f"{field}必须是非负数字或空值。")
+    return value
+
+
+def _human_ratings_snapshot(plan: dict[str, Any], out: Path) -> tuple[set[str], str]:
+    """Bind author records to the same validated anonymous candidates as model reviews."""
+    pairs_path = out / "blind-pairs.json"
+    key_path = out / "blind-key-private.json"
+    if not pairs_path.exists() or not key_path.exists():
+        raise ValueError("导入作者评测前必须先生成 blind-pairs.json 和匿名映射。")
+    pairs_data = read_json(pairs_path)
+    if not isinstance(pairs_data, dict) or pairs_data.get("plan_sha256") != sha(plan):
+        raise ValueError("匿名候选与固定方案指纹不一致。")
+    pair_rows = pairs_data.get("pairs")
+    key_rows = read_json(key_path)
+    if not isinstance(pair_rows, list) or not isinstance(key_rows, list) or any(
+            not isinstance(item, dict) or not isinstance(item.get("id"), str)
+            for item in pair_rows + key_rows):
+        raise ValueError("匿名候选或方法映射格式无效。")
+    pairs = {item["id"]: item for item in pair_rows}
+    keys = {item["id"]: item for item in key_rows}
+    if len(pairs) != len(pair_rows) or len(keys) != len(key_rows) or set(pairs) != set(keys):
+        raise ValueError("匿名候选与方法映射不一致，不能导入作者评测。")
+    if any(not isinstance(pair.get("case_id"), str) for pair in pairs.values()) or any(
+            not isinstance(mapping.get(field), str)
+            for mapping in keys.values()
+            for field in ("A", "B", "A_sample", "B_sample", "comparator")):
+        raise ValueError("匿名候选或方法映射格式无效。")
+    records: dict[str, dict[str, Any]] = {}
+    for path in sorted((out / "samples").glob("*.json")):
+        record = read_json(path)
+        if not isinstance(record, dict) or not isinstance(record.get("id"), str):
+            raise ValueError("原始候选格式无效，不能导入作者评测。")
+        if record["id"] in records:
+            raise ValueError("原始候选身份重复，不能导入作者评测。")
+        records[record["id"]] = record
+    for pair_id, pair in pairs.items():
+        validated_blind_pair(plan, pair, keys[pair_id], records)
+    snapshot = sha({
+        "pairs": [pairs[pair_id] for pair_id in sorted(pairs)],
+        "keys": [keys[pair_id] for pair_id in sorted(keys)],
+    })
+    return set(pairs), snapshot
+
+
+def _normalize_human_rating_rows(plan: dict[str, Any], out: Path, raw: Any) -> list[dict[str, Any]]:
+    """Validate rows imported from a desktop author-review session."""
+    pair_ids, snapshot = _human_ratings_snapshot(plan, out)
+    if isinstance(raw, dict) and raw.get("blind_snapshot_sha256") not in (None, snapshot):
+        raise ValueError("作者评分的匿名候选快照已变化，不能复用旧评分。")
+    ratings, _metadata = _human_ratings_container(raw, plan)
+    normalized: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    allowed = {
+        "pair_id", "reviewer_id", "winner", "adoptable_A", "adoptable_B",
+        "edit_seconds_A", "edit_seconds_B", "hard_violations", "notes",
+    }
+    for index, item in enumerate(ratings, start=1):
+        if not isinstance(item, dict):
+            raise ValueError(f"第{index}条作者评测不是对象。")
+        unknown = sorted(set(item) - allowed)
+        if unknown:
+            raise ValueError(f"第{index}条作者评测包含未知字段：{', '.join(unknown)}。")
+        pair_id = item.get("pair_id")
+        reviewer_id = item.get("reviewer_id")
+        if not isinstance(pair_id, str) or pair_id not in pair_ids:
+            raise ValueError(f"第{index}条作者评测的 pair_id 无效。")
+        if not isinstance(reviewer_id, str) or not reviewer_id.strip() or len(reviewer_id.strip()) > 200:
+            raise ValueError(f"第{index}条作者评测需要非空 reviewer_id。")
+        reviewer_id = reviewer_id.strip()
+        identity = (reviewer_id, pair_id)
+        if identity in seen:
+            raise ValueError("同一 reviewer_id 不能重复提交同一匿名候选。")
+        seen.add(identity)
+        winner = item.get("winner")
+        if winner is not None and (
+                not isinstance(winner, str) or winner not in {"A", "B", "tie"}):
+            raise ValueError(f"第{index}条作者评测的 winner 无效。")
+        adoptable = {}
+        for side in ("A", "B"):
+            value = item.get("adoptable_" + side)
+            if value is not None and not isinstance(value, bool):
+                raise ValueError(f"第{index}条作者评测的 adoptable_{side} 必须是开关或空值。")
+            adoptable[side] = value
+        edit_seconds = {
+            side: _optional_nonnegative_number(
+                item.get("edit_seconds_" + side), f"第{index}条作者评测的 edit_seconds_{side}")
+            for side in ("A", "B")
+        }
+        violations = item.get("hard_violations", [])
+        if not isinstance(violations, list) or len(violations) > 30:
+            raise ValueError(f"第{index}条作者评测的 hard_violations 必须是不超过30项的数组。")
+        try:
+            json.dumps(violations, ensure_ascii=False, allow_nan=False)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"第{index}条作者评测的 hard_violations 不是可保存的JSON。") from exc
+        notes = item.get("notes", "")
+        if not isinstance(notes, str) or len(notes) > 10_000:
+            raise ValueError(f"第{index}条作者评测的 notes 必须是10000字以内文本。")
+        if (winner is None and adoptable["A"] is None and adoptable["B"] is None
+                and edit_seconds["A"] is None and edit_seconds["B"] is None
+                and not violations and not notes.strip()):
+            raise ValueError(f"第{index}条作者评测没有任何记录内容。")
+        normalized.append({
+            "pair_id": pair_id, "reviewer_id": reviewer_id, "winner": winner,
+            "adoptable_A": adoptable["A"], "adoptable_B": adoptable["B"],
+            "edit_seconds_A": edit_seconds["A"], "edit_seconds_B": edit_seconds["B"],
+            "hard_violations": violations, "notes": notes,
+        })
+    return normalized
+
+
+def _load_human_ratings(plan: dict[str, Any], out: Path) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    path = out / "human-ratings.json"
+    if not path.exists():
+        return [], {}
+    raw = read_json(path)
+    ratings, metadata = _human_ratings_container(raw, plan)
+    normalized = _normalize_human_rating_rows(plan, out, raw)
+    if isinstance(raw, dict):
+        if raw.get("plan_sha256") not in (None, sha(plan)):
+            raise ValueError("保存的作者评测与当前固定方案指纹不一致。")
+        metadata = {
+            key: raw[key] for key in ("source", "desktop_run_id", "recorded_at",
+                                      "imported_at", "source_sha256")
+            if key in raw
+        }
+    return normalized, metadata
+
+
+def _percentile(values: list[float], percentile: float) -> float | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    position = (len(ordered) - 1) * percentile
+    lower = math.floor(position)
+    upper = math.ceil(position)
+    if lower == upper:
+        return ordered[lower]
+    return ordered[lower] + (ordered[upper] - ordered[lower]) * (position - lower)
+
+
+def _human_efficiency(plan: dict[str, Any], out: Path) -> dict[str, Any]:
+    ratings, metadata = _load_human_ratings(plan, out)
+    if not ratings:
+        return {
+            "adoption_rate": None, "edit_seconds": None, "ratings": 0,
+            "reviewers": 0, "by_arm": {}, "status": "unmeasured",
+            "reason": "未取得实际作者的盲评采纳与修改记录。",
+        }
+    keys = {item["id"]: item for item in read_json(out / "blind-key-private.json")}
+    arms = {arm["id"] for arm in plan["arms"]}
+    stats = {
+        arm: {"adopted": 0, "adoption_observations": 0, "edit_seconds": []}
+        for arm in arms
+    }
+    winner_counts = {"A": 0, "B": 0, "tie": 0}
+    reviewers: set[str] = set()
+    for rating in ratings:
+        reviewers.add(rating["reviewer_id"])
+        if rating["winner"] is not None:
+            winner_counts[rating["winner"]] += 1
+        mapping = keys[rating["pair_id"]]
+        for side in ("A", "B"):
+            arm = mapping[side]
+            adoptable = rating["adoptable_" + side]
+            if adoptable is not None:
+                stats[arm]["adoption_observations"] += 1
+                stats[arm]["adopted"] += int(adoptable)
+            seconds = rating["edit_seconds_" + side]
+            if seconds is not None:
+                stats[arm]["edit_seconds"].append(float(seconds))
+    adoption_observations = sum(item["adoption_observations"] for item in stats.values())
+    adopted = sum(item["adopted"] for item in stats.values())
+    edit_values = [seconds for item in stats.values() for seconds in item["edit_seconds"]]
+    by_arm = {}
+    for arm, item in stats.items():
+        by_arm[arm] = {
+            "adopted": item["adopted"],
+            "adoption_observations": item["adoption_observations"],
+            "adoption_rate": (
+                item["adopted"] / item["adoption_observations"]
+                if item["adoption_observations"] else None
+            ),
+            "edit_seconds": {
+                "count": len(item["edit_seconds"]),
+                "median": _percentile(item["edit_seconds"], 0.5),
+                "p95": _percentile(item["edit_seconds"], 0.95),
+            } if item["edit_seconds"] else None,
+        }
+    return {
+        "adoption_rate": adopted / adoption_observations if adoption_observations else None,
+        "edit_seconds": {
+            "count": len(edit_values),
+            "median": _percentile(edit_values, 0.5),
+            "p95": _percentile(edit_values, 0.95),
+        } if edit_values else None,
+        "ratings": len(ratings), "reviewers": len(reviewers),
+        "winner_counts": winner_counts, "by_arm": by_arm,
+        "status": ("measured" if adoption_observations and edit_values else
+                   "partial" if adoption_observations or edit_values else "recorded_only"),
+        "source": metadata,
+        "reason": "桌面端作者评分已离线导入；结果不改变文学质量或第一梯队闸门。",
+    }
+
+
+def record_human_ratings(plan: dict[str, Any], out: Path, source: Path) -> dict[str, Any]:
+    """Import desktop author ratings without contacting a model provider."""
+    validate_plan(plan)
+    if not source.exists() or not source.is_file():
+        raise ValueError("作者评测导入文件不存在。")
+    raw = read_json(source)
+    imported = _normalize_human_rating_rows(plan, out, raw)
+    existing_path = out / "human-ratings.json"
+    existing: list[dict[str, Any]] = []
+    if existing_path.exists():
+        existing, _ = _load_human_ratings(plan, out)
+    merged: dict[tuple[str, str], dict[str, Any]] = {
+        (item["reviewer_id"], item["pair_id"]): item for item in existing
+    }
+    for item in imported:
+        key = (item["reviewer_id"], item["pair_id"])
+        if key in merged and merged[key] != item:
+            raise ValueError("已有同一作者和匿名候选的不同记录，拒绝覆盖。")
+        merged[key] = item
+    rows = sorted(merged.values(), key=lambda item: (item["pair_id"], item["reviewer_id"]))
+    _ratings, metadata = _human_ratings_container(raw, plan)
+    _pair_ids, snapshot = _human_ratings_snapshot(plan, out)
+    payload = {
+        "protocol": HUMAN_RATINGS_VERSION, "plan_sha256": sha(plan),
+        "blind_snapshot_sha256": snapshot,
+        "imported_at": now(), "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+        "ratings": rows,
+    }
+    payload.update(metadata)
+    write_json(existing_path, payload)
+    return payload
+
+
 def judge_schema(pair: dict[str, Any]) -> dict[str, Any]:
     score = {"type": "object", "required": list(CRITERIA), "additionalProperties": False,
              "properties": {name: {"type": "integer", "minimum": 1, "maximum": 5} for name in CRITERIA}}
@@ -1217,8 +1496,7 @@ def report(plan: dict[str, Any], out: Path) -> dict[str, Any]:
                   "currency_cost": None, "cost_state": "unmeasured",
                   "output_max_tokens_per_request": plan["max_output_tokens"],
                   "scope": "请求上限为硬闸；用量停止阈值按已报告用量，当前请求可能超出；未知用量和未知价格不得算零费用。"},
-        "author_efficiency": {"adoption_rate": None, "edit_seconds": None,
-                              "status": "unmeasured", "reason": "未取得实际作者的盲评采纳与修改记录。"},
+        "author_efficiency": _human_efficiency(plan, out),
         "first_tier_proven": False,
         "limits": ["默认试评不是七竞品的真实运行比较。",
                    "文学盲评只覆盖固定材料，不证明整本长篇效果。",
@@ -1249,7 +1527,8 @@ def report(plan: dict[str, Any], out: Path) -> dict[str, Any]:
             item["decisive_preference_wilson_95"] is not None
             and item["decisive_preference_wilson_95"][0] >= acceptance["minimum_preference_lower_95"]
             for item in by_comparator.values()),
-        "actual_author_efficiency_measured": False,
+        "actual_author_efficiency_measured": (
+            result["author_efficiency"]["status"] == "measured"),
     }
     result["pilot_evidence_complete"] = all(result["acceptance_gates"][key] for key in
                                             ("all_generations_complete", "same_writer_model",
@@ -1285,11 +1564,23 @@ def report(plan: dict[str, Any], out: Path) -> dict[str, Any]:
         band = "未测" if interval is None else f"{interval[0]:.1%}至{interval[1]:.1%}"
         paragraphs.append(f"| {comparator} | {item['distinct_stories']} | "
                           f"{item['wins']} / {item['losses']} / {item['ties']} | {band} |")
+    author = result["author_efficiency"]
+    if author["status"] in {"measured", "partial"}:
+        adoption = ("未测" if author["adoption_rate"] is None
+                    else f"{author['adoption_rate']:.1%}")
+        edit = author["edit_seconds"]
+        edit_text = ("未测" if edit is None
+                     else f"中位数 {edit['median']:.1f} 秒，P95 {edit['p95']:.1f} 秒")
+        author_line = f"作者实际采纳率 {adoption}；修改时间 {edit_text}。"
+    elif author["status"] == "recorded_only":
+        author_line = "已记录作者评分，但没有可计算的采纳开关或修改时间。"
+    else:
+        author_line = "作者实际采纳率和修改时间：未测。"
     paragraphs.extend([
         "\n双顺序出现偏好变化的评审组数：" + str(order_disagreement) + "。\n",
         "模型标出的硬规则违规候选：" + ("、".join(violated_samples) if violated_samples else "未标出") + "。\n",
         "试评质量闸：" + ("通过" if result["pilot_quality_passed"] else "未通过") + "。\n",
-        "作者实际采纳率和修改时间：未测。没有把试评结果标成第一梯队已证明。\n",
+        author_line + " 没有把试评结果标成第一梯队已证明。\n",
         "完整候选见 samples，匿名文本见 blind-review.md，实际请求与用量见 request-ledger.json。\n",
     ])
     (out / "report.md").write_text("\n".join(paragraphs), encoding="utf-8")
@@ -1298,11 +1589,14 @@ def report(plan: dict[str, Any], out: Path) -> dict[str, Any]:
 
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("command", choices=("plan", "generate", "blind", "judge", "report"))
+    parser.add_argument("command", choices=("plan", "generate", "blind", "judge",
+                                            "record-human", "report"))
     parser.add_argument("--plan", type=Path)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--model", default=os.environ.get("MOYU_AI_MODEL", ""))
     parser.add_argument("--judge-model", action="append", default=[])
+    parser.add_argument("--ratings", type=Path,
+                        help="record-human 使用的桌面端作者评分 JSON；不触发模型请求")
     parser.add_argument("--max-new-requests", type=int,
                         help="pause this invocation after this many new reservations; never retry an old request")
     parser.add_argument("--execute-paid", action="store_true",
@@ -1330,6 +1624,12 @@ def main(argv: Sequence[str] | None = None) -> int:
             blind_pairs(plan, out)
         elif args.command == "judge":
             judge(plan, out, args.judge_model, max_new_requests=args.max_new_requests)
+        elif args.command == "record-human":
+            if args.ratings is None:
+                raise ValueError("record-human 需要 --ratings 指定桌面端作者评分 JSON。")
+            payload = record_human_ratings(plan, out, args.ratings.resolve())
+            print(encoded({"ratings": len(payload["ratings"]),
+                           "output": str(out / "human-ratings.json")}))
         else:
             print(encoded(report(plan, out)))
     return 0

@@ -509,6 +509,10 @@ class OutputContractTests(unittest.TestCase):
             "创作思路\n先让人物离开。\n甲乙",
             "我们需要回答这个问题。\n甲乙",
             "We need to write a scene.\n甲乙",
+            "Let me understand the task. I'm continuing a Chinese mystery novel.\n甲乙",
+            "Let me plan the scene:\n- 21:56, water is rising.\n甲乙",
+            "Let me think about the request.\n甲乙",
+            "Wait, I need to check the word count.\n甲乙",
         ):
             finding = find_planning_contamination("continue", text)
             self.assertIsNotNone(finding)
@@ -530,6 +534,12 @@ class OutputContractTests(unittest.TestCase):
         ))
         self.assertIsNone(find_planning_contamination(
             "continue", "“<think>是卡片上的印字。”她说。"
+        ))
+        self.assertIsNone(find_planning_contamination(
+            "continue", "她说：“Let me understand the task.”然后把门推开。"
+        ))
+        self.assertIsNone(find_planning_contamination(
+            "continue", "她低声说，Let me understand the old map, then folded it."
         ))
 
     def test_v5_writing_self_talk_and_explicit_body_plans_are_detected(self) -> None:

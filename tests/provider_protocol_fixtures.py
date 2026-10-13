@@ -320,13 +320,12 @@ class ProtocolTests(unittest.TestCase):
             self.assertEqual(caught.exception.code, "invalid_request")
         self.assertEqual(len(Handler.requests), before)
 
-    def test_thinking_and_compatible_effort_must_agree_after_parameter_merge(self) -> None:
+    def test_thinking_and_compatible_effort_must_agree_within_one_layer(self) -> None:
         before = len(Handler.requests)
         for mode, effort in (("enabled", "none"), ("disabled", "low"), ("disabled", "high")):
             with self.subTest(mode=mode, effort=effort), self.assertRaises(ProviderError):
                 self.call("json", config=self.config(
-                    "json", parameters={"thinking": {"type": mode}},
-                    task_parameters={"continue": {"reasoning_effort": effort}}))
+                    "json", parameters={"thinking": {"type": mode}, "reasoning_effort": effort}))
         self.assertEqual(len(Handler.requests), before)
         for mode, effort in (("disabled", "none"), ("enabled", "minimal"),
                              ("enabled", "low"), ("enabled", "high")):
@@ -341,6 +340,67 @@ class ProtocolTests(unittest.TestCase):
             parameters={"reasoning_effort": "none"})
         self.assertEqual(legacy["payload"]["reasoning_effort"], "none")
         self.assertNotIn("thinking", legacy["payload"])
+
+    def test_specific_reasoning_setting_replaces_inherited_representation(self) -> None:
+        messages = [{"role": "user", "content": "只返回正文"}]
+        cases = (
+            ({"thinking": {"type": "enabled"}}, {"reasoning_effort": "none"}, {},
+             {"reasoning_effort": "none"}),
+            ({"reasoning_effort": "high"}, {"thinking": {"type": "disabled"}}, {},
+             {"thinking": {"type": "disabled"}}),
+            ({"thinking": {"type": "enabled"}}, {"reasoning_effort": "high"},
+             {"thinking": {"type": "disabled"}}, {"thinking": {"type": "disabled"}}),
+            ({"reasoning_effort": "none"}, {"thinking": {"type": "disabled"}},
+             {"reasoning_effort": "high"}, {"reasoning_effort": "high"}),
+        )
+        for defaults, task_parameters, parameters, expected in cases:
+            with self.subTest(defaults=defaults, task_parameters=task_parameters,
+                              parameters=parameters):
+                config = self.config(
+                    "json", model="glm-5.2", parameters=defaults,
+                    task_parameters={"continue": task_parameters})
+                prepared = prepare_chat_request(config, messages, parameters=parameters)
+                reasoning = {name: prepared["payload"][name] for name in
+                             ("thinking", "reasoning_effort") if name in prepared["payload"]}
+                self.assertEqual(reasoning, expected)
+                self.assertEqual(
+                    {name: prepared["request_audit"]["effective_parameters"][name]
+                     for name in expected}, expected)
+                result = self.call("json", config=config, parameters=parameters)
+                sent_reasoning = {name: Handler.requests[-1]["payload"][name] for name in
+                                  ("thinking", "reasoning_effort")
+                                  if name in Handler.requests[-1]["payload"]}
+                self.assertEqual(sent_reasoning, expected)
+                self.assertEqual(result["reasoning_observation"]["requested_disabled"],
+                                 expected.get("thinking") == {"type": "disabled"}
+                                 or expected.get("reasoning_effort") == "none")
+                self.assertEqual(config["parameters"], defaults)
+                self.assertEqual(config["task_parameters"]["continue"], task_parameters)
+
+    def test_parameter_priority_keeps_saved_temperature_above_legacy_default(self) -> None:
+        messages = [{"role": "user", "content": "参数优先级"}]
+        config = self.config(
+            "json", temperature=1.2, parameters={"temperature": 0},
+            task_parameters={"polish": {"temperature": 0.2}})
+        self.assertEqual(prepare_chat_request(config, messages)["payload"]["temperature"], 0)
+        self.assertEqual(
+            prepare_chat_request(config, messages, task="polish")["payload"]["temperature"], 0.2)
+        self.assertEqual(prepare_chat_request(
+            config, messages, task="polish", parameters={"temperature": 0.4}
+        )["payload"]["temperature"], 0.4)
+
+    def test_model_name_does_not_add_or_convert_explicit_reasoning_parameters(self) -> None:
+        messages = [{"role": "user", "content": "只返回正文"}]
+        config = self.config("json", model="glm-5.2")
+        unchanged = prepare_chat_request(config, messages)
+        self.assertNotIn("thinking", unchanged["payload"])
+        self.assertNotIn("reasoning_effort", unchanged["payload"])
+        for parameters in ({"thinking": {"type": "disabled"}}, {"reasoning_effort": "none"}):
+            with self.subTest(parameters=parameters):
+                prepared = prepare_chat_request(config, messages, parameters=parameters)
+                reasoning = {name: prepared["payload"][name] for name in
+                             ("thinking", "reasoning_effort") if name in prepared["payload"]}
+                self.assertEqual(reasoning, parameters)
 
     def test_frozen_request_preserves_thinking_when_current_configuration_changes(self) -> None:
         import server
