@@ -8,7 +8,7 @@
 
 最新[候选整理电脑端完整复验](../audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-final.json)于上海时间2026-10-14 02:03:08至02:06:19通过51个执行项、36份Python测试、8项JavaScript语法与55个电脑浏览器场景，66份源码前后相同，13附件指纹核验；整理19项、正文HTTP15项、20轮连续写作和五章10次专用候选检查实际执行。提供方为免费本机模拟，验证机械字数与工作流，不计入真实文学候选、评审或费用账本。
 
-工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传 `codex/full-function-audit`，增强GitHub检查运行 `38434003558` 于上海时间2026-10-14 00:52:11至00:56:02实际成功，见[远程记录](../audits/2026-10-13/evidence/github-actions-desktop-release-success.json)。历史[电脑端工程复验](../audits/2026-10-13/evidence/compatibility-python311-node24-desktop-release-final.json)通过50项/49个浏览器场景。这些历史成功不覆盖本次代码；[整理中间检查](../audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)失败原件保留，随后独立的新完整复验通过，本次对应源码上传与远程结果尚未登记。分支未合并main、公网未部署，文学仍未达标。
+工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传 `codex/full-function-audit`，增强GitHub检查运行 `38434003558` 于上海时间2026-10-14 00:52:11至00:56:02实际成功，见[远程记录](../audits/2026-10-13/evidence/github-actions-desktop-release-success.json)。候选整理与CI等待修复后的提交 `89ab69d4fd62f3561831b747da2c7b111f829132` 也已通过[运行38447803077](../audits/2026-10-13/evidence/github-actions-candidate-revision-ci-fix-success.json)，三组电脑端回归全部成功。历史[整理中间检查](../audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)失败原件仍保留。分支未合并main、公网未部署，文学仍未达标。
 
 ## 模型调用证据
 
