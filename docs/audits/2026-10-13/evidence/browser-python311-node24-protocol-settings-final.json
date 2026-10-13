@@ -1,0 +1,368 @@
+{
+  "passed": true,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段",
+      "passed": true
+    },
+    {
+      "name": "两窗口合并后撤销本页改稿并重做，两次都保留另一页新增段落",
+      "passed": true
+    },
+    {
+      "name": "同起点插入与删除双方向显示双方稿件，选择后保存及撤销重做不丢字",
+      "passed": true
+    },
+    {
+      "name": "重做插入遇到另一页同起点删字时保留正文和重做记录，恢复后可继续重做",
+      "passed": true
+    },
+    {
+      "name": "粗体撤销后接收另一页新改稿，快捷键重做和撤销仅变化粗体",
+      "passed": true
+    },
+    {
+      "name": "另一页覆盖本页撤销位置时拒绝操作，保留正文和可重试的撤销记录",
+      "passed": true
+    },
+    {
+      "name": "真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存",
+      "passed": true
+    },
+    {
+      "name": "自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    },
+    {
+      "name": "多问题审稿明确选择原句，精确修订第二重复句并重新审稿",
+      "passed": true
+    },
+    {
+      "name": "超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿",
+      "passed": true
+    },
+    {
+      "name": "整理超限候选保留父原文，双击仅一次调用且合限子候选等待明确采纳",
+      "passed": true
+    },
+    {
+      "name": "手工编辑过的父候选禁止模型整理，正文和原候选均继续保留",
+      "passed": true
+    },
+    {
+      "name": "整理确认期间原稿变化会阻止发送，过期候选保留供阅读",
+      "passed": true
+    },
+    {
+      "name": "整理回应丢失后刷新只读取已有任务，保持请求身份且不重复模型调用",
+      "passed": true
+    },
+    {
+      "name": "模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用",
+      "passed": true
+    },
+    {
+      "name": "关闭思考设置遇到非空思考字段，正文保留且采纳和整理均禁用",
+      "passed": true
+    },
+    {
+      "name": "队列先完成后人工编辑，迟到流式分片不覆盖候选、缓存或原稿",
+      "passed": true
+    },
+    {
+      "name": "1280×800电脑窗口无横向溢出，编辑和生成控件可用",
+      "passed": true
+    },
+    {
+      "name": "复制作品的完整历史候选同步只读标记，旧完整缓存也不能整理或采纳",
+      "passed": true
+    },
+    {
+      "name": "两作品切换隔离，卷章场景保存后建立目录",
+      "passed": true
+    },
+    {
+      "name": "电脑端四阶段规划中途刷新和失败重做，最终采用蓝图不改变已写正文",
+      "passed": true
+    },
+    {
+      "name": "同一时刻连续点击打开两书，最终作品与缓存完全隔离",
+      "passed": true
+    },
+    {
+      "name": "旧作品读取成功与错误迟到，均不改变当前正文、缓存和保存状态",
+      "passed": true
+    },
+    {
+      "name": "旧作品模型设置迟到，当前模型身份保持正确",
+      "passed": true
+    },
+    {
+      "name": "服务回应作品身份错误时拒绝覆盖，恢复后仍为原书",
+      "passed": true
+    },
+    {
+      "name": "设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型",
+      "passed": true
+    },
+    {
+      "name": "电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关",
+      "passed": true
+    },
+    {
+      "name": "旧书预览拆分合并导入独立作品，原作品保持原稿",
+      "passed": true
+    },
+    {
+      "name": "作为参考来源导入、阅读和按原句搜索不改变本书正文",
+      "passed": true
+    },
+    {
+      "name": "完整备份下载与恢复副本保留正文和参考来源",
+      "passed": true
+    }
+  ],
+  "artifacts": "Browser logs and private temporary DB are retained locally; desktop screenshots listed in this report.",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_a93789f8362948c9ae617ff69efeb166",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_339057c68afb44149d9181c0eb9c5e8a",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_1633a6d7f4e14c8da547b8e140d0bf5a",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_9ca34cdc373c4693a198efcd6d0ed029",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_d0ca53feb86741739c889a57cc9f748f",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_1a1a51fef2c540b6a98af14dcc3646dd",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_aa3ff9ad38b94523bda269662679a3a2",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_6c3c364567474b1fa34a41fea5224bc3",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_6c60dbf67a3446c1a21f6b3b22a804a3",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_d19df0fe98c545098148604d933b9353",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_d5b3859660734d9c952c4728827150c3",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_bf810e0c88954adbba7136a679c6c87d",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_168d51c769f444699e8da42a5870570a",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_08f2c4b9e44647cba545f4ae9cf709dc",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_60e0e62864d34f2d990c99a87e151d99",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_3f62694733aa42f8815f63569bb9240e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_c57708d9a0774075b5d74d892fd60210",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_826166dd2b094d75b2a9e727238bef05",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_82a5b11d466248cca436a5a65e9e578c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_f22575fce0f14a1b83cf6bae8e9cdce4",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "native_composition_events": [
+    {
+      "type": "compositionstart",
+      "data": "",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "lin",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "lin",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "linlan",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "linlan",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "林岚",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionend",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": false
+    }
+  ],
+  "candidate_revision": {
+    "parent_run_id": "airun_3890e286ac5e422eb9f8610bdc008dc0",
+    "child_run_id": "airun_7cf88a5efb49448a851b0612981dd0e3",
+    "provider_calls": 1,
+    "parent_preserved": true,
+    "child_explicitly_adopted_once": true,
+    "recovered_outside_queue_list": true,
+    "mechanical_and_workflow_only": true,
+    "facts_and_literature_accepted": false
+  },
+  "imported_project": "book_1a8510769365429f895f3877d967c7a5",
+  "reference_document": "reference_1ba57769100743e3a8fb2c22cd695190",
+  "restored_project": "book_2894d0586b554e59a860614304986594"
+}

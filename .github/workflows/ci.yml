@@ -50,6 +50,11 @@ jobs:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
           MOYU_TEST_PYTHON: python
         run: node tests/planning_browser_regressions.cjs
+      - name: Model settings browser regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/model_settings_browser_regressions.cjs
       - name: Five chapter author flow
         env:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright

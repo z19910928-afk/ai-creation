@@ -26,9 +26,10 @@ from typing import Any, Iterator, Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_output import find_planning_contamination
+from moyu_output import find_planning_contamination, output_contract as prose_output_contract
 from moyu_provider import (
-    ProviderError, call_chat_completion, prepare_chat_request, usage_accounting, validate_json,
+    ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts,
+    usage_accounting, validate_json,
 )
 
 PLAN_VERSION = "moyu-literary-v1"
@@ -82,6 +83,41 @@ def count_characters(text: str) -> int:
     return sum(not character.isspace() for character in text)
 
 
+def nonempty_reasoning_observation(record: dict[str, Any]) -> dict[str, Any] | None:
+    """Detect provider reasoning fields without retaining their contents.
+
+    A compatible gateway may return reasoning fields even when the
+    frozen request explicitly disabled reasoning.  The parser deliberately
+    never joins that field into prose; this check keeps the candidate out of
+    blind review until the transport contract is understood.
+    """
+    result = record.get("result")
+    result = result if isinstance(result, dict) else {}
+    audit = result.get("request_audit") or record.get("request_audit") or {}
+    audit = audit if isinstance(audit, dict) else {}
+    parameters = audit.get("effective_parameters")
+    summary = result.get("reasoning_observation")
+    summary = summary if isinstance(summary, dict) else {}
+    if isinstance(parameters, dict):
+        thinking = parameters.get("thinking")
+        disabled = (
+            isinstance(thinking, dict) and thinking.get("type") == "disabled"
+        ) or parameters.get("reasoning_effort") == "none"
+    else:
+        disabled = summary.get("requested_disabled") is True
+    if not disabled:
+        return None
+    nonempty, invalid = reasoning_field_counts(result)
+    if nonempty == 0 and invalid == 0:
+        return None
+    return {
+        "code": "reasoning_content_observed",
+        "description": ("提供方在关闭思考后返回的思考字段类型无法校验，候选不能进入盲评。"
+                        if invalid > 0 else
+                        "提供方在关闭思考后仍返回了非空思考字段，候选不能进入盲评。"),
+    }
+
+
 def output_contract(case: dict[str, Any]) -> dict[str, Any]:
     explicit = case.get("output_contract")
     if explicit is not None:
@@ -97,21 +133,16 @@ def output_contract(case: dict[str, Any]) -> dict[str, Any]:
         return {"minimum_characters": minimum, "maximum_characters": maximum,
                 "counting": "non_whitespace_characters_including_punctuation",
                 "source": "frozen_output_contract"}
-    instruction = case["instruction"]
-    absolute = re.search(r"续写\s*(\d+)\s*(?:至|到|-)\s*(\d+)\s*字", instruction)
-    relative = re.search(r"字数可在原文的\s*(\d+)%\s*(?:至|到|-)\s*(\d+)%", instruction)
-    minimum = maximum = None
-    if absolute:
-        minimum, maximum = (int(value) for value in absolute.groups())
-    elif relative:
-        original = count_characters(case["context"]["current_chapter"]["body"])
-        lower, upper = (int(value) for value in relative.groups())
-        minimum, maximum = math.ceil(original * lower / 100), math.floor(original * upper / 100)
-    if minimum is not None and (minimum < 1 or minimum > maximum):
-        raise ValueError("作者要求中的候选字数范围无效。")
+    contract = prose_output_contract(
+        case["task"], case["instruction"],
+        source_text=case["context"].get("current_chapter", {}).get("body"),
+    )
+    if contract["source"] == "explicit_relative_unresolved":
+        raise ValueError("相对字数要求缺少完整原文，不能冻结或发送文学评测。")
+    minimum, maximum = contract["minimum_characters"], contract["maximum_characters"]
     return {"minimum_characters": minimum, "maximum_characters": maximum,
             "counting": "non_whitespace_characters_including_punctuation",
-            "source": "explicit_instruction" if minimum is not None else "unspecified"}
+            "source": "explicit_instruction" if minimum is not None or maximum is not None else "unspecified"}
 
 
 def sample_validation(case: dict[str, Any], record: dict[str, Any]) -> dict[str, Any]:
@@ -135,9 +166,16 @@ def sample_validation(case: dict[str, Any], record: dict[str, Any]) -> dict[str,
     contract = output_contract(case)
     characters = count_characters(text)
     minimum, maximum = contract["minimum_characters"], contract["maximum_characters"]
-    if minimum is not None and not minimum <= characters <= maximum:
+    if ((minimum is not None and characters < minimum)
+            or (maximum is not None and characters > maximum)):
+        description = (f"候选为{characters}字，要求{minimum}至{maximum}字。" if minimum is not None and maximum is not None
+                       else f"候选为{characters}字，要求至少{minimum}字。" if minimum is not None
+                       else f"候选为{characters}字，要求最多{maximum}字。")
         issues.append({"code": "length_out_of_range",
-                       "description": f"候选为{characters}字，要求{minimum}至{maximum}字。"})
+                       "description": description})
+    reasoning = nonempty_reasoning_observation(record)
+    if reasoning:
+        issues.append(reasoning)
     contamination = find_planning_contamination(case["task"], text)
     if contamination:
         issues.append(contamination)

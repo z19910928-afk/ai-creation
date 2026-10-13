@@ -17,6 +17,7 @@ let authorPlanningTimer=null;
 let authorPlanningBusy=false;
 const authorPlanningStages=[['overview','总纲'],['volumes','卷'],['chapters','章'],['scenes','场景']];
 let authorSettings=null;
+let authorSettingsSeq=0;
 let authorBackups=[];
 let authorReferences=[];
 let authorLoadToken=0;
@@ -209,6 +210,7 @@ function authorBindAssistant(){
 
 async function authorLoadPage(){
  const token=++authorLoadToken;const owner=requestedProject;const which=view;
+ let settingsSequence=null;
  try{
   if(which==='library'){
    const data=await authorJSON('/api/projects');if(token!==authorLoadToken)return;
@@ -222,8 +224,10 @@ async function authorLoadPage(){
    await authorLoadPlanning(owner);
   }
   if(which==='settings'){
-   const data=await authorJSON('/api/ai/settings');if(token!==authorLoadToken||owner!==requestedProject)return;
-   authorSettings=data.settings||data;authorRenderSettings();
+   settingsSequence=authorBeginSettingsOperation();
+   const data=await authorJSON('/api/ai/settings');
+   if(token!==authorLoadToken||owner!==requestedProject||settingsSequence!==authorSettingsSeq)return;
+   authorSettings=data.settings||data;authorRenderSettings();await loadAIStatus();
   }
   if(which==='backups'){
    const data=await authorJSON('/api/backups');if(token!==authorLoadToken||owner!==requestedProject)return;
@@ -233,7 +237,10 @@ async function authorLoadPage(){
    const data=await authorJSON('/api/references');if(token!==authorLoadToken||owner!==requestedProject)return;
    authorReferences=data.references||[];authorRenderReferences();
   }
- }catch(error){if(token===authorLoadToken){const host=document.querySelector({library:'#projectList',blueprint:'#blueprintHost',settings:'#settingsHost',backups:'#backupList',references:'#referenceList'}[which]||'#taskList');if(host)host.innerHTML=`<div class="empty">${esc(error.message)}<button class="ghost-btn" data-author-reload>重新连接</button></div>`;host?.querySelector('[data-author-reload]')?.addEventListener('click',authorLoadPage)}}
+ }catch(error){if(token===authorLoadToken&&owner===requestedProject&&
+   (which!=='settings'||settingsSequence===authorSettingsSeq)){
+  const host=document.querySelector({library:'#projectList',blueprint:'#blueprintHost',settings:'#settingsHost',backups:'#backupList',references:'#referenceList'}[which]||'#taskList');if(host)host.innerHTML=`<div class="empty">${esc(error.message)}<button class="ghost-btn" data-author-reload>重新连接</button></div>`;host?.querySelector('[data-author-reload]')?.addEventListener('click',authorLoadPage)
+ }}
 }
 
 function authorRenderProjects(){
@@ -262,7 +269,7 @@ async function authorPerformProjectSwitch(id){
  backendOnline=false;requestedProject=id;storage.set(CURRENT_PROJECT_KEY,id);
  state=load();state.branch_id=authorProjects.find(p=>p.id===id)?.branch_id||state.branch_id;
  confirmedState=loadConfirmed();candidateStore=loadCandidates();activeChapter=storage.get(cacheKey(':active'))||state.chapters[0]?.id;
- authorBlueprint=null;authorBlueprintVersion=null;authorBlueprintDirty=false;authorBlueprintBase=null;authorBlueprintConflict=null;authorSettings=null;queueJobs=[];
+ authorBlueprint=null;authorBlueprintVersion=null;authorBlueprintDirty=false;authorBlueprintBase=null;authorBlueprintConflict=null;authorSettings=null;++authorSettingsSeq;queueJobs=[];
  clearTimeout(authorPlanningTimer);authorPlanning=null;authorPlanningRows=[];authorPlanningSelected=null;authorPlanningBusy=false;
  aiDraft=null;aiRunId=null;mergePending=null;saveError='';savedSelection=null;storyLoaded=false;storyLoadedChapter=null;
  storyMap={relationships:[],timeline:[],foreshadowing:[],conflicts:[],character_states:[],knowledge_scope:{}};
@@ -554,9 +561,24 @@ actions.materializePlan=async()=>{
 };
 actions.refreshTasks=()=>scheduleQueue(0);
 
+function authorProbeDescription(probe,model=''){
+ if(!probe)return '';
+ const requested=probe.requested_model||probe.model||model;
+ const identity=requested?` · 请求 ${requested}${probe.returned_model?` · 回传 ${probe.returned_model}`:' · 未回传模型名称'}`:'';
+ const time=probe.checked_at?` · ${probe.checked_at}`:'';
+ if(probe.configuration_stale)return `本次检测已失效：检测期间设置发生变化，不能验证当前设置${identity}${time}`;
+ return probe.success?`最近默认模型实测成功（连接回复符合要求）${identity}${time}`:
+  `最近连接检测未通过：${probe.error||'模型未返回符合要求的回复'}${identity}${time}`;
+}
+
+function authorBeginSettingsOperation(){
+ ++aiStatusSeq;
+ return ++authorSettingsSeq;
+}
+
 function authorRenderSettings(){
  const host=document.querySelector('#settingsHost');if(!host||!authorSettings)return;
- const s=authorSettings;const parameters=s.parameters||{},styles=s.styles||{},models=s.models||{};
+ const s=authorSettings,owner=requestedProject;const parameters=s.parameters||{},styles=s.styles||{},models=s.models||{};
  host.innerHTML=`<form id="modelSettings" class="settings-form"><div class="settings-fields">
  <label>服务地址<input id="modelBaseUrl" type="url" value="${esc(s.base_url||'')}" placeholder="https://example.com/v1"></label>
  <label>默认模型<input id="modelDefault" value="${esc(s.model||'')}"></label>
@@ -570,7 +592,7 @@ function authorRenderSettings(){
  <label>每日生成上限<input id="modelDailyLimit" type="number" min="0" max="100000" value="${s.daily_limit??50}"></label>
  ${[['continue','续写模型'],['polish','润色模型'],['outline','规划模型'],['summary','回顾模型'],['check','审稿模型']].map(([key,label])=>
  `<label>${label}<input data-task-model="${key}" value="${esc(models[key]||'')}" placeholder="使用默认模型"></label>`).join('')}</div>
- <p id="modelProbeStatus" class="modal-help">${s.last_probe?.success?`最近实测：${esc(s.last_probe.model||s.model)} · ${esc(s.last_probe.checked_at||'')}`:s.configured?'已配置，尚未验证模型响应':'尚未配置模型'}</p>
+ <p id="modelProbeStatus" class="modal-help">${esc(authorProbeDescription(s.last_probe,s.model)||(s.configured?'设置已保存，尚未验证默认模型响应':'尚未配置模型'))}</p>
  <p class="form-error" role="alert"></p><div class="settings-actions"><button class="ghost-btn" type="button" id="modelProbe">实测连接（调用模型）</button>
  <button class="primary-btn" type="submit">保存设置</button></div></form>`;
  const form=host.querySelector('#modelSettings');
@@ -586,21 +608,46 @@ function authorRenderSettings(){
   else if(reasoning)result.parameters.reasoning_effort=reasoning;
   if(value('modelKey').trim())result.api_key=value('modelKey').trim();return result;
  };
- const saveSettings=async()=>{
-  const result=await durableOperation('/api/ai/settings','PUT',payload());authorSettings=result.settings||result;
-  form.querySelector('#modelKey').value='';await loadAIStatus();return result;
+ const saveSettings=async sequence=>{
+  if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)
+   throw new Error('设置页面已更新，请重新打开设置');
+  const result=await durableOperation('/api/ai/settings','PUT',payload(),
+   ()=>owner===requestedProject&&sequence===authorSettingsSeq&&form.isConnected);
+  if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)
+   throw new Error('设置页面已更新，请重新打开设置');
+  authorSettings=result.settings||result;
+  form.querySelector('#modelKey').value='';await loadAIStatus();
+  if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)
+   throw new Error('设置页面已更新，请重新打开设置');
+  return result;
  };
  form.onsubmit=async e=>{
-  e.preventDefault();const button=form.querySelector('[type="submit"]');button.disabled=true;
-  try{await saveSettings();toast('模型与风格设置已经保存');authorRenderSettings()}
-  catch(error){form.querySelector('.form-error').textContent=error.message}finally{button.disabled=false}
+  e.preventDefault();const sequence=authorBeginSettingsOperation();
+  const button=form.querySelector('[type="submit"]');button.disabled=true;
+  try{await saveSettings(sequence);toast('模型与风格设置已经保存');authorRenderSettings()}
+  catch(error){if(owner===requestedProject&&sequence===authorSettingsSeq&&form.isConnected)form.querySelector('.form-error').textContent=error.message}finally{button.disabled=false}
  };
  form.querySelector('#modelProbe').onclick=async()=>{
-  const button=form.querySelector('#modelProbe');button.disabled=true;
-  try{await saveSettings();form.querySelector('#modelProbeStatus').textContent='正在验证真实模型响应…';
-   const result=await durableOperation('/api/ai/probe','POST',{});form.querySelector('#modelProbeStatus').textContent=
-   result.success?`实测成功 · ${result.model||authorSettings.model}`:`实测未通过：${result.error||'模型未返回有效内容'}`;
-  }catch(error){form.querySelector('#modelProbeStatus').textContent=`实测失败：${error.message}`}finally{button.disabled=false}
+  let sequence=authorBeginSettingsOperation();
+  const controls=[...form.querySelectorAll('input,textarea,select,button')];
+  const disabled=controls.map(control=>control.disabled);controls.forEach(control=>control.disabled=true);
+  try{await saveSettings(sequence);
+   if(owner!==requestedProject||sequence!==authorSettingsSeq)return;
+   sequence=authorBeginSettingsOperation();
+   form.querySelector('#modelProbeStatus').textContent='正在验证真实模型响应…';
+   const result=await durableOperation('/api/ai/probe','POST',{},
+    ()=>owner===requestedProject&&sequence===authorSettingsSeq&&form.isConnected);
+   if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)return;
+   if(result.settings)authorSettings=result.settings;
+   await loadAIStatus();
+   if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)return;
+   if(result.configuration_stale&&form.isConnected)authorRenderSettings();
+   if(view==='settings'){
+    const status=document.querySelector('#modelProbeStatus');
+    if(status)status.textContent=authorProbeDescription(result,authorSettings.model);
+   }
+  }catch(error){if(owner===requestedProject&&sequence===authorSettingsSeq&&form.isConnected)form.querySelector('#modelProbeStatus').textContent=`连接检测未完成：${error.message}`}
+  finally{controls.forEach((control,index)=>control.disabled=disabled[index])}
  };
 }
 

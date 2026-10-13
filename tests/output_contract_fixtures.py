@@ -50,6 +50,214 @@ class OutputContractTests(unittest.TestCase):
             850,
         )
 
+    def test_chinese_number_ranges_and_hanzi_units_enforce_real_boundaries(self) -> None:
+        for instruction in (
+            "续写六百到八百五十字。",
+            "续写600至八百五十个汉字。",
+            "字数控制在六百至850个汉字。",
+            "字数控制在600至850个汉字。",
+            "续写六百至八百五十中文字。",
+            "续写６００至８５０字符。",
+        ):
+            with self.subTest(instruction=instruction):
+                contract = output_contract("continue", instruction)
+                self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]),
+                                 (600, 850))
+                self.assertEqual(contract["target_characters"], 725)
+                self.assertFalse(validate_output("continue", "铁", contract)["eligible"])
+                for characters in (600, 850):
+                    self.assertTrue(validate_output("continue", "甲" * characters, contract)["eligible"])
+                for characters in (599, 851):
+                    self.assertFalse(validate_output("continue", "甲" * characters, contract)["eligible"])
+
+    def test_chinese_integer_units_and_positional_digits_are_unambiguous(self) -> None:
+        for numeral, expected in (
+            ("十", 10), ("百", 100), ("千", 1000), ("万", 10_000),
+            ("百万", 1_000_000), ("千万", 10_000_000),
+            ("十一", 11), ("两百", 200), ("一百零二", 102),
+            ("一千〇三十", 1030), ("一万", 10_000), ("两万", 20_000),
+            ("一万零六百", 10_600), ("一万两千三百四十五", 12_345),
+            ("十万", 100_000), ("二〇二六", 2026), ("〇一〇", 10),
+        ):
+            with self.subTest(numeral=numeral):
+                contract = output_contract("continue", f"续写{numeral}字。")
+                self.assertEqual(contract["minimum_characters"], expected)
+                self.assertEqual(contract["maximum_characters"], expected)
+
+    def test_imperative_lengths_with_have_are_enforced(self) -> None:
+        for instruction in (
+            "续写，正文要有六百至八百五十字。",
+            "续写，必须有600至850字。",
+            "正文需要有六百至850字。",
+            "润色，候选正文应有600至八百五十字。",
+            "续写，输出字数须有600至850字。",
+        ):
+            with self.subTest(instruction=instruction):
+                task = "polish" if "润色" in instruction else "continue"
+                contract = output_contract(task, instruction)
+                self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]),
+                                 (600, 850))
+                self.assertFalse(validate_output(task, "铁", contract)["eligible"])
+                for size in (600, 850):
+                    self.assertTrue(validate_output(task, "甲" * size, contract)["eligible"])
+                for size in (599, 851):
+                    self.assertFalse(validate_output(task, "甲" * size, contract)["eligible"])
+        contract = output_contract("continue", "续写，正文要有六百字。")
+        self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (600, 600))
+
+    def test_imperative_story_lengths_are_not_output_requirements(self) -> None:
+        for instruction in (
+            "续写，碑文要有六百至八百五十字。",
+            "续写，信中必须有600至850字。",
+            "续写，保留要有六百字的碑文。",
+            "续写，纸条上写着“正文要有600至850字”。",
+        ):
+            with self.subTest(instruction=instruction):
+                contract = output_contract("continue", instruction)
+                self.assertEqual(contract["source"], "unspecified")
+
+    def test_quoted_output_bounds_are_enforced_without_changing_author_text(self) -> None:
+        for instruction in (
+            "字数控制在“600至850字”。",
+            "正文要有「六百到八百五十字」。",
+            '续写，字数要求为"600至八百五十个汉字"。',
+            "正文长度范围：『六百至八百五十字』。",
+        ):
+            with self.subTest(instruction=instruction):
+                original = instruction.encode("utf-8")
+                contract = output_contract("continue", instruction)
+                self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]),
+                                 (600, 850))
+                self.assertFalse(validate_output("continue", "铁", contract)["eligible"])
+                for size in (600, 850):
+                    self.assertTrue(validate_output("continue", "甲" * size, contract)["eligible"])
+                for size in (599, 851):
+                    self.assertFalse(validate_output("continue", "甲" * size, contract)["eligible"])
+                self.assertEqual(instruction.encode("utf-8"), original)
+        self.assertEqual(
+            output_contract("continue", "字数至少“六百字”。")["minimum_characters"], 600)
+        self.assertEqual(
+            output_contract("continue", "正文最多‘八百五十字’。")["maximum_characters"], 850)
+        contract = output_contract(
+            "polish", "正文长度保持在“原文的百分之八十至百分之一百三十”。",
+            source_characters=100, source_scope="selection")
+        self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (80, 130))
+        self.assertEqual(contract["source_scope"], "selection")
+        with self.assertRaises(ValueError):
+            output_contract("continue", "字数控制在“六百百至八百五十字”。")
+
+    def test_quoted_story_bounds_and_dialogue_do_not_become_output_requirements(self) -> None:
+        for instruction in (
+            "她说：“字数控制在600至850字。”",
+            "她说：字数控制在“600至850字”。",
+            "纸条上写着：字数控制在“600至850字”。",
+            "续写，保留碑文中的‘600至850字’。",
+            "续写，保留纸条上的「续写六百到八百五十字」。",
+            "续写，字数控制在“她说至少600字，然后离开”。",
+        ):
+            with self.subTest(instruction=instruction):
+                contract = output_contract("continue", instruction)
+                self.assertEqual(contract["source"], "unspecified")
+                self.assertIsNone(contract["minimum_characters"])
+                self.assertIsNone(contract["maximum_characters"])
+        contract = output_contract(
+            "continue", "她说：“字数至少1000字。”字数控制在“600至850字”。")
+        self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (600, 850))
+
+    def test_chinese_one_sided_requirements_and_soft_targets_keep_same_gate(self) -> None:
+        self.assertEqual(output_contract("continue", "正文至少六百字。")["minimum_characters"], 600)
+        self.assertEqual(output_contract("continue", "正文最多八百五十汉字。")["maximum_characters"], 850)
+        contract = output_contract("continue", "续写六百至八百五十字。目标约七百二十字。")
+        self.assertEqual(contract["target_characters"], 720)
+        self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (600, 850))
+        for instruction in ("目标约七百二十字。", "正文长度目标约七百二十个汉字。"):
+            self.assertEqual(output_contract("continue", instruction)["source"], "unspecified")
+        with self.assertRaisesRegex(ValueError, "字数范围"):
+            output_contract("continue", "续写六百至八百五十字。目标约八百五十一字。")
+
+    def test_chinese_percentage_ranges_use_exact_selected_source(self) -> None:
+        for instruction in (
+            "润色所选正文，字数保持原文的百分之八十到百分之一百三十。",
+            "润色所选正文，字数保持原文的八十%至一百三十%。",
+            "润色所选正文，字数保持原文的80％至百分之一百三十。",
+            "润色所选正文，字数保持原文的百分之八十至130%。",
+        ):
+            with self.subTest(instruction=instruction):
+                contract = output_contract(
+                    "polish", instruction, source_text="甲" * 100, source_scope="selection")
+                self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (80, 130))
+                self.assertEqual(contract["source"], "explicit_relative")
+                self.assertEqual(contract["source_characters"], 100)
+                self.assertEqual(contract["source_scope"], "selection")
+                self.assertFalse(validate_output("polish", "甲" * 79, contract)["eligible"])
+                self.assertTrue(validate_output("polish", "甲" * 130, contract)["eligible"])
+                self.assertFalse(validate_output("polish", "甲" * 131, contract)["eligible"])
+
+    def test_chinese_percentage_one_sided_and_missing_source_are_guarded(self) -> None:
+        for instruction in (
+            "字数保持原文的至少百分之八十。",
+            "字数不少于原文的百分之八十。",
+        ):
+            self.assertEqual(
+                output_contract("polish", instruction, source_characters=100)["minimum_characters"], 80)
+        for instruction in (
+            "字数保持原文的不超过百分之一百三十。",
+            "字数不超过原文的百分之一百三十。",
+        ):
+            self.assertEqual(
+                output_contract("polish", instruction, source_characters=100)["maximum_characters"], 130)
+        contract = output_contract("polish", "字数保持原文的百分之八十至百分之一百三十。")
+        self.assertEqual(contract["source"], "explicit_relative_unresolved")
+        self.assertFalse(validate_output("polish", "甲", contract)["eligible"])
+
+    def test_invalid_numerals_do_not_silently_remove_or_change_length_gate(self) -> None:
+        for numeral in (
+            "六百百", "八十五十", "一百二", "一百零", "一千零零二",
+            "一千零二百", "一万万", "万六百", "一万六百", "六百8十",
+            "1,23", "600.5", "六百点五", "-600", "负六百", "两十", "零", "〇",
+        ):
+            with self.subTest(numeral=numeral), self.assertRaises(ValueError):
+                output_contract("continue", f"续写{numeral}字。")
+        for instruction in (
+            "续写八百五十到六百字。",
+            "字数保持原文的百分之一百三十至百分之八十。",
+            "字数保持原文的百分之八十%至百分之一百三十。",
+        ):
+            with self.subTest(instruction=instruction), self.assertRaises(ValueError):
+                output_contract("polish" if "百分之" in instruction else "continue",
+                                instruction, source_characters=100)
+
+    def test_chinese_story_quantities_and_quoted_targets_are_not_length_rules(self) -> None:
+        for instruction in (
+            "续写仓库场景：二十二点十分前离开，保留两把锁和第三次敲门。",
+            "续写：她在六百米外等了三分钟。",
+            "续写：碑文有六百字。",
+            "续写：碑文有六百百字。",
+            "续写，保留六百字的碑文。",
+            "润色全文，保留原文的百分之八十至百分之一百三十的意象。",
+            "润色全文，保留原文的百分之六百百至百分之一百三十的意象。",
+            "她说：“正文至少六百字。”",
+            "续写，保留纸条上的「续写六百到八百五十字」。",
+            "润色她的话：“字数保持原文的百分之八十至百分之一百三十”。",
+        ):
+            with self.subTest(instruction=instruction):
+                contract = output_contract("polish" if "润色" in instruction else "continue",
+                                           instruction, source_characters=100)
+                self.assertEqual(contract["source"], "unspecified")
+                self.assertIsNone(contract["minimum_characters"])
+                self.assertIsNone(contract["maximum_characters"])
+        instruction = "她说：“目标约八百五十一字。”续写六百至八百五十字。目标约七百二十字。"
+        contract = output_contract("continue", instruction)
+        self.assertEqual(contract["target_characters"], 720)
+        self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (600, 850))
+        contract = output_contract(
+            "continue", "续写：碑文有五百到九百字。正文长度控制在六百至八百五十字。")
+        self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (600, 850))
+        contract = output_contract(
+            "polish", "保留原文的百分之六百百至百分之一百三十的意象。"
+            "字数保持原文的百分之八十至百分之一百三十。", source_characters=100)
+        self.assertEqual((contract["minimum_characters"], contract["maximum_characters"]), (80, 130))
+
     def test_explicit_soft_target_preserves_absolute_range(self) -> None:
         for phrase, target in (
             ("目标约600字", 600),

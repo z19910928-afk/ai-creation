@@ -196,6 +196,12 @@ function candidateRevisionChild(candidate){
 function candidateRevisionReason(candidate){
  if(!candidate||!['continue','polish'].includes(candidate.task))return '只支持整理续写或润色正文';
  if(candidate.restored_read_only)return '恢复的候选仅供阅读，请生成新候选';
+ if(candidate.reasoning_observation?.requested_disabled&&(
+  candidate.reasoning_observation?.nonempty_events>0||candidate.reasoning_observation?.invalid_events>0)){
+  return candidate.reasoning_observation?.invalid_events>0?
+   '回复与关闭思考设置不一致；思考字段类型无法校验，本候选仅供阅读，不会自动重新发送':
+   '回复与关闭思考设置不一致；本候选仅供阅读，不会自动重新发送';
+ }
  if(!candidate.complete||candidate.truncated||candidate.mode!=='provider'||candidate.safe_to_apply!==true||
   candidate.completion_state!=='complete'||candidate.finish_reason!=='stop'||!candidate.originalText?.trim()){
   return '请等待模型返回完整正文；离线或不完整候选不能整理';
@@ -591,17 +597,19 @@ function showMergeConflict(){
   const saved=await syncBackend();if(saved)toast('合并后的文字已经保存');
  };
 }
-function durableOperation(path,method='POST',body={}){
+function durableOperation(path,method='POST',body={},guard=null){
  const owner=requestedProject;
  const operation=operationChain.catch(()=>{}).then(()=>{
   if(owner!==requestedProject)throw new Error('作品已切换，请回到原作品重新操作');
-  return performDurableOperation(path,method,body);
+  if(guard&&!guard())throw new Error('操作已过期，请重新操作');
+  return performDurableOperation(path,method,body,guard);
  });
  operationChain=operation.catch(()=>{});return operation;
 }
-async function performDurableOperation(path,method='POST',body={}){
+async function performDurableOperation(path,method='POST',body={},guard=null){
  if(!backendOnline)throw new Error('需要恢复连接后完成此操作，当前草稿已保留');
  if(!await syncBackend())throw new Error('请先保存或合并当前草稿');
+ if(guard&&!guard())throw new Error('操作已过期，请重新操作');
  const before=MoyuSync.copy(state);const owner=requestedProject;independentWrite=true;
  try{
   const response=await fetch(path,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});

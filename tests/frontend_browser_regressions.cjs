@@ -13,7 +13,7 @@ const root=path.resolve(__dirname,'..');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-browser-regression-'));
 const results={passed:false,scope:'真实浏览器、隔离SQLite、免费本机模拟提供方',cases:[],artifacts:temporary};
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-let app,provider,browser,base,providerText='来源甲章的候选。',providerDelay=600,providerStreamGate=null,reviewMode='single',planningFailure=false;
+let app,provider,browser,base,providerText='来源甲章的候选。',providerReasoning=null,providerDelay=600,providerStreamGate=null,reviewMode='single',planningFailure=false;
 let serverLog='',providerPort;
 const providerRequests=[];
 async function freePort(){
@@ -92,6 +92,7 @@ async function main(){
    const input=JSON.parse(raw||'{}');providerRequests.push(input);const text=providerOutput(input);
    if(input.stream){
     response.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache'});
+    if(providerReasoning!==null)response.write(`data: ${JSON.stringify({choices:[{delta:{reasoning_content:providerReasoning},finish_reason:null}]})}\n\n`);
     const middle=Math.max(1,Math.floor(text.length/2));
     response.write(`data: ${JSON.stringify({choices:[{delta:{content:text.slice(0,middle)},finish_reason:null}]})}\n\n`);
     const streamGate=providerStreamGate;
@@ -103,7 +104,8 @@ async function main(){
     },providerDelay);
    }else{
     response.writeHead(200,{'Content-Type':'application/json'});
-    setTimeout(()=>response.end(JSON.stringify({model:'browser-mock',choices:[{message:{content:text},finish_reason:'stop'}],
+    const message={content:text};if(providerReasoning!==null)message.reasoning_content=providerReasoning;
+    setTimeout(()=>response.end(JSON.stringify({model:'browser-mock',choices:[{message,finish_reason:'stop'}],
      usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})),providerDelay);
    }
   });
@@ -813,6 +815,35 @@ async function main(){
   assert.equal(await currentBody(firstId),before);
   await desktop.page.locator('#aiClear').click();
  });
+ await test('关闭思考设置遇到非空思考字段，正文保留且采纳和整理均禁用',async()=>{
+  const before=await currentBody(firstId),calls=providerRequests.length,settings=await api('/api/ai/settings');
+  providerText='林岚握住钥匙，沿着钟声走向空船。';providerReasoning='私密思考正文不能保存或显示';
+  try{
+   await api('/api/ai/settings','PUT',{parameters:{...settings.parameters,thinking:{type:'disabled'},reasoning_effort:undefined}});
+   await desktop.page.locator('#aiTask').selectOption('continue');
+   await desktop.page.locator('#aiInstruction').fill('续写10至100字。');
+   await desktop.page.locator('#aiGenerate').click();
+   await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft.reasoning_observation?.unexpected_reasoning,null,{timeout:15000});
+   await desktop.page.waitForFunction(()=>!streamReaders.size);
+   assert.equal(await desktop.page.locator('#aiOutput').inputValue(),providerText);
+   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+   assert.equal(await desktop.page.locator('#aiRevise').isEnabled(),false);
+   assert.match(await desktop.page.locator('#aiStatus').innerText(),/回复与关闭思考设置不一致/);
+   assert.match(await desktop.page.locator('#aiRevise').getAttribute('title'),/回复与关闭思考设置不一致/);
+   await desktop.page.locator('#aiOutput').fill('林岚改走堤岸，把钥匙留在掌心。');
+   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+   await desktop.page.evaluate(()=>reviseAI());
+   assert.equal(await desktop.page.locator('[data-revise-dialog]').count(),0);
+   assert.equal(providerRequests.length,calls+1);
+   assert.equal(await currentBody(firstId),before);
+   assert.equal(await desktop.page.evaluate(()=>JSON.stringify([...candidateStore.values()]).includes('私密思考正文不能保存或显示')),false);
+   assert.equal((await desktop.page.locator('body').innerText()).includes(providerReasoning),false);
+   await desktop.page.locator('#aiClear').click();
+  }finally{
+   providerReasoning=null;await api('/api/ai/settings','PUT',{parameters:settings.parameters});
+   await desktop.page.locator('#aiInstruction').fill('');
+  }
+ });
  await test('队列先完成后人工编辑，迟到流式分片不覆盖候选、缓存或原稿',async()=>{
   const before=await currentBody(firstId),original='林岚握住钥匙，沿着钟声走向空船。',edited='林岚保留钥匙，先停在岸边辨认钟声。';
   await desktop.page.waitForFunction(()=>!streamReaders.size);
@@ -1082,7 +1113,7 @@ async function main(){
   await switchThroughLibrary({id:'default-project'});
  });
  await test('设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型',async()=>{
-  providerDelay=80;providerText='本机连接检查成功。';
+  providerDelay=80;providerText='连接正常';
   await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
   await workspace.page.locator('#modelBaseUrl').fill(`http://127.0.0.1:${providerPort}/v1`);
   await workspace.page.locator('#modelDefault').fill('browser-mock');

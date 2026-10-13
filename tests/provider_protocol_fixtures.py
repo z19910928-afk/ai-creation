@@ -14,7 +14,7 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from moyu_provider import (ProviderCanceled, ProviderError, call_chat_completion,
-                           prepare_chat_request, usage_accounting)
+                           prepare_chat_request, reasoning_field_counts, usage_accounting)
 
 
 USAGE_CASES = {
@@ -30,6 +30,17 @@ USAGE_CASES = {
     "bool": {"total_tokens": True, "completion_tokens": 9},
     "negative": {"total_tokens": -1, "completion_tokens": 9},
     "float": {"total_tokens": 16.0, "completion_tokens": 9},
+}
+REASONING_FIELDS = {
+    "alias": {"reasoning": "私密思考全文不可保存"},
+    "object": {"reasoning_content": {"text": "私密思考全文不可保存"}},
+    "empty-object": {"reasoning": {}},
+    "array": {"reasoning_content": []},
+    "boolean": {"reasoning": False},
+    "number": {"reasoning_content": 0},
+    "null": {"reasoning_content": None, "reasoning": None},
+    "empty": {"reasoning_content": "", "reasoning": " \n"},
+    "both": {"reasoning_content": "私密思考全文不可保存", "reasoning": "第二个私密字段"},
 }
 
 
@@ -74,8 +85,9 @@ class Handler(BaseHTTPRequestHandler):
         json_cases = {"json", "wrong-schema", "wrong-usage", "json-length", "json-unknown",
                       "size", "secret-json", "wrong-content", "nan", "usage-extra",
                       "delayed-headers", "delayed-json", "vendor-finish", "usage-secret-key",
-                      "json-empty-finish"}
+                      "json-empty-finish", "reasoning-json", "reasoning-json-empty"}
         json_cases.update("usage-" + name for name in USAGE_CASES)
+        json_cases.update("reasoning-variant-json-" + name for name in REASONING_FIELDS)
         if case == "delayed-headers":
             time.sleep(0.35)
         self.send_response(200)
@@ -113,6 +125,22 @@ class Handler(BaseHTTPRequestHandler):
                 self.wfile.write(completion(finish=None))
             elif case == "json-empty-finish":
                 self.wfile.write(completion(finish=""))
+            elif case in {"reasoning-json", "reasoning-json-empty"}:
+                self.wfile.write(json.dumps({
+                    "model": "actual-fixture", "choices": [{
+                        "message": {"content": "铁", "reasoning_content":
+                                    "私密思考全文不可保存" if case == "reasoning-json" else " \n"},
+                        "finish_reason": "stop",
+                    }], "usage": {"prompt_tokens": 7, "completion_tokens": 9, "total_tokens": 16},
+                }, ensure_ascii=False).encode())
+            elif case.startswith("reasoning-variant-json-"):
+                fields = REASONING_FIELDS[case[len("reasoning-variant-json-"):]]
+                self.wfile.write(json.dumps({
+                    "model": "actual-fixture", "choices": [{
+                        "message": {"content": "只有真实正文", **fields},
+                        "finish_reason": "stop",
+                    }], "usage": {"prompt_tokens": 7, "completion_tokens": 9, "total_tokens": 16},
+                }, ensure_ascii=False).encode())
             elif case == "vendor-finish":
                 self.wfile.write(completion(finish="vendor-fixture-sensitive-value"))
             elif case == "size":
@@ -197,18 +225,32 @@ class Handler(BaseHTTPRequestHandler):
                     self.wfile.write(sse(text))
                     self.wfile.flush()
                 self.wfile.write(sse("", "stop") + b"data: [DONE]\n\n")
-            elif case in {"reasoning-only", "reasoning-body", "tail-failure"}:
-                count = 130 if case == "tail-failure" else 2
+            elif case.startswith("reasoning-variant-stream-"):
+                name = case[len("reasoning-variant-stream-"):]
+                count = 130 if name == "invalid-middle" else 2
+                for index in range(count):
+                    fields = ({"reasoning": {} if index == 113 else None}
+                              if name == "invalid-middle" else REASONING_FIELDS[name])
+                    self.wfile.write(("data: " + json.dumps({
+                        "choices": [{"index": 0, "delta": fields, "finish_reason": None}],
+                    }, ensure_ascii=False) + "\n\n").encode())
+                self.wfile.write(sse("只有真实正文", "stop",
+                                    usage={"prompt_tokens": 7, "completion_tokens": 9, "total_tokens": 16})
+                                 + b"data: [DONE]\n\n")
+            elif case in {"reasoning-only", "reasoning-body", "reasoning-middle", "tail-failure"}:
+                count = 130 if case in {"tail-failure", "reasoning-middle"} else 2
                 for _ in range(count):
                     self.wfile.write(("data: " + json.dumps({
                         "choices": [{"index": 0, "delta": {
-                            "reasoning_content": "私密思考全文不可保存",
+                            "reasoning_content": ("私密思考全文不可保存"
+                                                  if case != "reasoning-middle" or _ == 113 else ""),
                             "fixture-sensitive-value": "不可保存的字段值"},
                             "finish_reason": None}]}, ensure_ascii=False) + "\n\n").encode())
                 if case == "tail-failure":
                     self.wfile.write(sse("", "vendor-failure-at-tail"))
                 else:
-                    self.wfile.write(sse("只有真实正文" if case == "reasoning-body" else "", "stop")
+                    self.wfile.write(sse("只有真实正文" if case != "reasoning-only" else "", "stop",
+                                        usage={"prompt_tokens": 7, "completion_tokens": 9, "total_tokens": 16})
                                      + b"data: [DONE]\n\n")
             else:
                 self.wfile.write(b": heartbeat\r\n\r\nid: event-one\r\nevent: message\r\n")
@@ -711,6 +753,102 @@ class ProtocolTests(unittest.TestCase):
         for text in ("私密思考全文不可保存", "只有真实正文", "不可保存的字段值", "fixture-sensitive-value"):
             self.assertNotIn(text, observation)
         self.assertIn("[密钥已隐藏]", observation)
+        self.assertEqual(result["reasoning_observation"], {
+            "field_events": 2, "nonempty_events": 2, "invalid_events": 0,
+            "characters": 2 * len("私密思考全文不可保存"),
+            "requested_disabled": False, "unexpected_reasoning": False,
+        })
+
+    def test_disabled_thinking_with_nonempty_reasoning_is_observed_without_rewriting_protocol(self) -> None:
+        for case, stream, parameters in (
+                ("reasoning-json", False, {"thinking": {"type": "disabled"}}),
+                ("reasoning-body", True, {"thinking": {"type": "disabled"}}),
+                ("reasoning-json", False, {"reasoning_effort": "none"}),
+                ("reasoning-middle", True, {"thinking": {"type": "disabled"}})):
+            with self.subTest(case=case, parameters=parameters):
+                before = len(Handler.requests)
+                delivered = []
+                result = self.call(case, stream=stream, parameters=parameters,
+                                   on_chunk=delivered.append)
+                self.assertEqual(len(Handler.requests), before + 1)
+                self.assertEqual(result["text"], "铁" if case == "reasoning-json" else "只有真实正文")
+                self.assertEqual(result["text"], "".join(chunk["text"] for chunk in delivered))
+                self.assertEqual(result["completion_state"], "complete")
+                self.assertEqual(result["finish_reason"], "stop")
+                self.assertFalse(result["truncated"])
+                self.assertTrue(result["safe_to_apply"])
+                self.assertEqual(result["usage_state"], "reported")
+                self.assertEqual(result["billing_state"], "usage_reported")
+                self.assertEqual(result["usage"]["total_tokens"], 16)
+                observation = result["reasoning_observation"]
+                self.assertTrue(observation["requested_disabled"])
+                self.assertTrue(observation["unexpected_reasoning"])
+                expected_events = 2 if case == "reasoning-body" else 1
+                self.assertEqual(observation["nonempty_events"], expected_events)
+                self.assertEqual(observation["characters"], expected_events * len("私密思考全文不可保存"))
+                self.assertNotIn("私密思考全文不可保存", json.dumps(result, ensure_ascii=False))
+                if case == "reasoning-middle":
+                    self.assertTrue(result["protocol_observation"]["events_truncated"])
+                    self.assertTrue(all(
+                        item.get("choices", [{}])[0].get("delta", {}).get("fields", {}).get(
+                            "reasoning_content", {}).get("chars", 0) == 0
+                        for item in result["protocol_observation"]["events"]))
+
+    def test_enabled_thinking_and_empty_reasoning_field_do_not_trigger_mismatch(self) -> None:
+        for case, parameters in (
+                ("reasoning-json", {"thinking": {"type": "enabled"}}),
+                ("reasoning-body", {"thinking": {"type": "enabled"}}),
+                ("reasoning-json-empty", {"thinking": {"type": "disabled"}})):
+            with self.subTest(case=case):
+                result = self.call(case, stream=case == "reasoning-body", parameters=parameters)
+                self.assertTrue(result["safe_to_apply"])
+                self.assertFalse(result["reasoning_observation"]["unexpected_reasoning"])
+                self.assertNotIn("私密思考全文不可保存", json.dumps(result, ensure_ascii=False))
+
+    def test_reasoning_alias_and_invalid_shapes_are_counted_without_retaining_contents(self) -> None:
+        for transport in ("json", "stream"):
+            for name, fields in REASONING_FIELDS.items():
+                with self.subTest(transport=transport, shape=name):
+                    result = self.call("reasoning-variant-" + transport + "-" + name,
+                                       stream=transport == "stream",
+                                       parameters={"thinking": {"type": "disabled"}})
+                    multiplier = 2 if transport == "stream" else 1
+                    nonempty = sum(isinstance(value, str) and bool(value.strip())
+                                   for value in fields.values()) * multiplier
+                    invalid = sum(value is not None and not isinstance(value, str)
+                                  for value in fields.values()) * multiplier
+                    self.assertEqual(result["reasoning_observation"], {
+                        "field_events": len(fields) * multiplier,
+                        "nonempty_events": nonempty, "invalid_events": invalid,
+                        "characters": sum(len(value) for value in fields.values()
+                                          if isinstance(value, str)) * multiplier,
+                        "requested_disabled": True,
+                        "unexpected_reasoning": nonempty > 0 or invalid > 0,
+                    })
+                    self.assertEqual(reasoning_field_counts(result), (nonempty, invalid))
+                    self.assertEqual(result["text"], "只有真实正文")
+                    self.assertEqual(result["completion_state"], "complete")
+                    self.assertEqual(result["finish_reason"], "stop")
+                    self.assertTrue(result["safe_to_apply"])
+                    self.assertEqual(result["usage"]["total_tokens"], 16)
+                    for private in ("私密思考全文不可保存", "第二个私密字段"):
+                        self.assertNotIn(private, json.dumps(result, ensure_ascii=False))
+        allowed = self.call("reasoning-variant-json-alias",
+                            parameters={"thinking": {"type": "enabled"}})
+        self.assertFalse(allowed["reasoning_observation"]["unexpected_reasoning"])
+        self.assertTrue(allowed["safe_to_apply"])
+
+    def test_invalid_reasoning_count_survives_bounded_shape_truncation(self) -> None:
+        result = self.call("reasoning-variant-stream-invalid-middle", stream=True,
+                           parameters={"reasoning_effort": "none"})
+        self.assertEqual(reasoning_field_counts(result), (0, 1))
+        self.assertTrue(result["reasoning_observation"]["unexpected_reasoning"])
+        self.assertTrue(result["protocol_observation"]["events_truncated"])
+        self.assertTrue(all(item.get("choices", [{}])[0].get("delta", {}).get(
+            "fields", {}).get("reasoning", {}).get("type") != "object"
+            for item in result["protocol_observation"]["events"]))
+        self.assertTrue(result["safe_to_apply"])
+        self.assertEqual(result["text"], "只有真实正文")
 
     def test_reasoning_only_empty_reply_retains_protocol_evidence(self) -> None:
         with self.assertRaises(ProviderError) as caught:

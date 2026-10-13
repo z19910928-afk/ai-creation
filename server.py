@@ -453,6 +453,30 @@ def context_task_contract(task, context, response_format):
     return contract
 
 
+def prose_provider_issue(result: dict[str, Any]) -> dict[str, str] | None:
+    from moyu_provider import reasoning_field_counts
+    observation = result.get("reasoning_observation")
+    observation = observation if isinstance(observation, dict) else {}
+    audit = result.get("request_audit")
+    parameters = audit.get("effective_parameters") if isinstance(audit, dict) else None
+    if isinstance(parameters, dict):
+        disabled = (parameters.get("thinking") == {"type": "disabled"}
+                    or parameters.get("reasoning_effort") == "none")
+    else:
+        disabled = observation.get("requested_disabled") is True
+    if not disabled:
+        return None
+    nonempty, invalid = reasoning_field_counts(result)
+    if nonempty > 0 or invalid > 0:
+        return {
+            "code": "reasoning_content_observed",
+            "description": ("回复与关闭思考设置不一致；思考字段类型无法校验，本候选暂不能采纳。"
+                            if invalid > 0 else
+                            "回复与关闭思考设置不一致；模型返回了非空思考字段，本候选暂不能采纳。"),
+        }
+    return None
+
+
 def validate_prose_result(task: str, context: dict[str, Any], instruction: str,
                           result: dict[str, Any]) -> dict[str, Any]:
     if task not in {"continue", "polish"}:
@@ -462,6 +486,10 @@ def validate_prose_result(task: str, context: dict[str, Any], instruction: str,
         task, text or "", prose_output_contract(task, context, instruction),
         protocol_complete=result.get("completion_state") == "complete" and result.get("safe_to_apply") is True,
     )
+    issue = prose_provider_issue(result)
+    if issue:
+        checked["issues"].append(issue)
+        checked["eligible"] = checked["eligible_for_blind_review"] = False
     return {**result, "output_validation": checked}
 
 
@@ -4075,6 +4103,9 @@ def revision_parent(conn, run_id):
             or result.get("completion_state") != "complete" or result.get("finish_reason") != "stop"
             or result.get("truncated")):
         raise ValueError("只能整理已完整结束的正文候选，未完成或离线结果继续保留供阅读")
+    issue = prose_provider_issue(result)
+    if issue:
+        raise ValueError(issue["description"] + " 本候选保留供阅读，不会自动重新发送。")
     if (run["author_decision"] != "pending" or
             conn.execute("SELECT 1 FROM app_ai_run_decision WHERE ai_run_id=?", (run_id,)).fetchone() or
             conn.execute("SELECT 1 FROM app_candidate_application WHERE ai_run_id=?", (run_id,)).fetchone()):
@@ -4388,6 +4419,9 @@ def apply_candidate(conn, run_id, data):
     if decision not in {"accepted", "edited"}:
         raise ValueError("invalid candidate decision")
     if source["mode"] in {"append", "replace"}:
+        issue = prose_provider_issue(result)
+        if issue:
+            raise ValueError(issue["description"])
         replacement = bounded_text(data.get("replacement"), 2_000_000, "replacement")
         expected = (result.get("structured") or {}).get("content") if result.get("response_format") == "json" else result.get("text")
         expected = expected or ""

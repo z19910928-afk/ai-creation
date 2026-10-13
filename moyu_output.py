@@ -26,46 +26,62 @@ _CONTROL_WORDS = re.compile(
     r"(?:字数|字数控制|篇幅|长度|正文|控制在|控制为|限制为|限字|不少于|至少|"
     r"不低于|最低|不超过|最多|不高于|上限)"
 )
-_NUMBER = r"(?:\d{1,3}(?:,\d{3})*|\d+)"
+_CHINESE_DIGITS = {"零": 0, "〇": 0, "一": 1, "二": 2, "两": 2, "三": 3,
+                   "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
+_CHINESE_UNITS = {"十": 10, "百": 100, "千": 1000}
+_NUMERAL_CHARACTERS = "零〇一二两三四五六七八九十百千万"
+_NUMBER = (rf"(?<![\d{_NUMERAL_CHARACTERS}点])[-+负]?"
+           rf"[\d{_NUMERAL_CHARACTERS}][\d{_NUMERAL_CHARACTERS}点,.]*")
+_CHARACTER_UNIT = r"(?:个?\s*)?(?:汉字|中文字|字符|字)"
 _RANGE_SEPARATOR = r"(?:至|到|[-~～])"
+_RELATIVE_BASE = r"(?:原文|全文|原稿|所选正文|选中正文|本次正文)(?:的|长度的|字数的)?"
+
+
+def _percent_pattern(group: str) -> str:
+    return (rf"(?:(?=百分之)|(?={_NUMBER}\s*[%％]))"
+            rf"(?P<{group}_prefix>百分之)?(?P<{group}>{_NUMBER})\s*"
+            rf"(?P<{group}_symbol>[%％])?")
 
 # These forms describe an output requirement, not a number mentioned in story
 # material.  The surrounding-clause check below keeps extraction conservative.
 _ABSOLUTE_RANGE_RE = re.compile(
     rf"(?P<minimum>{_NUMBER})\s*{_RANGE_SEPARATOR}\s*"
-    rf"(?P<maximum>{_NUMBER})\s*(?:个?\s*)?(?:字|字符)"
+    rf"(?P<maximum>{_NUMBER})\s*{_CHARACTER_UNIT}"
 )
 _ABSOLUTE_EXACT_RE = re.compile(
-    rf"(?P<value>{_NUMBER})\s*(?:个?\s*)?(?:字|字符)"
+    rf"(?P<value>{_NUMBER})\s*{_CHARACTER_UNIT}"
 )
 _ABSOLUTE_MIN_RE = re.compile(
     rf"(?:不少于|至少|不低于|最低(?:不少于)?|下限(?:为)?)[：:\s]*"
-    rf"(?P<value>{_NUMBER})\s*(?:个?\s*)?(?:字|字符)"
+    rf"(?P<value>{_NUMBER})\s*{_CHARACTER_UNIT}"
 )
 _ABSOLUTE_MAX_RE = re.compile(
     rf"(?:不超过|最多|不高于|上限(?:为)?|上限)[：:\s]*"
-    rf"(?P<value>{_NUMBER})\s*(?:个?\s*)?(?:字|字符)"
+    rf"(?P<value>{_NUMBER})\s*{_CHARACTER_UNIT}"
 )
 _SOFT_TARGET_RE = re.compile(
     rf"(?:^|[。\n！？;；,，])\s*"
     rf"(?:(?:正文(?:长度|字数)?|字数|篇幅|长度)\s*)?"
     rf"目标\s*(?:为|是)?[：:\s]*(?:大约|约)?\s*"
-    rf"(?P<value>{_NUMBER})\s*(?:个?\s*)?(?:字符|字)"
+    rf"(?P<value>{_NUMBER})\s*{_CHARACTER_UNIT}"
     rf"(?=$|[\s，,。！？;；])"
 )
 
 _RELATIVE_RANGE_RE = re.compile(
-    rf"(?:原文|全文|原稿|所选正文|选中正文|本次正文)(?:的|长度的|字数的)?\s*"
-    rf"(?P<minimum>{_NUMBER})\s*%\s*{_RANGE_SEPARATOR}\s*"
-    rf"(?P<maximum>{_NUMBER})\s*%"
+    rf"{_RELATIVE_BASE}\s*{_percent_pattern('minimum')}\s*{_RANGE_SEPARATOR}\s*"
+    rf"{_percent_pattern('maximum')}"
 )
 _RELATIVE_MIN_RE = re.compile(
-    rf"(?:原文|全文|原稿|所选正文|选中正文|本次正文)(?:的|长度的|字数的)?\s*"
-    rf"(?:不少于|至少|不低于)\s*(?P<value>{_NUMBER})\s*%"
+    rf"(?:{_RELATIVE_BASE}\s*(?:不少于|至少|不低于)|"
+    rf"(?:不少于|至少|不低于)\s*{_RELATIVE_BASE})\s*{_percent_pattern('value')}"
 )
 _RELATIVE_MAX_RE = re.compile(
-    rf"(?:原文|全文|原稿|所选正文|选中正文|本次正文)(?:的|长度的|字数的)?\s*"
-    rf"(?:不超过|最多|不高于)\s*(?P<value>{_NUMBER})\s*%"
+    rf"(?:{_RELATIVE_BASE}\s*(?:不超过|最多|不高于)|"
+    rf"(?:不超过|最多|不高于)\s*{_RELATIVE_BASE})\s*{_percent_pattern('value')}"
+)
+_QUOTED_REQUIREMENT_RE = re.compile(
+    r'“[^”]*”|‘[^’]*’|「[^」]*」|『[^』]*』|"(?:\\.|[^"\\])*"|'
+    r"'(?:\\.|[^'\\])*'"
 )
 
 # Planning markers are intentionally anchored to the beginning of the whole
@@ -120,8 +136,78 @@ def count_characters(text: str) -> int:
 count_non_whitespace_characters = count_characters
 
 
+def _chinese_section(value: str) -> int:
+    # Reject omitted-place abbreviations such as "一百二" instead of guessing.
+    if value in _CHINESE_UNITS:
+        return _CHINESE_UNITS[value]
+    total, previous_unit = 0, 10_000
+    digit: int | None = None
+    digit_form = ""
+    zero = False
+    for character in value:
+        if character in _CHINESE_DIGITS:
+            current = _CHINESE_DIGITS[character]
+            if digit is not None:
+                raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+            if current == 0:
+                if not total or zero:
+                    raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+                zero = True
+            else:
+                digit = current
+                digit_form = character
+            continue
+        unit = _CHINESE_UNITS[character]
+        if (unit >= previous_unit or zero and unit * 10 == previous_unit
+                or previous_unit != 10_000 and unit * 10 < previous_unit and not zero
+                or unit == 10 and digit_form == "两"):
+            raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+        if digit is None:
+            if total or unit != 10:
+                raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+            digit = 1
+        total += digit * unit
+        previous_unit, digit, digit_form, zero = unit, None, "", False
+    if digit is None:
+        if zero:
+            raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+    elif total and (previous_unit != 10 and not zero or digit_form == "两"):
+        raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+    return total + (digit or 0)
+
+
 def _number(value: str) -> int:
-    return int(value.replace(",", ""))
+    if re.fullmatch(r"(?:\d{1,3}(?:,\d{3})+|\d+)", value):
+        return int(value.replace(",", ""))
+    if not value or any(character not in _NUMERAL_CHARACTERS for character in value):
+        raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+    if all(character in _CHINESE_DIGITS for character in value):
+        if "两" in value and len(value) != 1:
+            raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+        return int("".join(str(_CHINESE_DIGITS[character]) for character in value))
+    if value.count("万") > 1:
+        raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+    if value == "万":
+        return 10_000
+    if "万" not in value:
+        return _chinese_section(value)
+    high, low = value.split("万")
+    if not high:
+        raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+    high_value = _chinese_section(high)
+    if not low:
+        return high_value * 10_000
+    leading_zero = low[0] in {"零", "〇"}
+    low_value = _chinese_section(low[1:] if leading_zero else low)
+    if not low_value or leading_zero != (low_value < 1000):
+        raise ValueError("字数中的数字格式无效，请使用600或六百等明确整数。")
+    return high_value * 10_000 + low_value
+
+
+def _percentage(match: re.Match[str], group: str) -> int:
+    if bool(match.group(group + "_prefix")) == bool(match.group(group + "_symbol")):
+        raise ValueError("字数百分比格式无效，请使用80%或百分之八十。")
+    return _number(match.group(group))
 
 
 def _validate_base(source_text: str | None, source_characters: int | None,
@@ -193,6 +279,15 @@ def _nearby_clause(instruction: str, start: int) -> str:
 def _is_explicit_length_clause(instruction: str, start: int, task: str) -> bool:
     """Require a nearby writing/length marker before accepting absolute digits."""
     clause = _nearby_clause(instruction, start)
+    # Imperative output lengths must take precedence over the story "有" guard.
+    if re.search(
+        r"(?:^|[，,:：]|\s)(?:正文|候选(?:正文)?|输出(?:正文)?)?"
+        r"(?:字数|长度|篇幅)?\s*(?:要有|需要有|必须有|应有|应当有|须有)"
+        r"\s*(?:大约|约)?\s*$", clause
+    ):
+        return True
+    if re.search(r"(?:保留|写有|写着|刻有|印有|印着|共有|只有|包含|有)\s*(?:大约|约)?\s*$", clause):
+        return False
     return bool(_TASK_WORDS.search(clause) or _CONTROL_WORDS.search(clause)
                 or task in _BODY_TASKS and re.search(r"(?:正文|候选|输出).{0,12}"
                                                      r"(?:需要|控制|限制|保持)", clause))
@@ -226,6 +321,26 @@ def _range_target(instruction: str, minimum: int, maximum: int) -> int:
     if len(targets) > 1:
         raise ValueError("正文长度目标不一致，请保留一个明确目标")
     return next(iter(targets)) if targets else (minimum + maximum) // 2
+
+
+def _mask_quoted_requirements(instruction: str) -> str:
+    def masked(match: re.Match[str]) -> str:
+        inner = match.group()[1:-1]
+        value = inner.strip().rstrip("。.").rstrip()
+        direct = re.search(
+            r"(?:^|[,，])\s*(?:正文(?:字数|长度)?|候选(?:正文)?|输出(?:正文)?|字数|篇幅|长度)"
+            r"\s*(?:控制(?:在|为)?|限制(?:在|为)?|保持(?:在|为)?|要求(?:为|是)?|"
+            r"目标(?:为|是)?|范围(?:为|是)?|必须(?:有)?|要有|需要|至少|最多|不超过|不少于)?"
+            r"\s*[:：]?\s*$",
+            _nearby_clause(instruction, match.start()).lstrip(" \t”’」』\"'"))
+        pure_length = any(pattern.fullmatch(value) for pattern in (
+            _ABSOLUTE_RANGE_RE, _ABSOLUTE_EXACT_RE, _ABSOLUTE_MIN_RE, _ABSOLUTE_MAX_RE,
+            _RELATIVE_RANGE_RE, _RELATIVE_MIN_RE, _RELATIVE_MAX_RE))
+        # Quoted bounds remain instructions only when explicitly introduced as
+        # the output length; character dialogue and manuscript excerpts do not.
+        return " " + inner + " " if direct and pure_length else " " * len(match.group())
+
+    return _QUOTED_REQUIREMENT_RE.sub(masked, instruction)
 
 
 def output_contract(
@@ -262,27 +377,33 @@ def output_contract(
     }
     if task not in _BODY_TASKS or not instruction.strip():
         return contract
+    instruction = _mask_quoted_requirements(instruction)
 
-    relative_match = _RELATIVE_RANGE_RE.search(instruction)
+    relative_match = next(
+        (match for match in _RELATIVE_RANGE_RE.finditer(instruction)
+         if _is_explicit_relative_clause(instruction, match.start(), task)), None)
     relative_minimum: int | None = None
     relative_maximum: int | None = None
     relative_start: int | None = None
     if relative_match:
-        relative_minimum = _number(relative_match.group("minimum"))
-        relative_maximum = _number(relative_match.group("maximum"))
+        relative_minimum = _percentage(relative_match, "minimum")
+        relative_maximum = _percentage(relative_match, "maximum")
         relative_start = relative_match.start()
     else:
-        relative_match_one_sided = _RELATIVE_MIN_RE.search(instruction)
+        relative_match_one_sided = next(
+            (match for match in _RELATIVE_MIN_RE.finditer(instruction)
+             if _is_explicit_relative_clause(instruction, match.start(), task)), None)
         if relative_match_one_sided:
-            relative_minimum = _number(relative_match_one_sided.group("value"))
+            relative_minimum = _percentage(relative_match_one_sided, "value")
             relative_start = relative_match_one_sided.start()
         else:
-            relative_match_one_sided = _RELATIVE_MAX_RE.search(instruction)
+            relative_match_one_sided = next(
+                (match for match in _RELATIVE_MAX_RE.finditer(instruction)
+                 if _is_explicit_relative_clause(instruction, match.start(), task)), None)
             if relative_match_one_sided:
-                relative_maximum = _number(relative_match_one_sided.group("value"))
+                relative_maximum = _percentage(relative_match_one_sided, "value")
                 relative_start = relative_match_one_sided.start()
-    if relative_start is not None and _is_explicit_relative_clause(
-            instruction, relative_start, task):
+    if relative_start is not None:
         _valid_percent_pair(relative_minimum, relative_maximum)
         minimum, maximum, source = _base_range(
             None, None, base, relative_minimum, relative_maximum)
@@ -303,8 +424,10 @@ def output_contract(
 
     # Prefer a range over an exact match.  The ranges are searched first so
     # the lower/upper numbers are not mistaken for a standalone exact target.
-    absolute_match = _ABSOLUTE_RANGE_RE.search(instruction)
-    if absolute_match and _is_explicit_length_clause(instruction, absolute_match.start(), task):
+    absolute_match = next(
+        (match for match in _ABSOLUTE_RANGE_RE.finditer(instruction)
+         if _is_explicit_length_clause(instruction, match.start(), task)), None)
+    if absolute_match:
         minimum = _number(absolute_match.group("minimum"))
         maximum = _number(absolute_match.group("maximum"))
         _valid_absolute_pair(minimum, maximum)
@@ -316,22 +439,23 @@ def output_contract(
         })
         return contract
 
-    minimum_match = _ABSOLUTE_MIN_RE.search(instruction)
-    maximum_match = _ABSOLUTE_MAX_RE.search(instruction)
+    minimum_match = next(
+        (match for match in _ABSOLUTE_MIN_RE.finditer(instruction)
+         if _is_explicit_length_clause(instruction, match.start(), task)), None)
+    maximum_match = next(
+        (match for match in _ABSOLUTE_MAX_RE.finditer(instruction)
+         if _is_explicit_length_clause(instruction, match.start(), task)), None)
     if minimum_match or maximum_match:
         minimum = _number(minimum_match.group("value")) if minimum_match else None
         maximum = _number(maximum_match.group("value")) if maximum_match else None
-        marker = minimum_match or maximum_match
-        assert marker is not None
-        if _is_explicit_length_clause(instruction, marker.start(), task):
-            _valid_absolute_pair(minimum, maximum)
-            contract.update({
-                "minimum_characters": minimum,
-                "maximum_characters": maximum,
-                "target_characters": minimum if minimum is not None else maximum,
-                "source": "explicit_absolute",
-            })
-            return contract
+        _valid_absolute_pair(minimum, maximum)
+        contract.update({
+            "minimum_characters": minimum,
+            "maximum_characters": maximum,
+            "target_characters": minimum if minimum is not None else maximum,
+            "source": "explicit_absolute",
+        })
+        return contract
 
     # An exact number is accepted only when it is directly tied to a writing
     # action or a length-control word.  This intentionally does not infer a

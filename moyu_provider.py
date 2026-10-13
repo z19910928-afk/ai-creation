@@ -477,6 +477,52 @@ def _protocol_shape(data: Any, secret: str) -> dict[str, Any]:
     return result
 
 
+def reasoning_field_counts(result: Mapping[str, Any]) -> tuple[int, int]:
+    """Read content-free reasoning counts, falling back to older shape logs."""
+    summary = result.get("reasoning_observation")
+    legacy_zero = False
+    if isinstance(summary, dict):
+        nonempty = summary.get("nonempty_events")
+        invalid = summary.get("invalid_events", 0)
+        if all(isinstance(value, int) and not isinstance(value, bool) and value >= 0
+               for value in (nonempty, invalid)):
+            if "invalid_events" in summary or nonempty > 0:
+                return nonempty, invalid
+            legacy_zero = True
+    observation = result.get("protocol_observation")
+    events = observation.get("events") if isinstance(observation, dict) else None
+    nonempty = invalid = 0
+    for event in events if isinstance(events, list) else []:
+        if not isinstance(event, dict):
+            continue
+        choices = event.get("choices")
+        for choice in choices if isinstance(choices, list) else []:
+            if not isinstance(choice, dict):
+                continue
+            for key in ("delta", "message"):
+                message = choice.get(key)
+                fields = message.get("fields") if isinstance(message, dict) else None
+                if not isinstance(fields, dict):
+                    continue
+                for name in ("reasoning_content", "reasoning"):
+                    if name not in fields:
+                        continue
+                    shape = fields[name]
+                    if isinstance(shape, dict) and shape.get("type") == "null":
+                        continue
+                    if isinstance(shape, dict) and shape.get("type") == "string":
+                        characters = shape.get("chars")
+                        if (isinstance(characters, int) and not isinstance(characters, bool)
+                                and characters >= 0):
+                            # Old zero summaries counted only reasoning_content
+                            # strings, including whitespace; alias fields were missed.
+                            if not legacy_zero or name == "reasoning":
+                                nonempty += characters > 0
+                            continue
+                    invalid += 1
+    return nonempty, invalid
+
+
 class _SecretStream:
     """Keep a potential secret prefix until it is safe to publish that chunk."""
 
@@ -502,7 +548,8 @@ class _SecretStream:
 
 class _Accumulator:
     def __init__(self, task: str, response_format: str, secret: str,
-                 on_chunk: ChunkCallback | None, schema: Mapping[str, Any] | None) -> None:
+                 on_chunk: ChunkCallback | None, schema: Mapping[str, Any] | None,
+                 *, thinking_disabled: bool = False) -> None:
         self.task = task
         self.response_format = response_format
         self.secret = secret
@@ -521,6 +568,11 @@ class _Accumulator:
         self.refused = False
         self.events_observed = 0
         self.protocol_events: list[dict[str, Any]] = []
+        self.thinking_disabled = thinking_disabled
+        self.reasoning_field_events = 0
+        self.reasoning_nonempty_events = 0
+        self.reasoning_invalid_events = 0
+        self.reasoning_characters = 0
 
     def append(self, piece: str, *, event: str = "message", provider_id: str = "") -> None:
         if not piece:
@@ -635,6 +687,17 @@ class _Accumulator:
             message = {"content": choice["text"]}
         if not isinstance(message, dict):
             raise ProviderError("提供方回复缺少有效正文对象。", code="invalid_response")
+        # Counts cover every event; bounded shape logs can omit middle events.
+        for name in ("reasoning_content", "reasoning"):
+            if name not in message:
+                continue
+            self.reasoning_field_events += 1
+            reasoning = message[name]
+            if isinstance(reasoning, str):
+                self.reasoning_characters += len(reasoning)
+                self.reasoning_nonempty_events += bool(reasoning.strip())
+            elif reasoning is not None:
+                self.reasoning_invalid_events += 1
         if "role" in message and message["role"] != "assistant":
             raise ProviderError("提供方返回了错误正文角色。", code="invalid_response")
         refusal = message.get("refusal")
@@ -674,6 +737,15 @@ class _Accumulator:
                 "_chunks": [dict(chunk) for chunk in self.chunks],
                 "stream_transport": "provider_native_sse" if sse else "provider_json",
                 "provider_sse_complete": self.saw_done if sse else None,
+                "reasoning_observation": {
+                    "field_events": self.reasoning_field_events,
+                    "nonempty_events": self.reasoning_nonempty_events,
+                    "invalid_events": self.reasoning_invalid_events,
+                    "characters": self.reasoning_characters,
+                    "requested_disabled": self.thinking_disabled,
+                    "unexpected_reasoning": self.thinking_disabled and (
+                        self.reasoning_nonempty_events > 0 or self.reasoning_invalid_events > 0),
+                },
                 "protocol_observation": {
                     "events_observed": self.events_observed,
                     "events_recorded": len(self.protocol_events),
@@ -800,7 +872,11 @@ def call_chat_completion(
     if isinstance(response_limit, bool) or not isinstance(response_limit, int) or not 1 <= response_limit <= 10_000_000:
         raise ProviderError("模型回复大小上限无效。", code="invalid_configuration")
     secret = config.get("api_key", "")
-    accumulator = _Accumulator(task, response_format, secret, on_chunk, schema)
+    effective = prepared["payload"]
+    thinking_disabled = (effective.get("thinking") == {"type": "disabled"}
+                         or effective.get("reasoning_effort") == "none")
+    accumulator = _Accumulator(task, response_format, secret, on_chunk, schema,
+                               thinking_disabled=thinking_disabled)
     headers = {"Content-Type": "application/json", "Accept": "text/event-stream" if stream else "application/json",
                "User-Agent": "Moyu/1", "X-Client-Request-Id": prepared["request_audit"]["request_id"]}
     if secret:

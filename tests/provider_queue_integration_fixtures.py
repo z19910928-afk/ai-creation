@@ -39,6 +39,8 @@ class Handler(BaseHTTPRequestHandler):
         raw = self.rfile.read(int(self.headers.get("Content-Length", "0")))
         payload = json.loads(raw)
         case = self.path.split("/")[1]
+        is_probe = payload.get("messages", [{}])[0].get("content") == "连接测试。只回复：连接正常"
+        returned_model = payload["model"] if is_probe else "actual-fixture"
         with self.lock:
             self.calls.append({"case": case, "path": self.path, "payload": payload, "raw": raw,
                                "request_id": self.headers.get("X-Client-Request-Id"),
@@ -78,15 +80,15 @@ class Handler(BaseHTTPRequestHandler):
                         "completion_tokens_details": {"reasoning_tokens": 2,
                                                       "detail-fixture-original-credential": 2}})
                 self.wfile.write(json.dumps({
-                    "model": "actual-fixture", "choices": [{"index": 0, "message": {"content": text},
+                    "model": returned_model, "choices": [{"index": 0, "message": {"content": text},
                                                             "finish_reason": "stop"}],
                     "usage": usage,
                 }, ensure_ascii=False).encode())
                 self.wfile.flush()
             else:
                 self.wfile.write(("data: " + json.dumps({
-                    "model": "actual-fixture", "choices": [{"index": 0,
-                        "delta": {"content": "先到正文"},
+                    "model": returned_model, "choices": [{"index": 0,
+                        "delta": {"content": "连接" if is_probe else "先到正文"},
                         "finish_reason": "" if case == "empty-finish" else None}],
                 }, ensure_ascii=False) + "\n\n").encode())
                 self.wfile.flush()
@@ -99,7 +101,9 @@ class Handler(BaseHTTPRequestHandler):
                         b'data: {"choices":[],"usage":{"prompt_tokens":13,"completion_tokens":7,"total_tokens":20}}\n\n')
                     final_usage = {"prompt_tokens": 5, "completion_tokens": 7, "total_tokens": 12}
                 self.wfile.write(
-                    'data: {"choices":[{"index":0,"delta":{"content":"后到正文"},"finish_reason":"stop"}]}\n\n'.encode()
+                    ("data: " + json.dumps({"choices": [{"index": 0,
+                        "delta": {"content": "正常" if is_probe else "后到正文"},
+                        "finish_reason": "stop"}]}, ensure_ascii=False) + "\n\n").encode()
                     + ("data: " + json.dumps({"choices": [], "usage": final_usage}) + "\n\n").encode()
                     + b"data: [DONE]\n\n")
                 self.wfile.flush()

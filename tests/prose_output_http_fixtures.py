@@ -32,6 +32,8 @@ def encode(value):
 
 class LocalProseProvider(BaseHTTPRequestHandler):
     text = ""
+    reasoning = None
+    reasoning_field = "reasoning_content"
     incomplete = False
     calls = []
     lock = threading.Lock()
@@ -41,6 +43,8 @@ class LocalProseProvider(BaseHTTPRequestHandler):
         with self.lock:
             self.calls.append(payload)
             text = self.text
+            reasoning = self.reasoning
+            reasoning_field = self.reasoning_field
             incomplete = self.incomplete
         if incomplete:
             body = ("data: " + json.dumps({
@@ -55,9 +59,12 @@ class LocalProseProvider(BaseHTTPRequestHandler):
             return
         if (payload.get("response_format") or {}).get("type") in {"json_object", "json_schema"}:
             text = json.dumps({"content": text}, ensure_ascii=False)
+        message = {"content": text}
+        if reasoning is not None:
+            message[reasoning_field] = reasoning
         body = encode({
             "model": "local-prose-contract",
-            "choices": [{"message": {"content": text}, "finish_reason": "stop"}],
+            "choices": [{"message": message, "finish_reason": "stop"}],
             "usage": {"prompt_tokens": 40, "completion_tokens": 20, "total_tokens": 60},
         })
         self.send_response(200)
@@ -104,6 +111,8 @@ class ProseOutputHTTPTests(unittest.TestCase):
         with LocalProseProvider.lock:
             LocalProseProvider.calls.clear()
             LocalProseProvider.text = ""
+            LocalProseProvider.reasoning = None
+            LocalProseProvider.reasoning_field = "reasoning_content"
             LocalProseProvider.incomplete = False
 
         class AppHandler(server.Handler):
@@ -289,6 +298,122 @@ class ProseOutputHTTPTests(unittest.TestCase):
         self.assertEqual(status, 200, stored)
         self.assertEqual(stored["result"]["text"], text)
         self.assertEqual(stored["author_decision"], "pending")
+
+    def test_disabled_thinking_mismatch_blocks_application_and_revision_without_retry(self):
+        status, settings = self.request("PUT", "/api/ai/settings", {
+            "parameters": {"temperature": 0, "max_tokens": 3000,
+                           "thinking": {"type": "disabled"}},
+        })
+        self.assertEqual(status, 200, settings)
+        private_reasoning = "私密思考文本不得进入数据库或网页"
+        for text in ("铁", "雨" * 12):
+            with self.subTest(characters=len(text)):
+                with LocalProseProvider.lock:
+                    LocalProseProvider.reasoning = private_reasoning
+                job = self.enqueue(text)
+                completed = self.process(job)
+                result = completed["result"]
+                self.assertEqual(result["text"], text)
+                self.assertEqual(result["finish_reason"], "stop")
+                self.assertEqual(result["completion_state"], "complete")
+                self.assertTrue(result["safe_to_apply"])
+                self.assertEqual(result["usage"]["total_tokens"], 60)
+                self.assertEqual(result["reasoning_observation"], {
+                    "field_events": 1, "nonempty_events": 1, "invalid_events": 0,
+                    "characters": len(private_reasoning),
+                    "requested_disabled": True, "unexpected_reasoning": True,
+                })
+                validation = result["output_validation"]
+                self.assertFalse(validation["eligible"])
+                self.assertFalse(validation["eligible_for_blind_review"])
+                self.assertTrue(validation["protocol_complete"])
+                self.assertIn("reasoning_content_observed",
+                              {issue["code"] for issue in validation["issues"]})
+                self.assertNotIn(private_reasoning, json.dumps(completed, ensure_ascii=False))
+                for body, decision in ((text, "accepted"), ("雨" * 12, "edited")):
+                    rejected = self.assert_rejected_without_changes(job, body, decision=decision)
+                    self.assertIn("回复与关闭思考设置不一致", rejected["error"])
+                rejected = self.assert_revision_rejected(job, self.revision_request(job, text))
+                self.assertIn("回复与关闭思考设置不一致", rejected["error"])
+                self.process(job)
+                status, stored = self.request("GET", "/api/ai/jobs/" + job["id"])
+                self.assertEqual(status, 200, stored)
+                self.assertEqual(stored["result"], result)
+                self.assertEqual(stored["author_decision"], "pending")
+                with server.connect() as conn:
+                    for table, field in (("app_ai_job", "result_json"), ("app_ai_chunk", "text"),
+                                         ("ai_run", "consent_json")):
+                        self.assertTrue(all(private_reasoning not in (row[0] or "")
+                                            for row in conn.execute(f"SELECT {field} FROM {table}")))
+        with LocalProseProvider.lock:
+            self.assertEqual(len(LocalProseProvider.calls), 2)
+
+    def test_reasoning_alias_and_unknown_shapes_cannot_bypass_good_prose_with_manual_edits(self):
+        status, settings = self.request("PUT", "/api/ai/settings", {
+            "parameters": {"temperature": 0, "max_tokens": 3000,
+                           "thinking": {"type": "disabled"}},
+        })
+        self.assertEqual(status, 200, settings)
+        private = "私密字段文字不可保存"
+        text = "雨" * 725
+        for field, value in (("reasoning", private), ("reasoning_content", {"text": private}),
+                             ("reasoning", []), ("reasoning_content", False)):
+            for response_format in ("text", "json"):
+                with self.subTest(field=field, kind=type(value).__name__, format=response_format):
+                    with LocalProseProvider.lock:
+                        LocalProseProvider.reasoning = value
+                        LocalProseProvider.reasoning_field = field
+                    job = self.enqueue(text, instruction="续写600至850字。",
+                                       response_format=response_format)
+                    result = self.process(job)["result"]
+                    self.assertEqual(result["finish_reason"], "stop")
+                    self.assertTrue(result["safe_to_apply"])
+                    self.assertTrue(result["output_validation"]["protocol_complete"])
+                    self.assertEqual(result["output_validation"]["characters"], 725)
+                    self.assertFalse(result["output_validation"]["eligible"])
+                    self.assertFalse(result["output_validation"]["eligible_for_blind_review"])
+                    expected_invalid = int(not isinstance(value, str))
+                    self.assertEqual(result["reasoning_observation"]["invalid_events"], expected_invalid)
+                    self.assertEqual(result["reasoning_observation"]["nonempty_events"], 1 - expected_invalid)
+                    issue = result["output_validation"]["issues"][-1]
+                    self.assertEqual(issue["code"], "reasoning_content_observed")
+                    if expected_invalid:
+                        self.assertIn("思考字段类型无法校验", issue["description"])
+                        self.assertNotIn("非空", issue["description"])
+                    self.assertNotIn(private, json.dumps(result, ensure_ascii=False))
+                    for body, decision in ((text, "accepted"), ("潮" * 725, "edited")):
+                        self.assert_rejected_without_changes(job, body, decision=decision)
+                    self.assert_revision_rejected(job, self.revision_request(job, text))
+                    with server.connect() as conn:
+                        for table, column in (("app_ai_job", "result_json"), ("app_ai_chunk", "text"),
+                                              ("ai_run", "consent_json")):
+                            self.assertTrue(all(private not in (row[0] or "")
+                                                for row in conn.execute(f"SELECT {column} FROM {table}")))
+        with LocalProseProvider.lock:
+            self.assertEqual(len(LocalProseProvider.calls), 8)
+
+    def test_provider_issue_checks_old_alias_or_invalid_shapes_without_rewriting_record(self):
+        result = {
+            "request_audit": {"effective_parameters": {"thinking": {"type": "disabled"}}},
+            "reasoning_observation": {"nonempty_events": 0, "requested_disabled": True},
+            "protocol_observation": {"events": [{"choices": [{
+                "message": {"fields": {}},
+            }]}]},
+        }
+        fields = result["protocol_observation"]["events"][0]["choices"][0]["message"]["fields"]
+        for field, shape in (("reasoning", {"type": "string", "chars": 7}),
+                             ("reasoning_content", {"type": "object", "fields": 0})):
+            with self.subTest(field=field):
+                fields.clear()
+                fields[field] = shape
+                before = copy.deepcopy(result)
+                self.assertEqual(server.prose_provider_issue(result)["code"], "reasoning_content_observed")
+                self.assertEqual(result, before)
+        fields.clear()
+        fields["reasoning_content"] = {"type": "string", "chars": 2}
+        self.assertIsNone(server.prose_provider_issue(result))
+        result["reasoning_observation"] = {"nonempty_events": False, "invalid_events": 0}
+        self.assertIsNotNone(server.prose_provider_issue(result))
 
     def test_edited_oversize_and_planning_still_fail_without_side_effects(self):
         job = self.enqueue("雨" * 12)

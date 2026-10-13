@@ -493,7 +493,7 @@ def evaluate_fixture(fixture: Mapping[str, Any]) -> dict[str, Any]:
     executable = fixture.get("executable")
     executable_result: dict[str, Any] | None = None
     if executable:
-        command = executable if isinstance(executable, list) else [sys.executable, str(executable)]
+        command = _resolve_executable_command(executable)
         try:
             proc = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, timeout=float(fixture.get("timeout_seconds", 30)))
             executable_result = {"command": command, "returncode": proc.returncode, "stdout": proc.stdout[-2000:], "stderr": proc.stderr[-2000:], "passed": proc.returncode == 0}
@@ -544,6 +544,23 @@ def _load(path: Path) -> list[Mapping[str, Any]]:
     if not isinstance(data, Mapping):
         raise ValueError(f"{path}: expected fixture object or fixtures array")
     return [data]
+
+
+def _resolve_executable_command(executable: Any) -> list[str]:
+    """Use the current interpreter for fixture commands named ``python``.
+
+    Release fixtures are shared between CI and developer machines.  macOS
+    installations commonly expose only ``python3`` while CI exposes both
+    ``python`` and ``python3``; using ``sys.executable`` keeps the fixture
+    subprocess on the same tested runtime in either environment.
+    """
+    command = executable if isinstance(executable, list) else [sys.executable, str(executable)]
+    if not command:
+        raise ValueError("fixture executable command cannot be empty")
+    first = Path(str(command[0])).name.lower()
+    if first in {"python", "python3"} or first.startswith("python3."):
+        return [sys.executable, *[str(item) for item in command[1:]]]
+    return [str(item) for item in command]
 
 
 def main(argv: Sequence[str] | None = None) -> int:

@@ -13,7 +13,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from moyu_provider import ProviderError, call_chat_completion, prepare_chat_request, usage_accounting
+from moyu_provider import (
+    ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts, usage_accounting,
+)
 
 
 TASKS = {"continue", "polish", "outline", "scene", "summary", "check", "brainstorm",
@@ -161,13 +163,27 @@ def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
         "base_url": payload.get("base_url", ""), "model": payload.get("model", ""),
         "models": payload.get("models") or {}, "styles": payload.get("styles") or {},
         "parameters": payload.get("parameters") or {},
-        "daily_limit": payload.get("daily_limit", 0), "last_probe": payload.get("last_probe"),
+        "daily_limit": payload.get("daily_limit", 0), "last_probe": _public_probe(payload.get("last_probe")),
         "configured": bool(config["base_url"] and config["model"]),
         "api_key_configured": bool(config["api_key"]),
         "api_key_masked": "已保存密钥" if config["api_key"] else "",
         "credential_storage": "local_private_file",
         "credential_backup": "密钥不包含在作品备份中，换设备后需重新填写。",
     }
+
+
+def _public_probe(probe: Any) -> dict[str, Any] | None:
+    if not isinstance(probe, dict):
+        return None
+    public = dict(probe)
+    if public.get("success") and not (
+            public.get("protocol_complete") is True and public.get("response_valid") is True
+            and public.get("model_identity_match") is True
+            and public.get("reasoning_consistent") is True
+            and public.get("configuration_stale") is not True):
+        public.update(success=False, error_code="probe_legacy_unverified",
+                      error="历史连接记录未校验回复与模型名称，当前设置尚未按现行要求验证。")
+    return public
 
 
 def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) -> dict[str, Any]:
@@ -273,21 +289,58 @@ def probe_settings(conn: sqlite3.Connection, project: str,
     conn.execute("INSERT INTO app_quota_reservation(ai_run_id,project_id,day,status,created_at,updated_at) VALUES(?,?,?,?,?,?)",
                  (run_id, project, day, "reserved", started_at, started_at))
     conn.commit()
-    probe: dict[str, Any] = {"checked_at": _now(), "success": False, "model": config["model"],
-                             "requested_model": config["model"]}
+    probe: dict[str, Any] = {
+        "checked_at": _now(), "success": False, "model": config["model"],
+        "requested_model": config["model"], "protocol_complete": False,
+        "response_valid": False, "reasoning_consistent": False,
+    }
     result: dict[str, Any] = {}
     status = "failed"
     try:
         result = call_chat_completion(config, messages, task="probe", max_tokens=32,
                                       parameters={"temperature": 0}, cancel_event=cancel_event,
                                       request_id=run_id)
-        status = "success" if result["safe_to_apply"] else "unknown"
-        probe.update({"success": result["safe_to_apply"], "returned_model": result["returned_model"],
-                      "finish_reason": result["finish_reason"], "usage": result["usage"],
-                      "billing_state": result["billing_state"], "latency_ms": result["latency_ms"]})
+        text = result.get("text", "")
+        protocol_complete = (result.get("safe_to_apply") is True
+                             and result.get("completion_state") == "complete"
+                             and result.get("finish_reason") == "stop")
+        observation = result.get("reasoning_observation") or {}
+        nonempty_reasoning, invalid_reasoning = reasoning_field_counts(result)
+        reasoning_consistent = not (
+            observation.get("requested_disabled") is True
+            and (nonempty_reasoning > 0 or invalid_reasoning > 0))
+        response_valid = isinstance(text, str) and text.strip() == "连接正常"
+        probe.update({"protocol_complete": protocol_complete,
+                      "response_valid": response_valid, "reasoning_consistent": reasoning_consistent,
+                      "response_characters": len(text.strip()) if isinstance(text, str) else 0,
+                      "returned_model": result.get("returned_model"),
+                      "completion_state": result.get("completion_state"),
+                      "finish_reason": result.get("finish_reason"), "usage": result.get("usage"),
+                      "billing_state": result.get("billing_state"), "latency_ms": result.get("latency_ms")})
         probe["model_identity_match"] = (
-            result["returned_model"] == config["model"] if result["returned_model"] else None)
+            result.get("returned_model") == config["model"] if result.get("returned_model") else None)
         probe["model_identity_scope"] = "仅比较提供方回传名称，名称相同不能证明底层模型身份。"
+        probe["success"] = bool(protocol_complete and response_valid and reasoning_consistent
+                                and probe["model_identity_match"] is True)
+        if not protocol_complete:
+            probe.update(error_code="probe_incomplete_response",
+                         error="模型回复没有正常完整结束，连接检测未通过。")
+        elif not response_valid:
+            probe.update(error_code="probe_unexpected_response",
+                         error=f"模型完整结束，但回复{probe['response_characters']}字，"
+                               "未按连接测试要求只回复“连接正常”。")
+        elif not reasoning_consistent:
+            probe.update(error_code="probe_unexpected_reasoning",
+                         error="已设置关闭思考，但思考字段类型无法校验，连接检测未通过。"
+                         if invalid_reasoning > 0 else
+                         "已设置关闭思考，但模型仍返回非空思考字段，连接检测未通过。")
+        elif probe["model_identity_match"] is not True:
+            probe.update(error_code="probe_model_mismatch" if probe["model_identity_match"] is False
+                         else "probe_model_unreported",
+                         error="请求模型与回传名称不一致，当前所选模型尚未验证。"
+                         if probe["model_identity_match"] is False
+                         else "提供方未回传模型名称，当前所选模型尚未验证。")
+        status = "success" if probe["success"] else "failed" if protocol_complete else "unknown"
     except ProviderError as exc:
         result = exc.partial_result
         status = exc.status
@@ -301,6 +354,11 @@ def probe_settings(conn: sqlite3.Connection, project: str,
     latest_saved = _saved(conn, project)
     latest_config = provider_settings(conn, project)
     probe["configuration_stale"] = latest_config != config
+    if probe["configuration_stale"]:
+        probe.update(success=False, error_code="probe_configuration_stale",
+                     error="检测期间设置发生变化，本次回复不能验证当前设置。")
+        if status == "success":
+            status = "failed"
     accounting = usage_accounting(result.get("usage"), result.get("usage_accounting"))
     token_data = {"usage": result.get("usage"), "usage_state": accounting["state"],
                   "usage_accounting": accounting,

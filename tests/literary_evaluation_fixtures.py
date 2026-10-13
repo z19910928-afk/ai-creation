@@ -227,6 +227,37 @@ class EvaluationTests(unittest.TestCase):
         legacy_case.pop("output_contract")
         self.assertEqual(evaluation.output_contract(legacy_case)["minimum_characters"], 600)
 
+    def test_unfrozen_length_requirements_use_shared_chinese_rules(self) -> None:
+        case = copy.deepcopy(self.plan["cases"][0])
+        case.pop("output_contract")
+        record = {"status": "complete", "result": {
+            "text": "铁", "safe_to_apply": True,
+            "completion_state": "complete", "finish_reason": "stop",
+        }}
+        for instruction in ("续写六百到八百五十字。", "字数控制在600至850个汉字。"):
+            with self.subTest(instruction=instruction):
+                case["instruction"] = instruction
+                before = copy.deepcopy(case)
+                with patch.object(evaluation, "prose_output_contract",
+                                  wraps=moyu_output.output_contract) as shared:
+                    check = evaluation.sample_validation(case, record)
+                shared.assert_called_once()
+                self.assertEqual(check["output_contract"]["minimum_characters"], 600)
+                self.assertEqual(check["output_contract"]["maximum_characters"], 850)
+                self.assertFalse(check["eligible_for_blind_review"])
+                self.assertEqual(case, before)
+        case["instruction"] = "正文至少六百字。"
+        record["result"]["text"] = "甲" * 600
+        self.assertTrue(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+        case["instruction"] = "正文最多八百五十字。"
+        record["result"]["text"] = "甲" * 851
+        self.assertFalse(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+        case["instruction"] = "续写，保留六百字的碑文。"
+        self.assertEqual(evaluation.output_contract(case)["source"], "unspecified")
+        case["output_contract"] = {"minimum_characters": 600, "maximum_characters": 850}
+        case["instruction"] = "续写六百百字。"
+        self.assertEqual(evaluation.output_contract(case)["source"], "frozen_output_contract")
+
     def test_sample_validation_uses_shared_writing_markers_and_preserves_original_text(self) -> None:
         case = self.plan["cases"][0]
         for prefix in (
@@ -252,6 +283,165 @@ class EvaluationTests(unittest.TestCase):
                 self.assertIn(moyu_output.find_planning_contamination(case["task"], text),
                               check["issues"])
                 self.assertEqual(record, before)
+
+    def test_sample_validation_blocks_reasoning_field_when_request_disabled_it(self) -> None:
+        case = self.plan["cases"][0]
+        text = "甲" * 650
+        record = {
+            "status": "complete",
+            "result": {
+                "text": text,
+                "safe_to_apply": True,
+                "completion_state": "complete",
+                "finish_reason": "stop",
+                "provider_sse_complete": True,
+                "request_audit": {
+                    "effective_parameters": {
+                        "thinking": {"type": "disabled"},
+                        "stream": True,
+                    },
+                },
+                "protocol_observation": {
+                    "events": [{
+                        "choices": [{
+                            "delta": {
+                                "fields": {
+                                    "reasoning_content": {"type": "string", "chars": 12},
+                                },
+                            },
+                        }],
+                    }],
+                },
+            },
+        }
+        before = copy.deepcopy(record)
+        check = evaluation.sample_validation(case, record)
+        self.assertFalse(check["eligible_for_blind_review"])
+        self.assertIn("reasoning_content_observed", {item["code"] for item in check["issues"]})
+        self.assertEqual(record, before)
+
+        record["result"]["request_audit"]["effective_parameters"] = {
+            "reasoning_effort": "none",
+            "stream": True,
+        }
+        check = evaluation.sample_validation(case, record)
+        self.assertFalse(check["eligible_for_blind_review"])
+        self.assertIn("reasoning_content_observed", {item["code"] for item in check["issues"]})
+
+        record["result"]["request_audit"]["effective_parameters"] = {"stream": True}
+        self.assertTrue(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+
+    def test_reasoning_summary_covers_events_missing_from_bounded_shapes(self) -> None:
+        case = self.plan["cases"][0]
+        record = {
+            "status": "complete",
+            "result": {
+                "text": "甲" * 650,
+                "safe_to_apply": True,
+                "completion_state": "complete",
+                "finish_reason": "stop",
+                "provider_sse_complete": True,
+                "request_audit": {"effective_parameters": {
+                    "thinking": {"type": "disabled"}, "stream": True,
+                }},
+                "reasoning_observation": {
+                    "field_events": 130, "nonempty_events": 1, "characters": 12,
+                    "requested_disabled": True, "unexpected_reasoning": True,
+                },
+                "protocol_observation": {
+                    "events_truncated": True, "events": [],
+                },
+            },
+        }
+        before = copy.deepcopy(record)
+        check = evaluation.sample_validation(case, record)
+        self.assertTrue(check["protocol_complete"])
+        self.assertEqual([issue["code"] for issue in check["issues"]],
+                         ["reasoning_content_observed"])
+        self.assertFalse(check["eligible_for_blind_review"])
+        self.assertEqual(record, before)
+        record["result"].pop("request_audit")
+        self.assertFalse(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+        record["result"]["request_audit"] = {
+            "effective_parameters": {"thinking": {"type": "enabled"}},
+        }
+        self.assertTrue(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+
+    def test_reasoning_summary_empty_values_and_malformed_legacy_shapes_are_safe(self) -> None:
+        record = {"result": {
+            "request_audit": {"effective_parameters": {"reasoning_effort": "none"}},
+            "reasoning_observation": {
+                "nonempty_events": 0, "requested_disabled": True,
+            },
+            "protocol_observation": {"events": [{"choices": [{
+                "message": {"fields": {"reasoning_content": {"type": "string", "chars": 2}}},
+            }]}]},
+        }}
+        self.assertIsNone(evaluation.nonempty_reasoning_observation(record))
+        for summary in (None, [], {"nonempty_events": True}, {"nonempty_events": -1}):
+            for events in (None, {}, [None], [{"choices": None}], [{"choices": [None]}]):
+                with self.subTest(summary=summary, events=events):
+                    record["result"]["reasoning_observation"] = summary
+                    record["result"]["protocol_observation"] = {"events": events}
+                    self.assertIsNone(evaluation.nonempty_reasoning_observation(record))
+
+    def test_reasoning_alias_and_invalid_types_block_complete_eligible_length_samples(self) -> None:
+        case = self.plan["cases"][0]
+        record = {"status": "complete", "result": {
+            "text": "甲" * 725, "safe_to_apply": True,
+            "completion_state": "complete", "finish_reason": "stop",
+            "request_audit": {"effective_parameters": {"thinking": {"type": "disabled"}}},
+        }}
+        for field, shape in (
+                ("reasoning", {"type": "string", "chars": 12}),
+                ("reasoning_content", {"type": "object", "fields": 1}),
+                ("reasoning", {"type": "array", "items": 0}),
+                ("reasoning_content", {"type": "bool"}),
+                ("reasoning", {"type": "int"})):
+            for summary in (None, {"nonempty_events": 0, "requested_disabled": True},
+                            {"nonempty_events": False, "invalid_events": 0},
+                            {"nonempty_events": 0, "invalid_events": -1}):
+                with self.subTest(field=field, shape=shape["type"], summary=summary):
+                    record["result"]["reasoning_observation"] = summary
+                    record["result"]["protocol_observation"] = {"events": [{"choices": [{
+                        "message": {"fields": {field: shape}},
+                    }]}]}
+                    before = copy.deepcopy(record)
+                    check = evaluation.sample_validation(case, record)
+                    self.assertTrue(check["protocol_complete"])
+                    self.assertEqual(check["characters"], 725)
+                    self.assertFalse(check["eligible_for_blind_review"])
+                    self.assertEqual([item["code"] for item in check["issues"]],
+                                     ["reasoning_content_observed"])
+                    if shape["type"] != "string":
+                        self.assertIn("思考字段类型无法校验", check["issues"][0]["description"])
+                        self.assertNotIn("非空", check["issues"][0]["description"])
+                    self.assertEqual(record, before)
+        record["result"]["protocol_observation"] = {"events_truncated": True, "events": []}
+        record["result"]["reasoning_observation"] = {
+            "nonempty_events": 0, "invalid_events": 1, "requested_disabled": True,
+        }
+        self.assertFalse(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+        record["result"]["request_audit"]["effective_parameters"] = {"thinking": {"type": "enabled"}}
+        self.assertTrue(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+
+    def test_old_zero_summary_preserves_whitespace_but_new_counts_are_authoritative(self) -> None:
+        record = {"result": {
+            "request_audit": {"effective_parameters": {"reasoning_effort": "none"}},
+            "reasoning_observation": {"nonempty_events": 0, "requested_disabled": True},
+            "protocol_observation": {"events": [{"choices": [{
+                "message": {"fields": {
+                    "reasoning_content": {"type": "string", "chars": 2},
+                    "reasoning": {"type": "null"},
+                }},
+            }]}]},
+        }}
+        self.assertIsNone(evaluation.nonempty_reasoning_observation(record))
+        record["result"]["protocol_observation"]["events"][0]["choices"][0]["message"]["fields"][
+            "reasoning"] = {"type": "string", "chars": 3}
+        self.assertIsNotNone(evaluation.nonempty_reasoning_observation(record))
+        record["result"]["reasoning_observation"]["invalid_events"] = 0
+        self.assertIsNone(evaluation.nonempty_reasoning_observation(record))
 
     def test_sample_validation_accepts_quoted_markers_and_ordinary_novel_monologues(self) -> None:
         case = self.plan["cases"][0]
