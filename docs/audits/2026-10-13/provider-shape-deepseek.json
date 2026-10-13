@@ -1,0 +1,1517 @@
+{
+  "billing_state": "usage_reported",
+  "content_type": "text/event-stream",
+  "created_at": "2026-10-13T03:55:56.013121+00:00",
+  "done_received": true,
+  "ended_at": "2026-10-13T03:56:14.633284+00:00",
+  "events": [
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "role": {
+                "chars": 9,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "role"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 4,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 3,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "reasoning_content": {
+                "chars": 1,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "reasoning_content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "content": {
+                "chars": 2,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": {
+            "type": "null"
+          },
+          "finish_reason_type": "NoneType",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [
+        {
+          "delta": {
+            "fields": {
+              "content": {
+                "chars": 0,
+                "type": "string"
+              }
+            },
+            "keys": [
+              "content"
+            ],
+            "type": "object"
+          },
+          "finish_reason": "stop",
+          "finish_reason_type": "str",
+          "keys": [
+            "index",
+            "delta",
+            "finish_reason"
+          ],
+          "type": "object"
+        }
+      ],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object"
+    },
+    {
+      "choices": [],
+      "keys": [
+        "id",
+        "object",
+        "created",
+        "model",
+        "choices",
+        "usage"
+      ],
+      "model": "deepseek-v4-pro",
+      "type": "object",
+      "usage": {
+        "completion_tokens": 38,
+        "prompt_tokens": 97,
+        "total_tokens": 135
+      },
+      "usage_shape": {
+        "keys": [
+          "prompt_tokens",
+          "completion_tokens",
+          "total_tokens"
+        ],
+        "type": "object"
+      }
+    }
+  ],
+  "http_status": 200,
+  "latency_ms": 18608,
+  "purpose": "诊断协议字段，不能作为文学质量证据",
+  "request_audit": {
+    "created_at": "2026-10-13T03:55:56.011446+00:00",
+    "dispatched": true,
+    "effective_parameters": {
+      "max_tokens": 128,
+      "response_format": "text",
+      "stream": true,
+      "temperature": 0
+    },
+    "endpoint": "https://api.icodexs.com/v1/chat/completions",
+    "messages_sha256": "b85a308ef4a1e0786820563f60a149bf8b1bd59d5b1c2215860ecfb2296f289f",
+    "method": "POST",
+    "payload": {
+      "max_tokens": 128,
+      "messages": [
+        {
+          "content": "只返回连接测试文字，不需要解释。",
+          "role": "system"
+        },
+        {
+          "content": "只回复：连接正常",
+          "role": "user"
+        }
+      ],
+      "model": "deepseek-v4-pro",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0
+    },
+    "request_bytes": 259,
+    "request_id": "moyu_f042706f22564d7489e1c3f312cf71fa",
+    "request_sha256": "006bdf62444824a5a26230b93434b6ff5193a7839dbd848691a403803c301a9e",
+    "requested_model": "deepseek-v4-pro"
+  },
+  "response_bytes": 8623,
+  "status": "observed"
+}

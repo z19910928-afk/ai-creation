@@ -1,0 +1,5356 @@
+{
+  "arm_id": "baseline",
+  "case_id": "mystery-tide",
+  "frozen_request_sha256": "8b479ab923d6a00e719023815bc7af36eb79b9ade212d726e7b3977b688adb39",
+  "genre": "悬疑",
+  "id": "mystery-tide--1--baseline",
+  "repetition": 1,
+  "request_audit": {
+    "created_at": "2026-10-13T13:14:43.318536+00:00",
+    "dispatch_state": "dispatch_intent_recorded",
+    "dispatched": true,
+    "effective_parameters": {
+      "max_tokens": 3000,
+      "response_format": "text",
+      "stream": true,
+      "temperature": 0.65,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "endpoint": "https://api.icodexs.com/v1/chat/completions",
+    "messages_sha256": "1c6aff9c3b03e9ef9b0f7fcec2d022f84b0b42cf197671cfe1f4c4142d31a968",
+    "method": "POST",
+    "payload": {
+      "max_tokens": 3000,
+      "messages": [
+        {
+          "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+          "role": "system"
+        },
+        {
+          "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+          "role": "user"
+        }
+      ],
+      "model": "deepseek-v4-pro",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.65,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "provider_request_id": "6f9e210d-43f6-4ead-8653-7abd3cfc6226, e18c6a98-919b-4a8b-8520-d9fdf6400782",
+    "request_bytes": 2419,
+    "request_id": "eval_fd38e366e9f039f1963030363c67f787",
+    "request_sha256": "8b479ab923d6a00e719023815bc7af36eb79b9ade212d726e7b3977b688adb39",
+    "requested_model": "deepseek-v4-pro",
+    "response_bytes": 795251
+  },
+  "result": {
+    "billing_state": "usage_reported",
+    "completion_state": "complete",
+    "finish_reason": "stop",
+    "latency_ms": 22404,
+    "protocol_observation": {
+      "events": [
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "role": {
+                    "chars": 9,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 1,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 3,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 4,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 5,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 6,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 7,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 11,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 8,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 9,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 10,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 11,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 12,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 13,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 14,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 15,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 16,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 17,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 18,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 19,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 20,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 21,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 22,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 23,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 24,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 25,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 26,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 27,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 28,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 29,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 30,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 31,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 32,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 10,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 33,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 34,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 35,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 36,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 37,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 38,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 39,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 40,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 41,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 42,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 43,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 44,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 45,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 46,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 47,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 48,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 49,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 50,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 51,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 52,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 53,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 54,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 55,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 56,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 57,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 58,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 59,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 60,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 61,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 62,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 63,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 64,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 65,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 66,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 67,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 68,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 69,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 70,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 71,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 72,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 73,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 74,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 75,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 76,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 77,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 78,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 79,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 80,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 81,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 82,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 83,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 10,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 84,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 85,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 86,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 87,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 88,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 89,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 90,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 91,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 92,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 93,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 11,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 94,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 95,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 96,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 97,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 98,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 99,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 100,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 101,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 102,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 103,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 104,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 105,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 106,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 107,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 108,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 109,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 110,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 111,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 112,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2459,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2460,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 2,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2461,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2462,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2463,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 2,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2464,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 3,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2465,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2466,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 2,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2467,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2468,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 2,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2469,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2470,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2471,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2472,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2473,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "fields": 2,
+                    "type": "object"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "role": {
+                    "chars": 9,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "stop",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2474,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "fields": 5,
+            "type": "object"
+          }
+        }
+      ],
+      "events_observed": 2474,
+      "events_recorded": 128,
+      "events_truncated": true
+    },
+    "provider_response_id": "cmb-1026cea5c70811f1b63fc6dd8c43b2eb",
+    "provider_sse_complete": true,
+    "request_audit": {
+      "created_at": "2026-10-13T13:14:43.318536+00:00",
+      "dispatch_state": "dispatch_intent_recorded",
+      "dispatched": true,
+      "effective_parameters": {
+        "max_tokens": 3000,
+        "response_format": "text",
+        "stream": true,
+        "temperature": 0.65,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "endpoint": "https://api.icodexs.com/v1/chat/completions",
+      "messages_sha256": "1c6aff9c3b03e9ef9b0f7fcec2d022f84b0b42cf197671cfe1f4c4142d31a968",
+      "method": "POST",
+      "payload": {
+        "max_tokens": 3000,
+        "messages": [
+          {
+            "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+            "role": "system"
+          },
+          {
+            "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+            "role": "user"
+          }
+        ],
+        "model": "deepseek-v4-pro",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "temperature": 0.65,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "provider_request_id": "6f9e210d-43f6-4ead-8653-7abd3cfc6226, e18c6a98-919b-4a8b-8520-d9fdf6400782",
+      "request_bytes": 2419,
+      "request_id": "eval_fd38e366e9f039f1963030363c67f787",
+      "request_sha256": "8b479ab923d6a00e719023815bc7af36eb79b9ade212d726e7b3977b688adb39",
+      "requested_model": "deepseek-v4-pro",
+      "response_bytes": 795251
+    },
+    "requested_model": "deepseek-v4-pro",
+    "response_format": "text",
+    "returned_model": "deepseek-v4-pro",
+    "safe_to_apply": true,
+    "stream_transport": "provider_native_sse",
+    "structured": null,
+    "text": "21点57分。\n\n林岚把手机塞回口袋，不再看那百分之一的电。屏幕已经灭过一次，再亮一次也许就永远黑了。她蹲下身，手指顺着左靴内侧的缝线摸进去——线脚粗糙，是三天前她自己缝的。月牙钥匙还带着体温，被水汽一激，立刻凉了。\n\n门后那声音又响了。铁链拖过水泥，不快，一截一截的，像有人坐在那里，用脚一下一下地蹭。她没有出声。\n\n下面那把锁的钥匙孔弯得像一道浅浅的笑。\n\n她伸手去够，膝盖磕在门槛上，疼得她吸了口气。钥匙进去得很顺，仿佛这把锁等它等了很久。她向左拧，拧不动；向右，锁芯转了小半圈，咔的一声，很轻，链条从门板上垂下来，垂进水里。\n\n门开了一条缝。冷风灌进来，带着咸味和柴油味。她往里看了一眼——仓库深处黑着，只有靠墙那片被水泡得发白的地面上，拖出一道湿痕，一直延伸到通往后墙的铁梯下。铁梯通向屋梁，屋梁那边是旧码头的方向。\n\n她不知道那是谁留下的。她也不打算知道。\n\n手机在口袋里震了一下，随即彻底暗了。21点59分。\n\n她侧身挤进门缝。水没到脚踝，凉得发麻。每一步都拖出声音，她索性走快些，水花溅上裤腿。铁梯的横档全是锈，握上去像抓了一把粗盐。她爬到一半，脚下一滑，人往下坠了半米，手掌火辣辣地疼。她咬住牙，把那只没踩稳的靴子蹬紧——钥匙还插在下面的锁孔里，她没有回头去拔。\n\n爬到屋梁，她看见了旧码头。木桩一根根露出水面，系船的铁环空着，缆绳垂在水里荡。更远处，港口的灯把水面切成一条一条的亮线。她顺着屋梁挪到尽头，下面是一块斜搭的跳板，通向码头边缘。\n\n22点04分。\n\n她踩上跳板，木头在脚底下发出呻吟。她蹲低身子，一步一步往前。水已经漫过跳板中段，鞋底每一次抬起，都能感觉到下面那股力往上顶，不急，但不停。\n\n22点07分。她踩上码头的水泥面，膝盖一软，跪了下去。\n\n身后的仓库传来一声闷响，像有什么东西倒了，又像潮水撞上了门板。她没有回头。\n\n22点10分，海水漫过她刚才跪过的地方，一寸一寸，吞掉了跳板、铁环和那根垂着的缆绳。\n\n林岚站起来，左靴里空了。她这才想起来，钥匙还留在锁孔里。",
+    "truncated": false,
+    "usage": {
+      "completion_tokens": 2473,
+      "completion_tokens_details": {
+        "reasoning_tokens": 1870
+      },
+      "prompt_tokens": 982,
+      "prompt_tokens_details": {
+        "cached_tokens": 256
+      },
+      "total_tokens": 3455
+    },
+    "usage_state": "reported"
+  },
+  "run_id": "a73dbe34d277429d83cfbd2bd9a48983",
+  "sample_validation": {
+    "characters": 822,
+    "eligible_for_blind_review": true,
+    "hard_fact_status": "requires_independent_review",
+    "issues": [],
+    "output_contract": {
+      "counting": "non_whitespace_characters_including_punctuation",
+      "maximum_characters": 850,
+      "minimum_characters": 600,
+      "source": "frozen_output_contract"
+    },
+    "protocol_complete": true,
+    "scope": "字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。"
+  },
+  "status": "complete",
+  "task": "continue"
+}

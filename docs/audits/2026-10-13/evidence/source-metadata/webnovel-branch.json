@@ -1,0 +1,107 @@
+{
+  "name": "master",
+  "commit": {
+    "sha": "0af0c0b2fc2e4104e8a12c1d62136c6595a6a983",
+    "node_id": "C_kwDOQylde9oAKDBhZjBjMGIyZmMyZTQxMDRlOGExMmMxZDYyMTM2YzY1OTVhNmE5ODM",
+    "commit": {
+      "author": {
+        "name": "lingfengQAQ",
+        "email": "[redacted-email]",
+        "date": "2026-10-07T12:19:31Z"
+      },
+      "committer": {
+        "name": "lingfengQAQ",
+        "email": "[redacted-email]",
+        "date": "2026-10-07T12:19:31Z"
+      },
+      "message": "docs(readme): 增加赞助商 CrazyToken\n\nCo-authored-by: Cursor <[redacted-email]>",
+      "tree": {
+        "sha": "4bdeb4bbc4b145608509ca34c34b45a4aeb13e6b",
+        "url": "https://api.github.com/repos/lingfengQAQ/webnovel-writer/git/trees/4bdeb4bbc4b145608509ca34c34b45a4aeb13e6b"
+      },
+      "url": "https://api.github.com/repos/lingfengQAQ/webnovel-writer/git/commits/0af0c0b2fc2e4104e8a12c1d62136c6595a6a983",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/lingfengQAQ/webnovel-writer/commits/0af0c0b2fc2e4104e8a12c1d62136c6595a6a983",
+    "html_url": "https://github.com/lingfengQAQ/webnovel-writer/commit/0af0c0b2fc2e4104e8a12c1d62136c6595a6a983",
+    "comments_url": "https://api.github.com/repos/lingfengQAQ/webnovel-writer/commits/0af0c0b2fc2e4104e8a12c1d62136c6595a6a983/comments",
+    "author": {
+      "login": "lingfengQAQ",
+      "id": 75821188,
+      "node_id": "MDQ6VXNlcjc1ODIxMTg4",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75821188?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/lingfengQAQ",
+      "html_url": "https://github.com/lingfengQAQ",
+      "followers_url": "https://api.github.com/users/lingfengQAQ/followers",
+      "following_url": "https://api.github.com/users/lingfengQAQ/following{/other_user}",
+      "gists_url": "https://api.github.com/users/lingfengQAQ/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/lingfengQAQ/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/lingfengQAQ/subscriptions",
+      "organizations_url": "https://api.github.com/users/lingfengQAQ/orgs",
+      "repos_url": "https://api.github.com/users/lingfengQAQ/repos",
+      "events_url": "https://api.github.com/users/lingfengQAQ/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/lingfengQAQ/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "lingfengQAQ",
+      "id": 75821188,
+      "node_id": "MDQ6VXNlcjc1ODIxMTg4",
+      "avatar_url": "https://avatars.githubusercontent.com/u/75821188?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/lingfengQAQ",
+      "html_url": "https://github.com/lingfengQAQ",
+      "followers_url": "https://api.github.com/users/lingfengQAQ/followers",
+      "following_url": "https://api.github.com/users/lingfengQAQ/following{/other_user}",
+      "gists_url": "https://api.github.com/users/lingfengQAQ/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/lingfengQAQ/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/lingfengQAQ/subscriptions",
+      "organizations_url": "https://api.github.com/users/lingfengQAQ/orgs",
+      "repos_url": "https://api.github.com/users/lingfengQAQ/repos",
+      "events_url": "https://api.github.com/users/lingfengQAQ/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/lingfengQAQ/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "97216ddf064d0c345d98a8d987a782a95002ce0c",
+        "url": "https://api.github.com/repos/lingfengQAQ/webnovel-writer/commits/97216ddf064d0c345d98a8d987a782a95002ce0c",
+        "html_url": "https://github.com/lingfengQAQ/webnovel-writer/commit/97216ddf064d0c345d98a8d987a782a95002ce0c"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/lingfengQAQ/webnovel-writer/branches/master",
+    "html": "https://github.com/lingfengQAQ/webnovel-writer/tree/master"
+  },
+  "protected": false,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": [],
+      "checks": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/lingfengQAQ/webnovel-writer/branches/master/protection",
+  "archive_redaction": {
+    "original_artifact_sha256": "076e665010f8b5ed265f2c6aa346633b0cff152845f2a83508a44c50f9b977d3",
+    "categories": [
+      "personal_email"
+    ],
+    "commit_ids_unchanged": true,
+    "public_bytes_are_original": false
+  }
+}

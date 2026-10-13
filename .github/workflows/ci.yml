@@ -7,6 +7,7 @@ on:
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -17,11 +18,13 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
       - name: Syntax checks
         run: |
-          python -m py_compile server.py scripts/*.py tests/*.py
-          node --check app.js
+          python -m py_compile *.py scripts/*.py tests/*.py
+          for source in *.js scripts/*.cjs tests/*.cjs; do
+            node --check "$source"
+          done
       - name: Contract fixtures
         run: |
           set -e
@@ -31,3 +34,24 @@ jobs:
           done
       - name: Evaluation fixtures
         run: python scripts/evaluation_runner.py --fixtures-dir tests/fixtures --output /tmp/moyu-evaluation.json
+      - name: Editor merge regressions
+        run: node tests/editor_sync_fixtures.cjs
+      - name: Install browser regression runtime
+        run: |
+          npm install --prefix "$RUNNER_TEMP/moyu-browser-runtime" --no-audit --no-fund --package-lock=false playwright@1.62.1
+          "$RUNNER_TEMP/moyu-browser-runtime/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Real browser regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/frontend_browser_regressions.cjs
+      - name: Planning browser regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/planning_browser_regressions.cjs
+      - name: Five chapter author flow
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/desktop_author_flow_regressions.cjs

@@ -1,0 +1,116 @@
+{
+  "all_12_requests_byte_identical": true,
+  "comparisons": [
+    {
+      "case_arm": "daily-summary--baseline",
+      "request_sha256": "4860290c4b8544e3805bf6f9b3df0f97d0a82aea1235fb8d030592e9fd1adb6c",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "daily-summary--moyu",
+      "request_sha256": "69aa1f99959f5c043201eafc4c3023b2ad605db50de1780d82f3c117816fddb2",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "mystery-check--baseline",
+      "request_sha256": "40ac23aa0d47ab8b23883934fc198fcbec9bce84b1440fdaccf7f119d0836727",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "mystery-check--moyu",
+      "request_sha256": "dde7f792ade79e7ba538986dea8e8b38e3c61bddc5c6d9f97079d733218eb637",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "mystery-tide--baseline",
+      "request_sha256": "691ac63c67db300973acfbb27354cef9485f97d7ebfc71374b125f7ffa54c0e4",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "mystery-tide--moyu",
+      "request_sha256": "8e54d6ce50531720e620998bfe438533a9338d6ad13d1df4d78dae996d06869d",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "romance-ticket--baseline",
+      "request_sha256": "41bca1d516013055e35b13d264bdfbdba026e7306ed13730aa8b3e780de70e73",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "romance-ticket--moyu",
+      "request_sha256": "beb04909d5bb4f6eff57588a2232878d3860ead21768e235b21abc2686ce9f3e",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "science-airlock--baseline",
+      "request_sha256": "784cdff84153abb07cdca1b0bd8271a7cf4f932a3a4725063f32644887f38a1c",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "science-airlock--moyu",
+      "request_sha256": "b3757cf6704b0e33e4564f7d71897998f4d9710d19a12557597c87f256c78a5f",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "wuxia-polish--baseline",
+      "request_sha256": "84cd165c64f360142be88600d6ffc124041c0c720c58af5a484003614d00fa88",
+      "same_request_bytes": true
+    },
+    {
+      "case_arm": "wuxia-polish--moyu",
+      "request_sha256": "cf9cdea6642cdd780854b50b18986877328edeecd67fce3a44fe77fad383ba9b",
+      "same_request_bytes": true
+    }
+  ],
+  "cost_state": "unknown; 已预留次数不等于已收费次数，旧记录和短诊断费用须合计；未报告用量不能算零",
+  "created_at": "2026-10-13T05:00:23.780206+00:00",
+  "first_tier_proven": false,
+  "invocation_max_new_requests": 2,
+  "max_output_tokens": 2000,
+  "maximum_total_after_two_new_requests": 13,
+  "paid_calls_executed_during_freeze": 0,
+  "planned_sample_ids": [
+    "mystery-tide--1--baseline",
+    "mystery-tide--1--moyu"
+  ],
+  "prior_evaluation_ledgers": [
+    {
+      "directory": "literary-pilot",
+      "reported_tokens": 1015,
+      "requests_without_usage": 7,
+      "reserved_requests": 8,
+      "statuses": [
+        "unknown",
+        "unknown",
+        "unknown",
+        "unknown",
+        "unknown",
+        "unknown",
+        "complete",
+        "reserved"
+      ]
+    },
+    {
+      "directory": "literary-pilot-v2",
+      "reported_tokens": 0,
+      "requests_without_usage": 2,
+      "reserved_requests": 2,
+      "statuses": [
+        "failed",
+        "failed"
+      ]
+    }
+  ],
+  "prior_total_reserved_or_diagnostic_requests": 11,
+  "provider_total_timeout_seconds": 180,
+  "purpose": "同一冻结文学请求的协议诊断，最多原首题两个arm；不重试旧unknown身份。",
+  "separate_short_shape_diagnostics": 1,
+  "source_directory": "../literary-pilot-v2",
+  "source_requests_sha256": "143dccd277abc89be553205e2f92deb8f65dd1de6913c62745636e4b92dff04a",
+  "source_run_sha256": "fe7c487ea3bf1099a9a5b5ce5c7ce7b1b1d71fec462f6a4b2dd92b0e81fe3066",
+  "writer_model": "deepseek-v4-pro",
+  "writer_parameters": {
+    "temperature": 0.65
+  },
+  "writer_stream": true
+}

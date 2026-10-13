@@ -1,0 +1,310 @@
+{
+  "passed": true,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段",
+      "passed": true
+    },
+    {
+      "name": "真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存",
+      "passed": true
+    },
+    {
+      "name": "自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    },
+    {
+      "name": "多问题审稿明确选择原句，精确修订第二重复句并重新审稿",
+      "passed": true
+    },
+    {
+      "name": "超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿",
+      "passed": true
+    },
+    {
+      "name": "模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用",
+      "passed": true
+    },
+    {
+      "name": "1280×800电脑窗口无横向溢出，编辑和生成控件可用",
+      "passed": true
+    },
+    {
+      "name": "两作品切换隔离，卷章场景保存后建立目录",
+      "passed": true
+    },
+    {
+      "name": "电脑端四阶段规划中途刷新和失败重做，最终采用蓝图不改变已写正文",
+      "passed": true
+    },
+    {
+      "name": "同一时刻连续点击打开两书，最终作品与缓存完全隔离",
+      "passed": true
+    },
+    {
+      "name": "旧作品读取成功与错误迟到，均不改变当前正文、缓存和保存状态",
+      "passed": true
+    },
+    {
+      "name": "旧作品模型设置迟到，当前模型身份保持正确",
+      "passed": true
+    },
+    {
+      "name": "服务回应作品身份错误时拒绝覆盖，恢复后仍为原书",
+      "passed": true
+    },
+    {
+      "name": "设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型",
+      "passed": true
+    },
+    {
+      "name": "电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关",
+      "passed": true
+    },
+    {
+      "name": "旧书预览拆分合并导入独立作品，原作品保持原稿",
+      "passed": true
+    },
+    {
+      "name": "作为参考来源导入、阅读和按原句搜索不改变本书正文",
+      "passed": true
+    },
+    {
+      "name": "完整备份下载与恢复副本保留正文和参考来源",
+      "passed": true
+    }
+  ],
+  "artifacts": "Browser logs and private temporary DB are retained locally; desktop screenshots listed in this report.",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_398d12ef783d4b1b9be1a1ad884ee57e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_b2ff9460765446aaa18a58d2ac31a423",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_68c8fd558cb44ff5a64e1f84e39fb0c9",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_49582805e3b3474bac5dea5d7f43806c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_8628c7208e5d43559fedf288291719c2",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_9e43e1e1d3f64ae0b1f7988ce2cf7a65",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_35cefd36061441e88513ce5a371ca577",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_e7295394ae654cada236051bb69db1af",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_97f2b36a89df4bfc9d0954501195ebb2",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_af33dfa3ca3f4f9f97c064b43c3b96f1",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_21dd8a92b6e64d2f9b1cb2fbb5a487a5",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_d23907f460fb446cb5e1e7230935b0fa",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_7e2ad1d566404c3a8bdc1a848b8936ed",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_ffb152d558134a3abd6fa3d226396679",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_e6a3a297df474b3d99e57aba9fd86bed",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_041e0123ce2a48f8815c7e023f5bebc4",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_7d07850a439e49a7879d34842c72fb77",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_8998214b2d27466a84522490d885cac1",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_15642945b9124bd8869865b74fcb4041",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_94949bb2fa0d460aa4ed693d580c6cdb",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "native_composition_events": [
+    {
+      "type": "compositionstart",
+      "data": "",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "lin",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "lin",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "linlan",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "linlan",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "林岚",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionend",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": false
+    }
+  ],
+  "imported_project": "book_cd8affaf4bd1442ebb671f1526e78131",
+  "reference_document": "reference_d0d4f7a17bf5494e952af12f72ca696b",
+  "restored_project": "book_4b86dbf1b5da4bdd98c070c5f08d464c"
+}

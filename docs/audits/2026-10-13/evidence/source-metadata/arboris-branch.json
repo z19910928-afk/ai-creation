@@ -1,0 +1,110 @@
+{
+  "name": "main",
+  "commit": {
+    "sha": "dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+    "node_id": "C_kwDOQAanUNoAKGRkODBjNjliYzMwYTgwZDY4YjM3NWJkNTA0YzZiYzMwODE2NGZmOWU",
+    "commit": {
+      "author": {
+        "name": "Fox2",
+        "email": "[redacted-email]",
+        "date": "2026-02-25T01:17:49Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "[redacted-email]",
+        "date": "2026-02-25T01:17:49Z"
+      },
+      "message": "Create README-en.md for Arboris-Novel\n\nAdd initial README for Arboris-Novel project with features, installation instructions, and contribution guidelines.",
+      "tree": {
+        "sha": "08647938cbd5a602a27f5e7aa228742a4b1d8c4b",
+        "url": "https://api.github.com/repos/t59688/arboris-novel/git/trees/08647938cbd5a602a27f5e7aa228742a4b1d8c4b"
+      },
+      "url": "https://api.github.com/repos/t59688/arboris-novel/git/commits/dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "public_archive_redacted",
+        "signature": null,
+        "payload": "tree 08647938cbd5a602a27f5e7aa228742a4b1d8c4b\nparent 584ffc3994c5ed5f2daccc5320f990d5cbba0e27\nauthor Fox2 <[redacted-email]> 1771982269 +0800\ncommitter GitHub <[redacted-email]> 1771982269 +0800\n\nCreate README-en.md for Arboris-Novel\n\nAdd initial README for Arboris-Novel project with features, installation instructions, and contribution guidelines.",
+        "verified_at": "2026-02-25T01:17:50Z",
+        "original_verified": true,
+        "original_reason": "valid"
+      }
+    },
+    "url": "https://api.github.com/repos/t59688/arboris-novel/commits/dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+    "html_url": "https://github.com/t59688/arboris-novel/commit/dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+    "comments_url": "https://api.github.com/repos/t59688/arboris-novel/commits/dd80c69bc30a80d68b375bd504c6bc308164ff9e/comments",
+    "author": {
+      "login": "t59688",
+      "id": 125454309,
+      "node_id": "U_kgDOB3pH5Q",
+      "avatar_url": "https://avatars.githubusercontent.com/u/125454309?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/t59688",
+      "html_url": "https://github.com/t59688",
+      "followers_url": "https://api.github.com/users/t59688/followers",
+      "following_url": "https://api.github.com/users/t59688/following{/other_user}",
+      "gists_url": "https://api.github.com/users/t59688/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/t59688/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/t59688/subscriptions",
+      "organizations_url": "https://api.github.com/users/t59688/orgs",
+      "repos_url": "https://api.github.com/users/t59688/repos",
+      "events_url": "https://api.github.com/users/t59688/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/t59688/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "584ffc3994c5ed5f2daccc5320f990d5cbba0e27",
+        "url": "https://api.github.com/repos/t59688/arboris-novel/commits/584ffc3994c5ed5f2daccc5320f990d5cbba0e27",
+        "html_url": "https://github.com/t59688/arboris-novel/commit/584ffc3994c5ed5f2daccc5320f990d5cbba0e27"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/t59688/arboris-novel/branches/main",
+    "html": "https://github.com/t59688/arboris-novel/tree/main"
+  },
+  "protected": false,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": [],
+      "checks": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/t59688/arboris-novel/branches/main/protection",
+  "archive_redaction": {
+    "original_artifact_sha256": "99145d695769dac0c4099e81639c576c558c439fb79e6690334ae1f95f9d088e",
+    "categories": [
+      "personal_email",
+      "signed_payload_not_publicly_verifiable"
+    ],
+    "commit_ids_unchanged": true,
+    "public_bytes_are_original": false
+  }
+}

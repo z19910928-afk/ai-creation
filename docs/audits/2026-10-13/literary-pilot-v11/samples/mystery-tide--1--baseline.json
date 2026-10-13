@@ -1,0 +1,4110 @@
+{
+  "arm_id": "baseline",
+  "case_id": "mystery-tide",
+  "frozen_request_sha256": "32aecf873625b04eda152c479a9c8a875a915370fc2bde75b2a345a7d37bb5a2",
+  "genre": "悬疑",
+  "id": "mystery-tide--1--baseline",
+  "repetition": 1,
+  "request_audit": {
+    "created_at": "2026-10-13T15:13:09.641975+00:00",
+    "dispatch_state": "dispatch_intent_recorded",
+    "dispatched": true,
+    "effective_parameters": {
+      "max_tokens": 3000,
+      "response_format": "text",
+      "stream": true,
+      "temperature": 0.65,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "endpoint": "https://api.icodexs.com/v1/chat/completions",
+    "messages_sha256": "04c4a1a5f9ca8dc3e7bb27b1b488264c40a5ab5ae1b2ae4dfd5ee3688038f3ff",
+    "method": "POST",
+    "payload": {
+      "max_tokens": 3000,
+      "messages": [
+        {
+          "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+          "role": "system"
+        },
+        {
+          "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。 字数按正文所有非空白字符计算，包括标点、数字和字母；目标约720字，必须在600至850字之间。发出前自行精简到上限内，保留完整场景，只输出正文，不显示计数或检查过程。",
+          "role": "user"
+        }
+      ],
+      "model": "glm-5.1",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.65,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "provider_request_id": "7568c81e-b33f-4608-896f-73513d14ac4a, 403bc88d-54c8-43c2-9f50-423cea084c09",
+    "request_bytes": 2646,
+    "request_id": "eval_8f40c22f2f29cd0887e59971bad976d9",
+    "request_sha256": "32aecf873625b04eda152c479a9c8a875a915370fc2bde75b2a345a7d37bb5a2",
+    "requested_model": "glm-5.1",
+    "response_bytes": 41331
+  },
+  "result": {
+    "billing_state": "usage_reported",
+    "completion_state": "complete",
+    "finish_reason": "stop",
+    "latency_ms": 16359,
+    "protocol_observation": {
+      "events": [
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "role": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 1,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 2,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 3,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 1,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 4,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 5,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 10,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 6,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 7,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 8,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 9,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 10,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 11,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 12,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 13,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 14,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 15,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 16,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 17,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 18,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 19,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 20,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 21,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 22,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 23,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 24,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 25,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 26,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 27,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 28,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 10,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 29,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 30,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 31,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 32,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 33,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 34,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 35,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 36,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 37,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 38,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 10,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 39,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 40,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 41,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 42,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 11,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 43,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 44,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 45,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 46,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 47,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 3,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 48,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 49,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 50,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 51,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 52,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 53,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 54,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 55,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 56,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 57,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 58,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 59,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 60,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 61,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 62,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 63,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 64,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 65,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 66,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 67,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 68,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 69,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 70,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 71,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 10,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 72,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 73,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 74,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 75,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 76,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 77,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 78,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 79,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 80,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 81,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 82,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 83,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 84,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 10,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 85,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 86,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 87,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 88,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 89,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 90,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 91,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 92,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 93,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 94,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 12,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 95,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 96,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 97,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 98,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 99,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 100,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 101,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 102,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 103,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 104,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 105,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 106,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 107,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 4,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 108,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 109,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 110,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 111,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 112,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 174,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 175,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 176,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 177,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 178,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 5,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 179,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 180,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 181,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 8,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 182,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 7,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 183,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 184,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 6,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 185,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 12,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 186,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 2,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 2,
+              "finish_reason": {
+                "type": "null"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 187,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {},
+                "type": "object"
+              },
+              "fields": 3,
+              "finish_reason": "stop",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 188,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "provider"
+          ],
+          "type": "object"
+        },
+        {
+          "choices": [],
+          "event_sequence": 189,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "fields": 5,
+            "type": "object"
+          }
+        }
+      ],
+      "events_observed": 189,
+      "events_recorded": 128,
+      "events_truncated": true
+    },
+    "provider_response_id": "d685f664-561e-432d-8781-52a59d0fa0b5",
+    "provider_sse_complete": true,
+    "request_audit": {
+      "created_at": "2026-10-13T15:13:09.641975+00:00",
+      "dispatch_state": "dispatch_intent_recorded",
+      "dispatched": true,
+      "effective_parameters": {
+        "max_tokens": 3000,
+        "response_format": "text",
+        "stream": true,
+        "temperature": 0.65,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "endpoint": "https://api.icodexs.com/v1/chat/completions",
+      "messages_sha256": "04c4a1a5f9ca8dc3e7bb27b1b488264c40a5ab5ae1b2ae4dfd5ee3688038f3ff",
+      "method": "POST",
+      "payload": {
+        "max_tokens": 3000,
+        "messages": [
+          {
+            "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+            "role": "system"
+          },
+          {
+            "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。 字数按正文所有非空白字符计算，包括标点、数字和字母；目标约720字，必须在600至850字之间。发出前自行精简到上限内，保留完整场景，只输出正文，不显示计数或检查过程。",
+            "role": "user"
+          }
+        ],
+        "model": "glm-5.1",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "temperature": 0.65,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "provider_request_id": "7568c81e-b33f-4608-896f-73513d14ac4a, 403bc88d-54c8-43c2-9f50-423cea084c09",
+      "request_bytes": 2646,
+      "request_id": "eval_8f40c22f2f29cd0887e59971bad976d9",
+      "request_sha256": "32aecf873625b04eda152c479a9c8a875a915370fc2bde75b2a345a7d37bb5a2",
+      "requested_model": "glm-5.1",
+      "response_bytes": 41331
+    },
+    "requested_model": "glm-5.1",
+    "response_format": "text",
+    "returned_model": "glm-5.1",
+    "safe_to_apply": true,
+    "stream_transport": "provider_native_sse",
+    "structured": null,
+    "text": "铁链声停了。林岚屏住呼吸，把耳朵贴上铁门，听见另一侧有人换了个脚步，鞋底碾过碎石，往远处去了。她等了十几秒，确认没有第二个人，才蹲下身去拔左靴。靴筒湿透了，贴着小腿像一层冰。她把手指伸进内侧夹层，指甲抠到那枚缝死的线脚，扯了两下没扯开。潮水声已经比刚才大了。她咬断线头，月牙钥匙滑进掌心，带着体温也捂不热的凉。墙上两把锁并排，上面那把是普通挂锁，锈成铁褐色，钥匙插不进去。下面那把小一圈，铜质，钥匙孔果然弯成一道弧。她把月牙钥匙对准弧口推进去，齿牙咬合的声音很轻，像骨头缝里卡进一粒沙。转了半圈，锁芯弹开。铁链从门闩上滑落，砸在地面，闷响一声。她没有立刻推门，先把链子拾起来靠在墙边，免得被人听出动静。门缝透进来的风带着腥咸味，比仓库里浓得多。她侧身挤出去，外面是旧码头东面的栈道，木板泡得发黑，踩上去往下沉。脚下有水了。不多，刚漫过栈道边缘，正往低洼处汇。手机屏幕亮了一下，电量百分之一，信号栏还是空的。她没再去看，把手机塞回口袋。月牙钥匙攥在手里没放，齿尖硌着指腹。栈道尽头有两条路，左边的台阶通向堤岸公路，右边的岔道绕向码头背面，尽头是一排废弃的集装箱。左边快，但正对着仓库门口，刚才拖铁链的人往那个方向走了。右边绕远，栈道更低，潮水先淹这边。她算了一下时间。港口广播说22点10分涨潮，现在最多21点58分，剩十二分钟。走右边，到集装箱那边至少要八分钟，如果中途栈道被淹就得趟水，水到膝盖以下还能走，再深就危险。走左边，四分钟能上堤岸，但要撞上那个人。她不知道那人是谁，更不知道他跟陆衡的死有没有关系。陆衡死的那天晚上她不在场，事后只听人说是在码头北段出的事，具体怎么出的，没人跟她讲清楚。她能确定的只有一件事：那封信里写的\"第二把锁认得月牙\"，现在验证了，锁确实认得。水漫过脚面了。林岚往右走了三步，栈道板翘起来一截，水从缝隙里涌上来，打湿了靴口。她停下来，回头看了一眼仓库铁门，门还虚掩着，里面黑得什么都看不见。风把门吹得晃了一下，铰链吱嘎响。她转回头，盯住右边岔道尽头。集装箱之间有一条窄巷，穿过去就是码头外围的公路。她加快脚步，水已经到脚踝，每一步都带起水声。月牙钥匙塞回左靴夹层，空出来的手扶着栈道边的铁栏杆，锈片扎进掌心，她没松手。21点59分。栈道走到一半，前面有一段塌了，缺口不到两尺，水在底下打着旋。她踩上缺口边的横梁，身子往前倾，一只脚跨过去，另一只脚跟上来，横梁往下沉了一寸。她没停，继续跑。集装箱的轮廓出现在前面，黑漆漆地堵着半边天。窄巷入口有光，是堤岸路灯漏过来的。她钻进巷子，两侧铁皮贴着肩膀，脚下终于没有水了。22点03分。她从窄巷另一头出来，站上公路路肩，回头望。栈道已经没在水下，仓库的铁门只剩顶上一截露在外面。潮水还在涨。",
+    "truncated": false,
+    "usage": {
+      "completion_tokens": 872,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      },
+      "prompt_tokens": 696,
+      "prompt_tokens_details": {
+        "cached_tokens": 0
+      },
+      "total_tokens": 1568
+    },
+    "usage_accounting": {
+      "reported_tokens_lower_bound": 1568,
+      "source": "provider_reported",
+      "state": "reported",
+      "total_tokens": 1568
+    },
+    "usage_state": "reported"
+  },
+  "run_id": "fd9f18fdac98422fbd972bc754f3c2b2",
+  "sample_validation": {
+    "characters": 1133,
+    "eligible_for_blind_review": false,
+    "hard_fact_status": "requires_independent_review",
+    "issues": [
+      {
+        "code": "length_out_of_range",
+        "description": "候选为1133字，要求600至850字。"
+      }
+    ],
+    "output_contract": {
+      "counting": "non_whitespace_characters_including_punctuation",
+      "maximum_characters": 850,
+      "minimum_characters": 600,
+      "source": "frozen_output_contract"
+    },
+    "protocol_complete": true,
+    "scope": "字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。"
+  },
+  "status": "complete",
+  "task": "continue"
+}

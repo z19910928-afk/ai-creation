@@ -1,0 +1,16 @@
+{
+  "scheduler": {
+    "order": [1, 2, 3],
+    "submitted_priorities": {"2": 100, "3": -100},
+    "pending_cancel_result": false,
+    "scope": "Original scheduler class AST; logger stub; in-process asyncio only. Current reachable workflow paths use WorkflowRuntime instead."
+  },
+  "foreshadow_suggest": {
+    "output": {
+      "goals": ["准备回到旧城，必须找回铜镜"],
+      "items": ["必须找回铜镜"],
+      "persons": ["林岚准备", "回到旧城", "必须找回", "铜镜"]
+    },
+    "scope": "Original suggest method AST; no SQLModel import, database, UI, or model call."
+  }
+}

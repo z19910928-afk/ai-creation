@@ -1,0 +1,87 @@
+{
+  "desktop": {
+    "viewport": [
+      1440,
+      1000
+    ],
+    "page_errors": [],
+    "horizontal_overflow": false,
+    "bold_button_changed_body": false
+  },
+  "plot_workflow": {
+    "card_text": "旧钥匙必须在结尾回收。\n点击卡片后可在下一版移动状态",
+    "card_has_action": false,
+    "movable_stage_control_count": 0
+  },
+  "ai_switch_chapter": {
+    "generation_chapter_id": "ch_5e2b94ddcff24846ad3eeb1fe9baf36b",
+    "actual_local_target_id": "audit_other_chapter",
+    "wrong_chapter_has_candidate_in_browser": true,
+    "wrong_chapter_has_candidate_in_database": false,
+    "original_version": 5,
+    "server_version": 6,
+    "backend_online_after_adoption": false,
+    "displayed_save_status": "刚刚保存",
+    "same_candidate_count_after_second_adoption": 2,
+    "scope": "Real page + local server; AI response replaced by a free browser mock"
+  },
+  "mobile": {
+    "viewport": [
+      390,
+      844
+    ],
+    "page_errors": [],
+    "horizontal_overflow": false,
+    "controls_with_overflowing_text": [
+      {
+        "text": "审查本章",
+        "client_height": 26,
+        "content_height": 36
+      },
+      {
+        "text": "历史版本",
+        "client_height": 26,
+        "content_height": 36
+      },
+      {
+        "text": "任务契约",
+        "client_height": 30,
+        "content_height": 88
+      },
+      {
+        "text": "复制候选",
+        "client_height": 30,
+        "content_height": 64
+      }
+    ],
+    "ai_instruction_width": 40
+  },
+  "typing_during_save": {
+    "transmitted_versions": [
+      6,
+      6
+    ],
+    "database_contains_newest_input": false,
+    "browser_contains_newest_input": true,
+    "backend_online_after_second_save": false,
+    "scope": "Real browser + real HTTP; first successful response delivery delayed"
+  },
+  "long_chapter_polish": {
+    "original_characters": 15412,
+    "preview_http": 200,
+    "real_prompt_contains_chapter_head": false,
+    "local_body_characters_after_adoption": 90,
+    "local_body_contains_chapter_head": false,
+    "database_body_characters_after_adoption": 15412,
+    "database_body_contains_chapter_head": true,
+    "backend_online_after_adoption": false,
+    "scope": "Actual prompt-preview + real browser adoption; generated output mocked; browser and database checked separately"
+  },
+  "rejected_memory_reload": {
+    "database_title": "审查用隔离作品",
+    "page_title": "未命名长篇",
+    "backend_online": false,
+    "source_data_overwritten": false,
+    "scope": "New browser cache, actual GET /api/state, frontend hydration"
+  }
+}

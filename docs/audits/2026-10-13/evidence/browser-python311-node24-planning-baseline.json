@@ -1,0 +1,248 @@
+{
+  "passed": true,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    },
+    {
+      "name": "多问题审稿明确选择原句，精确修订第二重复句并重新审稿",
+      "passed": true
+    },
+    {
+      "name": "超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿",
+      "passed": true
+    },
+    {
+      "name": "模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用",
+      "passed": true
+    },
+    {
+      "name": "1280×800电脑窗口无横向溢出，编辑和生成控件可用",
+      "passed": true
+    },
+    {
+      "name": "两作品切换隔离，卷章场景保存后建立目录",
+      "passed": true
+    },
+    {
+      "name": "电脑端四阶段规划中途刷新和失败重做，最终采用蓝图不改变已写正文",
+      "passed": true
+    },
+    {
+      "name": "同一时刻连续点击打开两书，最终作品与缓存完全隔离",
+      "passed": true
+    },
+    {
+      "name": "旧作品读取成功与错误迟到，均不改变当前正文、缓存和保存状态",
+      "passed": true
+    },
+    {
+      "name": "旧作品模型设置迟到，当前模型身份保持正确",
+      "passed": true
+    },
+    {
+      "name": "服务回应作品身份错误时拒绝覆盖，恢复后仍为原书",
+      "passed": true
+    },
+    {
+      "name": "设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型",
+      "passed": true
+    },
+    {
+      "name": "电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关",
+      "passed": true
+    },
+    {
+      "name": "旧书预览拆分合并导入独立作品，原作品保持原稿",
+      "passed": true
+    },
+    {
+      "name": "作为参考来源导入、阅读和按原句搜索不改变本书正文",
+      "passed": true
+    },
+    {
+      "name": "完整备份下载与恢复副本保留正文和参考来源",
+      "passed": true
+    }
+  ],
+  "artifacts": "Browser logs and private temporary DB are retained locally; desktop screenshots listed in this report.",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_56198947179a4c44a9bf498f4376511d",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_b7e0f10e735b49ba8392226b93004d1e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_b5a59e211d1345449f580c6671c0e253",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_fa39939305ed442ab0b8902e111c5566",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_50321028975b44f2bb9099256f6e1aed",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_152cf1958ecc479ba4a7bea6721b688f",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_ceb4ef49c63643d9bc2a962d23b65631",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_99b11005a3bd4737b0033c0ddea5ded8",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_4409f8fe761441d3a71b0aede81852d1",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_e5115061342948db89c517190e21cc0b",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_9a4ea35999644588a970e5e9c6849d74",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_406d99c6c38346ce82b262e406328408",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_c15826c405374530ad952a14c503ac98",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_510a424229fa4c68a289eed4e6120292",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_4a764663da38407fa206c5bee7341275",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_d1b3ab3cb1994ffcacecfd892874f1f4",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_2073aebe57e4470cbd1f7b73b365b819",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_a0059909122b4f6ba5ee8578308a88f0",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_94ab51a8587741868dc0a335ae33aa4d",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_e631bb30be1641f3950efc3f6c9a1a5d",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "imported_project": "book_c0641e36e6e1417da1bf56649e6b3a5d",
+  "reference_document": "reference_12f30ebec7e84458b5613b998a0bff75",
+  "restored_project": "book_7eb88a6249a4444a8cdfc28ef6591fec"
+}

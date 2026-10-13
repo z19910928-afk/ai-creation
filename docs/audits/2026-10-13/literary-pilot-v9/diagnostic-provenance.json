@@ -1,0 +1,39 @@
+{
+  "purpose": "原指定接口的DeepSeek两种别名出现思考污染，kimi-k3只返回思考而无正文；改用服务实时模型清单中的glm-5.1检查正常正文输出。首先最多两个新增请求，合格才扩大相同题库。",
+  "previous_run": "../literary-pilot-v8/",
+  "model": "glm-5.1",
+  "provider_models_read_status": 200,
+  "official_reference": {
+    "url": "https://docs.z.ai/guides/llm/glm-5.1.md",
+    "retrieval_method": "curl HTTPS",
+    "http_success": true,
+    "checked": "官方示例明确thinking.type可为enabled或disabled；思考默认开启，reasoning_content与content分离。",
+    "limitation": "官方文档不能证明聚合接口确实转发参数，也不能证明底层模型身份。"
+  },
+  "writer_parameters": {
+    "temperature": 0.65,
+    "max_tokens": 3000,
+    "stream": true,
+    "thinking": {"type": "disabled"}
+  },
+  "fairness": "两种方法素材、任务、规则、作者要求、模型及全部非消息参数一致。跨模型或参数变化不能归因产品提升。",
+  "prior_usage": {
+    "literary_reserved_requests": 22,
+    "literary_reported_total_tokens": 37851,
+    "literary_requests_without_complete_total": 10,
+    "separate_dispatched_shape_diagnostic_requests": 1,
+    "shape_diagnostic_reported_total_tokens": 135,
+    "combined_reserved_requests": 23,
+    "combined_reported_total_tokens": 37986,
+    "actual_currency_cost": null
+  },
+  "budget": {
+    "this_run_request_cap": 36,
+    "combined_request_cap_if_all_reserved": 59,
+    "this_run_reported_tokens_stop_threshold": 142014,
+    "prior_plus_stop_threshold": 180000,
+    "limitation": "请求数上限包括失败与未知预留；已报告用量阈值无法保证费用上限，当前请求可能超出。未知用量和未知价格不记零。"
+  },
+  "history_policy": "旧八轮全部冻结请求、候选、账本和报告保持原字节；此次建立新的独立运行身份，不重发旧失败。",
+  "acceptance_policy": "先通过协议完整、600至850字和明显思考污染检查；随后按两种独立评审模型、双顺序及原定门槛匿名评测。第一梯队仍需更大独立故事集、实际竞品和作者效率证据。"
+}

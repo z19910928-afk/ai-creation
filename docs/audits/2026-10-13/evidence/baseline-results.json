@@ -1,0 +1,126 @@
+{
+  "python": "3.12.14",
+  "contract_fixtures": [
+    {
+      "file": "tests/ai_contract_fixtures.py",
+      "exit_code": 0,
+      "stdout": "AI contract fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/ai_queue_fixtures.py",
+      "exit_code": 0,
+      "stdout": "AI queue fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/assertion_workflow_fixtures.py",
+      "exit_code": 0,
+      "stdout": "assertion workflow fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/backup_recovery_fixtures.py",
+      "exit_code": 0,
+      "stdout": "backup/recovery fixtures passed: online backup, digest, corruption rejection, restore, generic drill, RPO/RTO\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/branch_cas_fixtures.py",
+      "exit_code": 0,
+      "stdout": "branch CAS fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/chapter_commit_fixtures.py",
+      "exit_code": 0,
+      "stdout": "chapter commit fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/character_state_fixtures.py",
+      "exit_code": 0,
+      "stdout": "character state fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/corrupt_import_fixtures.py",
+      "exit_code": 0,
+      "stdout": "corrupt import fixtures passed: 5 rejected\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/frontend_story_fixtures.py",
+      "exit_code": 0,
+      "stdout": "frontend story fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/longform_knowledge_scope_fixtures.py",
+      "exit_code": 0,
+      "stdout": "longform knowledge-scope fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/projection_health_fixtures.py",
+      "exit_code": 0,
+      "stdout": "projection health fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/range_patch_fixtures.py",
+      "exit_code": 0,
+      "stdout": "range patch fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/reversible_patch_fixtures.py",
+      "exit_code": 0,
+      "stdout": "reversible patch fixtures passed: 2 restored\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/runtime_continuity_fixtures.py",
+      "exit_code": 0,
+      "stdout": "runtime continuity fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/schema_negative_fixtures.py",
+      "exit_code": 0,
+      "stdout": "schema regression fixtures passed: scope, append-only, canon evidence, export confirmation, migration ledger\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/search_fixtures.py",
+      "exit_code": 0,
+      "stdout": "search fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/story_structure_fixtures.py",
+      "exit_code": 0,
+      "stdout": "story structure fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/stream_resume_fixtures.py",
+      "exit_code": 0,
+      "stdout": "stream resume fixtures: ok\n",
+      "stderr": ""
+    },
+    {
+      "file": "tests/strict_feature_fixtures.py",
+      "exit_code": 0,
+      "stdout": "strict feature fixtures: ok\n",
+      "stderr": ""
+    }
+  ],
+  "fixed_evaluation": {
+    "exit_code": 1,
+    "stdout": ", \"corrupt_import_acceptance_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"freshness_p50_ms\": {\"actual\": 2000.0, \"passed\": true, \"rule\": {\"max\": 5000}, \"status\": \"pass\"}, \"freshness_p95_ms\": {\"actual\": 5600.0, \"passed\": true, \"rule\": {\"max\": 30000}, \"status\": \"pass\"}, \"recovery_success_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"reversible_patch_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"rpo_p95_seconds\": {\"actual\": 117.0, \"passed\": true, \"rule\": {\"max\": 300}, \"status\": \"pass\"}, \"rto_p95_seconds\": {\"actual\": 585.0, \"passed\": true, \"rule\": {\"max\": 900}, \"status\": \"pass\"}, \"stale_citation_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"unsupported_canon_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}}, \"thresholds\": {\"branch_leakage\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"conflict_recall_hard\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 0.95}, \"status\": \"pass\"}, \"corrupt_import_acceptance_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"freshness_p50_ms\": {\"actual\": 2000.0, \"passed\": true, \"rule\": {\"max\": 5000}, \"status\": \"pass\"}, \"freshness_p95_ms\": {\"actual\": 5600.0, \"passed\": true, \"rule\": {\"max\": 30000}, \"status\": \"pass\"}, \"recovery_success_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"reversible_patch_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"rpo_p95_seconds\": {\"actual\": 117.0, \"passed\": true, \"rule\": {\"max\": 300}, \"status\": \"pass\"}, \"rto_p95_seconds\": {\"actual\": 585.0, \"passed\": true, \"rule\": {\"max\": 900}, \"status\": \"pass\"}, \"stale_citation_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"unsupported_canon_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}}, \"tolerance\": {\"epsilon\": 1e-09}}], \"passed\": false}\n",
+    "stderr": ""
+  },
+  "fixture_count": 19,
+  "all_contract_fixtures_passed": true
+}

@@ -1,0 +1,189 @@
+{
+  "created_at": "2026-10-13T05:30:42.022103+00:00",
+  "passed": false,
+  "scope": "Real browser under Python3.11.17/Node20.20.2 after runner timeout fix; preceding multiwindow case left desktop stale",
+  "results": {
+    "passed": false,
+    "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+    "cases": [
+      {
+        "name": "慢保存继续输入，新文字落库且版本连续推进",
+        "passed": true
+      },
+      {
+        "name": "断网不会假报已保存，恢复后保留并保存草稿",
+        "passed": true
+      },
+      {
+        "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+        "passed": true
+      },
+      {
+        "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+        "passed": true
+      },
+      {
+        "name": "emoji选区润色只替换选中范围",
+        "passed": true
+      },
+      {
+        "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+        "passed": true
+      },
+      {
+        "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+        "passed": true
+      },
+      {
+        "name": "结构候选更新场景计划并保持正文与作者决定",
+        "passed": true
+      },
+      {
+        "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+        "passed": true
+      },
+      {
+        "name": "长章无选区润色不会全文覆盖",
+        "passed": true
+      },
+      {
+        "name": "两窗口同句冲突展示双方并可手工合并",
+        "passed": true
+      },
+      {
+        "name": "拒绝记忆后新浏览器仍回读真实作品",
+        "passed": true
+      }
+    ],
+    "artifacts": "./.audit-cache/runtime-artifacts/moyu-browser-regression-hLOZbN",
+    "rounds": [
+      {
+        "round": 1,
+        "run_id": "airun_419c1ad9902e495db83a14b6c33aeadd",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 2,
+        "run_id": "airun_e6d07218c6614d7e929a084b9d48c983",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 3,
+        "run_id": "airun_6e4f3b92b146450c959873d46590cb34",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 4,
+        "run_id": "airun_fbcdbc733ce34a5a963eb94a81d7a4be",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 5,
+        "run_id": "airun_a849e7ee9c2c4706b93cbc539cb3e64a",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 6,
+        "run_id": "airun_378c64c6ae45463c9180cdd76d669b1c",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 7,
+        "run_id": "airun_d28e890ce0f64999a769dc12fbf771d4",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 8,
+        "run_id": "airun_8ebbd16ac2be467083e161535911f575",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 9,
+        "run_id": "airun_8e15b1df0ddf4f22bec26e3b7d9c6797",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 10,
+        "run_id": "airun_a864f9bfaaa44db49446a352679da2ca",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 11,
+        "run_id": "airun_1c912fcf8fad45f8a51915f463510166",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 12,
+        "run_id": "airun_6483f02a4855497699d8f197435ac579",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 13,
+        "run_id": "airun_8abf91bbb45b49058ae73bf42191aa92",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 14,
+        "run_id": "airun_ab617558985e4c9794474b02fa9d9b57",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 15,
+        "run_id": "airun_61421965e42042a79646ae9c0e3d974c",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 16,
+        "run_id": "airun_3cbff822cedd4f78857c019587849df4",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 17,
+        "run_id": "airun_b437ba160a094af5ba67a11cd08e0293",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 18,
+        "run_id": "airun_f54510f7bad749a0a66fb52e3541689c",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 19,
+        "run_id": "airun_e50b7d28cb3a40478ef29f43a49187c9",
+        "body_preserved": true,
+        "candidate_count": 1
+      },
+      {
+        "round": 20,
+        "run_id": "airun_6cb05da1387d493cb67ea22ba658fc08",
+        "body_preserved": true,
+        "candidate_count": 1
+      }
+    ],
+    "failure": {
+      "message": "page.waitForFunction: Timeout 15000ms exceeded.; save details: {\"backendOnline\":true,\"dirty\":true,\"syncInFlight\":false,\"saveError\":\"\",\"merge\":[{\"path\":\"chapters/ch_b849d5b3dd5248e886cedf763e11e1a4/body\",\"base\":\"本页把灯交给林岚。\",\"local\":\"林岚把红铜罗盘交给守灯人。\\n守灯人答应在子夜把罗盘送回渡口。\",\"remote\":\"合并：林岚先接过灯，再交给守门人。\"}],\"stateVersion\":131,\"confirmedVersion\":131,\"status\":\"有冲突，草稿已保留\"}",
+      "stack": "Error: page.waitForFunction: Timeout 15000ms exceeded.; save details: {\"backendOnline\":true,\"dirty\":true,\"syncInFlight\":false,\"saveError\":\"\",\"merge\":[{\"path\":\"chapters/ch_b849d5b3dd5248e886cedf763e11e1a4/body\",\"base\":\"本页把灯交给林岚。\",\"local\":\"林岚把红铜罗盘交给守灯人。\\n守灯人答应在子夜把罗盘送回渡口。\",\"remote\":\"合并：林岚先接过灯，再交给守门人。\"}],\"stateVersion\":131,\"confirmedVersion\":131,\"status\":\"有冲突，草稿已保留\"}\n    at waitSaved (./tests/frontend_browser_regressions.cjs:34:9)\n    at async ./tests/frontend_browser_regressions.cjs:266:58\n    at async test (./tests/frontend_browser_regressions.cjs:46:2)\n    at async main (./tests/frontend_browser_regressions.cjs:263:2)",
+      "server_log": "TP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/runs/airun_72edfb822cf14f7cb35372edb197b531/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"POST /api/ai/runs/airun_72edfb822cf14f7cb35372edb197b531/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/runs/airun_775882b99e634b848976387f4fe3308d/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"POST /api/ai/jobs/aijob_72bd244d6c75486cb4f68ad773d05811/cancel HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/runs/airun_775882b99e634b848976387f4fe3308d/stream?after_seq=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET / HTTP/1.1\" 304 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:52+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:53+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"PUT /api/state HTTP/1.1\" 409 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"POST /api/memory HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"PATCH /api/memory/browser_memory HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:54+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:55+00:00] \"PUT /api/state HTTP/1.1\" 409 -\n127.0.0.1 - - [2026-10-13T05:28:55+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:28:57+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:29:01+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:29:05+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T05:29:09+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n"
+    }
+  },
+  "source_artifact": "./.audit-cache/runtime-artifacts/moyu-browser-regression-hLOZbN/results.json",
+  "remote_paid_requests": 0
+}

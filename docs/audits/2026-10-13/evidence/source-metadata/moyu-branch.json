@@ -1,0 +1,107 @@
+{
+  "name": "main",
+  "commit": {
+    "sha": "62f1c66a7b16bb84f2940dc1af48e685aaf58818",
+    "node_id": "C_kwDOVGnD_toAKDYyZjFjNjZhN2IxNmJiODRmMjk0MGRjMWFmNDhlNjg1YWFmNTg4MTg",
+    "commit": {
+      "author": {
+        "name": "Jack Liu",
+        "email": "[redacted-email]",
+        "date": "2026-10-12T23:20:36Z"
+      },
+      "committer": {
+        "name": "Jack Liu",
+        "email": "[redacted-email]",
+        "date": "2026-10-12T23:20:36Z"
+      },
+      "message": "docs: align audit and CI with first-tier workflow",
+      "tree": {
+        "sha": "9b294843c1262fefe477473ac79e571ad407d5cd",
+        "url": "https://api.github.com/repos/z19910928-afk/neural-network-ai-creation/git/trees/9b294843c1262fefe477473ac79e571ad407d5cd"
+      },
+      "url": "https://api.github.com/repos/z19910928-afk/neural-network-ai-creation/git/commits/62f1c66a7b16bb84f2940dc1af48e685aaf58818",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/z19910928-afk/neural-network-ai-creation/commits/62f1c66a7b16bb84f2940dc1af48e685aaf58818",
+    "html_url": "https://github.com/z19910928-afk/neural-network-ai-creation/commit/62f1c66a7b16bb84f2940dc1af48e685aaf58818",
+    "comments_url": "https://api.github.com/repos/z19910928-afk/neural-network-ai-creation/commits/62f1c66a7b16bb84f2940dc1af48e685aaf58818/comments",
+    "author": {
+      "login": "zhao91928-star",
+      "id": 319286110,
+      "node_id": "U_kgDOEwfrXg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/319286110?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/zhao91928-star",
+      "html_url": "https://github.com/zhao91928-star",
+      "followers_url": "https://api.github.com/users/zhao91928-star/followers",
+      "following_url": "https://api.github.com/users/zhao91928-star/following{/other_user}",
+      "gists_url": "https://api.github.com/users/zhao91928-star/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/zhao91928-star/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/zhao91928-star/subscriptions",
+      "organizations_url": "https://api.github.com/users/zhao91928-star/orgs",
+      "repos_url": "https://api.github.com/users/zhao91928-star/repos",
+      "events_url": "https://api.github.com/users/zhao91928-star/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/zhao91928-star/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "zhao91928-star",
+      "id": 319286110,
+      "node_id": "U_kgDOEwfrXg",
+      "avatar_url": "https://avatars.githubusercontent.com/u/319286110?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/zhao91928-star",
+      "html_url": "https://github.com/zhao91928-star",
+      "followers_url": "https://api.github.com/users/zhao91928-star/followers",
+      "following_url": "https://api.github.com/users/zhao91928-star/following{/other_user}",
+      "gists_url": "https://api.github.com/users/zhao91928-star/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/zhao91928-star/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/zhao91928-star/subscriptions",
+      "organizations_url": "https://api.github.com/users/zhao91928-star/orgs",
+      "repos_url": "https://api.github.com/users/zhao91928-star/repos",
+      "events_url": "https://api.github.com/users/zhao91928-star/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/zhao91928-star/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "c48fc6e5266e7f11f16590f0457ed3dc7d5c343e",
+        "url": "https://api.github.com/repos/z19910928-afk/neural-network-ai-creation/commits/c48fc6e5266e7f11f16590f0457ed3dc7d5c343e",
+        "html_url": "https://github.com/z19910928-afk/neural-network-ai-creation/commit/c48fc6e5266e7f11f16590f0457ed3dc7d5c343e"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/z19910928-afk/neural-network-ai-creation/branches/main",
+    "html": "https://github.com/z19910928-afk/neural-network-ai-creation/tree/main"
+  },
+  "protected": false,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": [],
+      "checks": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/z19910928-afk/neural-network-ai-creation/branches/main/protection",
+  "archive_redaction": {
+    "original_artifact_sha256": "eea9556c814feba1952bba94ebc16cf2d99214083517a3dd9f3560cd22fd01a4",
+    "categories": [
+      "personal_email"
+    ],
+    "commit_ids_unchanged": true,
+    "public_bytes_are_original": false
+  }
+}

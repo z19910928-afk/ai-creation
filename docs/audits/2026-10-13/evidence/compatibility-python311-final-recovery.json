@@ -1,0 +1,35 @@
+{
+  "created_at": "2026-10-13T05:03:57.445075+00:00",
+  "scope": "Final audit consistency fix after full 37-check compatibility pass; no request payload changes",
+  "python": "3.11.17",
+  "prior_full_compatibility": "compatibility-python311-node20-nonbrowser.json",
+  "checks": [
+    {
+      "command": [
+        "-m",
+        "py_compile",
+        "scripts/literary_evaluation.py",
+        "tests/literary_evaluation_fixtures.py"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 0.03,
+      "output": ""
+    },
+    {
+      "command": [
+        "tests/literary_evaluation_fixtures.py"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "seconds": 0.913,
+      "output": "test_abrupt_exit_after_dispatch_recovers_unknown_with_checkpoint_and_no_retry (__main__.EvaluationTests.test_abrupt_exit_after_dispatch_recovers_unknown_with_checkpoint_and_no_retry) ... ok\ntest_blinding_is_deterministic_and_does_not_expose_arm_or_model_ids (__main__.EvaluationTests.test_blinding_is_deterministic_and_does_not_expose_arm_or_model_ids) ... ok\ntest_changed_endpoint_cannot_dispatch_frozen_request (__main__.EvaluationTests.test_changed_endpoint_cannot_dispatch_frozen_request) ... ok\ntest_complete_ledger_recovers_reserved_sample_without_losing_known_usage (__main__.EvaluationTests.test_complete_ledger_recovers_reserved_sample_without_losing_known_usage) ... ok\ntest_complete_sample_recovers_reserved_ledger_and_preserves_sample_bytes (__main__.EvaluationTests.test_complete_sample_recovers_reserved_ledger_and_preserves_sample_bytes) ... ok\ntest_complete_two_order_pilot_still_requires_actual_author_efficiency (__main__.EvaluationTests.test_complete_two_order_pilot_still_requires_actual_author_efficiency) ... ok\ntest_dispatch_ledger_before_sample_write_recovers_consistent_audits (__main__.EvaluationTests.test_dispatch_ledger_before_sample_write_recovers_consistent_audits) ... ok\ntest_dispatch_marks_ledger_and_sample_before_provider_result (__main__.EvaluationTests.test_dispatch_marks_ledger_and_sample_before_provider_result) ... ok\ntest_generation_roundtrip_preserves_actual_request_bytes_and_never_retries (__main__.EvaluationTests.test_generation_roundtrip_preserves_actual_request_bytes_and_never_retries) ... ok\ntest_grade_count_cannot_replace_missing_pair_coverage (__main__.EvaluationTests.test_grade_count_cannot_replace_missing_pair_coverage) ... ok\ntest_interrupt_after_dispatch_preserves_known_send_marker (__main__.EvaluationTests.test_interrupt_after_dispatch_preserves_known_send_marker) ... ok\ntest_invalid_quote_is_rejected_and_cannot_count_toward_complete_evidence (__main__.EvaluationTests.test_invalid_quote_is_rejected_and_cannot_count_toward_complete_evidence) ... ok\ntest_judge_interrupt_during_final_save_preserves_grade_and_usage (__main__.EvaluationTests.test_judge_interrupt_during_final_save_preserves_grade_and_usage) ... ok\ntest_keyboard_interrupt_finishes_reserved_record_as_unknown_without_retry (__main__.EvaluationTests.test_keyboard_interrupt_finishes_reserved_record_as_unknown_without_retry) ... ok\ntest_ledger_unknown_request_still_consumes_request_budget_and_cannot_repeat (__main__.EvaluationTests.test_ledger_unknown_request_still_consumes_request_budget_and_cannot_repeat) ... ok\ntest_material_preserves_full_body_and_exact_source_range (__main__.EvaluationTests.test_material_preserves_full_body_and_exact_source_range) ... ok\ntest_no_grades_cannot_be_claimed_as_complete_or_first_tier (__main__.EvaluationTests.test_no_grades_cannot_be_claimed_as_complete_or_first_tier) ... ok\ntest_old_reserved_without_dispatch_marker_is_preserved (__main__.EvaluationTests.test_old_reserved_without_dispatch_marker_is_preserved) ... ok\ntest_old_snapshot_calibration_is_only_allowed_without_execution_records (__main__.EvaluationTests.test_old_snapshot_calibration_is_only_allowed_without_execution_records) ... ok\ntest_plan_rejects_boolean_limits_and_missing_rules (__main__.EvaluationTests.test_plan_rejects_boolean_limits_and_missing_rules) ... ok\ntest_report_revalidates_evidence_in_saved_complete_grades (__main__.EvaluationTests.test_report_revalidates_evidence_in_saved_complete_grades) ... ok\ntest_same_stream_setting_and_usage_request_apply_to_all_writer_arms (__main__.EvaluationTests.test_same_stream_setting_and_usage_request_apply_to_all_writer_arms) ... ok\ntest_self_grading_or_single_judge_is_rejected (__main__.EvaluationTests.test_self_grading_or_single_judge_is_rejected) ... ok\ntest_tampered_frozen_request_is_rejected_before_dispatch (__main__.EvaluationTests.test_tampered_frozen_request_is_rejected_before_dispatch) ... ok\ntest_two_new_request_limit_pauses_and_resume_uses_only_new_ids (__main__.EvaluationTests.test_two_new_request_limit_pauses_and_resume_uses_only_new_ids) ... ok\ntest_two_unknown_failures_stop_without_reserving_or_dispatching_a_third (__main__.EvaluationTests.test_two_unknown_failures_stop_without_reserving_or_dispatching_a_third) ... ok\ntest_writer_interrupt_during_final_ledger_save_preserves_complete_response (__main__.EvaluationTests.test_writer_interrupt_during_final_ledger_save_preserves_complete_response) ... ok\ntest_wrong_saved_request_hash_refuses_recovery_and_preserves_checkpoint (__main__.EvaluationTests.test_wrong_saved_request_hash_refuses_recovery_and_preserves_checkpoint) ... ok\n\n----------------------------------------------------------------------\nRan 28 tests in 0.865s\n\nOK\n"
+    }
+  ],
+  "passed": true,
+  "source_files_sha256": {
+    "moyu_provider.py": "e807b7d0430468384c726887edeb4cc01ec315eb6fee88f58dc14d36fd14d2e4",
+    "scripts/literary_evaluation.py": "15ce7285cd08d1670dc35d7f604cb329d291f4fc53cea84ae0b4c9f20e340adb",
+    "tests/literary_evaluation_fixtures.py": "d97d6a9aead4e5097830b3d51db2dbd5a633b2c4f27cee5fb5305559a2af4be3"
+  }
+}

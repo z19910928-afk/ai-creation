@@ -8,6 +8,7 @@ import socket
 import subprocess
 import tempfile
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
@@ -26,8 +27,12 @@ def main() -> None:
             except Exception: time.sleep(.05)
         def call(path: str, method: str = "GET", payload: dict | None = None, statuses=(200, 201)) -> dict:
             req = urllib.request.Request(base + path, method=method, data=json.dumps(payload).encode() if payload else None, headers={"Content-Type": "application/json"})
-            with urllib.request.urlopen(req, timeout=3) as response:
-                assert response.status in statuses
+            try:
+                with urllib.request.urlopen(req, timeout=3) as response:
+                    assert response.status in statuses
+                    return json.load(response)
+            except urllib.error.HTTPError as response:
+                assert response.code in statuses
                 return json.load(response)
         state = call("/api/state"); first, second = state["records"][:2]
         relation = call("/api/relationships", "POST", {"from_entity_id": first["id"], "to_entity_id": second["id"], "relation_type": "盟友"})
@@ -36,7 +41,16 @@ def main() -> None:
         link = call("/api/foreshadow-links", "POST", {"plot_id": plot["id"], "chapter_id": state["chapters"][0]["id"], "kind": "plant"})
         call(f"/api/relationships/{relation['id']}", "PATCH", {"relation_type": "敌对", "note": "利益冲突"})
         call(f"/api/timeline/{event['id']}", "PATCH", {"title": "首次相遇（修订）", "status": "canon"})
-        call(f"/api/foreshadow-links/{link['id']}", "PATCH", {"kind": "develop", "note": "逐步加强"})
+        call(f"/api/foreshadow-links/{link['id']}", "PATCH",
+             {"kind": "develop", "note": "逐步加强"}, statuses=(400,))
+        unchanged = call("/api/story-map")
+        assert unchanged["foreshadowing"][0]["kind"] == "plant"
+        chapter = call(f"/api/chapters/{state['chapters'][0]['id']}", "PATCH",
+                       {"body": "钟声第二次响起，林岚认出那是旧码头的信号。"})
+        call(f"/api/foreshadow-links/{link['id']}", "PATCH",
+             {"kind": "develop", "note": "逐步加强",
+              "source_quote": chapter["body"],
+              "source_start": 0, "source_end": len(chapter["body"])})
         structure = call("/api/story-map")
         assert structure["relationships"][0]["relation_type"] == "敌对"
         assert structure["timeline"][0]["title"] == "首次相遇（修订）"

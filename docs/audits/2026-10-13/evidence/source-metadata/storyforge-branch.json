@@ -1,0 +1,115 @@
+{
+  "name": "main",
+  "commit": {
+    "sha": "83ad0231c7ab85f1b9725940861899b07a7d69b1",
+    "node_id": "C_kwDOSBdXmdoAKDgzYWQwMjMxYzdhYjg1ZjFiOTcyNTk0MDg2MTg5OWIwN2E3ZDY5YjE",
+    "commit": {
+      "author": {
+        "name": "yuanbw2025",
+        "email": "[redacted-email]",
+        "date": "2026-10-12T12:52:49Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "[redacted-email]",
+        "date": "2026-10-12T12:52:49Z"
+      },
+      "message": "Merge pull request #122 from yuanbw2025/feat/website-experience-20261012\n\n官网提供真实 StoryForge 界面体验并关闭 AI 调用",
+      "tree": {
+        "sha": "7529c5a7af79c63958199ab7e3b1f151064cbb9f",
+        "url": "https://api.github.com/repos/yuanbw2025/storyforge/git/trees/7529c5a7af79c63958199ab7e3b1f151064cbb9f"
+      },
+      "url": "https://api.github.com/repos/yuanbw2025/storyforge/git/commits/83ad0231c7ab85f1b9725940861899b07a7d69b1",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "public_archive_redacted",
+        "signature": null,
+        "payload": "tree 7529c5a7af79c63958199ab7e3b1f151064cbb9f\nparent 188ca03bcd9a06cd052fa04ed9cf7f929dd5b4b5\nparent e74ce419942f2f5c5b537c33be8433e9c55f8fce\nauthor yuanbw2025 <[redacted-email]> 1791809569 +0800\ncommitter GitHub <[redacted-email]> 1791809569 +0800\n\nMerge pull request #122 from yuanbw2025/feat/website-experience-20261012\n\n官网提供真实 StoryForge 界面体验并关闭 AI 调用",
+        "verified_at": "2026-10-12T12:52:50Z",
+        "original_verified": true,
+        "original_reason": "valid"
+      }
+    },
+    "url": "https://api.github.com/repos/yuanbw2025/storyforge/commits/83ad0231c7ab85f1b9725940861899b07a7d69b1",
+    "html_url": "https://github.com/yuanbw2025/storyforge/commit/83ad0231c7ab85f1b9725940861899b07a7d69b1",
+    "comments_url": "https://api.github.com/repos/yuanbw2025/storyforge/commits/83ad0231c7ab85f1b9725940861899b07a7d69b1/comments",
+    "author": {
+      "login": "yuanbw2025",
+      "id": 251321267,
+      "node_id": "U_kgDODvrbsw",
+      "avatar_url": "https://avatars.githubusercontent.com/u/251321267?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/yuanbw2025",
+      "html_url": "https://github.com/yuanbw2025",
+      "followers_url": "https://api.github.com/users/yuanbw2025/followers",
+      "following_url": "https://api.github.com/users/yuanbw2025/following{/other_user}",
+      "gists_url": "https://api.github.com/users/yuanbw2025/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/yuanbw2025/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/yuanbw2025/subscriptions",
+      "organizations_url": "https://api.github.com/users/yuanbw2025/orgs",
+      "repos_url": "https://api.github.com/users/yuanbw2025/repos",
+      "events_url": "https://api.github.com/users/yuanbw2025/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/yuanbw2025/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "188ca03bcd9a06cd052fa04ed9cf7f929dd5b4b5",
+        "url": "https://api.github.com/repos/yuanbw2025/storyforge/commits/188ca03bcd9a06cd052fa04ed9cf7f929dd5b4b5",
+        "html_url": "https://github.com/yuanbw2025/storyforge/commit/188ca03bcd9a06cd052fa04ed9cf7f929dd5b4b5"
+      },
+      {
+        "sha": "e74ce419942f2f5c5b537c33be8433e9c55f8fce",
+        "url": "https://api.github.com/repos/yuanbw2025/storyforge/commits/e74ce419942f2f5c5b537c33be8433e9c55f8fce",
+        "html_url": "https://github.com/yuanbw2025/storyforge/commit/e74ce419942f2f5c5b537c33be8433e9c55f8fce"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/yuanbw2025/storyforge/branches/main",
+    "html": "https://github.com/yuanbw2025/storyforge/tree/main"
+  },
+  "protected": false,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": [],
+      "checks": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/yuanbw2025/storyforge/branches/main/protection",
+  "archive_redaction": {
+    "original_artifact_sha256": "55f989182acd395e748028dea93e779ca23759cee46857c5b01fc78680c53688",
+    "categories": [
+      "personal_email",
+      "signed_payload_not_publicly_verifiable"
+    ],
+    "commit_ids_unchanged": true,
+    "public_bytes_are_original": false
+  }
+}

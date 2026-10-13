@@ -1,0 +1,17 @@
+{
+  "created_at": "2026-10-13T13:43:36.304657+00:00",
+  "plan_sha256": "05cf942777edfaac3379a0a85ba0ec7506c9b075aac6f525fe29125d32f173fa",
+  "protocol": "moyu-literary-v1",
+  "request_freeze_policy": "使用首次固定的实际请求；源码指纹只用于审计。",
+  "request_identity_policy": "对外请求身份由独立运行身份、请求用途和本地记录身份共同固定。",
+  "run_id": "0131454c3fbc4f09ae0aaabc1f3c16d6",
+  "source_files_sha256": {
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_output.py": "65dd8b2b21cffb8d2f3e1470353e2a12deaef6fde83e70ea3d70821c53899329",
+    "moyu_provider.py": "0643b5f8c7dbf870f39af052eebe81f275a8dad3efd837e5e90509a5ea8c04a8",
+    "scripts/literary_evaluation.py": "2525abc16d325213e0b2734c8ea09d20f7e73d0d1bb61574130cb7fd1f73a6b9",
+    "server.py": "5a60a91c17a0572037050833a4882fc4ff30eda88c0146dd5d9668dfa3200c00"
+  },
+  "writer_model": "deepseek-v4-pro-0813",
+  "writer_requests_sha256": "968165e950f3a311ae83d00db6dfda84f9e4cd0320e5eb74309eab1db50d8291"
+}

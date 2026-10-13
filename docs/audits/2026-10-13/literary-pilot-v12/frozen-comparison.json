@@ -1,0 +1,57 @@
+{
+  "checkedAt": "2026-10-13T16:09:14.826Z",
+  "comparedRun": "literary-pilot-v11",
+  "baselineBodyBytesUnchanged": true,
+  "sharedUserAndMaterialsUnchanged": true,
+  "moyuOnlyChangedSystemSentence": true,
+  "changes": [
+    {
+      "id": "mystery-tide--baseline",
+      "baselineBodyUnchanged": true,
+      "userUnchanged": true,
+      "onlyAllowedSentence": true,
+      "contextUnchanged": true,
+      "endpointUnchanged": true
+    },
+    {
+      "id": "mystery-tide--moyu",
+      "baselineBodyUnchanged": null,
+      "userUnchanged": true,
+      "onlyAllowedSentence": true,
+      "contextUnchanged": true,
+      "endpointUnchanged": true
+    },
+    {
+      "id": "romance-ticket--baseline",
+      "baselineBodyUnchanged": true,
+      "userUnchanged": true,
+      "onlyAllowedSentence": true,
+      "contextUnchanged": true,
+      "endpointUnchanged": true
+    },
+    {
+      "id": "romance-ticket--moyu",
+      "baselineBodyUnchanged": null,
+      "userUnchanged": true,
+      "onlyAllowedSentence": true,
+      "contextUnchanged": true,
+      "endpointUnchanged": true
+    },
+    {
+      "id": "science-airlock--baseline",
+      "baselineBodyUnchanged": true,
+      "userUnchanged": true,
+      "onlyAllowedSentence": true,
+      "contextUnchanged": true,
+      "endpointUnchanged": true
+    },
+    {
+      "id": "science-airlock--moyu",
+      "baselineBodyUnchanged": null,
+      "userUnchanged": true,
+      "onlyAllowedSentence": true,
+      "contextUnchanged": true,
+      "endpointUnchanged": true
+    }
+  ]
+}

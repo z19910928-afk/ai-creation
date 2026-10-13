@@ -1,0 +1,325 @@
+{
+  "created_at": "2026-10-13T06:13:44.011293+00:00",
+  "scope": "Python3.11/Node20 after metadata/DOM invalidation and nested secret-key fixes; macOS arm64; isolated databases and free local providers",
+  "python": "Python 3.11.17",
+  "node": "v20.20.2",
+  "remote_ci_executed": false,
+  "checks": [
+    {
+      "name": "Python syntax: all application/scripts/tests",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.118
+    },
+    {
+      "name": "tests/ai_contract_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.316,
+      "output_tail": "AI contract fixtures: ok\n"
+    },
+    {
+      "name": "tests/ai_queue_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.28,
+      "output_tail": "AI queue fixtures: ok\n"
+    },
+    {
+      "name": "tests/assertion_workflow_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.223,
+      "output_tail": "assertion workflow fixtures: ok\n"
+    },
+    {
+      "name": "tests/backup_recovery_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.036,
+      "output_tail": "backup/recovery fixtures passed: online backup, digest, corruption rejection, restore, generic drill, RPO/RTO\n"
+    },
+    {
+      "name": "tests/branch_cas_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.196,
+      "output_tail": "branch CAS fixtures: ok\n"
+    },
+    {
+      "name": "tests/chapter_analysis_workflow_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.036,
+      "output_tail": "test_accepting_review_does_not_claim_fix_and_empty_report_is_unverified (__main__.AnalysisWorkflowTests.test_accepting_review_does_not_claim_fix_and_empty_report_is_unverified) ... ok\ntest_caller_rollback_remains_in_control_after_decision (__main__.AnalysisWorkflowTests.test_caller_rollback_remains_in_control_after_decision) ... ok\ntest_edit_invalidates_automatic_summary_but_preserves_author_changes (__main__.AnalysisWorkflowTests.test_edit_invalidates_automatic_summary_but_preserves_author_changes) ... ok\ntest_edited_candidate_cannot_replace_its_original_quote (__main__.AnalysisWorkflowTests.test_edited_candidate_cannot_replace_its_original_quote) ... ok\ntest_evidence_review_decisions_and_stale_prior_chapter (__main__.AnalysisWorkflowTests.test_evidence_review_decisions_and_stale_prior_chapter) ... ok\ntest_late_analysis_and_old_confirmation_cannot_change_new_manuscript (__main__.AnalysisWorkflowTests.test_late_analysis_and_old_confirmation_cannot_change_new_manuscript) ... ok\ntest_mixed_callback_failure_rolls_back_all_candidates (__main__.AnalysisWorkflowTests.test_mixed_callback_failure_rolls_back_all_candidates) ... ok\ntest_model_review_can_only_quote_actual_sent_passage (__main__.AnalysisWorkflowTests.test_model_review_can_only_quote_actual_sent_passage) ... ok\ntest_same_revision_generation_and_decision_retry_are_idempotent (__main__.AnalysisWorkflowTests.test_same_revision_generation_and_decision_retry_are_idempotent) ... ok\ntest_saved_normal_prose_and_confirmed_handoff (__main__.AnalysisWorkflowTests.test_saved_normal_prose_and_confirmed_handoff) ... ok\ntest_scope_and_deleted_source_are_checked (__main__.AnalysisWorkflowTests.test_scope_and_deleted_source_are_checked) ... ok\ntest_unresolved_character_candidate_can_be_rejected_without_canon_write (__main__.AnalysisWorkflowTests.test_unresolved_character_candidate_can_be_rejected_without_canon_write) ... ok\ntest_unresolved_character_knowledge_requires_resolution_before_confirmation (__main__.AnalysisWorkflowTests.test_unresolved_character_knowledge_requires_resolution_before_confirmation) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 0.008s\n\nOK\n",
+      "unittest_count": 13
+    },
+    {
+      "name": "tests/chapter_commit_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.186,
+      "output_tail": "chapter commit fixtures: ok\n"
+    },
+    {
+      "name": "tests/character_state_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.19,
+      "output_tail": "character state fixtures: ok\n"
+    },
+    {
+      "name": "tests/context_http_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 4.802,
+      "output_tail": ": 4,\n              \"actual_total_chapter_passages_sent\": 4,\n              \"context_utf8_bytes\": 20003,\n              \"actual_material_utf8_bytes\": 20003,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.130231\n            },\n            {\n              \"query\": \"阿岚要兑现把红铜罗盘交给塔伯的约定。\",\n              \"gold_chapter\": 13,\n              \"gold_quote_hash\": \"6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60\",\n              \"rank_in_sent_packet\": 1,\n              \"actual_ranked_passages_sent\": 4,\n              \"actual_total_chapter_passages_sent\": 4,\n              \"context_utf8_bytes\": 18772,\n              \"actual_material_utf8_bytes\": 18772,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.126099\n            },\n            {\n              \"query\": \"这次开门仍要照门闩向外提两寸再向右转的办法。\",\n              \"gold_chapter\": 15,\n              \"gold_quote_hash\": \"3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a\",\n              \"rank_in_sent_packet\": 1,\n              \"actual_ranked_passages_sent\": 5,\n              \"actual_total_chapter_passages_sent\": 5,\n              \"context_utf8_bytes\": 19787,\n              \"actual_material_utf8_bytes\": 19787,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.129225\n            }\n          ]\n        },\n        \"10\": {\n          \"recall\": 1.0,\n          \"gold_passages\": 5,\n          \"missed_passages\": [],\n          \"citation_accuracy\": 1.0,\n          \"citation_count\": 23,\n          \"correct_citations\": 23,\n          \"illegal_materials\": 0,\n          \"end_to_end_simulated_provider_seconds\": {\n            \"p50\": 0.129628,\n            \"p95\": 0.132455,\n            \"min\": 0.127053,\n            \"max\": 0.132455,\n            \"samples\": [\n              0.131983,\n              0.129628,\n              0.132455,\n              0.128494,\n              0.127053\n            ]\n          },\n          \"observations\": [\n            {\n              \"query\": \"让林岚检查袖口的冷灰药粉是否还能使用。\",\n              \"gold_chapter\": 3,\n              \"gold_quote_hash\": \"4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe\",\n              \"rank_in_sent_packet\": 1,\n              \"actual_ranked_passages_sent\": 5,\n              \"actual_total_chapter_passages_sent\": 5,\n              \"context_utf8_bytes\": 20104,\n              \"actual_material_utf8_bytes\": 20104,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.131983\n            },\n            {\n              \"query\": \"寻找月牙密钥，记住它藏在什么地方。\",\n              \"gold_chapter\": 7,\n              \"gold_quote_hash\": \"7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342\",\n              \"rank_in_sent_packet\": 1,\n              \"actual_ranked_passages_sent\": 5,\n              \"actual_total_chapter_passages_sent\": 5,\n              \"context_utf8_bytes\": 20099,\n              \"actual_material_utf8_bytes\": 20099,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.129628\n            },\n            {\n              \"query\": \"让林岚再次抬起左肩时想起渡桥留下的伤。\",\n              \"gold_chapter\": 9,\n              \"gold_quote_hash\": \"a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a\",\n              \"rank_in_sent_packet\": 1,\n              \"actual_ranked_passages_sent\": 4,\n              \"actual_total_chapter_passages_sent\": 4,\n              \"context_utf8_bytes\": 20429,\n              \"actual_material_utf8_bytes\": 20429,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.132455\n            },\n            {\n              \"query\": \"阿岚要兑现把红铜罗盘交给塔伯的约定。\",\n              \"gold_chapter\": 13,\n              \"gold_quote_hash\": \"6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60\",\n              \"rank_in_sent_packet\": 1,\n              \"actual_ranked_passages_sent\": 4,\n              \"actual_total_chapter_passages_sent\": 4,\n              \"context_utf8_bytes\": 19198,\n              \"actual_material_utf8_bytes\": 19198,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.128494\n            },\n            {\n              \"query\": \"这次开门仍要照门闩向外提两寸再向右转的办法。\",\n              \"gold_chapter\": 15,\n              \"gold_quote_hash\": \"3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a\",\n              \"rank_in_sent_packet\": 1,\n              \"actual_ranked_passages_sent\": 5,\n              \"actual_total_chapter_passages_sent\": 5,\n              \"context_utf8_bytes\": 20213,\n              \"actual_material_utf8_bytes\": 20213,\n              \"context_budget_max\": 24000,\n              \"elapsed_seconds\": 0.127053\n            }\n          ]\n        }\n      }\n    }\n  ],\n  \"workflow_checks\": [\n    {\n      \"name\": \"body-only PATCH clears obsolete automatic summary and handoff\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"full-state PUT cannot restore obsolete generated fields\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"full-state PUT preserves simultaneous author handoff\",\n      \"passed\": true\n    }\n  ]\n}\n"
+    },
+    {
+      "name": "tests/context_pipeline_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 1.393,
+      "output_tail": "test_actual_30_100_300_chapter_retrieval (__main__.ContextPipelineTests.test_actual_30_100_300_chapter_retrieval) ... ok\ntest_body_scope_and_alias_ambiguity (__main__.ContextPipelineTests.test_body_scope_and_alias_ambiguity) ... ok\ntest_complete_and_selected_chapter_budget (__main__.ContextPipelineTests.test_complete_and_selected_chapter_budget) ... ok\ntest_instruction_changes_actual_ranked_material (__main__.ContextPipelineTests.test_instruction_changes_actual_ranked_material) ... ok\ntest_memory_revision_scope_and_evidence_are_checked (__main__.ContextPipelineTests.test_memory_revision_scope_and_evidence_are_checked) ... ok\ntest_ordinary_prose_analysis_dedup_and_staleness (__main__.ContextPipelineTests.test_ordinary_prose_analysis_dedup_and_staleness) ... ok\ntest_paragraph_chunks_do_not_change_source (__main__.ContextPipelineTests.test_paragraph_chunks_do_not_change_source) ... ok\ntest_semantic_review_requires_both_quotes_and_author_decision (__main__.ContextPipelineTests.test_semantic_review_requires_both_quotes_and_author_decision) ... ok\ntest_shared_search_scope (__main__.ContextPipelineTests.test_shared_search_scope) ... ok\ntest_small_budget_preserves_current_revision_and_exact_body (__main__.ContextPipelineTests.test_small_budget_preserves_current_revision_and_exact_body) ... ok\ntest_sources_reject_stale_wrong_and_ambiguous_quotes (__main__.ContextPipelineTests.test_sources_reject_stale_wrong_and_ambiguous_quotes) ... ok\ntest_story_time_belief_and_plans (__main__.ContextPipelineTests.test_story_time_belief_and_plans) ... ok\ntest_zero_limits_and_author_pinning (__main__.ContextPipelineTests.test_zero_limits_and_author_pinning) ... ok\n\n----------------------------------------------------------------------\nRan 13 tests in 1.330s\n\nOK\n{\n  \"benchmark\": [\n    {\n      \"chapters\": 30,\n      \"labelled_queries\": 5,\n      \"actual_passage_recall\": 1.0,\n      \"missed_passages\": [],\n      \"illegal_material_count\": 0,\n      \"illegal_materials\": [],\n      \"context_build_seconds\": [\n        0.0549,\n        0.0094,\n        0.0097,\n        0.0094,\n        0.0094\n      ],\n      \"scope\": \"actual assemble_context output after budget; local lexical retrieval; fixed synthetic prose; no model\"\n    },\n    {\n      \"chapters\": 100,\n      \"labelled_queries\": 5,\n      \"actual_passage_recall\": 1.0,\n      \"missed_passages\": [],\n      \"illegal_material_count\": 0,\n      \"illegal_materials\": [],\n      \"context_build_seconds\": [\n        0.1477,\n        0.0322,\n        0.0321,\n        0.0318,\n        0.0319\n      ],\n      \"scope\": \"actual assemble_context output after budget; local lexical retrieval; fixed synthetic prose; no model\"\n    },\n    {\n      \"chapters\": 300,\n      \"labelled_queries\": 5,\n      \"actual_passage_recall\": 1.0,\n      \"missed_passages\": [],\n      \"illegal_material_count\": 0,\n      \"illegal_materials\": [],\n      \"context_build_seconds\": [\n        0.4288,\n        0.0975,\n        0.1005,\n        0.099,\n        0.0987\n      ],\n      \"scope\": \"actual assemble_context output after budget; local lexical retrieval; fixed synthetic prose; no model\"\n    }\n  ],\n  \"passed\": true\n}\n",
+      "unittest_count": 13
+    },
+    {
+      "name": "tests/corrupt_import_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.014,
+      "output_tail": "corrupt import fixtures passed: 5 rejected\n"
+    },
+    {
+      "name": "tests/frontend_story_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.015,
+      "output_tail": "frontend story fixtures: ok\n"
+    },
+    {
+      "name": "tests/import_archive_lifecycle_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.766,
+      "output_tail": "127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/references/reference_44c70bf97ea44ba58256e01c0178bf68 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/references/reference_44c70bf97ea44ba58256e01c0178bf68/search?q=%E7%BA%A2%E9%93%9C%E7%BD%97%E7%9B%98 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/references/reference_44c70bf97ea44ba58256e01c0178bf68 HTTP/1.1\" 404 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/references/reference_44c70bf97ea44ba58256e01c0178bf68/search?q=%E7%BA%A2%E9%93%9C%E7%BD%97%E7%9B%98 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/references/reference_44c70bf97ea44ba58256e01c0178bf68 HTTP/1.1\" 404 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/references/reference_44c70bf97ea44ba58256e01c0178bf68/search?q=%E7%BA%A2%E9%93%9C%E7%BD%97%E7%9B%98 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/references HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"POST /api/import/apply HTTP/1.1\" 500 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:51+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/backups/backup_080bd28b2c284dee8c8ac43d9ab866e0/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/ai/queue/drain HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/ai/queue?status=queued HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/backups/backup_080bd28b2c284dee8c8ac43d9ab866e0/restore HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:13:52+00:00] \"GET /api/projects HTTP/1.1\" 200 -\nimport/archive HTTP lifecycle fixtures: ok\n"
+    },
+    {
+      "name": "tests/literary_evaluation_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.919,
+      "output_tail": "test_abrupt_exit_after_dispatch_recovers_unknown_with_checkpoint_and_no_retry (__main__.EvaluationTests.test_abrupt_exit_after_dispatch_recovers_unknown_with_checkpoint_and_no_retry) ... ok\ntest_blinding_is_deterministic_and_does_not_expose_arm_or_model_ids (__main__.EvaluationTests.test_blinding_is_deterministic_and_does_not_expose_arm_or_model_ids) ... ok\ntest_changed_endpoint_cannot_dispatch_frozen_request (__main__.EvaluationTests.test_changed_endpoint_cannot_dispatch_frozen_request) ... ok\ntest_complete_ledger_recovers_reserved_sample_without_losing_known_usage (__main__.EvaluationTests.test_complete_ledger_recovers_reserved_sample_without_losing_known_usage) ... ok\ntest_complete_sample_recovers_reserved_ledger_and_preserves_sample_bytes (__main__.EvaluationTests.test_complete_sample_recovers_reserved_ledger_and_preserves_sample_bytes) ... ok\ntest_complete_two_order_pilot_still_requires_actual_author_efficiency (__main__.EvaluationTests.test_complete_two_order_pilot_still_requires_actual_author_efficiency) ... ok\ntest_dispatch_ledger_before_sample_write_recovers_consistent_audits (__main__.EvaluationTests.test_dispatch_ledger_before_sample_write_recovers_consistent_audits) ... ok\ntest_dispatch_marks_ledger_and_sample_before_provider_result (__main__.EvaluationTests.test_dispatch_marks_ledger_and_sample_before_provider_result) ... ok\ntest_generation_roundtrip_preserves_actual_request_bytes_and_never_retries (__main__.EvaluationTests.test_generation_roundtrip_preserves_actual_request_bytes_and_never_retries) ... ok\ntest_grade_count_cannot_replace_missing_pair_coverage (__main__.EvaluationTests.test_grade_count_cannot_replace_missing_pair_coverage) ... ok\ntest_interrupt_after_dispatch_preserves_known_send_marker (__main__.EvaluationTests.test_interrupt_after_dispatch_preserves_known_send_marker) ... ok\ntest_interrupt_before_complete_response_preserves_received_usage_and_partial_text (__main__.EvaluationTests.test_interrupt_before_complete_response_preserves_received_usage_and_partial_text) ... ok\ntest_invalid_quote_is_rejected_and_cannot_count_toward_complete_evidence (__main__.EvaluationTests.test_invalid_quote_is_rejected_and_cannot_count_toward_complete_evidence) ... ok\ntest_judge_interrupt_during_final_save_preserves_grade_and_usage (__main__.EvaluationTests.test_judge_interrupt_during_final_save_preserves_grade_and_usage) ... ok\ntest_keyboard_interrupt_finishes_reserved_record_as_unknown_without_retry (__main__.EvaluationTests.test_keyboard_interrupt_finishes_reserved_record_as_unknown_without_retry) ... ok\ntest_ledger_unknown_request_still_consumes_request_budget_and_cannot_repeat (__main__.EvaluationTests.test_ledger_unknown_request_still_consumes_request_budget_and_cannot_repeat) ... ok\ntest_material_preserves_full_body_and_exact_source_range (__main__.EvaluationTests.test_material_preserves_full_body_and_exact_source_range) ... ok\ntest_no_grades_cannot_be_claimed_as_complete_or_first_tier (__main__.EvaluationTests.test_no_grades_cannot_be_claimed_as_complete_or_first_tier) ... ok\ntest_old_reserved_without_dispatch_marker_is_preserved (__main__.EvaluationTests.test_old_reserved_without_dispatch_marker_is_preserved) ... ok\ntest_old_snapshot_calibration_is_only_allowed_without_execution_records (__main__.EvaluationTests.test_old_snapshot_calibration_is_only_allowed_without_execution_records) ... ok\ntest_plan_rejects_boolean_limits_and_missing_rules (__main__.EvaluationTests.test_plan_rejects_boolean_limits_and_missing_rules) ... ok\ntest_report_revalidates_evidence_in_saved_complete_grades (__main__.EvaluationTests.test_report_revalidates_evidence_in_saved_complete_grades) ... ok\ntest_same_stream_setting_and_usage_request_apply_to_all_writer_arms (__main__.EvaluationTests.test_same_stream_setting_and_usage_request_apply_to_all_writer_arms) ... ok\ntest_self_grading_or_single_judge_is_rejected (__main__.EvaluationTests.test_self_grading_or_single_judge_is_rejected) ... ok\ntest_tampered_frozen_request_is_rejected_before_dispatch (__main__.EvaluationTests.test_tampered_frozen_request_is_rejected_before_dispatch) ... ok\ntest_two_new_request_limit_pauses_and_resume_uses_only_new_ids (__main__.EvaluationTests.test_two_new_request_limit_pauses_and_resume_uses_only_new_ids) ... ok\ntest_two_unknown_failures_stop_without_reserving_or_dispatching_a_third (__main__.EvaluationTests.test_two_unknown_failures_stop_without_reserving_or_dispatching_a_third) ... ok\ntest_writer_interrupt_during_final_ledger_save_preserves_complete_response (__main__.EvaluationTests.test_writer_interrupt_during_final_ledger_save_preserves_complete_response) ... ok\ntest_wrong_saved_request_hash_refuses_recovery_and_preserves_checkpoint (__main__.EvaluationTests.test_wrong_saved_request_hash_refuses_recovery_and_preserves_checkpoint) ... ok\n\n----------------------------------------------------------------------\nRan 29 tests in 0.860s\n\nOK\n",
+      "unittest_count": 29
+    },
+    {
+      "name": "tests/longform_knowledge_scope_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.021,
+      "output_tail": "longform knowledge-scope fixtures: ok\n"
+    },
+    {
+      "name": "tests/manuscript_import_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.052,
+      "output_tail": "test_damaged_binary_empty_and_unsupported_files_are_rejected (__main__.ImportParsingTests.test_damaged_binary_empty_and_unsupported_files_are_rejected) ... ok\ntest_epub_duplicate_zip_members_and_crc_damage_are_rejected (__main__.ImportParsingTests.test_epub_duplicate_zip_members_and_crc_damage_are_rejected) ... ok\ntest_epub_inline_text_image_alt_and_empty_spine_item (__main__.ImportParsingTests.test_epub_inline_text_image_alt_and_empty_spine_item) ... ok\ntest_epub_traversal_entities_missing_member_and_remote_body_rejected (__main__.ImportParsingTests.test_epub_traversal_entities_missing_member_and_remote_body_rejected) ... ok\ntest_epub_two_public_doctype_is_local_and_entity_subset_is_rejected (__main__.ImportParsingTests.test_epub_two_public_doctype_is_local_and_entity_subset_is_rejected) ... ok\ntest_epub_uses_spine_order_and_preserves_notes_and_duplicate_titles (__main__.ImportParsingTests.test_epub_uses_spine_order_and_preserves_notes_and_duplicate_titles) ... ok\ntest_extreme_single_chapter_splits_without_loss (__main__.ImportParsingTests.test_extreme_single_chapter_splits_without_loss) ... ok\ntest_gb18030_and_utf8_bom_preserve_every_codepoint (__main__.ImportParsingTests.test_gb18030_and_utf8_bom_preserve_every_codepoint) ... ok\ntest_markdown_title_preface_and_fenced_pseudo_headings (__main__.ImportParsingTests.test_markdown_title_preface_and_fenced_pseudo_headings) ... ok\ntest_no_heading_is_one_exact_chapter (__main__.ImportParsingTests.test_no_heading_is_one_exact_chapter) ... ok\ntest_split_and_merge_preview_only_changes_boundaries_and_titles (__main__.ImportParsingTests.test_split_and_merge_preview_only_changes_boundaries_and_titles) ... ok\ntest_utf8_short_preface_duplicate_and_empty_chapter_are_retained (__main__.ImportParsingTests.test_utf8_short_preface_duplicate_and_empty_chapter_are_retained) ... ok\ntest_epub_original_bytes_and_format_losses_survive_archive (__main__.ReferenceWorkflowTests.test_epub_original_bytes_and_format_losses_survive_archive) ... ok\ntest_original_archive_is_exact_private_and_rollbackable (__main__.ReferenceWorkflowTests.test_original_archive_is_exact_private_and_rollbackable) ... ok\ntest_reference_exact_provenance_idempotency_and_search_scope (__main__.ReferenceWorkflowTests.test_reference_exact_provenance_idempotency_and_search_scope) ... ok\ntest_reference_search_reports_a_bounded_complete_section_subset (__main__.ReferenceWorkflowTests.test_reference_search_reports_a_bounded_complete_section_subset) ... ok\ntest_reference_write_caller_rollback_and_source_mismatch (__main__.ReferenceWorkflowTests.test_reference_write_caller_rollback_and_source_mismatch) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.011s\n\nOK\n",
+      "unittest_count": 17
+    },
+    {
+      "name": "tests/projection_health_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.184,
+      "output_tail": "projection health fixtures: ok\n"
+    },
+    {
+      "name": "tests/provider_protocol_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 2.965,
+      "output_tail": "test_bounded_protocol_observation_retains_failure_at_stream_tail (__main__.ProtocolTests.test_bounded_protocol_observation_retains_failure_at_stream_tail) ... ok\ntest_cancel_after_dispatch_intent_has_consistent_not_sent_result (__main__.ProtocolTests.test_cancel_after_dispatch_intent_has_consistent_not_sent_result) ... ok\ntest_cancel_before_dispatch_has_no_call (__main__.ProtocolTests.test_cancel_before_dispatch_has_no_call) ... ok\ntest_cancel_closes_reading_connection_and_marks_unknown_billing (__main__.ProtocolTests.test_cancel_closes_reading_connection_and_marks_unknown_billing) ... ok\ntest_chunks_arrive_before_model_finishes (__main__.ProtocolTests.test_chunks_arrive_before_model_finishes) ... ok\ntest_dispatch_audit_runs_before_http_request (__main__.ProtocolTests.test_dispatch_audit_runs_before_http_request) ... ok\ntest_empty_key_does_not_change_any_text (__main__.ProtocolTests.test_empty_key_does_not_change_any_text) ... ok\ntest_eof_and_missing_finish_are_unknown (__main__.ProtocolTests.test_eof_and_missing_finish_are_unknown) ... ok\ntest_failed_chunk_persistence_stops_once (__main__.ProtocolTests.test_failed_chunk_persistence_stops_once) ... ok\ntest_failed_dispatch_persistence_prevents_http_request (__main__.ProtocolTests.test_failed_dispatch_persistence_prevents_http_request) ... ok\ntest_failure_does_not_expose_provider_error_body_or_secret (__main__.ProtocolTests.test_failure_does_not_expose_provider_error_body_or_secret) ... ok\ntest_filter_and_refusal_are_not_candidates (__main__.ProtocolTests.test_filter_and_refusal_are_not_candidates) ... ok\ntest_idle_and_total_deadline_stop_transport (__main__.ProtocolTests.test_idle_and_total_deadline_stop_transport) ... ok\ntest_interrupt_after_usage_keeps_partial_story_usage_and_protocol (__main__.ProtocolTests.test_interrupt_after_usage_keeps_partial_story_usage_and_protocol) ... ok\ntest_invalid_protocol_values_are_rejected (__main__.ProtocolTests.test_invalid_protocol_values_are_rejected) ... ok\ntest_length_with_done_is_not_complete (__main__.ProtocolTests.test_length_with_done_is_not_complete) ... ok\ntest_long_header_wait_and_json_thinking_use_total_deadline_not_stream_idle (__main__.ProtocolTests.test_long_header_wait_and_json_thinking_use_total_deadline_not_stream_idle) ... ok\ntest_multiline_heartbeats_and_reported_usage (__main__.ProtocolTests.test_multiline_heartbeats_and_reported_usage) ... ok\ntest_nonstream_finish_reason_and_stream_json_fallback (__main__.ProtocolTests.test_nonstream_finish_reason_and_stream_json_fallback) ... ok\ntest_reasoning_is_observed_without_becoming_story_or_saved_content (__main__.ProtocolTests.test_reasoning_is_observed_without_becoming_story_or_saved_content) ... ok\ntest_reasoning_only_empty_reply_retains_protocol_evidence (__main__.ProtocolTests.test_reasoning_only_empty_reply_retains_protocol_evidence) ... ok\ntest_redirect_is_not_followed (__main__.ProtocolTests.test_redirect_is_not_followed) ... ok\ntest_request_validation_prevents_malformed_calls (__main__.ProtocolTests.test_request_validation_prevents_malformed_calls) ... ok\ntest_response_size_is_bounded (__main__.ProtocolTests.test_response_size_is_bounded) ... ok\ntest_schema_accepts_valid_json_task (__main__.ProtocolTests.test_schema_accepts_valid_json_task) ... ok\ntest_secret_in_usage_field_names_is_redacted_recursively (__main__.ProtocolTests.test_secret_in_usage_field_names_is_redacted_recursively) ... ok\ntest_secret_redaction_spans_network_chunks (__main__.ProtocolTests.test_secret_redaction_spans_network_chunks) ... ok\ntest_timeout_cannot_automatically_retry (__main__.ProtocolTests.test_timeout_cannot_automatically_retry) ... ok\ntest_unknown_finish_keeps_redacted_raw_reason_and_field_shape (__main__.ProtocolTests.test_unknown_finish_keeps_redacted_raw_reason_and_field_shape) ... ok\ntest_wrong_structured_types_fail_and_keep_candidate (__main__.ProtocolTests.test_wrong_structured_types_fail_and_keep_candidate) ... ok\ntest_zero_temperature_purpose_model_and_exact_request_audit (__main__.ProtocolTests.test_zero_temperature_purpose_model_and_exact_request_audit) ... ok\n\n----------------------------------------------------------------------\nRan 31 tests in 2.901s\n\nOK\n",
+      "unittest_count": 31
+    },
+    {
+      "name": "tests/provider_queue_integration_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 5.315,
+      "output_tail": "test_chunks_persist_before_finish_without_blocking_other_writes (__main__.IntegrationTests.test_chunks_persist_before_finish_without_blocking_other_writes) ... ok\ntest_completed_request_audit_and_complete_backup_never_contain_credential (__main__.IntegrationTests.test_completed_request_audit_and_complete_backup_never_contain_credential) ... ok\ntest_configuration_change_during_probe_cannot_mark_new_settings_healthy (__main__.IntegrationTests.test_configuration_change_during_probe_cannot_mark_new_settings_healthy) ... ok\ntest_crash_recovery_keeps_unknown_charge_without_dispatch (__main__.IntegrationTests.test_crash_recovery_keeps_unknown_charge_without_dispatch) ... ok\ntest_credential_file_permission_must_be_private (__main__.IntegrationTests.test_credential_file_permission_must_be_private) ... ok\ntest_credential_in_usage_keys_cannot_reach_public_ledger_or_backup (__main__.IntegrationTests.test_credential_in_usage_keys_cannot_reach_public_ledger_or_backup) ... ok\ntest_database_rollback_preserves_previous_credential (__main__.IntegrationTests.test_database_rollback_preserves_previous_credential) ... ok\ntest_environment_credential_change_refuses_frozen_job (__main__.IntegrationTests.test_environment_credential_change_refuses_frozen_job) ... ok\ntest_eof_job_is_unknown_not_success_and_never_recovered_as_queued (__main__.IntegrationTests.test_eof_job_is_unknown_not_success_and_never_recovered_as_queued) ... ok\ntest_explicit_clear_remains_cleared_after_probe_with_environment_key (__main__.IntegrationTests.test_explicit_clear_remains_cleared_after_probe_with_environment_key) ... ok\ntest_failed_probe_records_safe_error_and_unknown_charge (__main__.IntegrationTests.test_failed_probe_records_safe_error_and_unknown_charge) ... ok\ntest_final_chunk_persistence_is_idempotent_with_exact_cumulative_hashes (__main__.IntegrationTests.test_final_chunk_persistence_is_idempotent_with_exact_cumulative_hashes) ... ok\ntest_incremental_local_chunk_hash_covers_preceding_chunks_and_rejects_gaps (__main__.IntegrationTests.test_incremental_local_chunk_hash_covers_preceding_chunks_and_rejects_gaps) ... ok\ntest_job_freezes_prompt_parameters_model_credential_and_source (__main__.IntegrationTests.test_job_freezes_prompt_parameters_model_credential_and_source) ... ok\ntest_job_refresh_reads_persisted_author_decision_after_accept_edit_and_undo (__main__.IntegrationTests.test_job_refresh_reads_persisted_author_decision_after_accept_edit_and_undo) ... ok\ntest_missing_frozen_credential_fails_before_dispatch_and_releases_quota (__main__.IntegrationTests.test_missing_frozen_credential_fails_before_dispatch_and_releases_quota) ... ok\ntest_model_change_invalidates_old_probe (__main__.IntegrationTests.test_model_change_invalidates_old_probe) ... ok\ntest_parallel_submission_cannot_over_reserve_quota_one (__main__.IntegrationTests.test_parallel_submission_cannot_over_reserve_quota_one) ... ok\ntest_probe_consumes_the_same_atomic_daily_quota (__main__.IntegrationTests.test_probe_consumes_the_same_atomic_daily_quota) ... ok\ntest_provider_concurrency_is_bounded_by_two (__main__.IntegrationTests.test_provider_concurrency_is_bounded_by_two) ... ok\ntest_queued_cancel_releases_reserved_budget (__main__.IntegrationTests.test_queued_cancel_releases_reserved_budget) ... ok\ntest_running_cancel_stops_transport_and_retains_partial_ledger (__main__.IntegrationTests.test_running_cancel_stops_transport_and_retains_partial_ledger) ... ok\ntest_settings_are_project_specific (__main__.IntegrationTests.test_settings_are_project_specific) ... ok\ntest_settings_do_not_put_secret_in_database_or_public_response (__main__.IntegrationTests.test_settings_do_not_put_secret_in_database_or_public_response) ... ok\ntest_wrong_structured_output_is_failed_with_safe_partial (__main__.IntegrationTests.test_wrong_structured_output_is_failed_with_safe_partial) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 5.229s\n\nOK\n",
+      "unittest_count": 25
+    },
+    {
+      "name": "tests/publication_assistant_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 1.318,
+      "output_tail": "test_assistant_query_is_read_only_for_every_tool (__main__.PublicationAssistantFixtures.test_assistant_query_is_read_only_for_every_tool) ... ok\ntest_assistant_token_confirmation_and_scope_guards (__main__.PublicationAssistantFixtures.test_assistant_token_confirmation_and_scope_guards) ... ok\ntest_backup_restore_and_duplicate_require_independent_credentials (__main__.PublicationAssistantFixtures.test_backup_restore_and_duplicate_require_independent_credentials) ... ok\ntest_confirm_once_preserves_manuscript_and_restored_jobs_are_independent (__main__.PublicationAssistantFixtures.test_confirm_once_preserves_manuscript_and_restored_jobs_are_independent) ... ok\ntest_epub_damage_rejected_and_third_party_losses_remain_explicit (__main__.PublicationAssistantFixtures.test_epub_damage_rejected_and_third_party_losses_remain_explicit) ... ok\ntest_publication_gate_review_and_stale_review (__main__.PublicationAssistantFixtures.test_publication_gate_review_and_stale_review) ... ok\ntest_publication_roundtrip_and_actual_import (__main__.PublicationAssistantFixtures.test_publication_roundtrip_and_actual_import) ... ok\ntest_source_bounds_types_empty_chapters_and_marker_damage (__main__.PublicationAssistantFixtures.test_source_bounds_types_empty_chapters_and_marker_damage) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 1.231s\n\nOK\n",
+      "unittest_count": 8
+    },
+    {
+      "name": "tests/range_patch_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.175,
+      "output_tail": "range patch fixtures: ok\n"
+    },
+    {
+      "name": "tests/reversible_patch_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.018,
+      "output_tail": "reversible patch fixtures passed: 2 restored\n"
+    },
+    {
+      "name": "tests/runtime_continuity_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.229,
+      "output_tail": "runtime continuity fixtures: ok\n"
+    },
+    {
+      "name": "tests/schema_negative_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.025,
+      "output_tail": "schema regression fixtures passed: scope, append-only, canon evidence, export confirmation, migration ledger\n"
+    },
+    {
+      "name": "tests/search_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.2,
+      "output_tail": "search fixtures: ok\n"
+    },
+    {
+      "name": "tests/story_structure_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.194,
+      "output_tail": "story structure fixtures: ok\n"
+    },
+    {
+      "name": "tests/stream_resume_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 1.192,
+      "output_tail": "stream resume fixtures: ok\n"
+    },
+    {
+      "name": "tests/strict_feature_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.357,
+      "output_tail": "strict feature fixtures: ok\n"
+    },
+    {
+      "name": "tests/workspace_workflow_fixtures.py",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.709,
+      "output_tail": "127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/ai HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/ai/runs/airun_4b409259e70f4ac89e2e3b6d3c78bc73/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/ai/runs/airun_4b409259e70f4ac89e2e3b6d3c78bc73/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/ai/runs/airun_4b409259e70f4ac89e2e3b6d3c78bc73/apply HTTP/1.1\" 409 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/ai/runs/airun_4b409259e70f4ac89e2e3b6d3c78bc73/apply HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/blueprint/materialize HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/blueprint/materialize HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/backups/backup_3bd76cffbb3b4f9d912a2eac63a0e3e2/restore HTTP/1.1\" 404 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/backups/backup_3bd76cffbb3b4f9d912a2eac63a0e3e2/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"PATCH /api/projects/book_62decfa7aa4d4aed95bcbabe25d84f1c HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"PATCH /api/projects/book_62decfa7aa4d4aed95bcbabe25d84f1c HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"POST /api/backups/backup_3bd76cffbb3b4f9d912a2eac63a0e3e2/restore HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-13T06:14:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\nworkspace HTTP workflows: ok\n"
+    },
+    {
+      "name": "Evaluation fixtures",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.148,
+      "output_tail": "count\": 3, \"hits\": 1, \"na_count\": 0, \"na_precision\": false, \"na_recall\": false, \"precision\": 1.0, \"recall\": 0.3333333333333333, \"returned_count\": 1, \"sample_count\": 3}, \"10\": {\"gold_count\": 3, \"hits\": 3, \"na_count\": 0, \"na_precision\": false, \"na_recall\": false, \"precision\": 0.75, \"recall\": 1.0, \"returned_count\": 4, \"sample_count\": 3}, \"5\": {\"gold_count\": 3, \"hits\": 3, \"na_count\": 0, \"na_precision\": false, \"na_recall\": false, \"precision\": 0.75, \"recall\": 1.0, \"returned_count\": 4, \"sample_count\": 3}}, \"freshness\": {\"p50_ms\": {\"na\": false, \"na_count\": 0, \"sample_count\": 3, \"status\": \"measured\", \"value\": 2000.0}, \"p95_ms\": {\"na\": false, \"na_count\": 0, \"sample_count\": 3, \"status\": \"measured\", \"value\": 5600.0}}, \"knowledge_scope\": {\"leakage_rate\": null, \"measured\": false, \"na\": true, \"precision\": null, \"recall\": null, \"required_count\": 0, \"returned_count\": 0, \"sample_count\": 0, \"violations\": []}, \"merge_f1\": {\"f1\": 1.0, \"hits\": 1, \"na\": false, \"precision\": 1.0, \"predicted_count\": 1, \"recall\": 1.0, \"sample_count\": 1}, \"precision_at_1\": 1.0, \"precision_at_10\": 0.75, \"precision_at_5\": 0.75, \"recall_at_1\": 0.3333333333333333, \"recall_at_10\": 1.0, \"recall_at_5\": 1.0, \"recovery\": {\"rpo_p50_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 90.0}, \"rpo_p95_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 117.0}, \"rto_p50_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 450.0}, \"rto_p95_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 585.0}, \"success_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 1.0}}, \"reversible_patch_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 1.0}, \"revision_distance\": {\"median\": 6.0, \"na\": false, \"p95\": 9.7, \"sample_count\": 4}, \"split_f1\": {\"f1\": 1.0, \"hits\": 1, \"na\": false, \"precision\": 1.0, \"predicted_count\": 1, \"recall\": 1.0, \"sample_count\": 1}, \"stale_citation_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 0.0}, \"unsupported_canon_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 1, \"status\": \"measured\", \"value\": 0.0}}, \"model\": \"fixture-model\", \"na_count\": 0, \"passed\": true, \"prompt_version\": \"eval-v1\", \"sample_count\": {\"citations\": 2, \"conflicts\": 2, \"corrupt_imports\": 2, \"evidence_gold\": 3, \"evidence_returned\": 4, \"facts\": 2, \"freshness\": 3, \"knowledge_claims\": 0, \"patches\": 2, \"recoveries\": 2, \"revisions\": 4}, \"samples\": {\"citations\": 2, \"conflicts\": 2, \"corrupt_imports\": 2, \"evidence_gold\": 3, \"evidence_returned\": 4, \"facts\": 2, \"freshness\": 3, \"knowledge_claims\": 0, \"patches\": 2, \"recoveries\": 2, \"revisions\": 4}, \"schema_version\": \"1.1\", \"seed\": 42, \"threshold_results\": {\"branch_leakage\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"conflict_recall_hard\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 0.95}, \"status\": \"pass\"}, \"corrupt_import_acceptance_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"freshness_p50_ms\": {\"actual\": 2000.0, \"passed\": true, \"rule\": {\"max\": 5000}, \"status\": \"pass\"}, \"freshness_p95_ms\": {\"actual\": 5600.0, \"passed\": true, \"rule\": {\"max\": 30000}, \"status\": \"pass\"}, \"recovery_success_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"reversible_patch_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"rpo_p95_seconds\": {\"actual\": 117.0, \"passed\": true, \"rule\": {\"max\": 300}, \"status\": \"pass\"}, \"rto_p95_seconds\": {\"actual\": 585.0, \"passed\": true, \"rule\": {\"max\": 900}, \"status\": \"pass\"}, \"stale_citation_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"unsupported_canon_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}}, \"thresholds\": {\"branch_leakage\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"conflict_recall_hard\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 0.95}, \"status\": \"pass\"}, \"corrupt_import_acceptance_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"freshness_p50_ms\": {\"actual\": 2000.0, \"passed\": true, \"rule\": {\"max\": 5000}, \"status\": \"pass\"}, \"freshness_p95_ms\": {\"actual\": 5600.0, \"passed\": true, \"rule\": {\"max\": 30000}, \"status\": \"pass\"}, \"recovery_success_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"reversible_patch_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"rpo_p95_seconds\": {\"actual\": 117.0, \"passed\": true, \"rule\": {\"max\": 300}, \"status\": \"pass\"}, \"rto_p95_seconds\": {\"actual\": 585.0, \"passed\": true, \"rule\": {\"max\": 900}, \"status\": \"pass\"}, \"stale_citation_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"unsupported_canon_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}}, \"tolerance\": {\"epsilon\": 1e-09}}], \"passed\": true}\n"
+    },
+    {
+      "name": "Node syntax: app.js",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.022
+    },
+    {
+      "name": "Node syntax: author-workspace.js",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.02
+    },
+    {
+      "name": "Node syntax: editor-sync.js",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.021
+    },
+    {
+      "name": "Node syntax: tests/editor_sync_fixtures.cjs",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.019
+    },
+    {
+      "name": "Node syntax: tests/frontend_browser_regressions.cjs",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.019
+    },
+    {
+      "name": "Editor merge regressions",
+      "exit_code": 0,
+      "passed": true,
+      "duration_seconds": 0.022,
+      "output_tail": "{\n  \"passed\": true,\n  \"cases\": [\n    \"保存回应推进版本，同时保留发送以后输入的新文字\",\n    \"独立记忆决定不阻止继续写正文\",\n    \"两窗口修改不同章节与新建章节可同时保留\",\n    \"中文及emoji非重叠改稿正确合并\",\n    \"同一句不同修改留下冲突，两份正文均可读\",\n    \"删除与另一窗口编辑不能静默丢失编辑\"\n  ]\n}\n"
+    }
+  ],
+  "source_sha256": {
+    "moyu_analysis.py": "fd667f9f085119f4fd7d936b7e552a5fc3f5f19d5bfa1764b17989be70d9e240",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "c6bbfe4efe865b3380119a1dca130fbf19efbb26781c651c32429d9d5d9ec7a5",
+    "moyu_context.py": "62e955a3286f6f4983bb011bb60a6be91142567bf252cce8b121a20479d8029e",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1",
+    "moyu_provider.py": "f9f864d552fa3ff1c10ac7bbd495b59032c29177d15d9bb5707f4aaadb4f2243",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_settings.py": "a9c4978ae72d0ff5400474ceabadf8be436a94785047b58f6c20a159b7a1e4a4",
+    "moyu_workspace.py": "2e478fb15e9f369e0d32f7f3fe7b02ef6e17a457e22577c3a091e07dc199d868",
+    "scripts/apply_migration.py": "dd05512dfa69d7c8331b82c52a9af146f13a3921e9309f8a9616ead834044f14",
+    "scripts/evaluation_runner.py": "f5db2131f5c233ea58ca499156a0c7b53843e6eb870927ca0b794521223798a5",
+    "scripts/literary_evaluation.py": "4198ae0409ed6c73e36a3936e9315243823e7a795c3f88489132c1fce4822a60",
+    "scripts/provider_shape_diagnostic.py": "9ee57e3d9c7bc22e3d97bbf974ae50654dcd30b2b08d966a909783c537bca23e",
+    "scripts/recovery_drill.py": "a4b567864328a35e1c2c94ecc97d9e4204bdc85e5b48e3339742f57ca8d0eadf",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "server.py": "868a2c0135fbe6a6482d1e64c1e162e46ab06aee5ff7a8c1837e6f64a4fcd6ab",
+    "tests/ai_contract_fixtures.py": "9ec454aaa2871e56e2f3a66d76b34b0e77bff35c4d47802e9cd842e4268da76a",
+    "tests/ai_queue_fixtures.py": "0b1980bc030cfcb26ef031920c8f5dc4356b8b252b04adb42ae4bc7db371bda5",
+    "tests/assertion_workflow_fixtures.py": "d45d1cf0a64970759b025b9ce47f66efdb823f600f92b4b4f25e4b963fa17700",
+    "tests/backup_recovery_fixtures.py": "061ea33f60b160b70e8aaff75535b7b64a5faec098c49b81c6fa593c2c6b2152",
+    "tests/branch_cas_fixtures.py": "21da9bcf4c91d2be0ce3ae99921b0bd06563adfa82993a0f5ceea747bf6e3cc7",
+    "tests/chapter_analysis_workflow_fixtures.py": "96e7e3fabbfcad8027977ab1387ff176480906d36021c1523d88d5c8dd57508c",
+    "tests/chapter_commit_fixtures.py": "7c34c78a90573e053917f4af04677b386c75b8eb7173980ce263404de6026fea",
+    "tests/character_state_fixtures.py": "3846f19bc3f685e65b81250934dabcad7e6567dbf2e74a6228d7cf1ed334a1c4",
+    "tests/context_http_fixtures.py": "add018506a3f25f1e0d8471e802f6444dd82cf6e60a0cce38c958b0bf6a68622",
+    "tests/context_pipeline_fixtures.py": "17ac0a29e680642ca4020e15016d077ed1a252e2f1150854eddc77647a686778",
+    "tests/corrupt_import_fixtures.py": "2271f184bad571d656a54342a6c6d437d25850c30ed97a19bb6661ca503f0ea4",
+    "tests/frontend_story_fixtures.py": "419e03d451c7b7b1e148e8651434b65cef947d3c976ee8c458a8b1885f12d1da",
+    "tests/import_archive_lifecycle_fixtures.py": "b367db7961ec80523a71d0e0a24fe7ff40a6c4184381c6c88dffa64850630c42",
+    "tests/literary_evaluation_fixtures.py": "41ee6a899b12b30e7b167bc1e38a4ec4888acba6944f675dd82f1595cb4bd6d7",
+    "tests/longform_knowledge_scope_fixtures.py": "2a67c5e1f2283030bc75a78a60fca5564c501bff2ff2de82d56f521085f6b6fd",
+    "tests/manuscript_import_fixtures.py": "38f15132b33611befc1c9122a0e45afae20d5fda19047734bda74e7ee9e20eb5",
+    "tests/projection_health_fixtures.py": "22a0d9a5fe00573e17b9865e988d4468296690940b85b3f0f1d0516744389214",
+    "tests/provider_protocol_fixtures.py": "41d98d757b3c11e66b2b9f71a098fc64634de18b19947bee6e5f0de78e42915b",
+    "tests/provider_queue_integration_fixtures.py": "81f9a08b1c395b5d628184d4441c7fc87fb4f0593e416ba46b204f2545c44c56",
+    "tests/publication_assistant_fixtures.py": "2e92f926928a9b033cd4897fa475b5f67eaa15f86de53dd1a454de5f5667e38d",
+    "tests/range_patch_fixtures.py": "6083a6a1b73465653f28986a26e805672adb4857f6f3b9c2815ca29a0f2c9a2b",
+    "tests/reversible_patch_fixtures.py": "b10c446a82bec642989cc2673df11600331bc5b780fdbeabb76c0f0d4a5d1f2c",
+    "tests/runtime_continuity_fixtures.py": "a9fe62e7afa7e712181f6cd2d4c2795fe05b629a22ce82219a5c3d348ed6a0f5",
+    "tests/schema_negative_fixtures.py": "81f29f9425214dfd9e773e94fd29b8f18867f436318857927ee737e6a5083585",
+    "tests/search_fixtures.py": "a2f3f5e2076114ad814832bdedf6f5c924f10f1929d66b3868989896e98b65e0",
+    "tests/story_structure_fixtures.py": "7803c9248361b148902ad2577f285db2242d437a1314c0571c0b0ae60458f7bc",
+    "tests/stream_resume_fixtures.py": "78d8c5e4483d6af8f04a2c63be63d011a1c5a59898c0f34e8ab2b010de5109dc",
+    "tests/strict_feature_fixtures.py": "e1380922b77fd3064fef9b814bb97f83959da8b3937cb280f098f9e49918fb61",
+    "tests/workspace_workflow_fixtures.py": "a3af48e54c4353883838baa40008b580062f80b55926b93ed7f9f91e2af5ba03",
+    "app.js": "8ce9268abdaff27f2cb1f53e5330d058b31784c18128e35833ba00b5378569e1",
+    "author-workspace.js": "3396f02396c46d8001972fea34376943a048d94194a746a7bd66033793b93d69",
+    "editor-sync.js": "8947eb5f26996a1b9f6a1786aedf011c40f08119f6ddb17ecc4dc968ab1d8b6f",
+    "tests/editor_sync_fixtures.cjs": "ed38f3fe6e61bcedb13c7f77cc49c6b3a95aa8da52cf3dc795682218708ce172",
+    "tests/frontend_browser_regressions.cjs": "5237b3ab325bf70c422227c641266503f9c1e2f95d84f89bb6209f9282675396"
+  },
+  "sources_changed_during_checks": [],
+  "passed": true,
+  "completed_at": "2026-10-13T06:14:06.767695+00:00",
+  "check_count": 37
+}

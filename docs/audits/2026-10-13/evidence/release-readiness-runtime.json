@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-13",
+  "timezone": "Asia/Shanghai",
+  "scope": "发布准备中的只读远程记录与本机运行时核查，不代表增强版完整检查或文学效果通过。",
+  "ci_configuration": {
+    "python": "3.11",
+    "node": "24",
+    "playwright": "1.62.1",
+    "current_enhanced_remote_run_confirmed": false,
+    "includes": [
+      "Python syntax",
+      "JavaScript and CJS syntax",
+      "all tests/*_fixtures.py",
+      "fixed evaluation",
+      "editor merge regressions",
+      "real browser regressions with free local provider"
+    ]
+  },
+  "verified_local_runtimes": {
+    "python": "3.11.17",
+    "node": "24.19.0",
+    "playwright": "1.62.1",
+    "playwright_node_engine": ">=20",
+    "full_current_source_verification_complete": false
+  },
+  "node_official_schedule": {
+    "source": "nodejs/Release:schedule.json (GitHub official repository, read with gh api)",
+    "node20_end": "2026-04-30",
+    "node24_maintenance": "2026-10-20",
+    "node24_end": "2028-04-30"
+  },
+  "confirmed_baseline_github_run": {
+    "id": 38321636718,
+    "commit": "62f1c66a7b16bb84f2940dc1af48e685aaf58818",
+    "created_at": "2026-10-12T23:20:44Z",
+    "status": "completed",
+    "conclusion": "success",
+    "scope": "旧配置仅包含语法、Python基础回归与固定评测，不包含本轮浏览器或编辑器合并回归。"
+  },
+  "publication_scope": {
+    "required": "电脑端",
+    "historical_supplement": "390×844手机记录",
+    "first_tier_proven": false,
+    "public_deployment_verified": false
+  }
+}

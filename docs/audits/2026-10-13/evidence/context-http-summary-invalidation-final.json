@@ -1,0 +1,809 @@
+{
+  "passed": true,
+  "scope": "real local HTTP and actual captured provider material; simulated model; temporary DBs",
+  "dataset": "fixed synthetic night-harbor prose; 30/100/300 chapters, five labelled ordinary sentences in chapter middles",
+  "method": "K controls actual ranked chapters; recall measures gold exact passage retained after final budget and provider serialization",
+  "limits": [
+    "These scores apply only to the supplied fixed corpus and five labelled queries per size.",
+    "Local lexical retrieval and exact source grounding are measured; literary quality and model knowledge are not.",
+    "K is a maximum; the conservative byte budget may send fewer passages.",
+    "Latency includes real HTTP, SQLite and a zero-cost simulated model response; it is not production-provider latency.",
+    "Token counts are a conservative byte estimate, not exact provider tokenization."
+  ],
+  "results": [
+    {
+      "chapters": 30,
+      "actual_provider_requests": 15,
+      "fixed_labelled_queries": 5,
+      "source_characters": 113737,
+      "recall_at_k": {
+        "1": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 10,
+          "correct_citations": 10,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.025337,
+            "p95": 0.075535,
+            "min": 0.023526,
+            "max": 0.075535,
+            "samples": [
+              0.075535,
+              0.024113,
+              0.025337,
+              0.025378,
+              0.023526
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11145,
+              "actual_material_utf8_bytes": 11145,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.075535
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11139,
+              "actual_material_utf8_bytes": 11139,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.024113
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11145,
+              "actual_material_utf8_bytes": 11145,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.025337
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11283,
+              "actual_material_utf8_bytes": 11283,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.025378
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11253,
+              "actual_material_utf8_bytes": 11253,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.023526
+            }
+          ]
+        },
+        "5": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 23,
+          "correct_citations": 23,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.024161,
+            "p95": 0.025208,
+            "min": 0.022474,
+            "max": 0.025208,
+            "samples": [
+              0.023992,
+              0.022474,
+              0.024161,
+              0.025208,
+              0.025149
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19675,
+              "actual_material_utf8_bytes": 19675,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.023992
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19669,
+              "actual_material_utf8_bytes": 19669,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.022474
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 19999,
+              "actual_material_utf8_bytes": 19999,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.024161
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 18769,
+              "actual_material_utf8_bytes": 18769,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.025208
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19783,
+              "actual_material_utf8_bytes": 19783,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.025149
+            }
+          ]
+        },
+        "10": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 23,
+          "correct_citations": 23,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.027097,
+            "p95": 0.029638,
+            "min": 0.024771,
+            "max": 0.029638,
+            "samples": [
+              0.02588,
+              0.028194,
+              0.029638,
+              0.027097,
+              0.024771
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20101,
+              "actual_material_utf8_bytes": 20101,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.02588
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20095,
+              "actual_material_utf8_bytes": 20095,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.028194
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 20425,
+              "actual_material_utf8_bytes": 20425,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.029638
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 19195,
+              "actual_material_utf8_bytes": 19195,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.027097
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20209,
+              "actual_material_utf8_bytes": 20209,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.024771
+            }
+          ]
+        }
+      }
+    },
+    {
+      "chapters": 100,
+      "actual_provider_requests": 15,
+      "fixed_labelled_queries": 5,
+      "source_characters": 397938,
+      "recall_at_k": {
+        "1": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 10,
+          "correct_citations": 10,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.052071,
+            "p95": 0.220904,
+            "min": 0.049055,
+            "max": 0.220904,
+            "samples": [
+              0.220904,
+              0.052071,
+              0.049055,
+              0.050329,
+              0.05218
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11151,
+              "actual_material_utf8_bytes": 11151,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.220904
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11145,
+              "actual_material_utf8_bytes": 11145,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.052071
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11150,
+              "actual_material_utf8_bytes": 11150,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.049055
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11289,
+              "actual_material_utf8_bytes": 11289,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.050329
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11259,
+              "actual_material_utf8_bytes": 11259,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.05218
+            }
+          ]
+        },
+        "5": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 23,
+          "correct_citations": 23,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.051689,
+            "p95": 0.052498,
+            "min": 0.04995,
+            "max": 0.052498,
+            "samples": [
+              0.052498,
+              0.051689,
+              0.051195,
+              0.04995,
+              0.051869
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19674,
+              "actual_material_utf8_bytes": 19674,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.052498
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19669,
+              "actual_material_utf8_bytes": 19669,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.051689
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 19999,
+              "actual_material_utf8_bytes": 19999,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.051195
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 18769,
+              "actual_material_utf8_bytes": 18769,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.04995
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19783,
+              "actual_material_utf8_bytes": 19783,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.051869
+            }
+          ]
+        },
+        "10": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 23,
+          "correct_citations": 23,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.048236,
+            "p95": 0.052156,
+            "min": 0.046928,
+            "max": 0.052156,
+            "samples": [
+              0.047312,
+              0.048236,
+              0.052156,
+              0.049277,
+              0.046928
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20100,
+              "actual_material_utf8_bytes": 20100,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.047312
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20095,
+              "actual_material_utf8_bytes": 20095,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.048236
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 20425,
+              "actual_material_utf8_bytes": 20425,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.052156
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 19195,
+              "actual_material_utf8_bytes": 19195,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.049277
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20209,
+              "actual_material_utf8_bytes": 20209,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.046928
+            }
+          ]
+        }
+      }
+    },
+    {
+      "chapters": 300,
+      "actual_provider_requests": 15,
+      "fixed_labelled_queries": 5,
+      "source_characters": 1210136,
+      "recall_at_k": {
+        "1": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 10,
+          "correct_citations": 10,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.127564,
+            "p95": 0.621041,
+            "min": 0.126066,
+            "max": 0.621041,
+            "samples": [
+              0.621041,
+              0.126097,
+              0.127879,
+              0.126066,
+              0.127564
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11159,
+              "actual_material_utf8_bytes": 11159,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.621041
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11154,
+              "actual_material_utf8_bytes": 11154,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.126097
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11160,
+              "actual_material_utf8_bytes": 11160,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.127879
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11298,
+              "actual_material_utf8_bytes": 11298,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.126066
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 1,
+              "actual_total_chapter_passages_sent": 2,
+              "context_utf8_bytes": 11268,
+              "actual_material_utf8_bytes": 11268,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.127564
+            }
+          ]
+        },
+        "5": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 23,
+          "correct_citations": 23,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.132571,
+            "p95": 0.136794,
+            "min": 0.128464,
+            "max": 0.136794,
+            "samples": [
+              0.132571,
+              0.133764,
+              0.136794,
+              0.128464,
+              0.129794
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19678,
+              "actual_material_utf8_bytes": 19678,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.132571
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19673,
+              "actual_material_utf8_bytes": 19673,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.133764
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 20003,
+              "actual_material_utf8_bytes": 20003,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.136794
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 18772,
+              "actual_material_utf8_bytes": 18772,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.128464
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 19787,
+              "actual_material_utf8_bytes": 19787,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.129794
+            }
+          ]
+        },
+        "10": {
+          "recall": 1.0,
+          "gold_passages": 5,
+          "missed_passages": [],
+          "citation_accuracy": 1.0,
+          "citation_count": 23,
+          "correct_citations": 23,
+          "illegal_materials": 0,
+          "end_to_end_simulated_provider_seconds": {
+            "p50": 0.128399,
+            "p95": 0.132013,
+            "min": 0.126619,
+            "max": 0.132013,
+            "samples": [
+              0.132013,
+              0.128399,
+              0.129143,
+              0.127251,
+              0.126619
+            ]
+          },
+          "observations": [
+            {
+              "query": "让林岚检查袖口的冷灰药粉是否还能使用。",
+              "gold_chapter": 3,
+              "gold_quote_hash": "4fe90fc630cbe457e9ad30f0647c33c5ce919d2fcdfba40c6b81cd23175cdcfe",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20104,
+              "actual_material_utf8_bytes": 20104,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.132013
+            },
+            {
+              "query": "寻找月牙密钥，记住它藏在什么地方。",
+              "gold_chapter": 7,
+              "gold_quote_hash": "7dcb1e3e1cdafcd2e98f32344ee59a98a56ece83c2c35b66c1bb224253983342",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20099,
+              "actual_material_utf8_bytes": 20099,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.128399
+            },
+            {
+              "query": "让林岚再次抬起左肩时想起渡桥留下的伤。",
+              "gold_chapter": 9,
+              "gold_quote_hash": "a1e328f38a6535ac77a6f981bdb8d5cb2515b050fb53037ea50c71e54975684a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 20429,
+              "actual_material_utf8_bytes": 20429,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.129143
+            },
+            {
+              "query": "阿岚要兑现把红铜罗盘交给塔伯的约定。",
+              "gold_chapter": 13,
+              "gold_quote_hash": "6da5960e88abc16ccf85b47008b91d3beb9668d5b65a0bf9c916ac300eb32e60",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 4,
+              "actual_total_chapter_passages_sent": 4,
+              "context_utf8_bytes": 19198,
+              "actual_material_utf8_bytes": 19198,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.127251
+            },
+            {
+              "query": "这次开门仍要照门闩向外提两寸再向右转的办法。",
+              "gold_chapter": 15,
+              "gold_quote_hash": "3c9ebe9eedcb4ade508f9821fade05a24515b3f601139c4ec2ccb4c04f9d327a",
+              "rank_in_sent_packet": 1,
+              "actual_ranked_passages_sent": 5,
+              "actual_total_chapter_passages_sent": 5,
+              "context_utf8_bytes": 20213,
+              "actual_material_utf8_bytes": 20213,
+              "context_budget_max": 24000,
+              "elapsed_seconds": 0.126619
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "workflow_checks": [
+    {
+      "name": "body-only PATCH clears obsolete automatic summary and handoff",
+      "passed": true
+    },
+    {
+      "name": "full-state PUT cannot restore obsolete generated fields",
+      "passed": true
+    },
+    {
+      "name": "full-state PUT preserves simultaneous author handoff",
+      "passed": true
+    }
+  ]
+}

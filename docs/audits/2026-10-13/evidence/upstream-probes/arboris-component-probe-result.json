@@ -1,0 +1,12 @@
+{
+  "scope": "AST-isolated original components; fake prompt, embedding and vector store; no HTTP, database or paid model",
+  "guardrail_configured_returns_none": true,
+  "select_ingest_signature_error": "missing a required argument: 'user_id'",
+  "visibility_keeps_villain_secret": true,
+  "visibility_keeps_world_future_truth": true,
+  "simple_rag_keeps_future_chapter": [
+    9
+  ],
+  "called_delete_chapter_exists": false,
+  "defined_delete_chapters_exists": true
+}

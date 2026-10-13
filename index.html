@@ -11,27 +11,37 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">墨</span><div><strong>墨屿</strong><small>小说创作台</small></div></div>
-      <div class="top-actions"><span id="saveState" class="save-state">本地已保存</span><button class="icon-btn" id="finalCheckBtn" title="终稿检查" aria-label="终稿检查">✓</button><button class="icon-btn" id="markdownExportBtn" title="导出 Markdown" aria-label="导出 Markdown">MD</button><button class="icon-btn" id="epubExportBtn" title="导出 EPUB" aria-label="导出 EPUB">EPUB</button><button class="icon-btn" id="importBtn" title="导入 JSON" aria-label="导入 JSON">↓</button><button class="icon-btn" id="exportBtn" title="导出 JSON" aria-label="导出 JSON">↑</button></div>
+      <div class="top-actions"><button id="saveState" class="save-state" title="查看保存状态">正在连接本机…</button><button class="icon-btn" id="finalCheckBtn" title="终稿检查" aria-label="终稿检查">✓</button><button class="icon-btn" id="markdownExportBtn" title="导出 Markdown" aria-label="导出 Markdown">MD</button><button class="icon-btn" id="epubExportBtn" title="导出 EPUB" aria-label="导出 EPUB">EPUB</button><button class="icon-btn" id="importBtn" title="导入稿件 JSON" aria-label="导入稿件 JSON">↓</button><button class="icon-btn" id="exportBtn" title="导出稿件 JSON" aria-label="导出稿件 JSON">↑</button></div>
     </header>
     <div class="workspace">
       <aside class="sidebar">
         <div class="project-card"><span class="eyebrow">当前作品</span><h1 id="projectTitle">未命名长篇</h1><p id="projectMeta">0 章 · 0 字</p><button class="ghost-btn" id="editProjectBtn">编辑作品信息</button></div>
         <nav class="nav-list" aria-label="主导航">
           <button class="nav-item active" data-view="dashboard"><span>⌂</span>总览</button>
+          <button class="nav-item" data-view="library"><span>▤</span>作品书架</button>
+          <button class="nav-item" data-view="blueprint"><span>☷</span>创作规划</button>
           <button class="nav-item" data-view="editor"><span>✦</span>章节 + AI 写作</button>
           <button class="nav-item" data-view="world"><span>♧</span>设定库</button>
           <button class="nav-item" data-view="memory"><span>✦</span>记忆中枢</button>
           <button class="nav-item" data-view="plot"><span>◇</span>情节与伏笔</button>
           <button class="nav-item" data-view="story"><span>⌘</span>故事结构</button>
           <button class="nav-item" data-view="search"><span>⌕</span>全文搜索</button>
+          <button class="nav-item" data-view="assistant"><span>⌕</span>项目助手</button>
+          <button class="nav-item" data-view="tasks"><span>☰</span>生成任务<span id="taskCount" class="task-count"></span></button>
+          <button class="nav-item" data-view="settings"><span>⚙</span>模型与风格</button>
+          <button class="nav-item" data-view="backups"><span>▣</span>备份中心</button>
+          <button class="nav-item" data-view="references"><span>▥</span>旧书与参考库</button>
         </nav>
-        <div class="sidebar-foot"><span class="status-dot"></span>SQLite 本地保存<div class="shortcut">⌘ K 搜索</div></div>
+        <div class="sidebar-foot"><span class="status-dot"></span>数据保存在本机<div class="shortcut">墨屿</div></div>
       </aside>
       <main id="main" class="main"></main>
     </div>
   </div>
   <input id="fileInput" type="file" accept="application/json" hidden />
+  <input id="bookFileInput" type="file" accept=".txt,.md,.markdown,.epub,text/plain,text/markdown,application/epub+zip" hidden />
   <div id="toast" class="toast" role="status"></div>
+  <script src="editor-sync.js"></script>
   <script src="app.js"></script>
+  <script src="author-workspace.js"></script>
 </body>
 </html>

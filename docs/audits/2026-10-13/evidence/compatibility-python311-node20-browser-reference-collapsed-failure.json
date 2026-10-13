@@ -1,0 +1,207 @@
+{
+  "passed": false,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    },
+    {
+      "name": "390×844手机按钮无文字溢出，补充要求可输入",
+      "passed": true
+    },
+    {
+      "name": "两作品切换隔离，卷章场景保存后建立目录",
+      "passed": true
+    },
+    {
+      "name": "设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型",
+      "passed": true
+    },
+    {
+      "name": "旧书预览拆分合并导入独立作品，原作品保持原稿",
+      "passed": true
+    }
+  ],
+  "artifacts": "./.audit-cache/runtime-artifacts/moyu-browser-regression-2oVsCy",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_4fe2083a22f544319d6a0f8ed59441f7",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_0ce2823997774fbea23ca5802c5c29a6",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_b66a95f1967444afb09d224be375a139",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_3ffc80d2bed24b82aeb37e07b99cef81",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_7c001d4a61a445348ec2765976a1e354",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_de46a5b93ca341f0b0a9361eabd29f54",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_5adfdddafc784f19b1d0c27aee780afc",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_b5f7e10cb0094713930d23088e7f1296",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_0a0c2b8185b64829a992656be8af486f",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_0c3d6c5e0caf4092bd76963e2fa9fa5e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_e7a014091be34047addc2798fa35b715",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_5a36b58b83a64a75ac1e3dc27da8b5df",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_4a511446f85a41509de7aa76301f1118",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_fa2304569b1c41f89c3338ed078c8f57",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_b7de19b6899d4c79999c4f4e4fcdad87",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_82a8101355934e59a1047f52d19b0e16",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_5f0231b6de5948999ee63c45780d5110",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_2923322713d84b98bf48478616b66ad6",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_0b7278b70e754905b6d5efe35148ee7a",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_c763e8cc41b84966aecdee6bd38b1849",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "imported_project": "book_a759af53962d4c349e59d74e50fbd97d",
+  "failure": {
+    "message": "The input did not match the regular expression /红铜罗盘只有在子夜/. Input:\n\n'导入前言 · 7 字\\n第一章 规则 · 28 字\\n第二章 药粉 · 20 字'\n",
+    "stack": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /红铜罗盘只有在子夜/. Input:\n\n'导入前言 · 7 字\\n第一章 规则 · 28 字\\n第二章 药粉 · 20 字'\n\n    at ./tests/frontend_browser_regressions.cjs:413:10\n    at async test (./tests/frontend_browser_regressions.cjs:46:2)\n    at async main (./tests/frontend_browser_regressions.cjs:397:2)",
+    "server_log": "27.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"POST /api/blueprint/materialize HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:02+00:00] \"GET /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/settings HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"PUT /api/ai/settings HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"PUT /api/ai/settings HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"POST /api/ai/probe HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/settings HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/runs/airun_f875d837c1024e098d1b898d2d9fde94/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"POST /api/ai/decision HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/references HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"GET /api/references HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"GET /api/references HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"GET /api/references HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:26:04+00:00] \"GET /api/references/reference_efa7bf5442cf45ddb604046634ce75aa HTTP/1.1\" 200 -\n"
+  }
+}

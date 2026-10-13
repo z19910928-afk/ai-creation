@@ -1,0 +1,35 @@
+{
+  "context_scope_and_middle_evidence": {
+    "old_chapter_selected": true,
+    "old_chapter_middle_evidence_in_prompt": false,
+    "future_memory_ids": [
+      "future_memory"
+    ],
+    "future_timeline_ids": [
+      "future_timeline"
+    ],
+    "villain_only_state_ids_in_hero_pov": [
+      "villain_secret"
+    ],
+    "memory_limit_zero_count": 1
+  },
+  "long_chapter_polish_scope": {
+    "original_characters": 15412,
+    "sent_current_body_characters": 12000,
+    "chapter_head_sentinel_present": false,
+    "scope": "Actual fit_context_budget component; browser overwrite tested separately"
+  },
+  "review_not_bound_to_body_revision": {
+    "initial_save_http": 200,
+    "review_http": 200,
+    "review_status_before_edit": "passed",
+    "edit_http": 200,
+    "review_status_after_edit": "passed",
+    "export_manifest_http": 200,
+    "finalization_after_changed_body": {
+      "allowed": true,
+      "issues": []
+    },
+    "scope": "Real local HTTP, temporary SQLite database, offline mode"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "arm_id": "baseline",
+  "case_id": "wuxia-polish",
+  "frozen_request_sha256": "42392f9594e565a1d42ce57f89d4479b81fa3130f462f4eba96d67045bf62e79",
+  "genre": "武侠",
+  "id": "wuxia-polish--1--baseline",
+  "repetition": 1,
+  "request_audit": {
+    "created_at": "2026-10-13T03:28:38.178805+00:00",
+    "dispatched": false,
+    "effective_parameters": {
+      "max_tokens": 2000,
+      "response_format": "text",
+      "stream": false,
+      "temperature": 0.65
+    },
+    "endpoint": "https://api.icodexs.com/v1/chat/completions",
+    "messages_sha256": "c6f4beddb49bef9cdd515a5226fc9eb89beaaa40c4ee0681cefdcf720d232bba",
+    "method": "POST",
+    "payload": {
+      "max_tokens": 2000,
+      "messages": [
+        {
+          "content": "你是中文小说创作助手。润色正文，保留所有事件和事实。只输出润色后的正文。",
+          "role": "system"
+        },
+        {
+          "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"顾青右臂骨裂。\", \"id\": \"wuxia-polish-fact-1\", \"source_quote\": \"顾青右臂骨裂。\", \"status\": \"confirmed\"}, {\"assertion\": \"顾青短刀落入河中。\", \"id\": \"wuxia-polish-fact-2\", \"source_quote\": \"顾青短刀落入河中。\", \"status\": \"confirmed\"}, {\"assertion\": \"孟舟必须活着。\", \"id\": \"wuxia-polish-fact-3\", \"source_quote\": \"孟舟必须活着。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"顾青非常紧张地站在木桥的东边，她的右臂很疼，不能挥剑。孟舟站在西边，忽然冲过来。顾青向右边让了一步，木板响了。然后顾青用左手将短刀抵在孟舟的肩膀上，孟舟往后退，两个人中间隔着断裂的木板。孟舟扯住了她的袖子。顾青为了稳住身体只好松开短刀。短刀掉进桥下的河里。她用左手扣住孟舟的手腕，终于没有杀他。\", \"body_complete\": true, \"chapter_hash\": \"afe67b87ecc19b45e7edcdbf3b7d696e2677aee13f5cceaddfbce7dae21fcb89\", \"id\": \"wuxia-polish\", \"plan\": {\"chapter_goal\": \"桥上的刀\", \"pov\": \"顾青\"}, \"source_range\": {\"end\": 147, \"start\": 0}, \"title\": \"桥上的刀\"}, \"previous_chapters\": [{\"chapter_hash\": \"253782b0cc14e7a05cef8176d43219ea975ef2094e622cd1f590c8c935c1712b\", \"excerpt\": \"顾青右臂骨裂，不能挥剑；她带一柄短刀。师父要她带孟舟活着回去。\", \"id\": \"wuxia-polish-previous\", \"source_range\": {\"end\": 31, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：润色下面全文，保留四次关键动作、短刀落水和顾青未杀人的结果；压缩套话，增强动作空间感。字数可在原文的80%至130%。",
+          "role": "user"
+        }
+      ],
+      "model": "deepseek-v4-pro",
+      "stream": false,
+      "temperature": 0.65
+    },
+    "request_bytes": 2176,
+    "request_id": "eval_7bb9acd0320e1b8f779a7e023895ee2b",
+    "request_sha256": "42392f9594e565a1d42ce57f89d4479b81fa3130f462f4eba96d67045bf62e79",
+    "requested_model": "deepseek-v4-pro"
+  },
+  "result": {
+    "billing_state": "usage_reported",
+    "completion_state": "complete",
+    "finish_reason": "stop",
+    "latency_ms": 5876,
+    "provider_response_id": "cmb-2ff8af03c6b611f19c316236fc20c764",
+    "provider_sse_complete": null,
+    "request_audit": {
+      "created_at": "2026-10-13T03:28:38.183394+00:00",
+      "dispatched": true,
+      "effective_parameters": {
+        "max_tokens": 2000,
+        "response_format": "text",
+        "stream": false,
+        "temperature": 0.65
+      },
+      "endpoint": "https://api.icodexs.com/v1/chat/completions",
+      "messages_sha256": "c6f4beddb49bef9cdd515a5226fc9eb89beaaa40c4ee0681cefdcf720d232bba",
+      "method": "POST",
+      "payload": {
+        "max_tokens": 2000,
+        "messages": [
+          {
+            "content": "你是中文小说创作助手。润色正文，保留所有事件和事实。只输出润色后的正文。",
+            "role": "system"
+          },
+          {
+            "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"顾青右臂骨裂。\", \"id\": \"wuxia-polish-fact-1\", \"source_quote\": \"顾青右臂骨裂。\", \"status\": \"confirmed\"}, {\"assertion\": \"顾青短刀落入河中。\", \"id\": \"wuxia-polish-fact-2\", \"source_quote\": \"顾青短刀落入河中。\", \"status\": \"confirmed\"}, {\"assertion\": \"孟舟必须活着。\", \"id\": \"wuxia-polish-fact-3\", \"source_quote\": \"孟舟必须活着。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"顾青非常紧张地站在木桥的东边，她的右臂很疼，不能挥剑。孟舟站在西边，忽然冲过来。顾青向右边让了一步，木板响了。然后顾青用左手将短刀抵在孟舟的肩膀上，孟舟往后退，两个人中间隔着断裂的木板。孟舟扯住了她的袖子。顾青为了稳住身体只好松开短刀。短刀掉进桥下的河里。她用左手扣住孟舟的手腕，终于没有杀他。\", \"body_complete\": true, \"chapter_hash\": \"afe67b87ecc19b45e7edcdbf3b7d696e2677aee13f5cceaddfbce7dae21fcb89\", \"id\": \"wuxia-polish\", \"plan\": {\"chapter_goal\": \"桥上的刀\", \"pov\": \"顾青\"}, \"source_range\": {\"end\": 147, \"start\": 0}, \"title\": \"桥上的刀\"}, \"previous_chapters\": [{\"chapter_hash\": \"253782b0cc14e7a05cef8176d43219ea975ef2094e622cd1f590c8c935c1712b\", \"excerpt\": \"顾青右臂骨裂，不能挥剑；她带一柄短刀。师父要她带孟舟活着回去。\", \"id\": \"wuxia-polish-previous\", \"source_range\": {\"end\": 31, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：润色下面全文，保留四次关键动作、短刀落水和顾青未杀人的结果；压缩套话，增强动作空间感。字数可在原文的80%至130%。",
+            "role": "user"
+          }
+        ],
+        "model": "deepseek-v4-pro",
+        "stream": false,
+        "temperature": 0.65
+      },
+      "provider_request_id": "82ba83a2-3c59-4bf8-9a9a-74e986f97aba, 289c8cd7-fae4-46b1-998a-a5daba917668",
+      "request_bytes": 2176,
+      "request_id": "eval_7bb9acd0320e1b8f779a7e023895ee2b",
+      "request_sha256": "42392f9594e565a1d42ce57f89d4479b81fa3130f462f4eba96d67045bf62e79",
+      "requested_model": "deepseek-v4-pro",
+      "response_bytes": 816
+    },
+    "requested_model": "deepseek-v4-pro",
+    "response_format": "text",
+    "returned_model": "deepseek-v4-pro",
+    "safe_to_apply": true,
+    "stream_transport": "provider_json",
+    "structured": null,
+    "text": "顾青站在木桥东侧，右臂疼得厉害，已握不住剑。孟舟在西侧，骤然抢步过来。她向右一让，木板在脚下发出声响。随即以左手持短刀抵住孟舟肩头，孟舟后退，两人之间隔着一块断裂的木板。孟舟扯住她的衣袖，她为稳身不得不松手，短刀坠入桥下河中。她左手扣住孟舟手腕，终究没有杀他。",
+    "truncated": false,
+    "usage": {
+      "completion_tokens": 102,
+      "completion_tokens_details": {
+        "reasoning_tokens": 0
+      },
+      "prompt_tokens": 913,
+      "prompt_tokens_details": {
+        "cached_tokens": 256
+      },
+      "total_tokens": 1015
+    },
+    "usage_state": "reported"
+  },
+  "status": "complete",
+  "task": "polish"
+}

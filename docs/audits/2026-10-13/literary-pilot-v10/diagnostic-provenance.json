@@ -1,0 +1,30 @@
+{
+  "purpose": "第九轮glm-5.1正常返回完整正文但两组超字数后，统一明确计数口径和720字目标；原600至850字输出合格范围不变。改为三种题材的续写诊断，输出先验合格后才进入盲评。",
+  "previous_run": "../literary-pilot-v9/",
+  "model": "glm-5.1",
+  "source_cases": ["mystery-tide", "science-airlock", "romance-ticket"],
+  "excluded_tasks": ["polish", "check", "summary"],
+  "shared_instruction_addition": "字数按正文所有非空白字符计算，包括标点、数字和字母；目标约720字，必须在600至850字之间。发出前自行精简到上限内，保留完整场景，只输出正文，不显示计数或检查过程。",
+  "fairness": "原始素材、事实规则和作者要求保持，以上补充完整地加入两组的作者要求。两组模型、参数、流式设置和输出预算一致。不对旧候选截短、清洗思考或挑选合格后替换失败。",
+  "writer_parameters": {"temperature": 0.65, "max_tokens": 3000, "stream": true, "thinking": {"type": "disabled"}},
+  "prior_usage": {
+    "literary_reserved_requests": 24,
+    "separate_dispatched_shape_diagnostic_requests": 1,
+    "combined_reserved_requests": 25,
+    "combined_reported_total_tokens": 40846,
+    "literary_requests_without_complete_total": 10,
+    "currency_cost": null
+  },
+  "budget": {
+    "planned_writer_requests": 6,
+    "minimum_judge_requests": 12,
+    "this_run_request_cap": 35,
+    "combined_request_cap_if_all_reserved": 60,
+    "this_run_reported_tokens_stop_threshold": 139154,
+    "prior_plus_stop_threshold": 180000,
+    "initial_invocation_maximum_new_requests": 2,
+    "limitation": "当前请求可能超过已报告用量阈值；未知用量和价格不是零费用。失败和未知请求仍计入累计预留。"
+  },
+  "history_policy": "旧九轮已冻结请求、候选、账本和报告原字节保留；这轮有新的独立运行身份，不重发旧失败。",
+  "acceptance_policy": "仅通过完整协议、原600至850字及明显污染检查的成对候选可匿名评审；两种不同评审模型双顺序与所有原质量门槛保持。三题仍不证明文学效果第一梯队、其他创作任务或真实作者效率。"
+}

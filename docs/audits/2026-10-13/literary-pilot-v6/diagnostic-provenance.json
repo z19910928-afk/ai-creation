@@ -1,0 +1,21 @@
+{
+  "purpose": "显式关闭DeepSeek思考的受控文学协议复验；本轮先限制为两次新请求，合格后才继续后续题目。",
+  "previous_run": "../literary-pilot-v5/",
+  "parameter_change": {
+    "removed": "reasoning_effort",
+    "added": {"thinking": {"type": "disabled"}},
+    "unchanged": ["deepseek-v4-pro", "temperature=0.65", "max_tokens=3000", "writer_stream=true", "600至850字的作者要求"]
+  },
+  "prior_literary_ledger": [
+    {"run": "literary-pilot", "requests": 8, "reported_tokens": 1015, "requests_without_usage": 7},
+    {"run": "literary-pilot-v2", "requests": 2, "reported_tokens": 0, "requests_without_usage": 2},
+    {"run": "literary-pilot-v3", "requests": 2, "reported_tokens": 2714, "requests_without_usage": 1},
+    {"run": "literary-pilot-v4", "requests": 2, "reported_tokens": 5427, "requests_without_usage": 0},
+    {"run": "literary-pilot-v5", "requests": 2, "reported_tokens": 6564, "requests_without_usage": 0}
+  ],
+  "prior_reserved_requests": 16,
+  "prior_reported_tokens": 15720,
+  "budget_policy": "新目录没有清除旧请求和未知费用；本轮请求硬上限降为40，已报告用量阈值扣除旧账本15720。独立协议诊断仍另行保留，不计零费用。",
+  "history_policy": "旧请求、候选、冻结快照和报告保持原样；本轮使用新的独立运行身份，不重复发送旧请求。",
+  "acceptance_policy": "请求完整结束、字数合格、无明显规划文字才可进入匿名比较；通过机械检查不证明文学质量、底层模型身份或第一梯队。"
+}

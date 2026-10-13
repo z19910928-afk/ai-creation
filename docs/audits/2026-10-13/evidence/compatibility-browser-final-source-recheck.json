@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-13T06:35:03.439128+00:00",
+  "prior_evidence": "docs/audits/2026-10-13/evidence/compatibility-python311-node20-post-summary-nonbrowser.json",
+  "prior_checks": 37,
+  "prior_passed": true,
+  "source_changes_since_prior": [
+    {
+      "path": "tests/frontend_browser_regressions.cjs",
+      "previous_sha256": "5237b3ab325bf70c422227c641266503f9c1e2f95d84f89bb6209f9282675396",
+      "current_sha256": "9a651a358aea780723c18771c18463d6f7bcfc9a2ee6bc6dfc743377c5ebf2bd"
+    }
+  ],
+  "node_browser_syntax_exit_code": 0,
+  "browser_evidence": "docs/audits/2026-10-13/evidence/compatibility-python311-node20-browser-final.json",
+  "browser_passed": true,
+  "browser_case_count": 20,
+  "continuous_writing_round_count": 20,
+  "chrome": "155.0.8059.40",
+  "playwright": "1.62.1",
+  "remote_ci_executed": false,
+  "paid_provider_calls": false,
+  "passed": true
+}

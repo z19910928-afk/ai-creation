@@ -1,0 +1,13 @@
+{
+  "created_at": "2026-10-13T05:22:03.904765+00:00",
+  "passed": false,
+  "scope": "Original unmodified frontend_browser_regressions.cjs under Python3.11.17/Node20.20.2 and Playwright1.62.1/system Chrome",
+  "failure": {
+    "kind": "process_timeout",
+    "seconds": 360,
+    "message": "Original runner emitted no final result before subprocess timeout. Full pass not established."
+  },
+  "temporary_artifacts": "./.audit-cache/runtime-artifacts/moyu-browser-regression-wevTxP",
+  "post_timeout_own_app_and_browser_children_present": false,
+  "automatic_paid_calls": 0
+}

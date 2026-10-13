@@ -1,0 +1,29 @@
+{
+  "purpose": "第十轮墨屿1003字超限后，验证新任务的长度提示一致性与完整结尾篇幅要求。作者要求、故事材料和事实规则保持不变，系统提示来自本轮产品实现。",
+  "previous_run": "../literary-pilot-v10/",
+  "model": "glm-5.1",
+  "source_cases": ["mystery-tide", "science-airlock", "romance-ticket"],
+  "prompt_change": "已解析双边长度范围时使用作者明确的有效软目标720字，不再另写中点725字；提示提前分配段落篇幅并预留完整结尾。目标统一只是待检验假设，不是已证明的超长根因。",
+  "fairness": "两组使用相同原始素材、事实规则、作者要求、模型、参数、3000 tokens上限和流式设置。墨屿只使用实际产品提示。新运行有独立身份；不重发旧记录，不截短、清洗或替换原候选。",
+  "prior_usage": {
+    "literary_reserved_requests": 26,
+    "separate_dispatched_shape_diagnostic_requests": 1,
+    "combined_reserved_requests": 27,
+    "combined_reported_total_tokens": 43681,
+    "literary_requests_without_complete_total": 10,
+    "currency_cost": null
+  },
+  "budget": {
+    "planned_writer_requests": 6,
+    "minimum_judge_requests": 12,
+    "this_run_request_cap": 33,
+    "combined_request_cap_if_all_reserved": 60,
+    "this_run_reported_tokens_stop_threshold": 136319,
+    "prior_plus_stop_threshold": 180000,
+    "initial_invocation_maximum_new_requests": 2,
+    "limitation": "未知用量和价格不等于零费用；当前请求仍可能超过已报告用量阈值。所有失败或未知请求继续计入累计预算。"
+  },
+  "acceptance_policy": "完整协议、无明显污染且原600至850字门槛均通过的成对候选才送匿名评审。首对不合格时不扩展后续题材。至少两个不同评审模型、双顺序和原质量闸全部保持。三题诊断不能证明第一梯队。",
+  "history_policy": "前十轮方案、请求、账本、候选与报告保留原始字节；不把新提示套回旧任务。",
+  "author_efficiency": "真实作者采纳率和修改时间仍未测量。"
+}

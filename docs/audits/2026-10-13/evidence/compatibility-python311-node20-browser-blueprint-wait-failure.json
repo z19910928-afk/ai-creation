@@ -1,0 +1,194 @@
+{
+  "passed": false,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    },
+    {
+      "name": "390×844手机按钮无文字溢出，补充要求可输入",
+      "passed": true
+    }
+  ],
+  "artifacts": "./.audit-cache/runtime-artifacts/moyu-browser-regression-u2gWXv",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_0cacdc656b3a4300aa60a581a2c2edea",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_5c97cff55baa4fcbb5f4dcac4e96558f",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_4679af06a586414b8a44791abaa94857",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_57b7d007fb9d4f639c930a5269da093c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_f175c2bd5e2849388a05d6cd1d87e104",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_627e999dd6674c998d1f7363bc2f2d9a",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_31c6427999a948dd9fabbac3905614d3",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_c2ba94d647644691b36aabc8e6cd0ad6",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_1d31f5065c044786ba8937b94eeb9e98",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_08cbb1455a474024b35bf2e27c4bee71",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_638daab11fa44cc49d435e35e9eef833",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_1cdface15c2840d781ee94da54e85da8",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_665ae52a2b5e46fdb7379665c5ac3112",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_1098378be459466e8809367c85070aef",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_742af2c8739e41b1b0dd6aee12b3be12",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_4398b241be9e4e54b5e6335951339817",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_1a1251cf896e4087a76ab57cba260cc8",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_9c9f25ab3f4f4dd0a669df3544ea32c3",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_5ddf1e16e1684fe0b8ee0f6a11a72a3a",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_db23594dc1de4286b6844c6ecee0a37e",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "failure": {
+    "message": "false == true",
+    "stack": "AssertionError [ERR_ASSERTION]: false == true\n    at ./tests/frontend_browser_regressions.cjs:344:71\n    at async test (./tests/frontend_browser_regressions.cjs:46:2)\n    at async main (./tests/frontend_browser_regressions.cjs:330:2)",
+    "server_log": "0-13T06:17:38+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"GET /api/chapter-analysis?chapter_id=ch_502688764b7e4bda96413253e2138d56 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"GET /api/ai/runs/airun_86ceb5a1732740b89a0872d939a8601e/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"GET /api/chapter-analysis?chapter_id=ch_502688764b7e4bda96413253e2138d56 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"POST /api/chapter-analysis/chapter_analysis_7db7e633c067ceb51946d1bfa1d7/confirm HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:38+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:39+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:39+00:00] \"GET /api/chapter-analysis?chapter_id=ch_502688764b7e4bda96413253e2138d56 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:39+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:39+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:39+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:39+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:39+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/story-reviews?chapter_id=ch_502688764b7e4bda96413253e2138d56 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/ai/runs/airun_15c37f7396b74356895475710d733801/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/story-reviews?chapter_id=ch_502688764b7e4bda96413253e2138d56 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"POST /api/story-reviews/story_review_d03065afb43e8d4a5febbce1c819/issues/review_5e79dc1ec03adfac626cca914ec5f365/decision HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/story-reviews?chapter_id=ch_502688764b7e4bda96413253e2138d56 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/story-reviews?chapter_id=ch_502688764b7e4bda96413253e2138d56 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:40+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"PUT /api/blueprint HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T06:17:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n"
+  }
+}

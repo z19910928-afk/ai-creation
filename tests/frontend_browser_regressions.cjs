@@ -1,0 +1,955 @@
+'use strict';
+
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const os=require('node:os');
+const path=require('node:path');
+const http=require('node:http');
+const net=require('node:net');
+const {spawn}=require('node:child_process');
+const {chromium}=require(process.env.MOYU_PLAYWRIGHT_MODULE||'playwright');
+
+const root=path.resolve(__dirname,'..');
+const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-browser-regression-'));
+const results={passed:false,scope:'真实浏览器、隔离SQLite、免费本机模拟提供方',cases:[],artifacts:temporary};
+const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+let app,provider,browser,base,providerText='来源甲章的候选。',providerDelay=600,reviewMode='single',planningFailure=false;
+let serverLog='',providerPort;
+const providerRequests=[];
+async function freePort(){
+ const socket=net.createServer();await new Promise(resolve=>socket.listen(0,'127.0.0.1',resolve));
+ const port=socket.address().port;await new Promise(resolve=>socket.close(resolve));return port;
+}
+async function api(route,method='GET',body,project='default-project'){
+ const response=await fetch(base+route,{method,headers:{'Content-Type':'application/json','X-Moyu-Project':project},
+  body:body===undefined?undefined:JSON.stringify(body)});
+ const data=await response.json();if(!response.ok)throw new Error(`${route} ${response.status}: ${JSON.stringify(data)}`);return data;
+}
+async function currentBody(id,project){const data=await api('/api/state','GET',undefined,project);return data.chapters.find(c=>c.id===id)?.body}
+async function waitSaved(page){
+ try{await page.waitForFunction(()=>backendOnline&&confirmedState&&!isDirty()&&!syncInFlight&&!independentWrite&&!adopting&&!saveError&&!mergePending,null,{timeout:15000})}
+ catch(error){
+  const details=await page.evaluate(()=>({backendOnline,dirty:isDirty(),syncInFlight,independentWrite,adopting,saveError,merge:mergePending?.conflicts,
+   stateVersion:state.version,confirmedVersion:confirmedState?.version,status:document.querySelector('#saveState')?.innerText}));
+  throw new Error(`${error.message}; save details: ${JSON.stringify(details)}`);
+ }
+}
+async function open(viewport={width:1440,height:1000}){
+ const context=await browser.newContext({viewport});const page=await context.newPage();const errors=[];
+ page.on('pageerror',error=>errors.push(error.message));await page.goto(base);
+ try{await page.waitForFunction(()=>backendOnline===true)}
+ catch(error){throw new Error(`${error.message}; page errors: ${errors.join('; ')}; save status: ${await page.locator('#saveState').innerText()}`)}
+ await page.locator('[data-view="editor"]').click();return {context,page,errors};
+}
+async function test(name,fn){
+ console.log(JSON.stringify({test:name,state:'running'}));
+ await fn();results.cases.push({name,passed:true});
+ console.log(JSON.stringify({test:name,state:'passed'}));
+}
+function providerOutput(input){
+ const system=input.messages?.[0]?.content||'';
+ const user=input.messages?.find(message=>message.role==='user')?.content||'';
+ let material={};
+ if(user.includes('<manuscript>'))material=JSON.parse(user.split('<manuscript>\n')[1].split('\n</manuscript>')[0]);
+ if(material.planning_workflow){
+  const stage=material.planning_workflow.stage,b=material.blueprint;
+  if(stage==='overview')return JSON.stringify({premise:b.premise,genre:b.genre||'悬疑',audience:'长篇小说读者',tone:'克制',contract:'保持人物认知边界。'});
+  if(stage==='volumes')return JSON.stringify({volumes:b.volumes.map((v,index)=>({id:v.id,title:`第${index+1}卷 雪路`,summary:'邮差循着封缄寻找旧驿站。'}))});
+  if(stage==='chapters'&&planningFailure){planningFailure=false;return JSON.stringify({volumes:[]})}
+  if(stage==='chapters')return JSON.stringify({volumes:b.volumes.map(v=>({id:v.id,chapters:v.chapters.map((c,index)=>({
+   id:c.id,title:`第${index+1}章 封缄`,goal:'找到寄信人',pov:'邮差',hook:'蜡印露出半个字。'}))}))});
+  return JSON.stringify({volumes:b.volumes.map(v=>({id:v.id,chapters:v.chapters.map(c=>({id:c.id,scenes:c.scenes.map((s,index)=>({
+   id:s.id,title:`场景${index+1} 驿站冲突`,goal:'取回包裹',location:'驿站',pov:'邮差'}))}))}))});
+ }
+ const current=material.current_chapter||{};const quote=String(current.body||'').split(/\r?\n/).find(line=>line.trim())||'';
+ if(system.includes('完整普通正文'))return JSON.stringify({
+  summary:{text:'林岚把红铜罗盘交给守灯人。',evidence:[{source_quote:quote}]},
+  handoff:{text:'下一章等待守灯人归还罗盘。',evidence:[{source_quote:quote}]},
+  candidates:[{kind:'event',name:'交出罗盘',note:'林岚把红铜罗盘交给守灯人。',source_quote:quote,epistemic_mode:'world_truth',known_by:['browser_lan','browser_keeper']}]});
+ if(system.includes('人物动机、因果、时间')&&reviewMode==='multiple'){
+  const body=String(current.body||'');const repeated='林岚抬头。';const second=Array.from(body.slice(0,body.lastIndexOf(repeated))).length;
+  return JSON.stringify({findings:[
+   {category:'motivation',severity:'possible',message:'交出罗盘与转身离开的动机需要衔接。',suggestion:'用具体动作承接选择。',
+    evidence:[{source_chapter_id:current.id,source_quote:'林岚把红铜罗盘交给守灯人。'},
+     {source_chapter_id:current.id,source_quote:'她转身走向空船。'}]},
+   {category:'style',severity:'suggestion',message:'第二次抬头可以换成具体动作。',suggestion:'保留后面的钟声。',
+    evidence:[{source_chapter_id:current.id,source_quote:repeated,source_start:second,source_end:second+Array.from(repeated).length}]}
+  ],uncertainties:['本机模拟仅验证审稿流程。']});
+ }
+ if(system.includes('人物动机、因果、时间'))return JSON.stringify({
+  findings:[{category:'motivation',severity:'possible',message:'可以补充交出罗盘的动机。',suggestion:'让她先看一眼空船。',
+   evidence:[{source_chapter_id:current.id,source_quote:quote}]}],uncertainties:['模拟模型只用于验证作者处理流程。']});
+ if(system.includes('可写的场景计划'))return JSON.stringify({pov:'林岚',location:'北塔',goal:'找回红铜罗盘',obstacle:'守门人堵住出口',exit:'灯灭了'});
+ if(system.includes('规划下一步故事'))return JSON.stringify({goal:'找回罗盘',conflict:'守门人封锁北塔',turn:'潮声突然停止',scenes:['塔门争执'],foreshadowing:['熄灭的灯']});
+ if(system.includes('总结'))return JSON.stringify({events:['林岚交出罗盘'],state_changes:['守灯人持有罗盘'],open_threads:['子夜归还罗盘']});
+ if(system.includes('相邻章节的矛盾'))return JSON.stringify({findings:['罗盘去向需交代'],evidence:[quote],uncertainties:['模拟结果']});
+ return providerText;
+}
+async function main(){
+ providerPort=await freePort();
+ provider=http.createServer((request,response)=>{
+  let raw='';request.on('data',chunk=>raw+=chunk);request.on('end',()=>{
+   const input=JSON.parse(raw||'{}');providerRequests.push(input);const text=providerOutput(input);
+   if(input.stream){
+    response.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache'});
+    const middle=Math.max(1,Math.floor(text.length/2));
+    response.write(`data: ${JSON.stringify({choices:[{delta:{content:text.slice(0,middle)},finish_reason:null}]})}\n\n`);
+    setTimeout(()=>{
+     if(response.destroyed)return;
+     response.write(`data: ${JSON.stringify({choices:[{delta:{content:text.slice(middle)},finish_reason:'stop'}],usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})}\n\n`);
+     response.end('data: [DONE]\n\n');
+    },providerDelay);
+   }else{
+    response.writeHead(200,{'Content-Type':'application/json'});
+    setTimeout(()=>response.end(JSON.stringify({model:'browser-mock',choices:[{message:{content:text},finish_reason:'stop'}],
+     usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})),providerDelay);
+   }
+  });
+ });
+ await new Promise(resolve=>provider.listen(providerPort,'127.0.0.1',resolve));
+ const appPort=await freePort();base=`http://127.0.0.1:${appPort}`;
+ app=spawn(process.env.MOYU_TEST_PYTHON||'python3',['server.py'],{cwd:root,
+  env:{...process.env,MOYU_DB:path.join(temporary,'test.sqlite3'),MOYU_HOST:'127.0.0.1',MOYU_PORT:String(appPort),
+   MOYU_AI_BASE_URL:`http://127.0.0.1:${providerPort}/v1`,MOYU_AI_MODEL:'browser-mock',MOYU_AI_API_KEY:'',
+   MOYU_AI_DAILY_QUOTA:'100',MOYU_SECRET_KEY:'',MOYU_BACKUP_DIR:path.join(temporary,'backups'),
+   MOYU_CREDENTIALS_DIR:path.join(temporary,'credentials')},
+  stdio:['ignore','ignore','pipe']});
+ app.stderr.on('data',chunk=>serverLog+=chunk.toString());
+ for(let n=0;n<200;n++){try{if((await fetch(base+'/api/health')).ok)break}catch{}if(app.exitCode!==null)throw new Error('server exited: '+serverLog.slice(-2500));if(n===199)throw new Error('server unavailable: '+serverLog.slice(-2500));await pause(40)}
+ const seeded=await api('/api/state');const firstId=seeded.chapters[0].id;
+ seeded.project.title='浏览器隔离测试作品';seeded.project.summary='灯塔守门人追查遗失的钥匙。';
+ seeded.chapters[0].body='林岚😀把钥匙藏在左靴。她走到门口，听见灯塔钟声。'.repeat(4);
+ seeded.chapters[0].chapter_goal='守住钥匙';seeded.chapters[0].scene_plan='门口遇见守门人';seeded.chapters[0].pov='林岚';
+ seeded.records.push({id:'browser_lan',type:'人物',name:'林岚',description:'她在渡口长大。',aliases:['阿岚']},
+  {id:'browser_keeper',type:'人物',name:'守灯人',description:'负责北塔夜航灯。'});
+ seeded.chapters.push({id:'browser_second',title:'第二章',body:'另一章的原稿，不接收第一章候选。',status:'草稿'});
+ await api('/api/state','PUT',seeded);
+ browser=await chromium.launch({headless:true,executablePath:process.env.MOYU_CHROME_PATH||undefined});
+
+ const desktop=await open();
+ await test('慢保存继续输入，新文字落库且版本连续推进',async()=>{
+  let held,ready;const observed=new Promise(resolve=>ready=resolve);const versions=[];
+  await desktop.page.route('**/api/state',async route=>{
+   if(route.request().method()!=='PUT')return route.continue();
+   versions.push(route.request().postDataJSON().version);
+   if(!held){const response=await route.fetch();held={route,response};ready();return}
+   await route.continue();
+  });
+  const text=await desktop.page.locator('#chapterBody').inputValue();
+  await desktop.page.locator('#chapterBody').fill(text+'\n第一次输入。');await observed;
+  await desktop.page.locator('#chapterBody').fill(text+'\n第一次输入。\n保存等待继续写。');
+  await desktop.page.locator('details.chapter-plan > summary').click();
+  await desktop.page.locator('#chapterGoal').fill('保存等待期间作者更新的本章目标。');
+  await held.route.fulfill({response:held.response});await waitSaved(desktop.page);
+  assert.match(await currentBody(firstId),/保存等待继续写/);
+  const persisted=(await api('/api/state')).chapters.find(item=>item.id===firstId);
+  assert.equal(persisted.chapter_goal,'保存等待期间作者更新的本章目标。');
+  assert.equal(await desktop.page.locator('#chapterGoal').inputValue(),persisted.chapter_goal);
+  assert.ok(versions.length>=2);assert.ok(Number(versions[1])>Number(versions[0]));
+  await desktop.page.unroute('**/api/state');
+ });
+ await test('断网不会假报已保存，恢复后保留并保存草稿',async()=>{
+  await desktop.page.route('**/api/state',route=>route.request().method()==='PUT'?route.abort('failed'):route.continue());
+  const text=await desktop.page.locator('#chapterBody').inputValue();await desktop.page.locator('#chapterBody').fill(text+'\n离线新增。');
+  await desktop.page.waitForFunction(()=>backendOnline===false);
+  assert.match(await desktop.page.locator('#saveState').innerText(),/连接|草稿|同步/);
+  assert.ok(!String(await currentBody(firstId)).includes('离线新增。'));
+  await desktop.page.unroute('**/api/state');await desktop.page.evaluate(()=>reconnect());await waitSaved(desktop.page);
+  assert.match(await currentBody(firstId),/离线新增/);
+ });
+ await test('粗体、引用、场景分隔和撤销真正修改并保存正文',async()=>{
+  const before=await desktop.page.locator('#chapterBody').inputValue();
+  await desktop.page.locator('#chapterBody').evaluate(el=>{el.focus();el.setSelectionRange(0,2)});
+  await desktop.page.locator('[data-format="bold"]').click();assert.match(await desktop.page.locator('#chapterBody').inputValue(),/^\*\*林岚\*\*/);
+  await desktop.page.locator('[data-editor-undo]').click();assert.equal(await desktop.page.locator('#chapterBody').inputValue(),before);
+  await desktop.page.locator('#chapterBody').evaluate(el=>{el.focus();el.setSelectionRange(0,2)});
+  await desktop.page.locator('[data-format="quote"]').click();assert.match(await desktop.page.locator('#chapterBody').inputValue(),/^> 林岚/);
+  await desktop.page.locator('[data-format="scene"]').click();assert.match(await desktop.page.locator('#chapterBody').inputValue(),/\*\*\*/);await waitSaved(desktop.page);
+ });
+ await test('请求等待时切章，迟到候选保持来源身份且单次采纳',async()=>{
+  providerText='第一章专属候选哨兵。';providerDelay=750;
+  const originalSecond=await currentBody('browser_second');
+  await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>candidateStore.size>0);
+  await desktop.page.locator('[data-chapter="browser_second"]').click();
+  await desktop.page.waitForFunction(()=>queueJobs.some(j=>j.status==='success'),null,{timeout:15000});
+  assert.equal(await currentBody('browser_second'),originalSecond);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  await desktop.page.waitForFunction(()=>aiDraft?.complete===true);
+  await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').dblclick();await waitSaved(desktop.page);
+  await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));
+  const text=await currentBody(firstId);assert.equal(text.split('第一章专属候选哨兵。').length-1,1);
+  assert.equal(await currentBody('browser_second'),originalSecond);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+ });
+ await test('emoji选区润色只替换选中范围',async()=>{
+  const value='首段保留。😀同一句。第二处：😀同一句。尾段保留。';
+  await desktop.page.locator('#chapterBody').fill(value);await waitSaved(desktop.page);
+  providerText='改好的第二处。';providerDelay=200;
+  await desktop.page.locator('#chapterBody').evaluate(el=>{const start=el.value.lastIndexOf('😀同一句。');el.focus();el.setSelectionRange(start,start+'😀同一句。'.length);el.dispatchEvent(new Event('select'))});
+  await desktop.page.locator('#aiTask').selectOption('polish');await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.task==='polish',null,{timeout:15000});
+  await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').click();
+  await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),'首段保留。😀同一句。第二处：改好的第二处。尾段保留。');
+ });
+ await test('连续20轮写作、切章、实际生成与单次采纳保持完整',async()=>{
+  providerDelay=80;
+  const rounds=[];
+  for(let round=1;round<=20;round++){
+   const sentinel=`第${round}轮原稿😀，铜匙留在左靴。`;
+   const candidate=`第${round}轮唯一候选。`;providerText=candidate;
+   await desktop.page.waitForFunction(()=>!aiDraft||['accepted','rejected'].includes(aiDraft.decision));
+   await desktop.page.locator('#chapterBody').fill(sentinel);await waitSaved(desktop.page);
+   await desktop.page.locator('[data-chapter="browser_second"]').click();
+   await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+   assert.equal(await desktop.page.locator('#chapterBody').inputValue(),sentinel);
+   await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
+   await desktop.page.waitForFunction(value=>aiDraft?.complete&&aiDraft?.text===value,candidate,{timeout:15000});
+   const runId=await desktop.page.evaluate(()=>aiDraft.ai_run_id);
+   await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').click();
+   await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
+   assert.equal(await currentBody(firstId),sentinel+'\n\n'+candidate);
+   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+   rounds.push({round,run_id:runId,body_preserved:true,candidate_count:1});
+  }
+  results.rounds=rounds;
+ });
+ await test('已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态',async()=>{
+  const fresh=await open();
+  await fresh.page.locator(`[data-chapter="${firstId}"]`).click();
+  await fresh.page.locator('[data-view="tasks"]').click();
+  await fresh.page.waitForFunction(()=>queueJobs.some(job=>job.author_decision==='accepted'));
+  const runId=await fresh.page.evaluate(()=>queueJobs.find(job=>job.author_decision==='accepted').ai_run_id);
+  const body=await currentBody(firstId);
+  await fresh.page.locator(`[data-task-open="${runId}"]`).click();
+  await fresh.page.waitForFunction(()=>view==='editor');
+  assert.equal(await fresh.page.locator('#aiAdopt').isEnabled(),false);
+  assert.match(await fresh.page.locator('#aiStatus').innerText(),/已采纳/);
+  assert.ok(await fresh.page.locator('#aiOutput').inputValue());
+  assert.equal(await fresh.page.locator('#aiOutput').evaluate(el=>el.readOnly),true);
+  assert.equal(await fresh.page.locator('#aiClear').isEnabled(),false);
+  assert.equal(await currentBody(firstId),body);
+  await fresh.context.close();
+ });
+ await test('结构候选更新场景计划并保持正文与作者决定',async()=>{
+  const before=await currentBody(firstId);providerDelay=80;
+  await desktop.page.locator('#aiTask').selectOption('scene');await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.task==='scene',null,{timeout:15000});
+  const runId=await desktop.page.evaluate(()=>aiDraft.ai_run_id);
+  await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').click();
+  await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
+  const snapshot=await api('/api/state');
+  assert.equal(snapshot.chapters.find(item=>item.id===firstId).body,before);
+  assert.match(snapshot.chapters.find(item=>item.id===firstId).scene_plan,/北塔|红铜罗盘/);
+  const jobs=(await api('/api/ai/queue')).jobs;
+  assert.equal(jobs.find(job=>job.ai_run_id===runId).author_decision,'accepted');
+ });
+ await test('真实流式任务停止后刷新仍为已停止且迟到内容不落正文',async()=>{
+  const before=await currentBody(firstId);providerDelay=4000;providerText='取消任务不准进入正文。';
+  await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>aiDraft?.job_id&&!aiDraft.complete);
+  const jobId=await desktop.page.evaluate(()=>aiDraft.job_id);
+  await desktop.page.locator('#aiClear').click();
+  await desktop.page.waitForFunction(value=>queueJobs.some(job=>job.id===value&&job.status==='canceled'),jobId,{timeout:15000});
+  await desktop.page.reload();await desktop.page.waitForFunction(()=>backendOnline);
+  await desktop.page.locator('[data-view="tasks"]').click();
+  await desktop.page.waitForFunction(value=>queueJobs.some(job=>job.id===value&&job.status==='canceled'),jobId);
+  assert.equal(await currentBody(firstId),before);
+  await desktop.page.locator(`[data-task-cancel="${jobId}"]`).count().then(count=>assert.equal(count,0));
+  await desktop.page.locator('[data-view="editor"]').click();providerDelay=80;
+ });
+ await test('长章无选区润色不会全文覆盖',async()=>{
+  const value='不可删除章首。'+'完整正文。'.repeat(2600);
+  await desktop.page.locator('#chapterBody').fill(value);await waitSaved(desktop.page);
+  await desktop.page.locator('#chapterBody').evaluate(el=>{el.focus();el.setSelectionRange(0,0);el.dispatchEvent(new Event('select'))});
+  await desktop.page.locator('#aiTask').selectOption('polish');const jobsBefore=(await api('/api/ai/queue')).jobs.length;
+  await desktop.page.locator('#aiGenerate').click();await pause(200);
+  assert.match(await desktop.page.locator('#toast').innerText(),/先选中/);
+  assert.equal((await api('/api/ai/queue')).jobs.length,jobsBefore);assert.equal(await currentBody(firstId),value);
+ });
+ await test('两窗口同句冲突展示双方并可手工合并',async()=>{
+  await desktop.page.locator('#chapterBody').fill('同一段基础正文。');await waitSaved(desktop.page);
+  const other=await open();await desktop.page.locator('#chapterBody').fill('本页把灯交给林岚。');await waitSaved(desktop.page);
+  await other.page.locator('#chapterBody').fill('另页把灯交给守门人。');
+  await other.page.locator('[data-merge-dialog]').waitFor();
+  const content=await other.page.locator('[data-merge-dialog]').innerText();assert.match(content,/本机已保存稿/);
+  const boxes=await other.page.locator('.conflict-columns textarea').allTextContents();assert.ok(boxes.some(x=>x.includes('林岚')));assert.ok(boxes.some(x=>x.includes('守门人')));
+  await other.page.locator('[data-merge-choice]').selectOption('manual');await other.page.locator('[data-merge-text]').fill('合并：林岚先接过灯，再交给守门人。');
+  await other.page.locator('[data-merge]').click();await waitSaved(other.page);assert.equal(await currentBody(firstId),'合并：林岚先接过灯，再交给守门人。');await other.context.close();
+  await desktop.page.reload();await desktop.page.waitForFunction(()=>backendOnline);
+  await desktop.page.locator('[data-view="editor"]').click();await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),'合并：林岚先接过灯，再交给守门人。');
+ });
+ await test('两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段',async()=>{
+  const original='😀本页第一段。\n第二段保持原样。\n最后一段。';
+  const prefix='另一页新增首段。\n',local=original.replace('最后一段。','本页改好的最后一段。');
+  await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+  const other=await open();await other.page.locator('#chapterBody').fill(prefix+original);await waitSaved(other.page);
+  let held,ready;const observed=new Promise(resolve=>ready=resolve);
+  await desktop.page.route('**/api/state',async route=>{
+   if(route.request().method()!=='GET'||held)return route.continue();
+   const response=await route.fetch();held={route,response};ready();
+  });
+  await desktop.page.locator('#chapterBody').fill(local);await observed;
+  await desktop.page.locator('#chapterBody').evaluate(input=>{input.focus();input.setSelectionRange(0,2,'backward')});
+  await held.route.fulfill({response:held.response});await waitSaved(desktop.page);
+  const merged=prefix+local;
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),merged);
+  assert.equal(await currentBody(firstId),merged);
+  const selection=await desktop.page.locator('#chapterBody').evaluate(input=>({
+   start:input.selectionStart,end:input.selectionEnd,direction:input.selectionDirection,
+   quote:input.value.slice(input.selectionStart,input.selectionEnd),
+  }));
+  assert.deepEqual(selection,{start:prefix.length,end:prefix.length+2,direction:'backward',quote:'😀'});
+  assert.equal(await desktop.page.locator('[data-merge-dialog]').count(),0);
+  await desktop.page.keyboard.insertText('本页继续');await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),merged.replace('😀','本页继续'));
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),merged.replace('😀','本页继续'));
+  await desktop.page.unroute('**/api/state');await other.context.close();
+ });
+ await test('两窗口合并后撤销本页改稿并重做，两次都保留另一页新增段落',async()=>{
+  const original='😀本页章首。\n中间段保持原样。\n本页旧末尾。';
+  const prefix='另一页保留新增段落。\n',local=original.replace('本页旧末尾。','本页新末尾。');
+  await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+  const other=await open();await other.page.locator('#chapterBody').fill(prefix+original);await waitSaved(other.page);
+  await desktop.page.locator('#chapterBody').fill(local);await waitSaved(desktop.page);
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),prefix+local);
+  await desktop.page.locator('[data-editor-undo]').click();await waitSaved(desktop.page);
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),prefix+original);
+  assert.equal(await currentBody(firstId),prefix+original);
+  await desktop.page.locator('[data-editor-redo]').click();await waitSaved(desktop.page);
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),prefix+local);
+  assert.equal(await currentBody(firstId),prefix+local);
+  await other.context.close();
+ });
+ await test('同起点插入与删除双方向显示双方稿件，选择后保存及撤销重做不丢字',async()=>{
+  const original='甲😀乙丙。\n另一段保持。',inserted=original.replace('😀','新😀'),deleted=original.replace('😀','');
+  const combined=original.replace('😀','新');
+  for(const [local,remote] of [[inserted,deleted],[deleted,inserted]]){
+   await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+   const writer=await open(),other=await open();
+   await other.page.locator('#chapterBody').fill(remote);await waitSaved(other.page);
+   await writer.page.locator('#chapterBody').fill(local);
+   const dialog=writer.page.locator('[data-merge-dialog]');await dialog.waitFor();
+   const drafts=await dialog.locator('.conflict-columns textarea').evaluateAll(inputs=>inputs.map(input=>input.value));
+   assert.deepEqual(drafts,[local,remote]);
+   assert.equal(await currentBody(firstId),remote);
+   await dialog.locator('[data-merge-choice]').selectOption('manual');
+   await dialog.locator('[data-merge-text]').fill(combined);
+   await dialog.locator('[data-merge]').click();await waitSaved(writer.page);
+   assert.equal(await currentBody(firstId),combined);
+   if(local===inserted){
+    await writer.page.locator('[data-editor-undo]').click();await waitSaved(writer.page);
+    assert.equal(await currentBody(firstId),deleted);
+    await writer.page.locator('[data-editor-redo]').click();await waitSaved(writer.page);
+    assert.equal(await currentBody(firstId),combined);
+   }else{
+    const history=await writer.page.evaluate(()=>({undo:editorUndo.get(authorEditorHistoryKey(chapter())).length,
+     redo:editorRedo.get(authorEditorHistoryKey(chapter())).length,version:state.version}));
+    await writer.page.locator('[data-editor-undo]').click();
+    assert.match(await writer.page.locator('#toast').innerText(),/撤销位置已被另一窗口修改/);
+    assert.equal(await currentBody(firstId),combined);
+    assert.equal(await writer.page.locator('#chapterBody').inputValue(),combined);
+    assert.deepEqual(await writer.page.evaluate(()=>({undo:editorUndo.get(authorEditorHistoryKey(chapter())).length,
+     redo:editorRedo.get(authorEditorHistoryKey(chapter())).length,version:state.version})),history);
+    await other.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(other.page);
+    await other.page.locator('#chapterBody').fill(deleted);await waitSaved(other.page);
+    await writer.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(writer.page);
+    await writer.page.locator('[data-editor-undo]').click();await waitSaved(writer.page);
+    assert.equal(await currentBody(firstId),original);
+    await writer.page.locator('[data-editor-redo]').click();await waitSaved(writer.page);
+    assert.equal(await currentBody(firstId),deleted);
+   }
+   await writer.context.close();await other.context.close();
+   await desktop.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(desktop.page);
+  }
+ });
+ await test('重做插入遇到另一页同起点删字时保留正文和重做记录，恢复后可继续重做',async()=>{
+  const original='甲😀乙丙。\n另一段保持。',inserted=original.replace('😀','新😀'),deleted=original.replace('😀','');
+  await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+  const writer=await open();
+  await writer.page.locator('#chapterBody').fill(inserted);await waitSaved(writer.page);
+  await writer.page.locator('[data-editor-undo]').click();await waitSaved(writer.page);
+  assert.equal(await currentBody(firstId),original);
+  const other=await open();await other.page.locator('#chapterBody').fill(deleted);await waitSaved(other.page);
+  await writer.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(writer.page);
+  const history=await writer.page.evaluate(()=>({undo:editorUndo.get(authorEditorHistoryKey(chapter())).length,
+   redo:editorRedo.get(authorEditorHistoryKey(chapter())).length,version:state.version}));
+  await writer.page.locator('[data-editor-redo]').click();
+  assert.match(await writer.page.locator('#toast').innerText(),/重做位置已被另一窗口修改/);
+  assert.equal(await writer.page.locator('#chapterBody').inputValue(),deleted);
+  assert.equal(await currentBody(firstId),deleted);
+  assert.deepEqual(await writer.page.evaluate(()=>({undo:editorUndo.get(authorEditorHistoryKey(chapter())).length,
+   redo:editorRedo.get(authorEditorHistoryKey(chapter())).length,version:state.version})),history);
+  await other.page.locator('#chapterBody').fill(original);await waitSaved(other.page);
+  await writer.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(writer.page);
+  await writer.page.locator('[data-editor-redo]').click();await waitSaved(writer.page);
+  assert.equal(await currentBody(firstId),inserted);
+  await writer.page.locator('[data-editor-undo]').click();await waitSaved(writer.page);
+  assert.equal(await currentBody(firstId),original);
+  await writer.context.close();await other.context.close();
+  await desktop.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(desktop.page);
+ });
+ await test('粗体撤销后接收另一页新改稿，快捷键重做和撤销仅变化粗体',async()=>{
+  const original='林岚😀站在门前。\n中间段落保持。\n守灯人在楼下。';
+  const remoteEnd='守灯人留在楼上。';
+  await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+  const other=await open();await other.page.locator('#chapterBody').fill(original+'\n另一页新增钟声。');await waitSaved(other.page);
+  await desktop.page.locator('#chapterBody').evaluate(input=>{input.focus();input.setSelectionRange(0,4)});
+  await desktop.page.locator('[data-format="bold"]').click();await waitSaved(desktop.page);
+  const bold=original.replace('林岚😀','**林岚😀**')+'\n另一页新增钟声。';
+  assert.equal(await currentBody(firstId),bold);
+  await desktop.page.locator('[data-editor-undo]').click();await waitSaved(desktop.page);
+  const undone=original+'\n另一页新增钟声。';assert.equal(await currentBody(firstId),undone);
+  await other.page.evaluate(async()=>{receiveState(await readServerState());await syncBackend()});await waitSaved(other.page);
+  await other.page.locator('#chapterBody').fill(undone.replace('守灯人在楼下。',remoteEnd));await waitSaved(other.page);
+  await desktop.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(desktop.page);
+  await desktop.page.locator('#chapterBody').focus();
+  const command=process.platform==='darwin'?'Meta':'Control';
+  await desktop.page.keyboard.press(`${command}+Shift+z`);await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),bold.replace('守灯人在楼下。',remoteEnd));
+  await desktop.page.keyboard.press(`${command}+z`);await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),undone.replace('守灯人在楼下。',remoteEnd));
+  assert.equal(await desktop.page.locator('[data-merge-dialog]').count(),0);
+  await other.context.close();
+ });
+ await test('另一页覆盖本页撤销位置时拒绝操作，保留正文和可重试的撤销记录',async()=>{
+  const original='林岚把钥匙留在左靴。\n守灯人不动。';
+  const local=original.replace('左靴','帽子'),remote=original.replace('左靴','门外');
+  await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+  await desktop.page.locator('#chapterBody').fill(local);await waitSaved(desktop.page);
+  const other=await open();await other.page.locator('#chapterBody').fill(remote);await waitSaved(other.page);
+  await desktop.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(desktop.page);
+  const before=await desktop.page.evaluate(()=>({undo:editorUndo.get(authorEditorHistoryKey(chapter())).length,version:state.version}));
+  await desktop.page.locator('[data-editor-undo]').click();
+  assert.match(await desktop.page.locator('#toast').innerText(),/撤销位置已被另一窗口修改/);
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),remote);
+  assert.equal(await currentBody(firstId),remote);
+  assert.deepEqual(await desktop.page.evaluate(()=>({undo:editorUndo.get(authorEditorHistoryKey(chapter())).length,version:state.version})),before);
+  assert.equal(await desktop.page.locator('[data-editor-redo]').isEnabled(),false);
+  await other.page.locator('#chapterBody').fill(local);await waitSaved(other.page);
+  await desktop.page.evaluate(async()=>receiveState(await readServerState()));await waitSaved(desktop.page);
+  await desktop.page.locator('[data-editor-undo]').click();await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),original);
+  await other.context.close();
+ });
+ await test('真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存',async()=>{
+  const original='章首保持。\n输入位置：。\n远端段落。';
+  await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+  const other=await open();
+  await other.page.locator('#chapterBody').fill(original.replace('远端段落。','另一页保留段落。'));await waitSaved(other.page);
+  let held,ready;const observed=new Promise(resolve=>ready=resolve);
+  await desktop.page.route('**/api/state',async route=>{
+   if(route.request().method()!=='GET'||held)return route.continue();
+   const response=await route.fetch();held={route,response};ready();
+  });
+  await desktop.page.bringToFront();
+  await desktop.page.locator('#chapterBody').evaluate(input=>{
+   globalThis.browserCompositionEvents=[];
+   for(const name of ['compositionstart','compositionupdate','compositionend','input'])document.addEventListener(name,event=>{
+    if(event.target===input)browserCompositionEvents.push({type:event.type,data:event.data,isComposing:!!event.isComposing,trusted:event.isTrusted});
+   },true);
+   const position=input.value.indexOf('输入位置：')+'输入位置：'.length;
+   input.focus();input.setSelectionRange(position,position);
+  });
+  const cdp=await desktop.context.newCDPSession(desktop.page);
+  await cdp.send('Input.imeSetComposition',{text:'lin',selectionStart:3,selectionEnd:3});await observed;
+  await held.route.fulfill({response:held.response});await waitSaved(desktop.page);
+  assert.match(await desktop.page.locator('#chapterBody').inputValue(),/输入位置：lin。/);
+  assert.doesNotMatch(await desktop.page.locator('#chapterBody').inputValue(),/另一页保留段落/);
+  assert.match(await desktop.page.evaluate(()=>chapter().body),/另一页保留段落/);
+  await cdp.send('Input.imeSetComposition',{text:'linlan',selectionStart:6,selectionEnd:6});await waitSaved(desktop.page);
+  assert.match(await desktop.page.locator('#chapterBody').inputValue(),/输入位置：linlan。/);
+  assert.match(await currentBody(firstId),/另一页保留段落/);
+  await cdp.send('Input.insertText',{text:'林岚'});
+  const expected=original.replace('输入位置：','输入位置：林岚').replace('远端段落。','另一页保留段落。');
+  await desktop.page.waitForFunction(value=>document.querySelector('#chapterBody').value===value,expected);
+  await waitSaved(desktop.page);assert.equal(await currentBody(firstId),expected);
+  const events=await desktop.page.evaluate(()=>browserCompositionEvents);
+  results.native_composition_events=events;
+  assert.ok(events.some(event=>event.type==='compositionstart'&&event.trusted));
+  assert.ok(events.some(event=>event.type==='input'&&event.isComposing&&event.trusted));
+  // Chrome CDP commits can report compositionend as untrusted; the exact
+  // committed candidate and the saved final正文 are still required above.
+  assert.ok(events.some(event=>event.type==='compositionend'&&event.data==='林岚'&&!event.isComposing)||
+   events.some(event=>event.trusted&&event.type==='input'&&!event.isComposing));
+  await desktop.page.keyboard.insertText('继续');await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),expected.replace('林岚','林岚继续'));
+  await cdp.detach();await desktop.page.unroute('**/api/state');await other.context.close();
+ });
+ await test('自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章',async()=>{
+  const original='第一章开头。\n第一章末尾。',prefix='另一页保留首段。\n';
+  await desktop.page.locator('#chapterBody').fill(original);await waitSaved(desktop.page);
+  const second=await currentBody('browser_second'),other=await open();
+  await other.page.locator('#chapterBody').fill(prefix+original);await waitSaved(other.page);
+  let held,ready;const observed=new Promise(resolve=>ready=resolve);
+  await desktop.page.route('**/api/state',async route=>{
+   if(route.request().method()!=='GET'||held)return route.continue();
+   const response=await route.fetch();held={route,response};ready();
+  });
+  const local=original.replace('第一章末尾。','第一章本页改好的末尾。');
+  await desktop.page.locator('#chapterBody').fill(local);await observed;
+  await desktop.page.locator('[data-chapter="browser_second"]').click();
+  await held.route.fulfill({response:held.response});await waitSaved(desktop.page);
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),second);
+  assert.equal(await currentBody('browser_second'),second);assert.equal(await currentBody(firstId),prefix+local);
+  await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  assert.equal(await desktop.page.locator('#chapterBody').inputValue(),prefix+local);
+  await desktop.page.unroute('**/api/state');await other.context.close();
+ });
+ await test('拒绝记忆后新浏览器仍回读真实作品',async()=>{
+  await api('/api/memory','POST',{id:'browser_memory',type:'人物',name:'测试记忆'});await api('/api/memory/browser_memory','PATCH',{status:'rejected'});
+  const fresh=await open();assert.equal(await fresh.page.locator('#projectTitle').innerText(),'浏览器隔离测试作品');assert.equal(await fresh.page.evaluate(()=>backendOnline),true);
+  await fresh.context.close();
+ });
+ await test('完整普通正文提取、作者确认摘要交接、原句定位与改稿失效',async()=>{
+  await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  const prose='林岚把红铜罗盘交给守灯人。\n守灯人答应在子夜把罗盘送回渡口。';
+  await desktop.page.locator('#chapterBody').fill(prose);await waitSaved(desktop.page);
+  await desktop.page.locator('[data-action="chapterAnalysis"]').click();await desktop.page.locator('[data-extract]').click();
+  await desktop.page.waitForFunction(()=>queueJobs.some(job=>job.task==='chapter_analysis'&&job.status==='success'),null,{timeout:15000});
+  await desktop.page.locator('[data-view="editor"]').click();await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  await desktop.page.locator('[data-action="chapterAnalysis"]').click();await desktop.page.locator('[data-analysis-decision]').waitFor();
+  assert.match(await desktop.page.locator('.analysis-modal blockquote').innerText(),/红铜罗盘/);
+  await desktop.page.locator('[data-analysis-decision]').selectOption('accepted');
+  await desktop.page.locator('[data-confirm-analysis]').click();await desktop.page.waitForFunction(()=>!document.querySelector('[data-confirm-analysis]'));
+  await waitSaved(desktop.page);
+  const saved=await api('/api/state');const current=saved.chapters.find(item=>item.id===firstId);
+  assert.match(current.recap,/红铜罗盘/);assert.match(current.next_brief,/归还罗盘/);
+  const confirmed=saved.memory.find(item=>item.name==='交出罗盘');assert.ok(confirmed);
+  assert.equal(confirmed.status,'已确认');assert.equal(confirmed.source_span_status,'valid');
+  await desktop.page.locator('[data-view="memory"]').click();await desktop.page.locator(`[data-memory-source="${confirmed.id}"]`).click();
+  const selection=await desktop.page.locator('#chapterBody').evaluate(el=>el.value.slice(el.selectionStart,el.selectionEnd));
+  assert.equal(selection,'林岚把红铜罗盘交给守灯人。');
+  await desktop.page.locator('#chapterBody').fill('林岚把罗盘留在自己手里，独自离开渡口。');await waitSaved(desktop.page);
+  await desktop.page.locator('[data-action="chapterAnalysis"]').click();
+  assert.match(await desktop.page.locator('.analysis-modal').innerText(),/原稿已变|重新提取/);
+  assert.equal(await desktop.page.locator('[data-confirm-analysis]').isEnabled(),false);
+  await desktop.page.locator('.analysis-modal [data-close]').click();
+  const revised=await api('/api/state');assert.equal(revised.chapters.find(item=>item.id===firstId).recap,'');
+  assert.equal(revised.chapters.find(item=>item.id===firstId).next_brief,'');
+  assert.equal(await desktop.page.locator('#chapterRecap').inputValue(),'');
+  assert.equal(await desktop.page.locator('#chapterNextBrief').inputValue(),'');
+  if(!await desktop.page.locator('details.chapter-plan').evaluate(el=>el.open))await desktop.page.locator('details.chapter-plan > summary').click();
+  await desktop.page.locator('#chapterGoal').fill('作者新目标：带着罗盘返回渡口。');await waitSaved(desktop.page);
+  await desktop.page.locator('#chapterTitle').fill('改稿后回到渡口');await waitSaved(desktop.page);
+  const planned=await api('/api/state');const plannedChapter=planned.chapters.find(item=>item.id===firstId);
+  assert.equal(plannedChapter.recap,'');assert.equal(plannedChapter.next_brief,'');
+  assert.equal(plannedChapter.chapter_goal,'作者新目标：带着罗盘返回渡口。');
+  assert.equal(revised.memory.find(item=>item.id===confirmed.id).status,'stale');
+ });
+ await test('语义审稿显示原句并保存作者解释，改稿后报告过期',async()=>{
+  const body='林岚把红铜罗盘交给守灯人。\n她回头看了一眼空船。';
+  await desktop.page.locator('#chapterBody').fill(body);await waitSaved(desktop.page);
+  await desktop.page.locator('[data-action="reviewChapter"]').click();await desktop.page.locator('[data-semantic-review]').click();
+  await desktop.page.waitForFunction(()=>queueJobs.some(job=>job.task==='semantic_review'&&job.status==='success'),null,{timeout:15000});
+  await desktop.page.locator('[data-view="editor"]').click();await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  await desktop.page.locator('[data-action="reviewChapter"]').click();await desktop.page.locator('[data-review-choice]').waitFor();
+  assert.match(await desktop.page.locator('.analysis-modal blockquote').innerText(),/红铜罗盘/);
+  await desktop.page.locator('[data-review-reason]').fill('下一段已补交代，她以罗盘换取渡船通行。');
+  await desktop.page.locator('[data-review-choice]').selectOption('explained');
+  await desktop.page.waitForFunction(()=>document.querySelector('[data-review-choice]')?.disabled===true&&
+   document.querySelector('[data-review-reason]')?.readOnly===true);
+  const report=(await api(`/api/story-reviews?chapter_id=${firstId}`)).reviews[0];
+  assert.equal(report.status,'resolved_by_author');assert.equal(report.auto_pass,false);
+  assert.match(report.findings[0].reason,/渡船/);
+  await desktop.page.locator('.analysis-modal [data-close]').click();
+  await desktop.page.locator('[data-action="reviewChapter"]').click();
+  assert.equal(await desktop.page.locator('[data-review-choice]').inputValue(),'explained');
+  assert.equal(await desktop.page.locator('[data-review-choice]').isEnabled(),false);
+  assert.equal(await desktop.page.locator('[data-review-reason]').evaluate(el=>el.readOnly),true);
+  await desktop.page.locator('.analysis-modal [data-close]').click();
+  await desktop.page.locator('#chapterBody').fill(body+'\n潮声停了。');await waitSaved(desktop.page);
+  await desktop.page.locator('[data-action="reviewChapter"]').click();assert.match(await desktop.page.locator('.analysis-modal').innerText(),/重新审稿/);
+  await desktop.page.locator('.analysis-modal [data-close]').click();
+ });
+ await test('多问题审稿明确选择原句，精确修订第二重复句并重新审稿',async()=>{
+  const body='😀章首保留。\n林岚把红铜罗盘交给守灯人。\n她转身走向空船。\n林岚抬头。\n风从门缝吹进来。\n林岚抬头。\n她听见北塔的钟声。';
+  reviewMode='multiple';await desktop.page.locator('#chapterBody').fill(body);await waitSaved(desktop.page);
+  const reviewsBefore=await desktop.page.evaluate(()=>queueJobs.filter(job=>job.task==='semantic_review'&&job.status==='success').length);
+  await desktop.page.locator('[data-action="reviewChapter"]').click();await desktop.page.locator('[data-semantic-review]').click();
+  await desktop.page.waitForFunction(n=>queueJobs.filter(job=>job.task==='semantic_review'&&job.status==='success').length>n,reviewsBefore,{timeout:15000});
+  await desktop.page.locator('[data-view="editor"]').click();await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  await desktop.page.locator('[data-action="reviewChapter"]').click();await desktop.page.locator('[data-review-issue="1"]').waitFor();
+  const jobsBefore=(await api('/api/ai/queue')).jobs.length;
+  await desktop.page.locator('[data-review-repair="0"]').click();
+  assert.match(await desktop.page.locator('.analysis-modal .form-error').innerText(),/先选择/);
+  assert.equal((await api('/api/ai/queue')).jobs.length,jobsBefore);
+  await desktop.page.locator('[data-review-target="0"]').selectOption('1');
+  await desktop.page.locator('[data-review-source="0"][data-review-evidence-index="1"]').click();
+  await desktop.page.waitForFunction(()=>!document.querySelector('.analysis-modal'));
+  assert.equal(await desktop.page.locator('#chapterBody').evaluate(el=>el.value.slice(el.selectionStart,el.selectionEnd)),'她转身走向空船。');
+  await desktop.page.locator('[data-action="reviewChapter"]').click();
+  await desktop.page.locator('[data-review-reason="1"]').fill('用手指动作承接她的紧张。');
+  await desktop.page.locator('[data-review-choice="1"]').selectOption('accepted');
+  await desktop.page.waitForFunction(()=>document.querySelector('[data-review-decision-note="1"]')?.hidden===false);
+  assert.equal(await currentBody(firstId),body);
+  providerText='林岚用拇指抵住掌心。';
+  await desktop.page.locator('[data-review-repair="1"]').click();
+  await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.task==='polish'&&aiDraft?.text==='林岚用拇指抵住掌心。',null,{timeout:15000});
+  const source=await desktop.page.evaluate(()=>aiDraft.source);
+  assert.equal(source.range.start,Array.from(body.slice(0,body.lastIndexOf('林岚抬头。'))).length);
+  assert.equal(source.range.quote,'林岚抬头。');
+  const repairRun=await desktop.page.evaluate(()=>aiDraft.ai_run_id);
+  const job=(await api('/api/ai/queue')).jobs.find(item=>item.ai_run_id===repairRun);
+  assert.ok(job);
+  await desktop.page.screenshot({path:path.join(temporary,'desktop-review-repair.png'),fullPage:true});
+  await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').click();
+  await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
+  const start=body.lastIndexOf('林岚抬头。');
+  assert.equal(await currentBody(firstId),body.slice(0,start)+'林岚用拇指抵住掌心。'+body.slice(start+'林岚抬头。'.length));
+  await desktop.page.locator('[data-action="reviewChapter"]').click();
+  assert.match(await desktop.page.locator('.analysis-modal').innerText(),/重新审稿/);
+  assert.equal(await desktop.page.locator('[data-review-repair="1"]').isEnabled(),false);
+  const completed=await desktop.page.evaluate(()=>queueJobs.filter(job=>job.task==='semantic_review'&&job.status==='success').length);
+  reviewMode='single';await desktop.page.locator('[data-semantic-review]').click();
+  await desktop.page.waitForFunction(n=>queueJobs.filter(job=>job.task==='semantic_review'&&job.status==='success').length>n,completed,{timeout:15000});
+  await desktop.page.locator('[data-view="editor"]').click();await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+  await desktop.page.locator('[data-action="reviewChapter"]').click();await desktop.page.locator('[data-review-choice]').waitFor();
+  assert.equal(await desktop.page.locator('[data-review-choice]').isEnabled(),true);
+  await desktop.page.locator('.analysis-modal [data-close]').click();
+ });
+ await test('超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿',async()=>{
+  const body=await currentBody(firstId);providerText='这份候选超出要求。'.repeat(6);
+  await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiInstruction').fill('续写20至30字。');
+  await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.output_validation?.eligible===false,null,{timeout:15000});
+  assert.equal(await desktop.page.locator('#aiOutput').inputValue(),providerText);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/要求20至30字/);
+  assert.equal(await currentBody(firstId),body);
+  const edited='😀林岚把灯罩扣紧，沿着潮水留下的白线走向空船。';
+  await desktop.page.locator('#aiOutput').fill(edited);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+  await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').click();
+  await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),body+'\n\n'+edited);
+  await desktop.page.locator('#aiInstruction').fill('');
+ });
+ await test('模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用',async()=>{
+  const before=await currentBody(firstId);
+  providerText='我们需要分析任务。\n林岚把钥匙压在掌心。';
+  await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.text==='我们需要分析任务。\n林岚把钥匙压在掌心。',null,{timeout:15000});
+  assert.equal(await desktop.page.locator('#aiOutput').inputValue(),providerText);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/规划|思考/);
+  for(const text of ['我们得精心写一段。\n林岚把钥匙压在掌心。','让我构思情节。\n林岚把钥匙压在掌心。']){
+   await desktop.page.locator('#aiOutput').fill(text);
+   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  }
+  for(const text of ['“我们需要分析任务。”林岚关上门。','我们需要分析脚印。林岚沿着台阶蹲下。']){
+   await desktop.page.locator('#aiOutput').fill(text);
+   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+  }
+  assert.equal(await currentBody(firstId),before);
+  await desktop.page.locator('#aiClear').click();
+ });
+ assert.deepEqual(desktop.errors,[]);await desktop.context.close();
+ const compact=await open({width:1280,height:800});
+ await test('1280×800电脑窗口无横向溢出，编辑和生成控件可用',async()=>{
+  assert.equal(await compact.page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  const bad=await compact.page.locator('button').evaluateAll(elements=>elements.filter(el=>el.clientHeight>0&&el.scrollHeight>el.clientHeight+2).map(el=>el.innerText));
+  assert.deepEqual(bad,[]);assert.ok((await compact.page.locator('#aiInstruction').boundingBox()).width>150);
+  await compact.page.screenshot({path:path.join(temporary,'compact-desktop-editor.png'),fullPage:true});
+ });
+ assert.deepEqual(compact.errors,[]);await compact.context.close();
+ const workspace=await open();
+ await test('两作品切换隔离，卷章场景保存后建立目录',async()=>{
+  await workspace.page.locator('[data-view="library"]').click();await workspace.page.locator('[data-action="createProject"]').click();
+  await workspace.page.locator('#newBookTitle').fill('独立第二部');await workspace.page.locator('#newBookSummary').fill('雪地邮差追查封缄。');
+  await workspace.page.locator('.author-form [type="submit"]').click();await workspace.page.waitForFunction(()=>state.project.title==='独立第二部');
+  await waitSaved(workspace.page);
+  await workspace.page.locator('[data-view="blueprint"]').click();await workspace.page.locator('[data-blueprint-field="premise"]').waitFor();
+  await workspace.page.locator('[data-action="addVolume"]').click();await workspace.page.locator('#volumeTitle').fill('第一卷 雪路');
+  await workspace.page.locator('.author-form [type="submit"]').click();await workspace.page.locator('[data-plan-add-chapter]').waitFor();
+  await workspace.page.locator('[data-plan-add-chapter]').click();await workspace.page.locator('#planChapterTitle').fill('第一章 封缄');
+  await workspace.page.locator('#planChapterGoal').fill('找回封缄');await workspace.page.locator('#planChapterPov').fill('邮差');
+  await workspace.page.locator('.author-form [type="submit"]').click();await workspace.page.locator('[data-plan-add-scene]').waitFor();
+  await workspace.page.locator('[data-plan-add-scene]').click();await workspace.page.locator('#planSceneTitle').fill('驿站冲突');
+  await workspace.page.locator('#planSceneGoal').fill('取回遗失的包裹');await workspace.page.locator('.author-form [type="submit"]').click();
+  await workspace.page.locator('[data-plan-edit-scene]').waitFor();await workspace.page.locator('[data-action="materializePlan"]').click();
+  await workspace.page.waitForFunction(()=>state.chapters.some(item=>item.plan_id&&item.title==='第一章 封缄'),null,{timeout:15000});
+  await waitSaved(workspace.page);
+  await workspace.page.locator('[data-view="editor"]').click();assert.ok((await workspace.page.locator('.chapter-sidebar').innerText()).includes('封缄'));
+  const newId=await workspace.page.evaluate(()=>requestedProject);assert.notEqual(newId,'default-project');
+  await workspace.page.locator('[data-view="library"]').click();await workspace.page.locator('[data-project-open="default-project"]').waitFor();
+  await workspace.page.locator('[data-project-open="default-project"]').click();await workspace.page.waitForFunction(()=>state.project.title==='浏览器隔离测试作品');
+  assert.equal((await api('/api/state','GET',undefined,newId)).project.title,'独立第二部');
+ });
+ await test('电脑端四阶段规划中途刷新和失败重做，最终采用蓝图不改变已写正文',async()=>{
+  await workspace.page.locator('[data-view="library"]').click();
+  const secondId=(await api('/api/projects')).projects.find(project=>project.title==='独立第二部').id;
+  await workspace.page.locator(`[data-project-open="${secondId}"]`).click();
+  await workspace.page.waitForFunction(()=>state.project.title==='独立第二部');await waitSaved(workspace.page);
+  const owner=await workspace.page.evaluate(()=>requestedProject);
+  await workspace.page.locator('[data-view="editor"]').click();
+  await workspace.page.locator('#chapterBody').fill('😀先前章节的已写正文。雪地邮差把封缄压在油灯下，这一段不能被新规划覆盖。');
+  await waitSaved(workspace.page);
+  const before=await api('/api/state','GET',undefined,owner);
+  await workspace.page.locator('[data-view="blueprint"]').click();await workspace.page.locator('[data-blueprint-field="premise"]').waitFor();
+  await workspace.page.locator('[data-action="beginPlanning"]').click();
+  await workspace.page.locator('#planningPremise').fill('雪地邮差追查封缄，旧驿站的蜡印藏着寄信人的名字。');
+  await workspace.page.locator('#planningVolumes').fill('2');await workspace.page.locator('#planningChapters').fill('2');
+  await workspace.page.locator('#planningScenes').fill('1');
+  await workspace.page.locator('.author-form [type="submit"]').click();
+  await workspace.page.locator('[data-planning-start]').waitFor();
+  const workflowId=await workspace.page.evaluate(()=>authorPlanning.id);
+  for(const stage of ['overview','volumes','chapters','scenes']){
+   assert.equal(await workspace.page.evaluate(()=>authorPlanning.stage),stage);
+   if(stage==='chapters')planningFailure=true;
+   await workspace.page.locator('[data-planning-start]').click();
+   if(stage==='chapters'){
+    await workspace.page.waitForFunction(()=>authorPlanning.attempt?.status==='failed',null,{timeout:15000});
+    const failures=await workspace.page.evaluate(()=>authorPlanning.attempts.filter(a=>a.status==='failed').length);
+    assert.equal(failures,1);assert.equal(await workspace.page.locator('[data-planning-start]').innerText(),'重做当前阶段');
+    await workspace.page.locator('[data-planning-start]').click();
+   }
+   await workspace.page.locator('[data-planning-confirm]').waitFor({timeout:15000});
+   assert.equal(await workspace.page.evaluate(()=>authorPlanning.attempt.status),'complete');
+   if(stage==='overview'){
+    await workspace.page.reload();await workspace.page.waitForFunction(()=>backendOnline);
+    await workspace.page.locator('[data-view="blueprint"]').click();await workspace.page.locator('[data-planning-confirm]').waitFor();
+    assert.equal(await workspace.page.evaluate(()=>authorPlanning.id),workflowId);
+   }
+   await workspace.page.locator('[data-planning-confirm]').click();
+   await workspace.page.waitForFunction(previous=>authorPlanning.stage!==previous||authorPlanning.status==='completed',stage);
+  }
+  assert.equal(await workspace.page.evaluate(()=>authorPlanning.attempts.filter(a=>a.status==='confirmed').length),4);
+  await workspace.page.screenshot({path:path.join(temporary,'desktop-planning.png'),fullPage:true});
+  await workspace.page.locator('[data-planning-apply]').click();
+  await workspace.page.waitForFunction(()=>authorPlanning.applied===true);
+  const after=await api('/api/state','GET',undefined,owner);
+  assert.deepEqual(after.chapters.map(c=>[c.id,c.body]),before.chapters.map(c=>[c.id,c.body]));
+  const blueprint=(await api('/api/blueprint','GET',undefined,owner)).blueprint;
+  assert.equal(blueprint.volumes.length,2);assert.equal(blueprint.volumes.flatMap(v=>v.chapters).length,4);
+  assert.equal(blueprint.volumes.flatMap(v=>v.chapters).flatMap(c=>c.scenes).length,4);
+  await workspace.page.locator('[data-view="tasks"]').click();await workspace.page.locator('[data-task-planning]').first().waitFor();
+  await workspace.page.locator('[data-task-planning]').first().click();await workspace.page.locator('[data-planning-status]').waitFor();
+  assert.match(await workspace.page.locator('[data-planning-status]').innerText(),/已采用/);
+  const planIds=blueprint.volumes.flatMap(v=>v.chapters).map(c=>c.id);
+  await workspace.page.locator('[data-action="materializePlan"]').click();
+  await workspace.page.waitForFunction(({ids,count})=>state.chapters.length===count&&
+   ids.every(id=>state.chapters.filter(c=>c.plan_id===id).length===1),
+   {ids:planIds,count:before.chapters.length+planIds.length},{timeout:15000});
+  await waitSaved(workspace.page);
+  const materialized=await api('/api/state','GET',undefined,owner);
+  assert.deepEqual(materialized.chapters.slice(0,planIds.length).map(c=>c.plan_id),planIds);
+  for(const c of before.chapters)assert.equal(materialized.chapters.find(x=>x.id===c.id).body,c.body);
+  const chapterIds=materialized.chapters.map(c=>c.id);
+  await workspace.page.locator('[data-action="materializePlan"]').click();
+  await workspace.page.waitForFunction(version=>Number(state.version)>Number(version),materialized.version);
+  await waitSaved(workspace.page);
+  assert.deepEqual((await api('/api/state','GET',undefined,owner)).chapters.map(c=>c.id),chapterIds);
+  await workspace.page.locator('[data-view="library"]').click();await workspace.page.locator('[data-project-open="default-project"]').click();
+  await workspace.page.waitForFunction(()=>requestedProject==='default-project');await waitSaved(workspace.page);
+ });
+ const raceProjects=[];
+ for(const label of ['甲','乙']){
+  const created=await api('/api/projects','POST',{title:`竞态作品${label}`,summary:`独立正文${label}`,goal:50000});
+  const id=(created.project||created.state.project).id;
+  const snapshot=await api('/api/state','GET',undefined,id);
+  snapshot.chapters[0].body=`竞态作品${label}专属原稿。`;await api('/api/state','PUT',snapshot,id);
+  await api('/api/ai/settings','PUT',{base_url:`http://127.0.0.1:${providerPort}/v1`,model:`browser-race-${label}`,
+   parameters:{temperature:0.65,max_tokens:3000},daily_limit:100},id);
+  raceProjects.push({id,title:`竞态作品${label}`,body:`竞态作品${label}专属原稿。`,model:`browser-race-${label}`});
+ }
+ async function switchThroughLibrary(project){
+  await workspace.page.locator('[data-view="library"]').click();
+  await workspace.page.locator(`[data-project-open="${project.id}"]`).waitFor();
+  await workspace.page.locator(`[data-project-open="${project.id}"]`).click();
+  await workspace.page.waitForFunction(id=>backendOnline&&requestedProject===id&&state.project.id===id,project.id);
+  await waitSaved(workspace.page);
+ }
+ async function assertProject(project){
+  const snapshot=await workspace.page.evaluate(()=>({id:requestedProject,state_id:state.project.id,
+   title:state.project.title,body:state.chapters[0].body,online:backendOnline,error:saveError,
+   cached:JSON.parse(storage.get(cacheKey())),confirmed:confirmedState}));
+  assert.equal(snapshot.id,project.id);assert.equal(snapshot.state_id,project.id);
+  assert.equal(snapshot.title,project.title);assert.equal(snapshot.body,project.body);
+  assert.equal(snapshot.online,true);assert.equal(snapshot.error,'');
+  assert.equal(snapshot.cached.project.id,project.id);assert.equal(snapshot.cached.chapters[0].body,project.body);
+  assert.equal(snapshot.confirmed.project.id,project.id);
+  assert.equal((await api('/api/state','GET',undefined,project.id)).chapters[0].body,project.body);
+ }
+ await test('同一时刻连续点击打开两书，最终作品与缓存完全隔离',async()=>{
+  await workspace.page.locator('[data-view="library"]').click();
+  await workspace.page.locator(`[data-project-open="${raceProjects[1].id}"]`).waitFor();
+  await workspace.page.evaluate(ids=>ids.forEach(id=>document.querySelector(`[data-project-open="${id}"]`).click()),raceProjects.map(item=>item.id));
+  await workspace.page.evaluate(()=>authorSwitchChain);await assertProject(raceProjects[1]);
+  await workspace.page.locator('[data-view="editor"]').click();
+  assert.equal(await workspace.page.locator('#chapterBody').inputValue(),raceProjects[1].body);
+ });
+ await test('旧作品读取成功与错误迟到，均不改变当前正文、缓存和保存状态',async()=>{
+  for(const success of [true,false]){
+   await switchThroughLibrary(raceProjects[0]);
+   let release,ready;const observed=new Promise(resolve=>ready=resolve);let captured=false;
+   await workspace.page.route('**/api/state',async route=>{
+    if(captured||route.request().method()!=='GET'||route.request().headers()['x-moyu-project']!==raceProjects[0].id)return route.continue();
+    captured=true;const response=await route.fetch();
+    await new Promise(resolve=>{release=resolve;ready()});
+    await route.fulfill(success?{response}:{status:503,contentType:'application/json',body:JSON.stringify({error:'旧作品迟到错误哨兵'})});
+   });
+   await workspace.page.evaluate(()=>{window.raceHydrate=hydrate()});await observed;
+   await switchThroughLibrary(raceProjects[1]);release();
+   await workspace.page.evaluate(()=>window.raceHydrate);await assertProject(raceProjects[1]);
+   await workspace.page.unroute('**/api/state');
+  }
+ });
+ await test('旧作品模型设置迟到，当前模型身份保持正确',async()=>{
+  await switchThroughLibrary(raceProjects[0]);
+  let release,ready;const observed=new Promise(resolve=>ready=resolve);let captured=false;
+  await workspace.page.route('**/api/ai/status',async route=>{
+   if(captured||route.request().headers()['x-moyu-project']!==raceProjects[0].id)return route.continue();
+   captured=true;const response=await route.fetch();
+   await new Promise(resolve=>{release=resolve;ready()});await route.fulfill({response});
+  });
+  await workspace.page.evaluate(()=>{window.raceStatus=loadAIStatus()});await observed;
+  await switchThroughLibrary(raceProjects[1]);release();await workspace.page.evaluate(()=>window.raceStatus);
+  assert.equal(await workspace.page.evaluate(()=>aiStatus.model),raceProjects[1].model);
+  await assertProject(raceProjects[1]);await workspace.page.unroute('**/api/ai/status');
+ });
+ await test('服务回应作品身份错误时拒绝覆盖，恢复后仍为原书',async()=>{
+  const wrong=await api('/api/state','GET',undefined,raceProjects[0].id);let captured=false;
+  await workspace.page.route('**/api/state',route=>{
+   if(captured||route.request().method()!=='GET')return route.continue();
+   captured=true;return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify(wrong)});
+  });
+  assert.equal(await workspace.page.evaluate(()=>hydrate()),false);
+  const refused=await workspace.page.evaluate(()=>({id:state.project.id,body:state.chapters[0].body,error:saveError,
+   online:backendOnline,cached:JSON.parse(storage.get(cacheKey()))}));
+  assert.equal(refused.id,raceProjects[1].id);assert.equal(refused.body,raceProjects[1].body);
+  assert.equal(refused.cached.project.id,raceProjects[1].id);assert.equal(refused.online,false);
+  assert.match(refused.error,/不一致/);await workspace.page.unroute('**/api/state');
+  await workspace.page.evaluate(()=>reconnect());await waitSaved(workspace.page);await assertProject(raceProjects[1]);
+  await switchThroughLibrary({id:'default-project'});
+ });
+ await test('设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型',async()=>{
+  providerDelay=80;providerText='本机连接检查成功。';
+  await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
+  await workspace.page.locator('#modelBaseUrl').fill(`http://127.0.0.1:${providerPort}/v1`);
+  await workspace.page.locator('#modelDefault').fill('browser-mock');
+  await workspace.page.locator('#modelTone').fill('克制、动作具体');
+  await workspace.page.locator('#modelStyleInstructions').fill('保持林岚视角，不补她未知的事实。');
+  await workspace.page.locator('#modelMaxTokens').fill('4096');
+  await workspace.page.locator('#modelReasoning').selectOption('none');
+  await workspace.page.locator('[data-task-model="continue"]').fill('browser-special-continue');
+  await workspace.page.locator('#modelSettings [type="submit"]').click();
+  await workspace.page.waitForFunction(()=>authorSettings?.styles?.tone==='克制、动作具体');
+  await workspace.page.locator('#modelProbe').click();
+  await workspace.page.waitForFunction(()=>document.querySelector('#modelProbeStatus')?.textContent.includes('实测成功'),null,{timeout:15000});
+  const configured=(await api('/api/ai/settings')).settings;
+  assert.equal(configured.models.continue,'browser-special-continue');assert.equal(configured.last_probe.success,true);
+  assert.equal(configured.parameters.max_tokens,4096);assert.equal(configured.parameters.reasoning_effort,'none');
+  assert.equal(configured.api_key_configured,false);
+  await workspace.page.locator('[data-view="editor"]').click();await workspace.page.locator(`[data-chapter="${firstId}"]`).click();
+  providerText='用途模型测试唯一候选。';await workspace.page.locator('#aiTask').selectOption('continue');await workspace.page.locator('#aiGenerate').click();
+  await workspace.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.text==='用途模型测试唯一候选。',null,{timeout:15000});
+  const actual=providerRequests.at(-1);assert.equal(actual.model,'browser-special-continue');
+  assert.equal(actual.max_tokens,4096);assert.equal(actual.reasoning_effort,'none');
+  assert.match(actual.messages[0].content,/克制、动作具体/);
+  await workspace.page.locator('#aiClear').click();
+ });
+ await test('电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关',async()=>{
+  await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
+  await workspace.page.locator('#modelReasoning').selectOption('deepseek_disabled');
+  await workspace.page.locator('#modelSettings [type="submit"]').click();
+  await workspace.page.waitForFunction(()=>authorSettings?.parameters?.thinking?.type==='disabled');
+  await workspace.page.reload();await workspace.page.waitForFunction(()=>backendOnline);
+  await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
+  assert.equal(await workspace.page.locator('#modelReasoning').inputValue(),'deepseek_disabled');
+  const configured=(await api('/api/ai/settings')).settings;
+  assert.deepEqual(configured.parameters.thinking,{type:'disabled'});
+  assert.equal(configured.parameters.reasoning_effort,undefined);
+  await workspace.page.locator('[data-view="editor"]').click();await workspace.page.locator(`[data-chapter="${firstId}"]`).click();
+  providerText='明确思考开关测试候选。';
+  await workspace.page.locator('#aiTask').selectOption('continue');await workspace.page.locator('#aiGenerate').click();
+  await workspace.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.text==='明确思考开关测试候选。',null,{timeout:15000});
+  const actual=providerRequests.at(-1);
+  assert.deepEqual(actual.thinking,{type:'disabled'});assert.equal(actual.reasoning_effort,undefined);
+  await workspace.page.locator('#aiClear').click();
+  await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
+  await workspace.page.locator('#modelReasoning').selectOption('');
+  await workspace.page.locator('#modelSettings [type="submit"]').click();
+  await workspace.page.waitForFunction(()=>!authorSettings?.parameters?.thinking&&!authorSettings?.parameters?.reasoning_effort);
+  await waitSaved(workspace.page);
+ });
+ await test('旧书预览拆分合并导入独立作品，原作品保持原稿',async()=>{
+  const oldBody=await currentBody(firstId);
+  const text='短序言。\n第一章 同名\n林岚留住月牙密钥。\n第一章 同名\n\n第二章 渡口\n守灯人带来冷灰药粉。\n';
+  await workspace.page.locator('[data-view="references"]').click();
+  await workspace.page.locator('#bookFileInput').setInputFiles({name:'old-book.txt',mimeType:'text/plain',buffer:Buffer.from(text)});
+  await workspace.page.locator('[data-import-confirm]').waitFor();
+  await workspace.page.locator('#importBookTitle').fill('浏览器旧书导入');
+  await workspace.page.locator('[data-import-body="0"]').evaluate(el=>{el.focus();el.setSelectionRange(2,2)});
+  await workspace.page.locator('[data-import-split="0"]').click();assert.equal(await workspace.page.locator('[data-import-body]').count(),5);
+  await workspace.page.locator('[data-import-merge="0"]').click();assert.equal(await workspace.page.locator('[data-import-body]').count(),4);
+  await workspace.page.locator('[data-import-confirm]').click();
+  await workspace.page.waitForFunction(()=>state.project.title==='浏览器旧书导入');
+  await waitSaved(workspace.page);
+  const id=await workspace.page.evaluate(()=>requestedProject);const saved=await api('/api/state','GET',undefined,id);
+  assert.equal(saved.chapters.length,4);assert.equal(saved.chapters.map(item=>item.body).join(''),text);
+  assert.equal(new Set(saved.chapters.map(item=>item.id)).size,4);assert.equal(await currentBody(firstId),oldBody);
+  results.imported_project=id;
+ });
+ await test('作为参考来源导入、阅读和按原句搜索不改变本书正文',async()=>{
+  const project=await workspace.page.evaluate(()=>requestedProject);
+  const before=await api('/api/state','GET',undefined,project);
+  const text='# 资料书\n\n## 第一章 规则\n红铜罗盘只有在子夜才能指向北塔。\n\n## 第二章 药粉\n冷灰药粉不能沾水。\n';
+  await workspace.page.locator('[data-view="references"]').click();
+  await workspace.page.locator('#bookFileInput').setInputFiles({name:'reference.md',mimeType:'text/markdown',buffer:Buffer.from(text)});
+  await workspace.page.locator('[data-import-confirm]').waitFor();await workspace.page.locator('#importBookMode').selectOption('reference');
+  await workspace.page.locator('#importBookTitle').fill('浏览器资料书');await workspace.page.locator('[data-import-confirm]').click();
+  await workspace.page.locator('[data-reference-open]').waitFor();
+  const after=await api('/api/state','GET',undefined,project);
+  assert.deepEqual(after.chapters.map(item=>[item.id,item.body]),before.chapters.map(item=>[item.id,item.body]));
+  const reference=(await api('/api/references','GET',undefined,project)).references[0];
+  assert.equal(reference.use,'reference_not_story_fact');
+  assert.equal(reference.filename,'reference.md');
+  assert.match(await workspace.page.locator('#referenceList').innerText(),/reference.md/);
+  await workspace.page.locator('[data-reference-open]').click();
+  await workspace.page.locator('#referenceResults summary').filter({hasText:'第一章 规则'}).click();
+  assert.match(await workspace.page.locator('#referenceResults').innerText(),/红铜罗盘只有在子夜/);
+  await workspace.page.locator('#referenceQuery').fill('红铜罗盘子夜北塔');await workspace.page.locator('[data-reference-search]').click();
+  await workspace.page.waitForFunction(()=>document.querySelector('#referenceResults .result')?.textContent.includes('红铜罗盘'));
+  await workspace.page.locator('.candidate-modal [data-close]').click();
+  results.reference_document=reference.id;
+ });
+ await test('完整备份下载与恢复副本保留正文和参考来源',async()=>{
+  const sourceId=await workspace.page.evaluate(()=>requestedProject);
+  const before=await api('/api/state','GET',undefined,sourceId);
+  await workspace.page.locator('[data-view="backups"]').click();await workspace.page.locator('[data-action="createBackup"]').click();
+  await workspace.page.locator('[data-backup-download]').waitFor();
+  const downloaded=workspace.page.waitForEvent('download');
+  await workspace.page.locator('[data-backup-download]').first().click();const download=await downloaded;
+  assert.match(download.suggestedFilename(),/\.zip$/);await download.saveAs(path.join(temporary,'complete-backup.zip'));
+  assert.ok(fs.statSync(path.join(temporary,'complete-backup.zip')).size>1000);
+  await workspace.page.locator('[data-backup-restore]').first().click();await workspace.page.locator('#restoreConfirm').check();
+  await workspace.page.locator('.author-form [type="submit"]').click();
+  await workspace.page.waitForFunction(previous=>requestedProject!==previous,sourceId);await waitSaved(workspace.page);
+  const restoredId=await workspace.page.evaluate(()=>requestedProject);
+  const restored=await api('/api/state','GET',undefined,restoredId);
+  assert.equal(restored.chapters.map(item=>item.body).join(''),before.chapters.map(item=>item.body).join(''));
+  assert.notDeepEqual(restored.chapters.map(item=>item.id),before.chapters.map(item=>item.id));
+  const references=(await api('/api/references','GET',undefined,restoredId)).references;assert.equal(references.length,1);
+  assert.equal(references[0].title,'浏览器资料书');
+  assert.deepEqual((await api('/api/state','GET',undefined,sourceId)).chapters.map(item=>item.body),before.chapters.map(item=>item.body));
+  results.restored_project=restoredId;
+ });
+ await workspace.page.locator('[data-view="editor"]').click();
+ await workspace.page.screenshot({path:path.join(temporary,'desktop-editor.png'),fullPage:true});
+ assert.deepEqual(workspace.errors,[]);await workspace.context.close();
+ results.passed=true;
+}
+
+main().catch(error=>{results.failure={message:error.message,stack:error.stack,server_log:serverLog.slice(-5000)};process.exitCode=1})
+ .finally(async()=>{
+  fs.writeFileSync(path.join(temporary,'results.json'),JSON.stringify(results,null,2)+'\n');
+  if(browser)await browser.close();
+  if(app&&app.exitCode===null){const stopped=new Promise(resolve=>app.once('exit',resolve));app.kill('SIGTERM');await Promise.race([stopped,pause(2000)]);if(app.exitCode===null)app.kill('SIGKILL');await stopped}
+  if(provider)await new Promise(resolve=>{provider.close(resolve);provider.closeAllConnections()});
+  fs.writeFileSync(path.join(temporary,'results.json'),JSON.stringify(results,null,2)+'\n');
+  console.log(JSON.stringify(results,null,2));
+ });

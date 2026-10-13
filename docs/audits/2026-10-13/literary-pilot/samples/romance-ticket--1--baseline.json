@@ -1,0 +1,103 @@
+{
+  "arm_id": "baseline",
+  "case_id": "romance-ticket",
+  "error": {
+    "billing_state": "unknown",
+    "error": "模型回复超过等待时间；不会自动重复发送。",
+    "error_code": "timeout",
+    "http_status": null,
+    "request_dispatched": true,
+    "status": "unknown"
+  },
+  "frozen_request_sha256": "9bdea80d317c9995fcce30aa017dd263f6f6bcd4c6dbdf936376aed18196713a",
+  "genre": "现实情感",
+  "id": "romance-ticket--1--baseline",
+  "repetition": 1,
+  "request_audit": {
+    "created_at": "2026-10-13T03:27:38.118892+00:00",
+    "dispatched": false,
+    "effective_parameters": {
+      "max_tokens": 2000,
+      "response_format": "text",
+      "stream": false,
+      "temperature": 0.65
+    },
+    "endpoint": "https://api.icodexs.com/v1/chat/completions",
+    "messages_sha256": "cae61f20820445cfd2ccfcd4e91fd1c7ace9ad7151716d9fced0225f777ba151",
+    "method": "POST",
+    "payload": {
+      "max_tokens": 2000,
+      "messages": [
+        {
+          "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+          "role": "system"
+        },
+        {
+          "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"两人分开两年。\", \"id\": \"romance-ticket-fact-1\", \"source_quote\": \"两人分开两年。\", \"status\": \"confirmed\"}, {\"assertion\": \"沈禾当年离开是照顾母亲。\", \"id\": \"romance-ticket-fact-2\", \"source_quote\": \"沈禾当年离开是照顾母亲。\", \"status\": \"confirmed\"}, {\"assertion\": \"母亲已经康复。\", \"id\": \"romance-ticket-fact-3\", \"source_quote\": \"母亲已经康复。\", \"status\": \"confirmed\"}, {\"assertion\": \"周叙未婚。\", \"id\": \"romance-ticket-fact-4\", \"source_quote\": \"周叙未婚。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"雨把沈禾困在修鞋铺。周叙把她断了鞋跟的鞋放到台灯下，指腹掠过那道旧裂口。沈禾看见收银台玻璃底下压着一张车票，正是她两年前走的那班车。她问：这张纸还没扔？\", \"body_complete\": true, \"chapter_hash\": \"25d6d831c0292a8dc74d9c571c8177fb4550de8801c2510e40c743a1da8f60d1\", \"id\": \"romance-ticket\", \"plan\": {\"chapter_goal\": \"雨停之前\", \"pov\": \"沈禾\"}, \"source_range\": {\"end\": 76, \"start\": 0}, \"title\": \"雨停之前\"}, \"previous_chapters\": [{\"chapter_hash\": \"1835b8829ba2dafb5afbe3ccc3053cef378fc27526fb8e3863f7bd2ad5ed2bf1\", \"excerpt\": \"沈禾和周叙分开两年，原因是沈禾决定去外地照顾母亲。母亲现在已康复。周叙留在城南开修鞋铺，没结婚。两人一直没谈过当年的离开。\", \"id\": \"romance-ticket-previous\", \"source_range\": {\"end\": 61, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。保持克制、日常的第三人称沈禾视角。两人通过修鞋和一张旧车票表达关系，不用突发事故或长篇告白强行和解。",
+          "role": "user"
+        }
+      ],
+      "model": "deepseek-v4-pro",
+      "stream": false,
+      "temperature": 0.65
+    },
+    "request_bytes": 2230,
+    "request_id": "eval_2e62592ac1b89e6a4f3e91f8a0f5f576",
+    "request_sha256": "9bdea80d317c9995fcce30aa017dd263f6f6bcd4c6dbdf936376aed18196713a",
+    "requested_model": "deepseek-v4-pro"
+  },
+  "result": {
+    "billing_state": "unknown",
+    "completion_state": "unknown",
+    "finish_reason": "unknown",
+    "latency_ms": 30013,
+    "provider_response_id": "",
+    "provider_sse_complete": null,
+    "request_audit": {
+      "created_at": "2026-10-13T03:27:38.120213+00:00",
+      "dispatched": true,
+      "effective_parameters": {
+        "max_tokens": 2000,
+        "response_format": "text",
+        "stream": false,
+        "temperature": 0.65
+      },
+      "endpoint": "https://api.icodexs.com/v1/chat/completions",
+      "messages_sha256": "cae61f20820445cfd2ccfcd4e91fd1c7ace9ad7151716d9fced0225f777ba151",
+      "method": "POST",
+      "payload": {
+        "max_tokens": 2000,
+        "messages": [
+          {
+            "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+            "role": "system"
+          },
+          {
+            "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"两人分开两年。\", \"id\": \"romance-ticket-fact-1\", \"source_quote\": \"两人分开两年。\", \"status\": \"confirmed\"}, {\"assertion\": \"沈禾当年离开是照顾母亲。\", \"id\": \"romance-ticket-fact-2\", \"source_quote\": \"沈禾当年离开是照顾母亲。\", \"status\": \"confirmed\"}, {\"assertion\": \"母亲已经康复。\", \"id\": \"romance-ticket-fact-3\", \"source_quote\": \"母亲已经康复。\", \"status\": \"confirmed\"}, {\"assertion\": \"周叙未婚。\", \"id\": \"romance-ticket-fact-4\", \"source_quote\": \"周叙未婚。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"雨把沈禾困在修鞋铺。周叙把她断了鞋跟的鞋放到台灯下，指腹掠过那道旧裂口。沈禾看见收银台玻璃底下压着一张车票，正是她两年前走的那班车。她问：这张纸还没扔？\", \"body_complete\": true, \"chapter_hash\": \"25d6d831c0292a8dc74d9c571c8177fb4550de8801c2510e40c743a1da8f60d1\", \"id\": \"romance-ticket\", \"plan\": {\"chapter_goal\": \"雨停之前\", \"pov\": \"沈禾\"}, \"source_range\": {\"end\": 76, \"start\": 0}, \"title\": \"雨停之前\"}, \"previous_chapters\": [{\"chapter_hash\": \"1835b8829ba2dafb5afbe3ccc3053cef378fc27526fb8e3863f7bd2ad5ed2bf1\", \"excerpt\": \"沈禾和周叙分开两年，原因是沈禾决定去外地照顾母亲。母亲现在已康复。周叙留在城南开修鞋铺，没结婚。两人一直没谈过当年的离开。\", \"id\": \"romance-ticket-previous\", \"source_range\": {\"end\": 61, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。保持克制、日常的第三人称沈禾视角。两人通过修鞋和一张旧车票表达关系，不用突发事故或长篇告白强行和解。",
+            "role": "user"
+          }
+        ],
+        "model": "deepseek-v4-pro",
+        "stream": false,
+        "temperature": 0.65
+      },
+      "request_bytes": 2230,
+      "request_id": "eval_2e62592ac1b89e6a4f3e91f8a0f5f576",
+      "request_sha256": "9bdea80d317c9995fcce30aa017dd263f6f6bcd4c6dbdf936376aed18196713a",
+      "requested_model": "deepseek-v4-pro",
+      "response_bytes": 0
+    },
+    "requested_model": "deepseek-v4-pro",
+    "response_format": "text",
+    "returned_model": null,
+    "safe_to_apply": false,
+    "stream_transport": "provider_json",
+    "structured": null,
+    "text": "",
+    "truncated": true,
+    "usage": null,
+    "usage_state": "unknown"
+  },
+  "status": "unknown",
+  "task": "continue"
+}

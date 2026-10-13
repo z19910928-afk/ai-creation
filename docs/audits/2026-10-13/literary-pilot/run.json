@@ -1,0 +1,19 @@
+{
+  "created_at": "2026-10-13T03:11:10.847704+00:00",
+  "plan_sha256": "27c0c0d3ca356c7c0b9d2d4d95077532231d21e2caaee70412004160a71153bc",
+  "protocol": "moyu-literary-v1",
+  "request_freeze_policy": "使用首次固定的实际请求；源码指纹只用于审计。",
+  "snapshot_calibration": {
+    "created_at": "2026-10-13T03:25:37.977872+00:00",
+    "execution_records": 0,
+    "previous_writer_requests_sha256": "914e1d48f8e1269cbd9635999e62a1c8ccd662eed937b80a1226420bc81f1747",
+    "reason": "补保存原始字节，修复JSON字段排序对请求指纹的影响"
+  },
+  "source_files_sha256": {
+    "moyu_provider.py": "e5b1005a77cd46b39491456b318a85db522f07a8e1c94dcbc735710bfd2effd0",
+    "scripts/literary_evaluation.py": "0d3e4ba6946933e201d5cb46b0ac6db0237e506ce50d891aae05ec1fe603247c",
+    "server.py": "7f6cfa77182bd182ad8973b8f26a5a420a79c0198f0d42de9620698ef8894afd"
+  },
+  "writer_model": "deepseek-v4-pro",
+  "writer_requests_sha256": "24655c8dd511a3283519d1e1649ab279cba30437b8f496d96e47a7f312934d2f"
+}

@@ -1,0 +1,107 @@
+{
+  "name": "main",
+  "commit": {
+    "sha": "99f0aec6ce3b1c65652d20007be930ebba6a6d20",
+    "node_id": "C_kwDOQLzqZ9oAKDk5ZjBhZWM2Y2UzYjFjNjU2NTJkMjAwMDdiZTkzMGViYmE2YTZkMjA",
+    "commit": {
+      "author": {
+        "name": "mumu",
+        "email": "[redacted-email]",
+        "date": "2026-10-10T05:45:16Z"
+      },
+      "committer": {
+        "name": "mumu",
+        "email": "[redacted-email]",
+        "date": "2026-10-10T05:45:16Z"
+      },
+      "message": "update: 感谢CrazyToken的赞助支持",
+      "tree": {
+        "sha": "992469d7bafe16c76e1488741f68df19e86e035c",
+        "url": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/git/trees/992469d7bafe16c76e1488741f68df19e86e035c"
+      },
+      "url": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/git/commits/99f0aec6ce3b1c65652d20007be930ebba6a6d20",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/commits/99f0aec6ce3b1c65652d20007be930ebba6a6d20",
+    "html_url": "https://github.com/xiamuceer-j/MuMuAINovel/commit/99f0aec6ce3b1c65652d20007be930ebba6a6d20",
+    "comments_url": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/commits/99f0aec6ce3b1c65652d20007be930ebba6a6d20/comments",
+    "author": {
+      "login": "xiamuceer-j",
+      "id": 188125299,
+      "node_id": "U_kgDOCzaQcw",
+      "avatar_url": "https://avatars.githubusercontent.com/u/188125299?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/xiamuceer-j",
+      "html_url": "https://github.com/xiamuceer-j",
+      "followers_url": "https://api.github.com/users/xiamuceer-j/followers",
+      "following_url": "https://api.github.com/users/xiamuceer-j/following{/other_user}",
+      "gists_url": "https://api.github.com/users/xiamuceer-j/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/xiamuceer-j/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/xiamuceer-j/subscriptions",
+      "organizations_url": "https://api.github.com/users/xiamuceer-j/orgs",
+      "repos_url": "https://api.github.com/users/xiamuceer-j/repos",
+      "events_url": "https://api.github.com/users/xiamuceer-j/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/xiamuceer-j/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "xiamuceer-j",
+      "id": 188125299,
+      "node_id": "U_kgDOCzaQcw",
+      "avatar_url": "https://avatars.githubusercontent.com/u/188125299?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/xiamuceer-j",
+      "html_url": "https://github.com/xiamuceer-j",
+      "followers_url": "https://api.github.com/users/xiamuceer-j/followers",
+      "following_url": "https://api.github.com/users/xiamuceer-j/following{/other_user}",
+      "gists_url": "https://api.github.com/users/xiamuceer-j/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/xiamuceer-j/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/xiamuceer-j/subscriptions",
+      "organizations_url": "https://api.github.com/users/xiamuceer-j/orgs",
+      "repos_url": "https://api.github.com/users/xiamuceer-j/repos",
+      "events_url": "https://api.github.com/users/xiamuceer-j/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/xiamuceer-j/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "749186d40894b40b9fd0589791fec243d42e60c9",
+        "url": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/commits/749186d40894b40b9fd0589791fec243d42e60c9",
+        "html_url": "https://github.com/xiamuceer-j/MuMuAINovel/commit/749186d40894b40b9fd0589791fec243d42e60c9"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/branches/main",
+    "html": "https://github.com/xiamuceer-j/MuMuAINovel/tree/main"
+  },
+  "protected": true,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": [],
+      "checks": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/branches/main/protection",
+  "archive_redaction": {
+    "original_artifact_sha256": "2f7d64e8caf5ea45bb42f6f0b0a6cf54741a6d1ec2ba86a489905d2761c3df54",
+    "categories": [
+      "personal_email"
+    ],
+    "commit_ids_unchanged": true,
+    "public_bytes_are_original": false
+  }
+}

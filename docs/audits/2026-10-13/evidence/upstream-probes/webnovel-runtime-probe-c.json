@@ -1,0 +1,28 @@
+{
+  "real_process_crash_recovery": {
+    "before_recovery_a": "new-a",
+    "recovered_a": "old-a",
+    "recovered_b": "old-b",
+    "unintended_c_exists": false,
+    "transaction_count_after": 0
+  },
+  "conflict_quarantine": {
+    "recovery_blocked": true,
+    "target_overwrite_blocked": true,
+    "author_edit_preserved": true,
+    "quarantine_records": 1,
+    "unrelated_write_succeeded": true
+  },
+  "rejection_normalizer_actual": {
+    "normalized_rejected_state_is_null": true
+  },
+  "inflight_edit_token_conflict_actual": {
+    "transmitted_versions": [
+      1,
+      1
+    ],
+    "current_local_version": 1,
+    "backend_marked_offline": true,
+    "typed_text_retained_locally": true
+  }
+}

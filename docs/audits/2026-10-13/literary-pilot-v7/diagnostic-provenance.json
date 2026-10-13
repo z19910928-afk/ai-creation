@@ -1,0 +1,20 @@
+{
+  "purpose": "检查指定接口的固定版本别名能否返回合格候选。先限制两次新增请求，输出合格后才继续其余题目；不重复发送旧请求。",
+  "previous_run": "../literary-pilot-v6/",
+  "model_change": {"from": "deepseek-v4-pro", "to": "deepseek-v4-pro-0813"},
+  "unchanged": ["temperature=0.65", "max_tokens=3000", "thinking.type=disabled", "stream=true", "600至850字的作者要求", "相同题目与事实规则", "基线和墨屿使用相同模型和生成参数"],
+  "attribution": "更换模型别名属于提供方兼容诊断，不能将与第六轮的差异归因于产品提升，也不能证明底层实际模型身份或思考开关生效。",
+  "prior_literary_ledger": [
+    {"run": "literary-pilot", "requests": 8, "reported_tokens": 1015, "requests_without_usage": 7},
+    {"run": "literary-pilot-v2", "requests": 2, "reported_tokens": 0, "requests_without_usage": 2},
+    {"run": "literary-pilot-v3", "requests": 2, "reported_tokens": 2714, "requests_without_usage": 1},
+    {"run": "literary-pilot-v4", "requests": 2, "reported_tokens": 5427, "requests_without_usage": 0},
+    {"run": "literary-pilot-v5", "requests": 2, "reported_tokens": 6564, "requests_without_usage": 0},
+    {"run": "literary-pilot-v6", "requests": 2, "reported_tokens": 7217, "requests_without_usage": 0}
+  ],
+  "prior_reserved_requests": 18,
+  "prior_reported_tokens": 22937,
+  "budget_policy": "请求次数和已报告用量延续旧账本。当前目录上限40请求、已报告用量停止阈值157063；旧请求未知用量和独立协议诊断另保留，不视为零费用。",
+  "history_policy": "前六轮冻结请求、候选与报告保持原样，本轮建立独立运行身份。",
+  "acceptance_policy": "协议完整、字数合格、没有明显思考文字后才进入匿名比较；质量要求保持原定值，不因失败而放宽。"
+}

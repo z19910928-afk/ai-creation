@@ -1,0 +1,176 @@
+{
+  "arm_id": "baseline",
+  "case_id": "mystery-tide",
+  "error": {
+    "billing_state": "unknown",
+    "error": "提供方返回了未知结束原因。",
+    "error_code": "invalid_response",
+    "http_status": null,
+    "request_dispatched": true,
+    "status": "failed"
+  },
+  "frozen_request_sha256": "691ac63c67db300973acfbb27354cef9485f97d7ebfc71374b125f7ffa54c0e4",
+  "genre": "悬疑",
+  "id": "mystery-tide--1--baseline",
+  "repetition": 1,
+  "request_audit": {
+    "created_at": "2026-10-13T08:36:35.835957+00:00",
+    "dispatch_state": "dispatch_intent_recorded",
+    "dispatched": true,
+    "effective_parameters": {
+      "max_tokens": 2000,
+      "response_format": "text",
+      "stream": true,
+      "temperature": 0.65
+    },
+    "endpoint": "https://api.icodexs.com/v1/chat/completions",
+    "messages_sha256": "1c6aff9c3b03e9ef9b0f7fcec2d022f84b0b42cf197671cfe1f4c4142d31a968",
+    "method": "POST",
+    "payload": {
+      "max_tokens": 2000,
+      "messages": [
+        {
+          "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+          "role": "system"
+        },
+        {
+          "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+          "role": "user"
+        }
+      ],
+      "model": "deepseek-v4-pro",
+      "stream": true,
+      "stream_options": {
+        "include_usage": true
+      },
+      "temperature": 0.65
+    },
+    "provider_request_id": "07f21b2b-a835-402a-b4bd-996502c17c2b, 2323e327-65b1-43c1-9136-86609c311d85",
+    "request_bytes": 2388,
+    "request_id": "eval_d9375c50cea9b7b6b924ad17f920a0f2",
+    "request_sha256": "691ac63c67db300973acfbb27354cef9485f97d7ebfc71374b125f7ffa54c0e4",
+    "requested_model": "deepseek-v4-pro",
+    "response_bytes": 369
+  },
+  "result": {
+    "billing_state": "unknown",
+    "completion_state": "unknown",
+    "finish_reason": "unknown",
+    "latency_ms": 7757,
+    "protocol_observation": {
+      "events": [
+        {
+          "choices": [
+            {
+              "delta": {
+                "fields": {
+                  "content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "extra_fields": {
+                    "type": "null"
+                  },
+                  "function_call": {
+                    "type": "null"
+                  },
+                  "reasoning_content": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "refusal": {
+                    "chars": 0,
+                    "type": "string"
+                  },
+                  "role": {
+                    "chars": 9,
+                    "type": "string"
+                  },
+                  "tool_calls": {
+                    "items": 0,
+                    "type": "array"
+                  }
+                },
+                "type": "object"
+              },
+              "fields": 4,
+              "finish_reason": "",
+              "type": "object"
+            }
+          ],
+          "event_sequence": 1,
+          "fields": 7,
+          "keys": [
+            "choices",
+            "created",
+            "id",
+            "model",
+            "object",
+            "usage",
+            "provider"
+          ],
+          "type": "object",
+          "usage": {
+            "type": "null"
+          }
+        }
+      ],
+      "events_observed": 1,
+      "events_recorded": 1,
+      "events_truncated": false
+    },
+    "provider_response_id": "cmb-36e6a76dc6e111f1a930065fcf364e2b",
+    "provider_sse_complete": false,
+    "request_audit": {
+      "created_at": "2026-10-13T08:36:35.835957+00:00",
+      "dispatch_state": "dispatch_intent_recorded",
+      "dispatched": true,
+      "effective_parameters": {
+        "max_tokens": 2000,
+        "response_format": "text",
+        "stream": true,
+        "temperature": 0.65
+      },
+      "endpoint": "https://api.icodexs.com/v1/chat/completions",
+      "messages_sha256": "1c6aff9c3b03e9ef9b0f7fcec2d022f84b0b42cf197671cfe1f4c4142d31a968",
+      "method": "POST",
+      "payload": {
+        "max_tokens": 2000,
+        "messages": [
+          {
+            "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。",
+            "role": "system"
+          },
+          {
+            "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+            "role": "user"
+          }
+        ],
+        "model": "deepseek-v4-pro",
+        "stream": true,
+        "stream_options": {
+          "include_usage": true
+        },
+        "temperature": 0.65
+      },
+      "provider_request_id": "07f21b2b-a835-402a-b4bd-996502c17c2b, 2323e327-65b1-43c1-9136-86609c311d85",
+      "request_bytes": 2388,
+      "request_id": "eval_d9375c50cea9b7b6b924ad17f920a0f2",
+      "request_sha256": "691ac63c67db300973acfbb27354cef9485f97d7ebfc71374b125f7ffa54c0e4",
+      "requested_model": "deepseek-v4-pro",
+      "response_bytes": 369
+    },
+    "requested_model": "deepseek-v4-pro",
+    "response_format": "text",
+    "returned_model": "deepseek-v4-pro",
+    "safe_to_apply": false,
+    "stream_transport": "provider_native_sse",
+    "structured": null,
+    "text": "",
+    "truncated": true,
+    "usage": null,
+    "usage_state": "unknown"
+  },
+  "status": "failed",
+  "task": "continue"
+}

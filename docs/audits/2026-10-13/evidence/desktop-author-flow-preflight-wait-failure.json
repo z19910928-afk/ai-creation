@@ -1,0 +1,212 @@
+{
+  "passed": false,
+  "scope": "Real desktop Chrome, isolated SQLite, free local provider; all author mutations use visible controls.",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "started_at": "2026-10-13T13:41:25.236Z",
+  "source_files_sha256_before": {
+    "app.js": "a3404d6f5594c3499f271ec5a7de760dc02d2a45ce8420b601063def32d15994",
+    "author-workspace.js": "4882a663885b06c55d2c996a3afefe704601541acf2db561238f02ba759e2e54",
+    "editor-sync.js": "8947eb5f26996a1b9f6a1786aedf011c40f08119f6ddb17ecc4dc968ab1d8b6f",
+    "index.html": "5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3",
+    "moyu_analysis.py": "8e826c3bdc42b70c8b2d4ad05a850a953e6ab95d8125577e32f77466dbb000dd",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "a7318094b8472c15e04bdee978d2c7eef9ed3fd49fab89b60c47deaaf9c34d26",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1",
+    "moyu_output.py": "65dd8b2b21cffb8d2f3e1470353e2a12deaef6fde83e70ea3d70821c53899329",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_provider.py": "0643b5f8c7dbf870f39af052eebe81f275a8dad3efd837e5e90509a5ea8c04a8",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_settings.py": "6ebc8fe45d509af865406a81fb45c65546457d24d6c853da4012add951bbacd6",
+    "moyu_workspace.py": "2e478fb15e9f369e0d32f7f3fe7b02ef6e17a457e22577c3a091e07dc199d868",
+    "server.py": "5a60a91c17a0572037050833a4882fc4ff30eda88c0146dd5d9668dfa3200c00",
+    "styles.css": "8397a9646c8539eeced664a89b65c4a0a96ad11a831512683258fc97a5a2a3ef",
+    "tests/desktop_author_flow_regressions.cjs": "1fb21b8140c09ddc9db76a1af2b5d26658c1d51aa57c593c44597ad1a9aff5e2"
+  },
+  "cases": [
+    {
+      "name": "作者通过书架创建作品并真实填写五章、记忆确认、审稿和归档",
+      "passed": true
+    },
+    {
+      "name": "第1章埋、第3章推进、第5章回收原句可定位且刷新后原稿完整",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary database retained locally; screenshot archived beside this report.",
+  "provider_requests": [
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "ch_a54fc46b7f24464483e28d7ef9520945",
+      "input_sha256": "97954fcebce880355443f3dabcd85e66c9953345c8e3e0cca7a0181894d63b35",
+      "output_sha256": "d4e53f79dd698daeb11f3a4c07b5cc99222047e1b50ca61e55019256bf30d640",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "ch_a54fc46b7f24464483e28d7ef9520945",
+      "input_sha256": "7f2409839f60254086f3d7849808356c418ba85c14aa71340b8a8c7bf0c9f17e",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "24e74ed7-64e1-4bf2-b0e0-2824a1e7faa3",
+      "input_sha256": "0c95587cda68a273d8dea7ec39ac1475e8fc7f16183bb2e1ac755d08a8146bd1",
+      "output_sha256": "9fb4cc65a18bce7d63315e427fe995cb3d4d1a92b19c6c0c593e4fcc02c92cf8",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "24e74ed7-64e1-4bf2-b0e0-2824a1e7faa3",
+      "input_sha256": "853f165a0f09a2d99ae730bdcc91a45494c63e77792914a45d866b46d8f57ec6",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "b13b21f5-039a-4750-897c-cac6ae91ba7b",
+      "input_sha256": "8d7b69999ce3bd8b214fd411c80ef8e6e7e748cf0e5f99719cc335014192df67",
+      "output_sha256": "cc5239f4de4c1a863265fa8ec1282fcc240869c562fc1284961465417e85939f",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "b13b21f5-039a-4750-897c-cac6ae91ba7b",
+      "input_sha256": "231b3857f1bbcdf4c492d3218069d78ba83e4c9ae1d868c93ef838e281d410d2",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "82635104-c27d-4dd6-93cb-7c22213a4e5f",
+      "input_sha256": "543fcb5b5d7c861b07285d2648f0a458205bea4f2d43a7fc372ac14efe1375ef",
+      "output_sha256": "0f55a93f47c57fc6fb29832b500bf065e87e454f6e5a487e46ca84fe0dd4c7fb",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "82635104-c27d-4dd6-93cb-7c22213a4e5f",
+      "input_sha256": "2705be664b9efd8d5686f7c4b625dc4e918792a499d6e6a520bde3ca1899c199",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "4eaf3330-f7db-4fac-9ead-cfc93d969f5a",
+      "input_sha256": "a1c47de35ce3bd9d679ebf3dc6c66bdb2c84f8376eae030eb15f6dcec0d0cfdd",
+      "output_sha256": "4aa110740c890d9d5d2f695981bf50c9883f84b90d1ee000174ac95c0ff9e4c0",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "4eaf3330-f7db-4fac-9ead-cfc93d969f5a",
+      "input_sha256": "c3964ba049b3ef9f445a0127b99f4f53911a1683fbded37f469f984b3ec61399",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    }
+  ],
+  "default_project_before": [
+    [
+      "ch_1bc446b8c4ca4b0b97a29c0df74f7c43",
+      "427bbf6bab7c5606f46db6d2ac048c8b1ae630e35975f77e848cdfa55929b084"
+    ]
+  ],
+  "chapter_ids": [
+    "ch_a54fc46b7f24464483e28d7ef9520945",
+    "24e74ed7-64e1-4bf2-b0e0-2824a1e7faa3",
+    "b13b21f5-039a-4750-897c-cac6ae91ba7b",
+    "82635104-c27d-4dd6-93cb-7c22213a4e5f",
+    "4eaf3330-f7db-4fac-9ead-cfc93d969f5a"
+  ],
+  "failure": {
+    "message": "page.waitForResponse: Timeout 30000ms exceeded while waiting for event \"response\"",
+    "stack": "page.waitForResponse: Timeout 30000ms exceeded while waiting for event \"response\"\n    at ./tests/desktop_author_flow_regressions.cjs:395:27\n    at async test (./tests/desktop_author_flow_regressions.cjs:78:3)\n    at async main (./tests/desktop_author_flow_regressions.cjs:383:3)",
+    "server_log": ".1 - - [2026-10-13T13:41:33+00:00] \"POST /api/chapters/4eaf3330-f7db-4fac-9ead-cfc93d969f5a/commit HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"POST /api/chapters/4eaf3330-f7db-4fac-9ead-cfc93d969f5a/commit HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"POST /api/chapters/4eaf3330-f7db-4fac-9ead-cfc93d969f5a/commit HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/chapters/4eaf3330-f7db-4fac-9ead-cfc93d969f5a/commits HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/story/foreshadow-links HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/story/foreshadow-links HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/story/foreshadow-links HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/story/foreshadow-links HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/story-reviews?chapter_id=ch_a54fc46b7f24464483e28d7ef9520945 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"POST /api/review HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:33+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/story-reviews?chapter_id=24e74ed7-64e1-4bf2-b0e0-2824a1e7faa3 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"POST /api/review HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/story-reviews?chapter_id=b13b21f5-039a-4750-897c-cac6ae91ba7b HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"POST /api/review HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/story-reviews?chapter_id=82635104-c27d-4dd6-93cb-7c22213a4e5f HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"POST /api/review HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/story-reviews?chapter_id=4eaf3330-f7db-4fac-9ead-cfc93d969f5a HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"POST /api/review HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/export/manifest HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:34+00:00] \"GET /api/export/manifest HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:35+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:35+00:00] \"GET /api/story/foreshadow-links HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:35+00:00] \"GET /api/export/manifest HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:35+00:00] \"GET /api/export/manifest HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:35+00:00] \"GET /api/export/manifest HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:37+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:41+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:45+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:49+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:53+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:41:57+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:42:01+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n",
+    "provider_error": "",
+    "ui": {
+      "view": "editor",
+      "activeChapter": "4eaf3330-f7db-4fac-9ead-cfc93d969f5a",
+      "project": "book_5cecf999bbd342949905a99557026b25",
+      "toast": "",
+      "modal": "终稿检查\n\n终稿导出默认被阻断。请处理以下项目；覆盖时必须留下作者理由。\n\n阻断 · 第 1 章《第一章 铜匙》尚未通过本章审查。\n阻断 · 第 2 章《第二章 石阶》尚未通过本章审查。\n阻断 · 第 3 章《第三章 月牙》尚未通过本章审查。\n阻断 · 第 4 章《第四章 排水沟》尚未通过本章审查。\n阻断 · 第 5 章《第五章 开闸》尚未通过本章审查。\n阻断 · 伏笔“月牙铜匙在旧闸门救出守灯人”的回收原句需要重新确认。\n关闭\n作者覆盖并记录原因\n标记全书完稿\n处理阻断项后导出",
+      "save": "已保存到本机",
+      "jobs": [
+        {
+          "id": "aijob_80922b9d91374370b1e0f6beb6022420",
+          "task": "chapter_analysis",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_b81fb3cff623439ca6b09fb04e07445f",
+          "task": "semantic_review",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_1973b1c0728049cca6a50aa321b022e6",
+          "task": "semantic_review",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_45c0a4b332f249078f51ef5adf3a97c1",
+          "task": "chapter_analysis",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_1a5e8943d3f94e37afa8a0e4a6f4616d",
+          "task": "chapter_analysis",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_d4c6b4995fdd481b8009b89a553a6b53",
+          "task": "semantic_review",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_72564b12524f45dc915350979b18a8ae",
+          "task": "semantic_review",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_0b24bfa8f2024b72b6987d9a8ae49529",
+          "task": "chapter_analysis",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_92d79995496c4e0f9bc3da4d2b1ce16d",
+          "task": "chapter_analysis",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_569af2e76678483d863f7f754f13c26b",
+          "task": "semantic_review",
+          "status": "success",
+          "error": null
+        }
+      ]
+    }
+  },
+  "finished_at": "2026-10-13T13:42:05.462Z"
+}

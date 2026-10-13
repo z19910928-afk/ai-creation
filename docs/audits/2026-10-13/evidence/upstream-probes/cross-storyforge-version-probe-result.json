@@ -1,0 +1,14 @@
+{
+  "source": "./.audit-cache/2026-10-13/references/NovelForge/frontend/src/renderer/src/services/versionService.ts",
+  "execution": "Original TypeScript module imported by Node with built-in type stripping; localStorage simulated in memory",
+  "requests": 0,
+  "writes_to_product": 0,
+  "added_versions": 25,
+  "retained_versions": 20,
+  "latest_title": "version-25",
+  "oldest_title": "version-6",
+  "checked_project_and_card_isolation": true,
+  "clearing_storage_removes_history": true,
+  "restoring_storage_recovers_20_items": true,
+  "malformed_storage_returns_empty": true
+}

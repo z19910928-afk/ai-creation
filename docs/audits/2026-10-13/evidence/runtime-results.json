@@ -1,0 +1,89 @@
+{
+  "accepted_memory_anchor_edit": {
+    "confirmed_save_http": 200,
+    "edit_http": 400,
+    "error": {
+      "error": "accepted memory requires a current source quote and an active entity"
+    },
+    "new_text_persisted": false
+  },
+  "deleted_chapter_json_restore": {
+    "delete_http": 200,
+    "restore_import_http": 409,
+    "error": {
+      "error": "UNIQUE constraint failed: document_node.id"
+    },
+    "chapters_after_import": 0
+  },
+  "ai_adoption_version_conflict": {
+    "ai_http": 200,
+    "decision_http": 201,
+    "original_version": 1,
+    "server_version": 2,
+    "adoption_save_http": 409,
+    "error": {
+      "error": "state version conflict",
+      "current_version": 2
+    },
+    "candidate_in_database": false
+  },
+  "rejected_memory_frontend_contract": {
+    "create_http": 201,
+    "reject_http": 200,
+    "state_memory_status": "已拒绝",
+    "ui_accepted_statuses": [
+      "待确认",
+      "已确认",
+      "candidate",
+      "accepted",
+      "rejected",
+      "stale",
+      "superseded"
+    ],
+    "contract_mismatch": true
+  },
+  "buffered_stream_and_empty_key": {
+    "provider_inter_delta_delay_seconds": 1.25,
+    "response_headers_delay_seconds": 1.279,
+    "delta_text": "[密钥已隐藏]第[密钥已隐藏]一[密钥已隐藏][密钥已隐藏]段[密钥已隐藏]输[密钥已隐藏]出[密钥已隐藏]",
+    "ledger_contains_scrubbing_marker": true,
+    "real_incremental_delivery": false
+  },
+  "queued_daily_quota_bypass": {
+    "configured_daily_quota": 1,
+    "enqueue_http": [
+      202,
+      202
+    ],
+    "drain_http": 200,
+    "provider_calls": 2,
+    "used_runs": 2,
+    "statuses": [
+      "success",
+      "success"
+    ]
+  },
+  "output_completion_and_schema": {
+    "length_finish_plus_done_truncated": false,
+    "eof_without_done_truncated": false,
+    "eof_without_done_finish_reason": "unknown",
+    "invalid_typed_schema_accepted": true
+  },
+  "synchronous_ai_holds_save_lock": {
+    "provider_delay_seconds": 1.25,
+    "concurrent_save_delay_seconds": 1.362,
+    "save_http": 200,
+    "ai_http": [
+      200
+    ],
+    "save_blocked_while_model_generates": true
+  },
+  "queued_cancel_discards_after_provider_finishes": {
+    "cancel_http": 202,
+    "initial_status": "running",
+    "cancel_to_terminal_seconds": 1.266,
+    "terminal_status": "canceled",
+    "provider_calls": 1,
+    "provider_work_interrupted": false
+  }
+}

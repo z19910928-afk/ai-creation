@@ -1,0 +1,13 @@
+{
+  "created_at": "2026-10-13T05:00:23.765696+00:00",
+  "plan_sha256": "3e6141d427421a0acd834da5c66f54bc9e7007396a4d5287b947e9ec8918d86e",
+  "protocol": "moyu-literary-v1",
+  "request_freeze_policy": "使用首次固定的实际请求；源码指纹只用于审计。",
+  "source_files_sha256": {
+    "moyu_provider.py": "e807b7d0430468384c726887edeb4cc01ec315eb6fee88f58dc14d36fd14d2e4",
+    "scripts/literary_evaluation.py": "f3e43900b15e01805eb8286319b9e6442e4d0758a3ba7af95b5290fc96c99ad0",
+    "server.py": "fb97781cbfb8f48ca40e2489eebf3bd6443d4fadd70d58e45c4e39d6f8f57bf5"
+  },
+  "writer_model": "deepseek-v4-pro",
+  "writer_requests_sha256": "bfc23b43acbb607abf3116c85a78dab7f6846b5e310673b38c208de1b4558d57"
+}

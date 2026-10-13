@@ -1,0 +1,13 @@
+{
+  "purpose": "前两个DeepSeek别名均出现正文通道思考污染后，检查同一指定接口中已列出的kimi-k3，寻找能正常输出的兼容模型。先限制两次新请求，合格后才扩展其余题目。",
+  "previous_run": "../literary-pilot-v7/",
+  "model_change": {"from": "deepseek-v4-pro-0813", "to": "kimi-k3"},
+  "parameter_change": {"removed": "thinking", "reason": "不向不同模型默认发送DeepSeek专用思考参数"},
+  "unchanged": ["temperature=0.65", "max_tokens=3000", "stream=true", "相同600至850字要求、故事题目及事实规则", "两组均使用同一模型和参数"],
+  "attribution": "新模型兼容性与文学成绩独立报告。不能将与旧轮的差异归因于产品改进，不伪造底层模型身份。",
+  "prior_reserved_requests": 20,
+  "prior_reported_tokens": 30416,
+  "budget_policy": "此前全部文学请求保留。新目录上限36请求、已报告用量停止阈值149584，旧未知用量、未知价格及独立协议诊断另有账本，不视为零费用。",
+  "history_policy": "旧七轮请求、候选、冻结快照、账本和报告保持原字节；本轮新运行身份，不重发原失败请求。",
+  "acceptance_policy": "协议完整、字数合格、无明显规划污染后才进入匿名比较。原定质量和第一梯队证据门槛保持不变。"
+}

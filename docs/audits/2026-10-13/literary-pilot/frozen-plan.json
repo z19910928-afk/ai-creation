@@ -1,0 +1,547 @@
+{
+  "acceptance": {
+    "maximum_hard_violation_rate": 0,
+    "minimum_distinct_stories_for_tier_claim": 30,
+    "minimum_genres": 3,
+    "minimum_preference_lower_95": 0.4
+  },
+  "arms": [
+    {
+      "id": "baseline",
+      "label": "通用固定材料基线",
+      "source": "plain-context"
+    },
+    {
+      "id": "moyu",
+      "label": "墨屿实际提示",
+      "source": "moyu-prompt"
+    }
+  ],
+  "budget": {
+    "currency_cost": "unknown_until_provider_prices_are_recorded",
+    "max_requests": 60,
+    "reported_tokens_stop_threshold": 180000
+  },
+  "candidate_arm": "moyu",
+  "cases": [
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "月牙钥匙藏在林岚左靴内侧。",
+            "id": "mystery-tide-fact-1",
+            "source_quote": "月牙钥匙藏在林岚左靴内侧。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "涨潮时间是22点10分。",
+            "id": "mystery-tide-fact-2",
+            "source_quote": "涨潮时间是22点10分。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "林岚不知道陆衡的凶手。",
+            "id": "mystery-tide-fact-3",
+            "source_quote": "林岚不知道陆衡的凶手。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "林岚手机没有信号。",
+            "id": "mystery-tide-fact-4",
+            "source_quote": "林岚手机没有信号。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。",
+          "body_complete": true,
+          "chapter_hash": "9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076",
+          "id": "mystery-tide",
+          "plan": {
+            "chapter_goal": "仓库的第二把锁",
+            "pov": "林岚"
+          },
+          "source_range": {
+            "end": 81,
+            "start": 0
+          },
+          "title": "仓库的第二把锁"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604",
+            "excerpt": "陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。",
+            "id": "mystery-tide-previous",
+            "source_range": {
+              "end": 73,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "悬疑",
+      "id": "mystery-tide",
+      "instruction": "续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+      "rules": [
+        {
+          "description": "月牙钥匙不能改到口袋或右靴。",
+          "id": "key-location"
+        },
+        {
+          "description": "涨潮固定22点10分。",
+          "id": "tide-time"
+        },
+        {
+          "description": "林岚不能直接知道凶手身份。",
+          "id": "limited-pov"
+        },
+        {
+          "description": "不能用没有信号的手机即时联网获救。",
+          "id": "no-mobile-rescue"
+        }
+      ],
+      "task": "continue"
+    },
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "外舱断电。",
+            "id": "science-airlock-fact-1",
+            "source_quote": "外舱断电。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "无线电坏了。",
+            "id": "science-airlock-fact-2",
+            "source_quote": "无线电坏了。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "莫宁只有一把扳手。",
+            "id": "science-airlock-fact-3",
+            "source_quote": "莫宁只有一把扳手。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "红柄顺时针半圈，过量会切断内舱供氧。",
+            "id": "science-airlock-fact-4",
+            "source_quote": "红柄顺时针半圈，过量会切断内舱供氧。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "第三分钟，气阀红柄卡住了。莫宁的手套被金属边划破，食指开始发麻。扳手落在离她一臂远的格栅上。玻璃另一边，阿渡把掌心贴上来，但莫宁听不见他说什么。",
+          "body_complete": true,
+          "chapter_hash": "482da07f76dbbebfa488814f60bc67820d630853d05b83c3f93957f990710188",
+          "id": "science-airlock",
+          "plan": {
+            "chapter_goal": "手动气阀",
+            "pov": "莫宁"
+          },
+          "source_range": {
+            "end": 72,
+            "start": 0
+          },
+          "title": "手动气阀"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "8cc356601bc298e882b39dd5802af4ae996be2275819796582a178f3eff45b4a",
+            "excerpt": "远航站断电后，莫宁带着一把扳手进入外舱。无线电坏了。氧气表显示十二分钟。阿渡留在内舱，隔着玻璃提醒她：红柄只能顺时针转半圈，再多就会切断内舱供氧。",
+            "id": "science-airlock-previous",
+            "source_range": {
+              "end": 73,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "科幻",
+      "id": "science-airlock",
+      "instruction": "续写600至850字。外舱缺氧，莫宁只能以机械方式修好气阀；写清行动与代价，不能新造万能设备，保持莫宁的有限视角。",
+      "rules": [
+        {
+          "description": "不可突然恢复设备供电而不交代因果。",
+          "id": "no-power"
+        },
+        {
+          "description": "红柄半圈限制和切断内舱供氧的代价不能消失。",
+          "id": "valve-limit"
+        },
+        {
+          "description": "无线电坏了，不能凭空听到阿渡的无线电话语。",
+          "id": "radio"
+        }
+      ],
+      "task": "continue"
+    },
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "两人分开两年。",
+            "id": "romance-ticket-fact-1",
+            "source_quote": "两人分开两年。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "沈禾当年离开是照顾母亲。",
+            "id": "romance-ticket-fact-2",
+            "source_quote": "沈禾当年离开是照顾母亲。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "母亲已经康复。",
+            "id": "romance-ticket-fact-3",
+            "source_quote": "母亲已经康复。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "周叙未婚。",
+            "id": "romance-ticket-fact-4",
+            "source_quote": "周叙未婚。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "雨把沈禾困在修鞋铺。周叙把她断了鞋跟的鞋放到台灯下，指腹掠过那道旧裂口。沈禾看见收银台玻璃底下压着一张车票，正是她两年前走的那班车。她问：这张纸还没扔？",
+          "body_complete": true,
+          "chapter_hash": "25d6d831c0292a8dc74d9c571c8177fb4550de8801c2510e40c743a1da8f60d1",
+          "id": "romance-ticket",
+          "plan": {
+            "chapter_goal": "雨停之前",
+            "pov": "沈禾"
+          },
+          "source_range": {
+            "end": 76,
+            "start": 0
+          },
+          "title": "雨停之前"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "1835b8829ba2dafb5afbe3ccc3053cef378fc27526fb8e3863f7bd2ad5ed2bf1",
+            "excerpt": "沈禾和周叙分开两年，原因是沈禾决定去外地照顾母亲。母亲现在已康复。周叙留在城南开修鞋铺，没结婚。两人一直没谈过当年的离开。",
+            "id": "romance-ticket-previous",
+            "source_range": {
+              "end": 61,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "现实情感",
+      "id": "romance-ticket",
+      "instruction": "续写600至850字。保持克制、日常的第三人称沈禾视角。两人通过修鞋和一张旧车票表达关系，不用突发事故或长篇告白强行和解。",
+      "rules": [
+        {
+          "description": "不能改写离开原因或母亲现状。",
+          "id": "departure-cause"
+        },
+        {
+          "description": "不用事故、疾病复发或结婚秘密强迫和解。",
+          "id": "no-forced-drama"
+        },
+        {
+          "description": "不得直接进入周叙未说出的内心。",
+          "id": "pov"
+        }
+      ],
+      "task": "continue"
+    },
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "顾青右臂骨裂。",
+            "id": "wuxia-polish-fact-1",
+            "source_quote": "顾青右臂骨裂。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "顾青短刀落入河中。",
+            "id": "wuxia-polish-fact-2",
+            "source_quote": "顾青短刀落入河中。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "孟舟必须活着。",
+            "id": "wuxia-polish-fact-3",
+            "source_quote": "孟舟必须活着。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "顾青非常紧张地站在木桥的东边，她的右臂很疼，不能挥剑。孟舟站在西边，忽然冲过来。顾青向右边让了一步，木板响了。然后顾青用左手将短刀抵在孟舟的肩膀上，孟舟往后退，两个人中间隔着断裂的木板。孟舟扯住了她的袖子。顾青为了稳住身体只好松开短刀。短刀掉进桥下的河里。她用左手扣住孟舟的手腕，终于没有杀他。",
+          "body_complete": true,
+          "chapter_hash": "afe67b87ecc19b45e7edcdbf3b7d696e2677aee13f5cceaddfbce7dae21fcb89",
+          "id": "wuxia-polish",
+          "plan": {
+            "chapter_goal": "桥上的刀",
+            "pov": "顾青"
+          },
+          "source_range": {
+            "end": 147,
+            "start": 0
+          },
+          "title": "桥上的刀"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "253782b0cc14e7a05cef8176d43219ea975ef2094e622cd1f590c8c935c1712b",
+            "excerpt": "顾青右臂骨裂，不能挥剑；她带一柄短刀。师父要她带孟舟活着回去。",
+            "id": "wuxia-polish-previous",
+            "source_range": {
+              "end": 31,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "武侠",
+      "id": "wuxia-polish",
+      "instruction": "润色下面全文，保留四次关键动作、短刀落水和顾青未杀人的结果；压缩套话，增强动作空间感。字数可在原文的80%至130%。",
+      "rules": [
+        {
+          "description": "顾青不能用受伤右臂突然挥剑。",
+          "id": "injury"
+        },
+        {
+          "description": "短刀落水必须保留。",
+          "id": "knife-loss"
+        },
+        {
+          "description": "孟舟未死，不能改成杀死。",
+          "id": "alive"
+        },
+        {
+          "description": "避让、左手抵刀、松刀落水、左手扣腕四个动作顺序不变。",
+          "id": "sequence"
+        }
+      ],
+      "task": "polish"
+    },
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "秦野左手骨折打了石膏。",
+            "id": "mystery-check-fact-1",
+            "source_quote": "秦野左手骨折打了石膏。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "旧旅店没有手机信号。",
+            "id": "mystery-check-fact-2",
+            "source_quote": "旧旅店没有手机信号。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "秦野23点40分首次进入值班室。",
+            "id": "mystery-check-fact-3",
+            "source_quote": "秦野23点40分首次进入值班室。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "23点25分，秦野已坐在值班室里。他用打着石膏的左手熟练举起手枪，另一只手点开手机网页，把查到的直播发给队友。窗边有一张蓝色纸条，上面没写字。",
+          "body_complete": true,
+          "chapter_hash": "aea83383c6e5aab2aea372f679ffcdaeb680c0103c4854d4d1a0c0d8914b9a13",
+          "id": "mystery-check",
+          "plan": {
+            "chapter_goal": "值班室记录",
+            "pov": "秦野"
+          },
+          "source_range": {
+            "end": 71,
+            "start": 0
+          },
+          "title": "值班室记录"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "9f5a3dbf42bceed864f91ae3dc826565a691f81f2481298bc60b001c6ac1829d",
+            "excerpt": "案发前，秦野的左手已骨折打上石膏。旧旅店在山谷，无手机信号。监控时间显示他在23点40分进入值班室，且进入后没有离开。",
+            "id": "mystery-check-previous",
+            "source_range": {
+              "end": 59,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "悬疑",
+      "id": "mystery-check",
+      "instruction": "逐条找出当前章的确定矛盾，必须引用原句；不要把未证实的猜测当错。已知矛盾有左手用枪、时间倒转、手机联网三类。",
+      "rules": [
+        {
+          "description": "应指出打石膏左手熟练用枪的矛盾并引原句。",
+          "id": "left-hand"
+        },
+        {
+          "description": "应指出23点25分在室内与23点40分首次进入矛盾。",
+          "id": "time"
+        },
+        {
+          "description": "应指出无信号却网页直播联网矛盾。",
+          "id": "network"
+        },
+        {
+          "description": "空白蓝纸条不是已证实矛盾。",
+          "id": "false-alarm"
+        }
+      ],
+      "task": "check"
+    },
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "张姨尚未决定停业。",
+            "id": "daily-summary-fact-1",
+            "source_quote": "张姨尚未决定停业。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "小梁父亲失联，结局未知。",
+            "id": "daily-summary-fact-2",
+            "source_quote": "小梁父亲失联，结局未知。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "陌生少年的身份未知。",
+            "id": "daily-summary-fact-3",
+            "source_quote": "陌生少年的身份未知。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "纸袋未打开。",
+            "id": "daily-summary-fact-4",
+            "source_quote": "纸袋未打开。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "今天张姨少收了小梁两块钱，说锅底那点不算一碗。小梁把旧木凳修好了，放回灶边。他正要走，一个陌生少年问起他父亲的名字。张姨把火关小，没接话。少年留下一个纸袋，袋子没有打开。",
+          "body_complete": true,
+          "chapter_hash": "f2a49ed9eb130e2087d82b49963b2c613993f351796c16415459bde931265367",
+          "id": "daily-summary",
+          "plan": {
+            "chapter_goal": "最后一锅粥",
+            "pov": "小梁"
+          },
+          "source_range": {
+            "end": 85,
+            "start": 0
+          },
+          "title": "最后一锅粥"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "47acc234651e9794ee84670eb95baa75f80f352334c5ca46b9a2cda93d881dfc",
+            "excerpt": "老街早餐铺由张姨经营。她说下个月可能停业，但还没决定。小梁每天代母亲买粥，父亲已失联半年，没有确定消息。",
+            "id": "daily-summary-previous",
+            "source_range": {
+              "end": 52,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "现实情感",
+      "id": "daily-summary",
+      "instruction": "总结已发生事件、人物变化和仍未解决的问题。只依据正文；张姨是否卖房、少年身份与父亲结局都未揭示。",
+      "rules": [
+        {
+          "description": "不能编造纸袋内容。",
+          "id": "bag"
+        },
+        {
+          "description": "不能推断父亲已死或已找到。",
+          "id": "father"
+        },
+        {
+          "description": "停业只是考虑，不能写成已决定。",
+          "id": "closure"
+        },
+        {
+          "description": "不能编造少年身份或动机。",
+          "id": "boy"
+        }
+      ],
+      "task": "summary"
+    }
+  ],
+  "created_at": "2026-10-13T03:10:08.569883+00:00",
+  "judging": {
+    "blind": true,
+    "both_orders": true,
+    "criteria": [
+      "continuity",
+      "character_motivation",
+      "causality",
+      "style",
+      "task_fit"
+    ],
+    "human_review_required_for_author_efficiency": true,
+    "minimum_distinct_judge_models": 2
+  },
+  "max_judge_output_tokens": 2200,
+  "max_output_tokens": 2000,
+  "protocol": "moyu-literary-v1",
+  "repetitions": 1,
+  "scope": "固定材料下的提示与候选试评；不替代真实检索、作者效率或七竞品全流程对照。",
+  "seed": 20261013,
+  "writer_parameters": {
+    "temperature": 0.65
+  }
+}

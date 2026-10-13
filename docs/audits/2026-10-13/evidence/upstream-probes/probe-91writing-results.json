@@ -1,0 +1,35 @@
+[
+  {
+    "case": "AI请求参数",
+    "scope": "R-隔离服务组件，fetch全部模拟",
+    "prompt": "上文下文",
+    "max_tokens": 2000000,
+    "temperature": 0.7,
+    "newline_removed": true,
+    "null_limit_fell_back": true,
+    "zero_temperature_ignored": true
+  },
+  {
+    "case": "旧备份组件刷新后数据消失",
+    "scope": "R-隔离函数，组件作者入口不可达",
+    "saved_metadata_only": true,
+    "payload_persisted": false
+  },
+  {
+    "case": "打开作品时先保存后加载材料",
+    "scope": "R-隔离初始化函数，未启动Vue界面",
+    "stored_characters": 0,
+    "stored_worlds": 0,
+    "stored_corpus": 0,
+    "stored_events": 0,
+    "loaded_in_memory_characters": 1
+  },
+  {
+    "case": "生成过程中切换章节，结束时覆盖当前章",
+    "scope": "R-隔离作者处理函数，模型模拟",
+    "requested_chapter": "A",
+    "current_chapter": "B",
+    "editor_content": "A的生成结果",
+    "wrong_chapter_overwrite": true
+  }
+]

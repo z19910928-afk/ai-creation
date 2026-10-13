@@ -1,0 +1,84 @@
+{
+  "passed": false,
+  "scope": "Real desktop Chrome, isolated SQLite, free local provider; all author mutations use visible controls.",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "started_at": "2026-10-13T13:38:40.044Z",
+  "source_files_sha256_before": {
+    "app.js": "318ebaa4d3ad204fb5dac53b8366baafc1330028a3f7b706a819b49fa000e988",
+    "author-workspace.js": "402a7fa603ce4f0f8ac3cb8731d752d10490e0df66cc96157be3f893fe6761b3",
+    "editor-sync.js": "8947eb5f26996a1b9f6a1786aedf011c40f08119f6ddb17ecc4dc968ab1d8b6f",
+    "index.html": "5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3",
+    "moyu_analysis.py": "8e826c3bdc42b70c8b2d4ad05a850a953e6ab95d8125577e32f77466dbb000dd",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "a7318094b8472c15e04bdee978d2c7eef9ed3fd49fab89b60c47deaaf9c34d26",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1",
+    "moyu_output.py": "65dd8b2b21cffb8d2f3e1470353e2a12deaef6fde83e70ea3d70821c53899329",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_provider.py": "0643b5f8c7dbf870f39af052eebe81f275a8dad3efd837e5e90509a5ea8c04a8",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_settings.py": "6ebc8fe45d509af865406a81fb45c65546457d24d6c853da4012add951bbacd6",
+    "moyu_workspace.py": "2e478fb15e9f369e0d32f7f3fe7b02ef6e17a457e22577c3a091e07dc199d868",
+    "server.py": "86658e3599bdb78cb27f3f2b8065910a824e8dd3f4b4e752b41df22db1c7fddb",
+    "styles.css": "8397a9646c8539eeced664a89b65c4a0a96ad11a831512683258fc97a5a2a3ef",
+    "tests/desktop_author_flow_regressions.cjs": "a909cff13d1172f544363a2a666a677563fe8b2cf3273555de86a35e1865227c"
+  },
+  "cases": [],
+  "artifacts": "Private temporary database retained locally; screenshot archived beside this report.",
+  "provider_requests": [
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "ch_861f4116ec5b46daa6fea40a22acb92f",
+      "input_sha256": "df3cffc8be6d80c388dbe505be311c450c9e4cdd23a29c41a2520be6a0a451ec",
+      "output_sha256": "d4e53f79dd698daeb11f3a4c07b5cc99222047e1b50ca61e55019256bf30d640",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "ch_861f4116ec5b46daa6fea40a22acb92f",
+      "input_sha256": "055b595231f83ae82cc43947094f48f5af89696fcc5544c377589c16f1eeb94e",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    }
+  ],
+  "default_project_before": [
+    [
+      "ch_97c8f8210e7a4f3e8a77d2784c0deac2",
+      "427bbf6bab7c5606f46db6d2ac048c8b1ae630e35975f77e848cdfa55929b084"
+    ]
+  ],
+  "failure": {
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- false\n",
+    "stack": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ undefined\n- false\n\n    at analysisAndReview (./tests/desktop_author_flow_regressions.cjs:150:10)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async ./tests/desktop_author_flow_regressions.cjs:318:7\n    at async test (./tests/desktop_author_flow_regressions.cjs:78:3)\n    at async main (./tests/desktop_author_flow_regressions.cjs:292:3)",
+    "server_log": "127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/health HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:40+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/chapter-analysis?chapter_id=ch_861f4116ec5b46daa6fea40a22acb92f HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/ai/runs/airun_eb5bb722d14c439687ed918777c94f7e/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/chapter-analysis?chapter_id=ch_861f4116ec5b46daa6fea40a22acb92f HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"POST /api/chapter-analysis/chapter_analysis_83c8c6fab7b90949356fac2ff615/confirm HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/story-reviews?chapter_id=ch_861f4116ec5b46daa6fea40a22acb92f HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/ai/runs/airun_a6e136441b6546d1a694c562fb59aa72/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/story-reviews?chapter_id=ch_861f4116ec5b46daa6fea40a22acb92f HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-13T13:38:41+00:00] \"GET /api/story-reviews?chapter_id=ch_861f4116ec5b46daa6fea40a22acb92f HTTP/1.1\" 200 -\n",
+    "provider_error": "",
+    "ui": {
+      "view": "editor",
+      "activeChapter": "ch_861f4116ec5b46daa6fea40a22acb92f",
+      "project": "book_f3de6e8ab74f49cbbdfc6794e9cad673",
+      "toast": "任务已保存，可以继续写作",
+      "modal": "本章审稿\n\n第一章 铜匙 · 已生成故事审稿报告\n\n尚无可处理的故事问题。\n\n本机固定返回只验证作者工作流，不评判文学质量。\n\n关闭\n基础归档检查\n重新故事审稿",
+      "save": "已保存到本机",
+      "jobs": [
+        {
+          "id": "aijob_23f8db588dc84459b48fe3d7d3d62dc1",
+          "task": "chapter_analysis",
+          "status": "success",
+          "error": null
+        },
+        {
+          "id": "aijob_f4b0229ed18643b5900fa4ae50e9aa6d",
+          "task": "semantic_review",
+          "status": "success",
+          "error": null
+        }
+      ]
+    }
+  },
+  "finished_at": "2026-10-13T13:38:42.048Z"
+}

@@ -1,0 +1,333 @@
+{
+  "scope": "Public audit archive only; literary samples, frozen requests, ledgers, and their hashes are unchanged.",
+  "private_originals": "artifacts/private-audit-originals/2026-10-13/ (Git ignored)",
+  "originals_are_required_for_byte_or_signature_verification": true,
+  "files": [
+    {
+      "path": "cross-review/cross-91writing-memory-mumu.md",
+      "original_sha256": "a1f3d557c353f5bec9f8cf5b4099f875ec84c85030e201e09dfd14c836c5ee5a",
+      "published_sha256": "acfe7fe548ddba54b5fec07e01f1deef8a66267502d4cbed65ad5b4597084ee1",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "cross-review/cross-novelforge-arboris-webnovel.md",
+      "original_sha256": "950aa6a79f5e9ff7900e62ee6c7f9bd893e33371f0ec611722560c811794f7df",
+      "published_sha256": "61b8c1360d02d8b1fac065fd03414689853b43b89936e765340f16c62afee6e8",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "cross-review/cross-storyforge-novelforge-91writing.md",
+      "original_sha256": "d8bc991df236c82d518b70a24e47fc29499cce132871ac6a25f10b4847070a04",
+      "published_sha256": "053827065373569d35e1b8459c6aa3ca459a639acbe596fa992dd43d7497689c",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node20-browser-adoption-wait-failure.json",
+      "original_sha256": "d735b595c65ae43a539b7417933edbf1527e1bb1f04c1ae140654c7ecc9e7a9b",
+      "published_sha256": "88c4f1a222daec2a9d9328ce8f05f81e2c09764c08e73afd5d8580616e8c255a",
+      "categories": [
+        "local_absolute_path",
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node20-browser-blueprint-wait-failure.json",
+      "original_sha256": "a3bb2a7ff4068876866309f95730b115cb98bf37ad34f50fbca7f4b3011a5540",
+      "published_sha256": "90f0ea3d6ddb12a6caf5e3d59308d33ab35f42c9869c9600aa7a69b531e87fdc",
+      "categories": [
+        "local_absolute_path",
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node20-browser-final.json",
+      "original_sha256": "397fbe1bad35a3db2abc3ffe5e15dc28ac342dd9ef0889752fd27e9fa93723ed",
+      "published_sha256": "c78de5ad1c2b208760e00d4e0d14de4da441fbb432bfc560b9703a5a332c8fe4",
+      "categories": [
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node20-browser-reference-collapsed-failure.json",
+      "original_sha256": "eb4507a7d13faebea1b51def6a9aa76ee25a7966e5d36461eb659b84b0f7a6f1",
+      "published_sha256": "125206a319d0db16bd2433bacc8cd023b14615d9c7f571521e53538f28c09c10",
+      "categories": [
+        "local_absolute_path",
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node20-browser-sequence-failure.json",
+      "original_sha256": "5b06d58da5b8b9b8e26bcb72e82bb40adafd038048f999a29e579618a392e474",
+      "published_sha256": "a67fad83d42530ae110dc7119ba395210a27a1ef07c58b0ae7a7a9a62a1242c5",
+      "categories": [
+        "local_absolute_path",
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node20-browser-summary-failure.json",
+      "original_sha256": "afc154f6158149496c0b018b905ccf78241d549337c420f30808364348b8e5ad",
+      "published_sha256": "1928da8b61c875d1ddddd96bec178cb0e663d0c85f1b5f0018c2c484683db709",
+      "categories": [
+        "local_absolute_path",
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node20-browser-timeout.json",
+      "original_sha256": "4eb8dd87138c2bd7f4cfcb15deeeb3e9ca160ec4da93d91fb4f0d2ab038d87e0",
+      "published_sha256": "c0474ac6c70d55fd75843dcf9f43ba05905ab22f2a61be00091e1998a1ba50e7",
+      "categories": [
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node24-path-failure.json",
+      "original_sha256": "ecac1e274c818017567fc2ec2e24da6ff7e1b795b881d547249566b936fce3ce",
+      "published_sha256": "77fe9142fa8fb4264a7a2d21d72229ad587e2b11d9ab718e9ab2326e12f3f33e",
+      "categories": [
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node24-planning-baseline.json",
+      "original_sha256": "15237754b9fb9092d54e26b1fc71ba107904d81a8e1a6e21246dd33b3015de5b",
+      "published_sha256": "e51e902f8c5e47940989a56fa559d2bdb4a8df8cf3639da8b0843b2cc3223fcf",
+      "categories": [
+        "local_macos_temp_path"
+      ]
+    },
+    {
+      "path": "evidence/README.md",
+      "original_sha256": "f47e2c242b1b5681039fc91fec5b32f1014da22258745b5b11662cb82bcc6b6c",
+      "published_sha256": "31a191d64c25c8512b97b6fc827afd0859f56a5cbee8ab22eb5693804631de2e",
+      "categories": [
+        "local_absolute_path"
+      ],
+      "editorial_updates_after_redaction": true
+    },
+    {
+      "path": "evidence/source-metadata/91writing-branch.json",
+      "original_sha256": "7ba65ec5a7870361b231c115d2c139573a88aa97dc3e4803e8eb25232eba6aeb",
+      "published_sha256": "f762efaf302752b1e0c4f3879e8875c8f5c6f0209c9db293e8f786606f8c1133",
+      "categories": [
+        "personal_email",
+        "signed_payload_not_publicly_verifiable"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/ainovel-branch.json",
+      "original_sha256": "1e31a4d903c163391e56e5bd896691fea00a59594e7f5269402c34730d94469b",
+      "published_sha256": "db567b4e5061b7c79a89179b52bddb108ac4940ec49257a03f2ce46780c8bd4d",
+      "categories": [
+        "personal_email"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/arboris-branch.json",
+      "original_sha256": "99145d695769dac0c4099e81639c576c558c439fb79e6690334ae1f95f9d088e",
+      "published_sha256": "42fad153dcb520e4077c610d23b2921406584f7329db453c1367d28146ff4020",
+      "categories": [
+        "personal_email",
+        "signed_payload_not_publicly_verifiable"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/moyu-branch.json",
+      "original_sha256": "eea9556c814feba1952bba94ebc16cf2d99214083517a3dd9f3560cd22fd01a4",
+      "published_sha256": "8eb78b7f29147f246c501e4a35ef14afc5b2bcfeae756afa2d0afe5b1e4bebe5",
+      "categories": [
+        "personal_email"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/mumu-branch.json",
+      "original_sha256": "2f7d64e8caf5ea45bb42f6f0b0a6cf54741a6d1ec2ba86a489905d2761c3df54",
+      "published_sha256": "526650de2f02ba90f9d0ee2d82f7710e38139f14e8dfdff60992b036444057ef",
+      "categories": [
+        "personal_email"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/novelforge-branch.json",
+      "original_sha256": "cb8bb7ab8ab6bb6b68628d459e484a08e7c81ee6a9f5a799415ca2ae0a9163be",
+      "published_sha256": "1dd617cecf2bebcd630e3b27b0eba4e5c52cef658b6a697bcb631eb21ceac3fb",
+      "categories": [
+        "personal_email",
+        "signed_payload_not_publicly_verifiable"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/storyforge-branch.json",
+      "original_sha256": "55f989182acd395e748028dea93e779ca23759cee46857c5b01fc78680c53688",
+      "published_sha256": "7941fb6e10f1501c8dad7748b5dbcd7e58924e34ef224d960a1c8c54744628fd",
+      "categories": [
+        "personal_email",
+        "signed_payload_not_publicly_verifiable"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/webnovel-branch.json",
+      "original_sha256": "076e665010f8b5ed265f2c6aa346633b0cff152845f2a83508a44c50f9b977d3",
+      "published_sha256": "05f64dbc0a760a22afb6ef7632920f7d8ab92af370e9cc5e619dc504d75722c2",
+      "categories": [
+        "personal_email"
+      ]
+    },
+    {
+      "path": "evidence/source-metadata/webnovel-v8-branch.json",
+      "original_sha256": "ed129de76b68ae707786670918c067822743fcf5cb8085998fc86e87e165cac6",
+      "published_sha256": "1ef395a92b43249359fe82d61007c3a471aabd75c7f711584cdb123076f24119",
+      "categories": [
+        "personal_email",
+        "signed_payload_not_publicly_verifiable"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/arboris-component-probe.py",
+      "original_sha256": "6037f182fe10005f6a8a89201436ab56af14caedf888fa28df8f5c4e946aba70",
+      "published_sha256": "443b5894392e819005b73b0c416cdc85aedca6fd9cae337d23a158317ca1c64e",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/cross-storyforge-version-probe-result.json",
+      "original_sha256": "7cbb7d7f657e15b157eac0a84c06d73931ab13985fec4d856276b516af5a63d5",
+      "published_sha256": "9f887abc20118e398275c9910617f8d0125fe2bcf728f4d5d7b13ff6c4bdb0bd",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/cross-storyforge-version-probe.mjs",
+      "original_sha256": "32628fd74d2221d72b26ac3b9554533027fc044f5c3d7543a979f83b71b64da4",
+      "published_sha256": "0474a1d5b6bc302f9472813d8689caaf249f0937d526367955c8249397672452",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/mumu_isolated_probe.py",
+      "original_sha256": "cac11a8a6b94c7eb2d3a2cd90a6a45b302d3fbc687181de452f3a0c7eaa2b03d",
+      "published_sha256": "c8158e503f4f969cbdf5a6775299d413fab3df6b2b452649b83d1d7ee9d5d653",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/novelforge-component-probe.py",
+      "original_sha256": "aeb2ec27f1f20484e23c7abde388846b506705b235dbff158c9bf774a7c8b9da",
+      "published_sha256": "b30ad509f8cd1a15a3f57ba12fa3e9975b211ac15466da0fb900387c5bc97b7d",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/probe-91writing.cjs",
+      "original_sha256": "7b584cbe1a222adff70dec2cd814230cbdef8f51277fbc1eb716599344bd6496",
+      "published_sha256": "48541b415176ac20bccda881b3a1f54cd62f100a5d54599c8e513ef1469487a1",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/storyforge-isolated-probe.mjs",
+      "original_sha256": "f6175042e8518d834bac89ea8d696943b4706ba17bd65fd6f6aa64f827c778d3",
+      "published_sha256": "cb11d42762031040878026de172ace2ae35273ae74c7f6293a6acf2fb07fbf5f",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/upstream-probes/webnovel_runtime_probe_c.mjs",
+      "original_sha256": "44420b6ddf67c41340c4bbf2a76ce63b4c555d8734a02820d6ae6ae1048ced5e",
+      "published_sha256": "698f3102d33dfbac805d57658ebcc1bd6d4b082d31feabb3bca774453e150b62",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "projects/agent-91writing.md",
+      "original_sha256": "a12eaf72d3f58f7fe47b1921755654a0f5c25b1b36baebdfe3402825a4d79963",
+      "published_sha256": "cc02047a53d86731339f3db9f4e9ab1f278ffccdb8f387c81c8caedebc29b0ae",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "projects/agent-arboris.md",
+      "original_sha256": "c3f1a140b3a0d0036fc844a103f58b0a12ee163a30be01d59efbed585a5e436d",
+      "published_sha256": "fd702982d91c2caaa352122149c344506b82e13cf6471bcdf519cfb2aa799283",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "projects/agent-memory-ai-novel.md",
+      "original_sha256": "bff42ebab4a2b1d9b0adac6e11b7333994d3ee7c9f9faf3b108a52cbb7308005",
+      "published_sha256": "64348e6a25aeaf21b8a7e6e00ed2ea3b9706fb4c42f5bd57aef410c12ff47f73",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "projects/agent-mumu.md",
+      "original_sha256": "2ba7ad924c85f6e93171276a93088cdcda126dabc8229a73d0d57605849bc2c0",
+      "published_sha256": "8d45cc0870edf6910a55d26d4c3c216fb4b3684279c3ea957b864a3248e02ba4",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "projects/agent-novelforge.md",
+      "original_sha256": "8ea2f5dfea5cb162a9ee362ff9e2df1bf2e265d81524cb7f741334d5fa614bd9",
+      "published_sha256": "d950fae67a89d936551a20bb9e6a473814cb6dabe235a305349f81778de21531",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "projects/agent-runtime-webnovel.md",
+      "original_sha256": "5593dbfba9676bf7a0da342ba60bb0f0a06753887364a88c8aeb19dda5e14b50",
+      "published_sha256": "3f1cf980eda5f9ad0a33faf2f1f1690528e6bf814cdc5823b7e9d44c2499d5b2",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "projects/agent-storyforge.md",
+      "original_sha256": "83b079839bfe9a4e6a597d747ede6827a9edd103bc2f8cac152e4fb1978ac442",
+      "published_sha256": "1b40b2ac10d8ab8732799d082494f0b37db5d9e75b62c70de87bfff7cb4ea945",
+      "categories": [
+        "local_absolute_path"
+      ],
+      "editorial_updates_after_redaction": true
+    },
+    {
+      "path": "projects/README.md",
+      "original_sha256": "4c83de983e273b1e49a770f86dc85420dbf930b51f7a260f982885b2ce234639",
+      "published_sha256": "785d5b832ad9a8f991a85383f94795a30f8789ca7eed874ca50bb57527537cb3",
+      "categories": [
+        "local_absolute_path"
+      ],
+      "editorial_updates_after_redaction": true
+    },
+    {
+      "path": "sources.md",
+      "original_sha256": "fda64324691528c8e04d5503b2a4fbdf532c9d66d7a703ea6df7fb9baaac7a4c",
+      "published_sha256": "f892a064a591402f6f8204a54c4919b8579cc3d1847ab9722d9cd7585dbe9e32",
+      "categories": [
+        "local_absolute_path"
+      ],
+      "editorial_updates_after_redaction": true
+    }
+  ]
+}

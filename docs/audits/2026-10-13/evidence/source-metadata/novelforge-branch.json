@@ -1,0 +1,115 @@
+{
+  "name": "main",
+  "commit": {
+    "sha": "a485814411546b3980df0a1696a0fb6a043d56ce",
+    "node_id": "C_kwDOPa_yOtoAKGE0ODU4MTQ0MTE1NDZiMzk4MGRmMGExNjk2YTBmYjZhMDQzZDU2Y2U",
+    "commit": {
+      "author": {
+        "name": "RhythmicWave",
+        "email": "[redacted-email]",
+        "date": "2026-09-23T04:53:48Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "[redacted-email]",
+        "date": "2026-09-23T04:53:48Z"
+      },
+      "message": "Merge pull request #187 from RhythmicWave/dev\n\nv0.9.8",
+      "tree": {
+        "sha": "a6d3fd09a2de9973a5d45982ddd060dc4db1ab51",
+        "url": "https://api.github.com/repos/RhythmicWave/NovelForge/git/trees/a6d3fd09a2de9973a5d45982ddd060dc4db1ab51"
+      },
+      "url": "https://api.github.com/repos/RhythmicWave/NovelForge/git/commits/a485814411546b3980df0a1696a0fb6a043d56ce",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "public_archive_redacted",
+        "signature": null,
+        "payload": "tree a6d3fd09a2de9973a5d45982ddd060dc4db1ab51\nparent 7c2d84ef80b83938aa07e65dd70582579c0a2596\nparent 5a02be91a2d1c98cbf56d22e8710ef92a9590701\nauthor RhythmicWave <[redacted-email]> 1790139228 +0800\ncommitter GitHub <[redacted-email]> 1790139228 +0800\n\nMerge pull request #187 from RhythmicWave/dev\n\nv0.9.8",
+        "verified_at": "2026-09-23T04:53:49Z",
+        "original_verified": true,
+        "original_reason": "valid"
+      }
+    },
+    "url": "https://api.github.com/repos/RhythmicWave/NovelForge/commits/a485814411546b3980df0a1696a0fb6a043d56ce",
+    "html_url": "https://github.com/RhythmicWave/NovelForge/commit/a485814411546b3980df0a1696a0fb6a043d56ce",
+    "comments_url": "https://api.github.com/repos/RhythmicWave/NovelForge/commits/a485814411546b3980df0a1696a0fb6a043d56ce/comments",
+    "author": {
+      "login": "RhythmicWave",
+      "id": 68987900,
+      "node_id": "MDQ6VXNlcjY4OTg3OTAw",
+      "avatar_url": "https://avatars.githubusercontent.com/u/68987900?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/RhythmicWave",
+      "html_url": "https://github.com/RhythmicWave",
+      "followers_url": "https://api.github.com/users/RhythmicWave/followers",
+      "following_url": "https://api.github.com/users/RhythmicWave/following{/other_user}",
+      "gists_url": "https://api.github.com/users/RhythmicWave/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/RhythmicWave/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/RhythmicWave/subscriptions",
+      "organizations_url": "https://api.github.com/users/RhythmicWave/orgs",
+      "repos_url": "https://api.github.com/users/RhythmicWave/repos",
+      "events_url": "https://api.github.com/users/RhythmicWave/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/RhythmicWave/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "7c2d84ef80b83938aa07e65dd70582579c0a2596",
+        "url": "https://api.github.com/repos/RhythmicWave/NovelForge/commits/7c2d84ef80b83938aa07e65dd70582579c0a2596",
+        "html_url": "https://github.com/RhythmicWave/NovelForge/commit/7c2d84ef80b83938aa07e65dd70582579c0a2596"
+      },
+      {
+        "sha": "5a02be91a2d1c98cbf56d22e8710ef92a9590701",
+        "url": "https://api.github.com/repos/RhythmicWave/NovelForge/commits/5a02be91a2d1c98cbf56d22e8710ef92a9590701",
+        "html_url": "https://github.com/RhythmicWave/NovelForge/commit/5a02be91a2d1c98cbf56d22e8710ef92a9590701"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/RhythmicWave/NovelForge/branches/main",
+    "html": "https://github.com/RhythmicWave/NovelForge/tree/main"
+  },
+  "protected": false,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": [],
+      "checks": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/RhythmicWave/NovelForge/branches/main/protection",
+  "archive_redaction": {
+    "original_artifact_sha256": "cb8bb7ab8ab6bb6b68628d459e484a08e7c81ee6a9f5a799415ca2ae0a9163be",
+    "categories": [
+      "personal_email",
+      "signed_payload_not_publicly_verifiable"
+    ],
+    "commit_ids_unchanged": true,
+    "public_bytes_are_original": false
+  }
+}

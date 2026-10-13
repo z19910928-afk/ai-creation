@@ -1,0 +1,107 @@
+{
+  "name": "dev",
+  "commit": {
+    "sha": "8b85b2b6f29af4c69241be7c42417dbe4795db30",
+    "node_id": "C_kwDORb_RKNoAKDhiODViMmI2ZjI5YWY0YzY5MjQxYmU3YzQyNDE3ZGJlNDc5NWRiMzA",
+    "commit": {
+      "author": {
+        "name": "inliver233",
+        "email": "[redacted-email]",
+        "date": "2026-07-28T19:21:50Z"
+      },
+      "committer": {
+        "name": "inliver233",
+        "email": "[redacted-email]",
+        "date": "2026-07-28T19:21:50Z"
+      },
+      "message": "docs: record database transaction remediation",
+      "tree": {
+        "sha": "396b02c000b9d1eaa42767789d9c794e276df1c8",
+        "url": "https://api.github.com/repos/inliver233/Ai-Novel/git/trees/396b02c000b9d1eaa42767789d9c794e276df1c8"
+      },
+      "url": "https://api.github.com/repos/inliver233/Ai-Novel/git/commits/8b85b2b6f29af4c69241be7c42417dbe4795db30",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/inliver233/Ai-Novel/commits/8b85b2b6f29af4c69241be7c42417dbe4795db30",
+    "html_url": "https://github.com/inliver233/Ai-Novel/commit/8b85b2b6f29af4c69241be7c42417dbe4795db30",
+    "comments_url": "https://api.github.com/repos/inliver233/Ai-Novel/commits/8b85b2b6f29af4c69241be7c42417dbe4795db30/comments",
+    "author": {
+      "login": "inliver233",
+      "id": 148784533,
+      "node_id": "U_kgDOCN5FlQ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148784533?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/inliver233",
+      "html_url": "https://github.com/inliver233",
+      "followers_url": "https://api.github.com/users/inliver233/followers",
+      "following_url": "https://api.github.com/users/inliver233/following{/other_user}",
+      "gists_url": "https://api.github.com/users/inliver233/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/inliver233/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/inliver233/subscriptions",
+      "organizations_url": "https://api.github.com/users/inliver233/orgs",
+      "repos_url": "https://api.github.com/users/inliver233/repos",
+      "events_url": "https://api.github.com/users/inliver233/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/inliver233/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "inliver233",
+      "id": 148784533,
+      "node_id": "U_kgDOCN5FlQ",
+      "avatar_url": "https://avatars.githubusercontent.com/u/148784533?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/inliver233",
+      "html_url": "https://github.com/inliver233",
+      "followers_url": "https://api.github.com/users/inliver233/followers",
+      "following_url": "https://api.github.com/users/inliver233/following{/other_user}",
+      "gists_url": "https://api.github.com/users/inliver233/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/inliver233/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/inliver233/subscriptions",
+      "organizations_url": "https://api.github.com/users/inliver233/orgs",
+      "repos_url": "https://api.github.com/users/inliver233/repos",
+      "events_url": "https://api.github.com/users/inliver233/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/inliver233/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "f245078842938d6bf167689fd4768ef70671b726",
+        "url": "https://api.github.com/repos/inliver233/Ai-Novel/commits/f245078842938d6bf167689fd4768ef70671b726",
+        "html_url": "https://github.com/inliver233/Ai-Novel/commit/f245078842938d6bf167689fd4768ef70671b726"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/inliver233/Ai-Novel/branches/dev",
+    "html": "https://github.com/inliver233/Ai-Novel/tree/dev"
+  },
+  "protected": false,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": [],
+      "checks": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/inliver233/Ai-Novel/branches/dev/protection",
+  "archive_redaction": {
+    "original_artifact_sha256": "1e31a4d903c163391e56e5bd896691fea00a59594e7f5269402c34730d94469b",
+    "categories": [
+      "personal_email"
+    ],
+    "commit_ids_unchanged": true,
+    "public_bytes_are_original": false
+  }
+}
