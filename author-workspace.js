@@ -592,7 +592,8 @@ function authorRenderSettings(){
  <label>每日生成上限<input id="modelDailyLimit" type="number" min="0" max="100000" value="${s.daily_limit??50}"></label>
  ${[['continue','续写模型'],['polish','润色模型'],['outline','规划模型'],['summary','回顾模型'],['check','审稿模型']].map(([key,label])=>
  `<label>${label}<input data-task-model="${key}" value="${esc(models[key]||'')}" placeholder="使用默认模型"></label>`).join('')}</div>
- <p id="modelProbeStatus" class="modal-help">${esc(authorProbeDescription(s.last_probe,s.model)||(s.configured?'设置已保存，尚未验证默认模型响应':'尚未配置模型'))}</p>
+ <p id="modelProbeStatus" class="modal-help">${esc(authorProbeDescription(s.last_probe,s.model)||
+  (s.configured||String(s.base_url||'').trim()&&String(s.model||'').trim()?'设置已保存，尚未验证默认模型响应':'尚未配置模型'))}</p>
  <p class="form-error" role="alert"></p><div class="settings-actions"><button class="ghost-btn" type="button" id="modelProbe">实测连接（调用模型）</button>
  <button class="primary-btn" type="submit">保存设置</button></div></form>`;
  const form=host.querySelector('#modelSettings');
