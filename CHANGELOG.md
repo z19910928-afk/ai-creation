@@ -10,6 +10,7 @@
 - 上海时间02:03:08至02:06:19的[候选整理完整复验](docs/audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-final.json)51个执行项、36份Python测试和55个电脑浏览器场景通过；66份源码前后指纹相同，13份附件指纹核验。候选整理19项、正文HTTP15项、20轮连续写作和五章10次专用候选检查均实际执行，提供方为免费本机模拟。
 - 文学质量、事实安全、作者效率与第一梯队均未证明。[中间工程失败](docs/audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)因源码变化与浏览器启动失败保留原件，随后独立完整复验通过；本次源码尚未登记对应上传与远程检查。下节 `eaca358` 与运行 `38434003558` 的历史成功不覆盖本次整理。
 - 回复模式诊断先执行一次同条件不分段请求，仍得到“铁”1字并观察到非空 `reasoning_content`；按停止条件未发送第二次流式请求。累计更新为34条预留、63876个可信完整tokens，10条缺完整用量，费用未知。[诊断记录](docs/audits/2026-10-13/literary-transport-v1/report.md)不代表文学达标或第一梯队。
+- 修正 `ai_contract_fixtures.py` 的服务健康等待：远程运行器现在最多等待10秒，并在服务提前退出时保留启动日志。修复后的[工程快照](docs/audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-ci-fix.json)51项、36份Python测试和55个电脑浏览器场景通过；这只修复检查启动竞态，不改变文学失败结论。
 
 ## 2026-10-14 · 电脑端交付复验与评测范围收口
 

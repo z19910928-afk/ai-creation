@@ -138,3 +138,5 @@
 ## 最新真实诊断
 
 候选整理失败后，固定同一墨屿整理输入先执行一次 `stream=false` 请求。模型、消息、参数、3000输出tokens和600至850字门保持不变；返回200、`stop`、完整用量4747 tokens，但正文仍是“铁”1字，并出现非空 `reasoning_content`。按预先停止条件未执行第二次流式请求。当前累计34条预留、63876个可信完整tokens，仍有10条缺完整用量，费用未知；[诊断报告](literary-transport-v1/report.md)只支持异常复现，不能支持文学质量或第一梯队结论。
+
+远程检查首次失败是 `ai_contract_fixtures.py` 在Linux运行器中健康等待窗口过短，修复为最多10秒并保留提前退出日志；本机修复后[新快照](evidence/compatibility-python311-node24-candidate-revision-ci-fix.json)再次通过51项和55个电脑场景。该测试修复不改变真实模型结果、费用账本或第一梯队门槛。
