@@ -88,8 +88,34 @@ const WRITING_META_PATTERN=new RegExp('^\\s*(?:'+[
  '我要(?:构造|设计|规划)(?:候选正文|续写段落|段落)',
  '下面我将(?:生成|输出)(?:续写|润色|改写)后的正文'
 ].map(pattern=>pattern+WRITING_META_BOUNDARY).join('|')+')');
+function hasProviderValidationShape(candidate,validation){
+ if(candidate?.mode==='offline')return true;
+ if(!validation||typeof validation!=='object'||Array.isArray(validation))return false;
+ const contract=validation.contract||validation.output_contract;
+ const hasOwn=(key)=>Object.prototype.hasOwnProperty.call(contract||{},key);
+ const nonNegativeIntegerOrNull=(value)=>value===null||
+  (Number.isInteger(value)&&value>=0);
+ return typeof validation.eligible==='boolean'&&
+  typeof validation.protocol_complete==='boolean'&&
+  Number.isInteger(validation.characters)&&validation.characters>=0&&
+  Array.isArray(validation.issues)&&contract&&typeof contract==='object'&&!Array.isArray(contract)&&
+  hasOwn('minimum_characters')&&nonNegativeIntegerOrNull(contract.minimum_characters)&&
+  hasOwn('maximum_characters')&&nonNegativeIntegerOrNull(contract.maximum_characters)&&
+  hasOwn('counting')&&typeof contract.counting==='string'&&
+  hasOwn('source')&&typeof contract.source==='string';
+}
 function candidateOutputIssues(candidate){
- const validation=candidate?.output_validation;if(!validation)return [];
+ const validation=candidate?.output_validation;
+ if(!validation||typeof validation!=='object'||Array.isArray(validation)){
+  // Offline drafts are intentionally local and do not carry provider checks.
+  // A provider (or legacy/unknown) draft must fail closed until the server
+  // records the mechanical output validation for this exact run.
+  if(['continue','polish'].includes(candidate?.task)&&candidate?.mode!=='offline')
+   return ['候选缺少后端输出验证，请重新生成'];
+  return [];
+ }
+ if(!hasProviderValidationShape(candidate,validation))
+  return ['候选未通过后端完整性检查，请重新生成后再采纳'];
  const text=candidate.text||'';const chars=Array.from(text).filter(char=>!/\s/u.test(char)).length;
  const contract=validation.contract||validation.output_contract||{};
  const issues=[];
@@ -127,7 +153,9 @@ function candidateOutputIssues(candidate){
  if(validation.protocol_complete===false&&!seenCodes.has('protocol_incomplete')){
   addIssue('protocol_incomplete','模型回复未具备完整正文协议证据，请重新生成后再采纳');
  }
- if(validation.eligible===false&&!issues.length&&!backendIssues.length){
+ if(typeof validation.eligible!=='boolean'&&!issues.length){
+  addIssue('validation_ineligible','候选未通过后端完整性检查，请重新生成后再采纳');
+ }else if(validation.eligible===false&&!issues.length&&!backendIssues.length){
   addIssue('validation_ineligible','候选未通过后端完整性检查，请重新生成后再采纳');
  }
  return issues;
@@ -213,6 +241,9 @@ function candidateRevisionChild(candidate){
 function candidateRevisionReason(candidate){
  if(!candidate||!['continue','polish'].includes(candidate.task))return '只支持整理续写或润色正文';
  if(candidate.restored_read_only)return '恢复的候选仅供阅读，请生成新候选';
+ const validation=candidate.output_validation;
+ if(!hasProviderValidationShape(candidate,validation))
+  return '候选缺少后端输出验证，请重新生成';
  if(candidate.reasoning_observation?.requested_disabled&&(
   candidate.reasoning_observation?.nonempty_events>0||candidate.reasoning_observation?.invalid_events>0)){
   return candidate.reasoning_observation?.invalid_events>0?

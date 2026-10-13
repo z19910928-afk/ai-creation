@@ -26,7 +26,11 @@ from typing import Any, Iterator, Sequence
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_output import find_planning_contamination, output_contract as prose_output_contract
+from moyu_output import (
+    find_planning_contamination,
+    output_contract as prose_output_contract,
+    output_prompt_constraints,
+)
 from moyu_provider import (
     ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts,
     usage_accounting, validate_json,
@@ -124,14 +128,24 @@ def output_contract(case: dict[str, Any]) -> dict[str, Any]:
     if explicit is not None:
         if not isinstance(explicit, dict):
             raise ValueError("候选输出要求必须是对象。")
-        minimum, maximum = explicit.get("minimum_characters"), explicit.get("maximum_characters")
+        minimum = explicit.get("minimum_characters")
+        maximum = explicit.get("maximum_characters")
+        target = explicit.get("target_characters")
         if (minimum is None) != (maximum is None) or any(
                 isinstance(value, bool) or not isinstance(value, int) or value < 1
                 for value in (minimum, maximum) if value is not None):
             raise ValueError("候选字数上下限必须同时提供正整数。")
         if minimum is not None and minimum > maximum:
             raise ValueError("候选字数下限不能大于上限。")
+        if (target is not None
+                and (isinstance(target, bool) or not isinstance(target, int) or target < 1)):
+            raise ValueError("候选字数目标必须为正整数。")
+        if target is not None and minimum is not None and target < minimum:
+            raise ValueError("候选字数目标不能低于下限。")
+        if target is not None and maximum is not None and target > maximum:
+            raise ValueError("候选字数目标不能高于上限。")
         return {"minimum_characters": minimum, "maximum_characters": maximum,
+                "target_characters": target,
                 "counting": "non_whitespace_characters_including_punctuation",
                 "source": "frozen_output_contract"}
     contract = prose_output_contract(
@@ -142,6 +156,7 @@ def output_contract(case: dict[str, Any]) -> dict[str, Any]:
         raise ValueError("相对字数要求缺少完整原文，不能冻结或发送文学评测。")
     minimum, maximum = contract["minimum_characters"], contract["maximum_characters"]
     return {"minimum_characters": minimum, "maximum_characters": maximum,
+            "target_characters": contract["target_characters"],
             "counting": "non_whitespace_characters_including_punctuation",
             "source": "explicit_instruction" if minimum is not None or maximum is not None else "unspecified"}
 
@@ -154,10 +169,17 @@ def sample_validation(case: dict[str, Any], record: dict[str, Any]) -> dict[str,
     audit = result.get("request_audit") or record.get("request_audit") or {}
     audit = audit if isinstance(audit, dict) else {}
     parameters = audit.get("effective_parameters")
-    streaming = isinstance(parameters, dict) and parameters.get("stream") is True
+    # Use the observed transport as a second source of truth. A damaged or
+    # legacy request audit must not make an unterminated native SSE look
+    # complete. ``truncated`` is checked independently because a malformed
+    # record can otherwise combine a stop reason with a truncated flag.
+    streaming = (
+        isinstance(parameters, dict) and parameters.get("stream") is True
+    ) or result.get("stream_transport") == "provider_native_sse"
     protocol_complete = (
         record.get("status") == "complete" and result.get("safe_to_apply") is True
         and result.get("completion_state") == "complete" and result.get("finish_reason") == "stop"
+        and result.get("truncated") is not True
         and (not streaming or result.get("provider_sse_complete") is True))
     issues = []
     if not protocol_complete:
@@ -320,14 +342,22 @@ def default_plan() -> dict[str, Any]:
     for case in cases:
         contract = output_contract(case)
         case["output_contract"] = {
-            key: contract[key] for key in ("minimum_characters", "maximum_characters")
+            key: contract[key] for key in (
+                "minimum_characters", "maximum_characters", "target_characters")
             if contract[key] is not None}
     return {
         "protocol": PLAN_VERSION, "created_at": now(), "seed": 20261013,
         "scope": "固定材料下的提示与候选试评；不替代真实检索、作者效率或七竞品全流程对照。",
         "arms": [{"id": "baseline", "label": "通用固定材料基线", "source": "plain-context"},
                  {"id": "moyu", "label": "墨屿实际提示", "source": "moyu-prompt"}],
-        "candidate_arm": "moyu", "repetitions": 1, "writer_parameters": {"temperature": 0.65},
+        "candidate_arm": "moyu", "repetitions": 1,
+        # The tested endpoint documents ``thinking.type`` as the portable
+        # switch. Do not add a second alias to a frozen request: gateways may
+        # interpret or reject unknown reasoning parameters differently.
+        "writer_parameters": {
+            "temperature": 0.65,
+            "thinking": {"type": "disabled"},
+        },
         "max_output_tokens": 2000, "max_judge_output_tokens": 2200,
         "budget": {"max_requests": 60, "reported_tokens_stop_threshold": 180_000,
                    "currency_cost": "unknown_until_provider_prices_are_recorded"},
@@ -585,6 +615,8 @@ def freeze_run(out: Path, plan: dict[str, Any], writer_model: str, *,
                 prepared = prepare_chat_request(
                     config, messages, task=item["task"], parameters=plan["writer_parameters"],
                     max_tokens=plan["max_output_tokens"], stream=plan.get("writer_stream", False))
+                if prepared["request_audit"]["payload"] != prepared["payload"]:
+                    raise ValueError("旧评测素材意外包含凭据，已停止校准。")
                 if prepared["endpoint"] != item["endpoint"] or prepared["payload"] != item["payload"]:
                     raise ValueError("旧快照与当前实际请求有实质变化，禁止校准。")
                 item["body_utf8"] = prepared["body"].decode("utf-8")
@@ -640,7 +672,12 @@ def messages_for(case: dict[str, Any], arm: dict[str, Any], plan_path: Path,
         return preview.get("messages") or [{"role": "system", "content": preview["system"]},
                                             {"role": "user", "content": preview["user"]}]
     if source == "plain-context":
-        return [{"role": "system", "content": "你是中文小说创作助手。" + TASK_INSTRUCTIONS[case["task"]]},
+        contract = output_contract(case)
+        constraints = output_prompt_constraints(case["task"], contract)
+        system = "你是中文小说创作助手。" + TASK_INSTRUCTIONS[case["task"]]
+        if constraints:
+            system += "\n本次候选要求：\n" + constraints
+        return [{"role": "system", "content": system},
                 {"role": "user", "content": json.dumps(case["context"], ensure_ascii=False)
                   + "\n作者要求：" + case["instruction"]}]
     if source == "frozen-requests":

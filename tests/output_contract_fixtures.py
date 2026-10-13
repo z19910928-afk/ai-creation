@@ -604,6 +604,8 @@ class OutputContractTests(unittest.TestCase):
         self.assertIn("标点、数字和字母均计入", prompt)
         self.assertIn("按场景需要分配各段篇幅", prompt)
         self.assertIn("不输出段落预算或检查过程", prompt)
+        self.assertIn("把目标字数当作收束点而不是最低要求", prompt)
+        self.assertIn("最后一句必须完整", prompt)
         self.assertIn("只返回正文", prompt)
         self.assertIn("不要解释", prompt)
         self.assertNotIn("作者补充要求", prompt)

@@ -1,0 +1,198 @@
+{
+  "arm_id": "baseline",
+  "case_id": "mystery-tide",
+  "frozen_request_sha256": "756c2f341b446343ba623880f302f73b46faee4db380eace0092e2547a96168f",
+  "genre": "悬疑",
+  "id": "mystery-tide--1--baseline",
+  "repetition": 1,
+  "request_audit": {
+    "created_at": "2026-10-13T23:17:46.948616+00:00",
+    "dispatch_state": "dispatch_intent_recorded",
+    "dispatched": true,
+    "effective_parameters": {
+      "max_tokens": 520,
+      "response_format": "text",
+      "stream": false,
+      "temperature": 0.65,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "endpoint": "https://api.icodexs.com/v1/chat/completions",
+    "messages_sha256": "3b304cf023deb8b62555699f94705f5e79f45d8dbfe1d581dc13b4fda406370d",
+    "method": "POST",
+    "payload": {
+      "max_tokens": 520,
+      "messages": [
+        {
+          "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。\n本次候选要求：\n正文长度目标约680字，允许600至850字。\n字数按去除空白后的字符数计算，标点、数字和字母均计入。\n按场景需要分配各段篇幅，为结尾留出字数；围绕作者要求推进关键行动或选择，用其直接结果收束当前片段，保留作者指定情节与因果，不输出段落预算或检查过程。\n只返回正文，不要解释、分析、思考过程、标题或代码围栏。",
+          "role": "system"
+        },
+        {
+          "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字，目标约680字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+          "role": "user"
+        }
+      ],
+      "model": "MiniMax-M3",
+      "stream": false,
+      "temperature": 0.65,
+      "thinking": {
+        "type": "disabled"
+      }
+    },
+    "provider_request_id": "731393c8-1683-42d5-be5b-2cbfba949a70, 9b11e051-1ffc-4b77-8fc7-860b32617f4d, a6c59632-8138-4248-857a-e70303ba9e39",
+    "request_bytes": 2858,
+    "request_id": "eval_8b0624e4faf68b1514f5244f5fe77bf0",
+    "request_sha256": "756c2f341b446343ba623880f302f73b46faee4db380eace0092e2547a96168f",
+    "requested_model": "MiniMax-M3",
+    "response_bytes": 2745
+  },
+  "result": {
+    "billing_state": "usage_reported",
+    "completion_state": "truncated",
+    "finish_reason": "length",
+    "latency_ms": 8500,
+    "protocol_observation": {
+      "events": [
+        {
+          "choices": [
+            {
+              "fields": 3,
+              "finish_reason": "length",
+              "message": {
+                "fields": {
+                  "content": {
+                    "chars": 818,
+                    "type": "string"
+                  },
+                  "role": {
+                    "chars": 9,
+                    "type": "string"
+                  }
+                },
+                "type": "object"
+              },
+              "type": "object"
+            }
+          ],
+          "event_sequence": 1,
+          "fields": 6,
+          "keys": [
+            "id",
+            "object",
+            "created",
+            "model",
+            "choices",
+            "usage"
+          ],
+          "type": "object",
+          "usage": {
+            "fields": 4,
+            "type": "object"
+          }
+        }
+      ],
+      "events_observed": 1,
+      "events_recorded": 1,
+      "events_truncated": false
+    },
+    "provider_response_id": "071def1c3ccc2526417c92d5a9db87bf",
+    "provider_sse_complete": null,
+    "reasoning_observation": {
+      "characters": 0,
+      "field_events": 0,
+      "invalid_events": 0,
+      "nonempty_events": 0,
+      "requested_disabled": true,
+      "unexpected_reasoning": false
+    },
+    "request_audit": {
+      "created_at": "2026-10-13T23:17:46.948616+00:00",
+      "dispatch_state": "dispatch_intent_recorded",
+      "dispatched": true,
+      "effective_parameters": {
+        "max_tokens": 520,
+        "response_format": "text",
+        "stream": false,
+        "temperature": 0.65,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "endpoint": "https://api.icodexs.com/v1/chat/completions",
+      "messages_sha256": "3b304cf023deb8b62555699f94705f5e79f45d8dbfe1d581dc13b4fda406370d",
+      "method": "POST",
+      "payload": {
+        "max_tokens": 520,
+        "messages": [
+          {
+            "content": "你是中文小说创作助手。续写当前场景，保持人物、因果和视角。只输出候选正文。\n本次候选要求：\n正文长度目标约680字，允许600至850字。\n字数按去除空白后的字符数计算，标点、数字和字母均计入。\n按场景需要分配各段篇幅，为结尾留出字数；围绕作者要求推进关键行动或选择，用其直接结果收束当前片段，保留作者指定情节与因果，不输出段落预算或检查过程。\n只返回正文，不要解释、分析、思考过程、标题或代码围栏。",
+            "role": "system"
+          },
+          {
+            "content": "{\"character_states\": [], \"confirmed_memory\": [{\"assertion\": \"月牙钥匙藏在林岚左靴内侧。\", \"id\": \"mystery-tide-fact-1\", \"source_quote\": \"月牙钥匙藏在林岚左靴内侧。\", \"status\": \"confirmed\"}, {\"assertion\": \"涨潮时间是22点10分。\", \"id\": \"mystery-tide-fact-2\", \"source_quote\": \"涨潮时间是22点10分。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚不知道陆衡的凶手。\", \"id\": \"mystery-tide-fact-3\", \"source_quote\": \"林岚不知道陆衡的凶手。\", \"status\": \"confirmed\"}, {\"assertion\": \"林岚手机没有信号。\", \"id\": \"mystery-tide-fact-4\", \"source_quote\": \"林岚手机没有信号。\", \"status\": \"confirmed\"}], \"context_budget\": {\"fixed_evaluation_materials\": true}, \"current_chapter\": {\"body\": \"21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\", \"body_complete\": true, \"chapter_hash\": \"9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076\", \"id\": \"mystery-tide\", \"plan\": {\"chapter_goal\": \"仓库的第二把锁\", \"pov\": \"林岚\"}, \"source_range\": {\"end\": 81, \"start\": 0}, \"title\": \"仓库的第二把锁\"}, \"previous_chapters\": [{\"chapter_hash\": \"bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604\", \"excerpt\": \"陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。\", \"id\": \"mystery-tide-previous\", \"source_range\": {\"end\": 73, \"start\": 0}, \"title\": \"上一章\"}], \"retrieved_chapters\": [], \"story_cards\": [], \"timeline\": []}\n作者要求：续写600至850字，目标约680字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+            "role": "user"
+          }
+        ],
+        "model": "MiniMax-M3",
+        "stream": false,
+        "temperature": 0.65,
+        "thinking": {
+          "type": "disabled"
+        }
+      },
+      "provider_request_id": "731393c8-1683-42d5-be5b-2cbfba949a70, 9b11e051-1ffc-4b77-8fc7-860b32617f4d, a6c59632-8138-4248-857a-e70303ba9e39",
+      "request_bytes": 2858,
+      "request_id": "eval_8b0624e4faf68b1514f5244f5fe77bf0",
+      "request_sha256": "756c2f341b446343ba623880f302f73b46faee4db380eace0092e2547a96168f",
+      "requested_model": "MiniMax-M3",
+      "response_bytes": 2745
+    },
+    "requested_model": "MiniMax-M3",
+    "response_format": "text",
+    "returned_model": "MiniMax-M3",
+    "safe_to_apply": false,
+    "stream_transport": "provider_json",
+    "structured": null,
+    "text": "21点56分，仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。\n\n铁链声停了。她屏住呼吸，听见自己的心跳撞在肋骨上。门后那个人没有走，只是在等着。她把手指从锁孔边缘收回来，转向左边那扇半掩的侧门。旧码头的木板裂缝里长着黑色的海藻，空气里有一股咸腥的味道。22点10分涨潮，广播里说过三次。她记得很清楚。\n\n台阶就在侧门外，八级，向下延伸到水里。现在海水退到了最远处，灰色的滩涂露在外面，破碎的贝壳反着微弱的光。她估算了一下时间。九点半之前必须离开。她抬起左脚，解开靴筒侧面的暗扣，把手伸进去。金属贴着脚踝内侧，她摸到月牙形的小钩子，把它从缝线里扯出来。\n\n月牙钥匙落在掌心，比她想象中还要轻，像是牙齿。银色的尖端弯成尖锐的弧度，正好能嵌进那个不规则的锁孔。她转身回到墙边，把钥匙送进去。锁芯转动的瞬间，门后传来一声沉闷的撞击，像是拳头砸在木板上。\n\n下面那把锁弹开了。铁门缝隙里透出一线暖黄色的光，有人点着灯。她没有推门。门上的第二把锁还在，是普通的铜锁，钥匙不知道在哪里。她蹲下去，盯着那个锁孔看了三秒。锁芯边缘刻着一道细小的划痕，像是某种记号。\n\n她在台阶口的海风里听到远处传来机械的轰鸣。港口的抽水机开始运转了。九点四十八分。涨潮前还有二十二分钟。她重新站起来，月牙钥匙还捏在手里，掌心的汗把它捂热了。她往侧门的方向走了两步，又停下来。\n\n陆衡死的时候，她正在整理渔具。消息是第二天早上送来的，说是在二号码头的废弃仓库里发现的他。凶手是谁，没有人告诉她。警方说还在调查。她把月牙钥匙藏进靴子里，从旧码头离开。\n\n她不确定自己有没有勇气走进那道暖黄色的光里。她低头看着自己的靴子，左靴内侧的暗扣还敞着，缝线被扯歪了，露出里面的棉絮。二十二分钟。海水涨起来的时候，台阶会被淹没，仓库的门会灌进半米深的海水。\n\n她必须做出选择。她把月牙",
+    "truncated": true,
+    "usage": {
+      "completion_tokens": 520,
+      "prompt_tokens": 867,
+      "prompt_tokens_details": {
+        "cached_tokens": 128
+      },
+      "total_tokens": 1387
+    },
+    "usage_accounting": {
+      "reported_tokens_lower_bound": 1387,
+      "source": "provider_reported",
+      "state": "reported",
+      "total_tokens": 1387
+    },
+    "usage_state": "reported"
+  },
+  "run_id": "8e236067b2614e45aa64bb1b984c04ef",
+  "sample_validation": {
+    "characters": 802,
+    "eligible_for_blind_review": false,
+    "hard_fact_status": "requires_independent_review",
+    "issues": [
+      {
+        "code": "protocol_incomplete",
+        "description": "模型回复未具备完整正文协议证据。"
+      }
+    ],
+    "output_contract": {
+      "counting": "non_whitespace_characters_including_punctuation",
+      "maximum_characters": 850,
+      "minimum_characters": 600,
+      "source": "frozen_output_contract",
+      "target_characters": 680
+    },
+    "protocol_complete": false,
+    "scope": "字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。"
+  },
+  "status": "incomplete",
+  "task": "continue"
+}

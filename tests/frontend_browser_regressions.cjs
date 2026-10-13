@@ -636,6 +636,40 @@ async function main(){
    aiDraft.output_validation.eligible=true;displayCandidate(aiDraft);
   });
   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+  const validation=await desktop.page.evaluate(()=>{
+   const saved=aiDraft.output_validation;
+   delete aiDraft.output_validation;
+   displayCandidate(aiDraft);
+   return saved;
+  });
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/缺少后端输出验证/);
+  await desktop.page.evaluate(saved=>{aiDraft.output_validation=saved;displayCandidate(aiDraft)},validation);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+  await desktop.page.evaluate(()=>{
+   aiDraft.output_validation={};
+   displayCandidate(aiDraft);
+  });
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/未通过后端完整性检查/);
+  await desktop.page.evaluate(saved=>{aiDraft.output_validation=saved;displayCandidate(aiDraft)},validation);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+  const editedCharacters=Array.from(edited).filter(char=>!/\s/u.test(char)).length;
+  await desktop.page.evaluate(characters=>{
+   aiDraft.output_validation={eligible:true,protocol_complete:true,characters,
+    issues:[],contract:{counting:'non_whitespace_characters_including_punctuation'}};
+   displayCandidate(aiDraft);
+  },editedCharacters);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/未通过后端完整性检查/);
+  await desktop.page.evaluate(characters=>{
+   aiDraft.output_validation={eligible:true,protocol_complete:true,characters,issues:[]};
+   displayCandidate(aiDraft);
+  },editedCharacters);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/未通过后端完整性检查/);
+  await desktop.page.evaluate(saved=>{aiDraft.output_validation=saved;displayCandidate(aiDraft)},validation);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
   await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').click();
   await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
   assert.equal(await currentBody(firstId),body+'\n\n'+edited);

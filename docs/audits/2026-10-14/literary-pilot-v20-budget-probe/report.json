@@ -1,0 +1,208 @@
+{
+  "acceptance_gates": {
+    "actual_author_efficiency_measured": false,
+    "all_generations_complete": false,
+    "all_planned_pairs_graded": false,
+    "all_sample_outputs_eligible": false,
+    "hard_violation_rate_within_gate": false,
+    "minimum_genres": false,
+    "no_judge_flagged_hard_violation": true,
+    "preference_uncertainty_within_gate": false,
+    "same_writer_model": true,
+    "sufficient_distinct_stories_for_tier_claim": false
+  },
+  "author_efficiency": {
+    "adoption_rate": null,
+    "by_arm": {},
+    "edit_seconds": null,
+    "ratings": 0,
+    "reason": "未取得实际作者的盲评采纳与修改记录。",
+    "reviewers": 0,
+    "status": "unmeasured"
+  },
+  "created_at": "2026-10-13T23:28:16.057109+00:00",
+  "distinct_story_coverage": {
+    "minimum_required_per_comparator": 30,
+    "observed": 1,
+    "output_eligible": 0,
+    "planned": 6,
+    "reviewed_by_comparator": {
+      "baseline": 0
+    },
+    "scope": "计划、实际返回、输出合格与完整评审分开计数；每个对照仅计入双方候选合格、达到不同实际返回评审模型门槛且每个模型完成双顺序的独立故事。同故事的题目、重复生成和重复评审不扩大样本量。故事按方案中的story_id合并，未指定时使用题目id；身份标签不证明内容独立性。"
+  },
+  "eligible_genres": [],
+  "first_tier_proven": false,
+  "generation": {
+    "complete_samples": 1,
+    "eligible_for_blind_review": 0,
+    "expected_samples": 12,
+    "missing_samples": [
+      "daily-summary--1--baseline",
+      "daily-summary--1--moyu",
+      "mystery-check--1--baseline",
+      "mystery-check--1--moyu",
+      "romance-ticket--1--baseline",
+      "romance-ticket--1--moyu",
+      "science-airlock--1--baseline",
+      "science-airlock--1--moyu",
+      "wuxia-polish--1--baseline",
+      "wuxia-polish--1--moyu"
+    ],
+    "observed_model_identities": [
+      {
+        "completion_state": "complete",
+        "finish_reason": "stop",
+        "requested_model": "MiniMax-M3",
+        "returned_model": "MiniMax-M3",
+        "sample_id": "mystery-tide--1--baseline",
+        "status": "complete"
+      },
+      {
+        "completion_state": "truncated",
+        "finish_reason": "length",
+        "requested_model": "MiniMax-M3",
+        "returned_model": "MiniMax-M3",
+        "sample_id": "mystery-tide--1--moyu",
+        "status": "incomplete"
+      }
+    ],
+    "observed_requested_models": [
+      "MiniMax-M3"
+    ],
+    "observed_returned_models": [
+      "MiniMax-M3"
+    ],
+    "output_checks": {
+      "mystery-tide--1--baseline": {
+        "characters": 862,
+        "eligible_for_blind_review": false,
+        "hard_fact_status": "requires_independent_review",
+        "issues": [
+          {
+            "code": "length_out_of_range",
+            "description": "候选为862字，要求600至850字。"
+          }
+        ],
+        "output_contract": {
+          "counting": "non_whitespace_characters_including_punctuation",
+          "maximum_characters": 850,
+          "minimum_characters": 600,
+          "source": "frozen_output_contract",
+          "target_characters": 620
+        },
+        "protocol_complete": true,
+        "scope": "字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。"
+      },
+      "mystery-tide--1--moyu": {
+        "characters": 902,
+        "eligible_for_blind_review": false,
+        "hard_fact_status": "requires_independent_review",
+        "issues": [
+          {
+            "code": "protocol_incomplete",
+            "description": "模型回复未具备完整正文协议证据。"
+          },
+          {
+            "code": "length_out_of_range",
+            "description": "候选为902字，要求600至850字。"
+          }
+        ],
+        "output_contract": {
+          "counting": "non_whitespace_characters_including_punctuation",
+          "maximum_characters": 850,
+          "minimum_characters": 600,
+          "source": "frozen_output_contract",
+          "target_characters": 620
+        },
+        "protocol_complete": false,
+        "scope": "字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。"
+      }
+    },
+    "recorded_samples": 2,
+    "requested_models": [
+      "MiniMax-M3"
+    ],
+    "returned_models": [
+      "MiniMax-M3"
+    ],
+    "same_requested_model": true,
+    "same_returned_model": true,
+    "scope": "协议完整与候选输出合格分别计数；字数及规划标记检查不证明文学质量。",
+    "unexpected_or_duplicate_samples": []
+  },
+  "genres": [
+    "悬疑",
+    "武侠",
+    "现实情感",
+    "科幻"
+  ],
+  "hard_violation_review": {
+    "candidate_samples": 1,
+    "candidate_samples_reviewed": 0,
+    "rate_among_reviewed": null,
+    "samples_flagged_by_judge": [],
+    "samples_flagged_without_complete_review": [],
+    "scope": "任何有效评审指出的违规立即保留；零条标记不等于已证实无违规，仍需独立复核。"
+  },
+  "judging": {
+    "distinct_judge_model_ids": [],
+    "distinct_returned_judge_models": [],
+    "expected_grades_at_observed_judge_count": 0,
+    "independence_scope": "不同模型名称不能独立证明训练来源或评审观点独立。",
+    "invalid_blind_pairs": {},
+    "invalid_or_incomplete_grades": 0,
+    "minimum_required_grades": 24,
+    "minimum_required_judge_models": 2,
+    "order_disagreement_count": 0,
+    "paired_preference": {
+      "baseline": {
+        "decisive_preference": null,
+        "decisive_preference_wilson_95": null,
+        "distinct_stories": 0,
+        "losses": 0,
+        "paired_samples_with_complete_two_order_judges": 0,
+        "scope": "区间以独立故事为单位；同故事的重复和评审次数不扩大样本量。",
+        "ties": 0,
+        "wins": 0
+      }
+    },
+    "pairs_with_two_complete_judges": 0,
+    "planned_pair_count": 6,
+    "valid_grades": 0
+  },
+  "limits": [
+    "默认试评不是七竞品的真实运行比较。",
+    "文学盲评只覆盖固定材料，不证明整本长篇效果。",
+    "第一梯队还需要数据安全、全流程、实际检索、完整恢复和作者效率证据。",
+    "不以单个模型自评分或换更贵的模型代替产品提升。"
+  ],
+  "observed_genres": [
+    "悬疑"
+  ],
+  "pilot_evidence_complete": false,
+  "pilot_quality_passed": false,
+  "plan_sha256": "99df9d12257bbf63022ec6a6c877f335c3c68b9a6c88c7d2bcf255600cb710f2",
+  "planned_genres": [
+    "悬疑",
+    "武侠",
+    "现实情感",
+    "科幻"
+  ],
+  "protocol": "moyu-literary-v1",
+  "reviewed_genres": [],
+  "scope": "固定材料下的提示与候选试评；不替代真实检索、作者效率或七竞品全流程对照。",
+  "usage": {
+    "cost_state": "unmeasured",
+    "currency_cost": null,
+    "output_max_tokens_per_request": 600,
+    "reported_tokens": 2916,
+    "reported_tokens_lower_bound": 2916,
+    "requests_cap": 60,
+    "requests_reserved": 2,
+    "requests_with_inconsistent_usage": 0,
+    "requests_with_partial_usage": 0,
+    "requests_without_usage": 0,
+    "scope": "请求上限为硬闸；用量停止阈值按已报告用量，当前请求可能超出；未知用量和未知价格不得算零费用。"
+  }
+}

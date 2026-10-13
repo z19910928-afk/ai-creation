@@ -600,6 +600,8 @@ def output_prompt_constraints(task: str, contract: Mapping[str, Any] | None) -> 
             if minimum is not None and maximum <= 1000:
                 lines.append("按场景需要分配各段篇幅，为结尾留出字数；围绕作者要求推进关键行动或选择，"
                              "用其直接结果收束当前片段，保留作者指定情节与因果，不输出段落预算或检查过程。")
+                lines.append("把目标字数当作收束点而不是最低要求；达到目标附近后立即完成当前动作并结束，"
+                             "不要继续新增人物、线索、背景或解释；最后一句必须完整。")
             else:
                 lines.append("按场景需要分配各段篇幅，为结尾留出字数；在上限前收束完整场景，"
                              "保留关键动作与因果，不输出段落预算或检查过程。")

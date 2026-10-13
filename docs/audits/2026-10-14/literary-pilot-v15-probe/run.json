@@ -1,0 +1,17 @@
+{
+  "created_at": "2026-10-13T22:24:38.368608+00:00",
+  "plan_sha256": "4e0709d924ac54936f3b7a1e9f8465f91191d1798bf437493a859a69a22a4fcd",
+  "protocol": "moyu-literary-v1",
+  "request_freeze_policy": "使用首次固定的实际请求；源码指纹只用于审计。",
+  "request_identity_policy": "对外请求身份由独立运行身份、请求用途和本地记录身份共同固定。",
+  "run_id": "5309da29b378434881fad2dae83c836a",
+  "source_files_sha256": {
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_output.py": "89b71d6359ebbc9425d17c01d35422a7990001d24864a9af99134c7aba081e2e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "scripts/literary_evaluation.py": "f283d32c81a80ebd4b5ec525cbbad3b5937deb5ffd46404990181f36aca3f9bc",
+    "server.py": "925e078d2af689d91e8e60320a73f6a09e03c333136d9bd79bfb26325ff24df7"
+  },
+  "writer_model": "MiniMax-M3",
+  "writer_requests_sha256": "ea8d968fe561ec0a1b16815c558ee6335c1cf386edbf5d3243793b3729082293"
+}

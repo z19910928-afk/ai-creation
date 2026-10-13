@@ -1,0 +1,7 @@
+{
+  "pairs": [],
+  "pairs_excluded_by_output_or_missing_samples": 6,
+  "plan_sha256": "031d89131b5ba3fabfaf4367a0eaa2d304de2654b1b76728805a23a41e823843",
+  "protocol": "moyu-literary-v1",
+  "scope": "匿名评判文件不包含方法名称或模型身份。"
+}

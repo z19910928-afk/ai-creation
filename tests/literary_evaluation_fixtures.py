@@ -154,6 +154,31 @@ class EvaluationTests(unittest.TestCase):
             self.assertEqual(chapter["chapter_hash"], hashlib.sha256(chapter["body"].encode()).hexdigest())
             self.assertTrue(chapter["body_complete"])
 
+    def test_default_writer_plan_uses_the_portable_thinking_switch(self) -> None:
+        self.assertEqual(self.plan["writer_parameters"]["thinking"], {"type": "disabled"})
+        self.assertNotIn("reasoning_effort", self.plan["writer_parameters"])
+        prepared = prepare_chat_request(
+            self.config, [{"role": "user", "content": "只返回正文"}],
+            parameters=self.plan["writer_parameters"],
+        )
+        self.assertEqual(prepared["payload"]["thinking"], {"type": "disabled"})
+        self.assertNotIn("reasoning_effort", prepared["payload"])
+        self.assertEqual(prepared["request_audit"]["effective_parameters"]["thinking"],
+                         {"type": "disabled"})
+        self.assertNotIn("reasoning_effort",
+                         prepared["request_audit"]["effective_parameters"])
+
+    def test_plain_context_baseline_uses_shared_output_constraints(self) -> None:
+        case = self.plan["cases"][0]
+        baseline = next(arm for arm in self.plan["arms"] if arm["source"] == "plain-context")
+        messages = evaluation.messages_for(case, baseline, self.plan_path, self.config)
+        self.assertEqual(messages[0]["role"], "system")
+        self.assertIn("正文长度目标约725字，允许600至850字。", messages[0]["content"])
+        self.assertIn("字数按去除空白后的字符数计算", messages[0]["content"])
+        self.assertIn("只返回正文", messages[0]["content"])
+        self.assertIn("作者要求：" + case["instruction"], messages[1]["content"])
+        self.assertEqual(case["output_contract"]["target_characters"], 725)
+
     def test_plan_rejects_boolean_limits_and_missing_rules(self) -> None:
         for key in ("repetitions", "max_output_tokens", "max_judge_output_tokens"):
             plan = copy.deepcopy(self.plan)
@@ -173,6 +198,11 @@ class EvaluationTests(unittest.TestCase):
             plan = copy.deepcopy(self.plan)
             plan["cases"][0]["output_contract"] = contract
             with self.assertRaises(ValueError):
+                evaluation.validate_plan(plan)
+        for target in (True, 599, 851, 680.0, "680"):
+            plan = copy.deepcopy(self.plan)
+            plan["cases"][0]["output_contract"]["target_characters"] = target
+            with self.subTest(target=target), self.assertRaises(ValueError):
                 evaluation.validate_plan(plan)
         for rate in (True, -0.1, 1.1, float("nan"), "0"):
             plan = copy.deepcopy(self.plan)
@@ -227,6 +257,44 @@ class EvaluationTests(unittest.TestCase):
         legacy_case.pop("output_contract")
         self.assertEqual(evaluation.output_contract(legacy_case)["minimum_characters"], 600)
 
+    def test_sample_validation_rejects_inconsistent_truncation_and_sse_tail(self) -> None:
+        case = self.plan["cases"][0]
+        base = {
+            "status": "complete",
+            "result": {
+                "text": "甲" * 725,
+                "safe_to_apply": True,
+                "completion_state": "complete",
+                "finish_reason": "stop",
+            },
+        }
+        truncated = copy.deepcopy(base)
+        truncated["result"]["truncated"] = True
+        check = evaluation.sample_validation(case, truncated)
+        self.assertFalse(check["protocol_complete"])
+        self.assertFalse(check["eligible_for_blind_review"])
+        self.assertIn("protocol_incomplete", {item["code"] for item in check["issues"]})
+
+        unterminated_sse = copy.deepcopy(base)
+        unterminated_sse["result"].update({
+            "stream_transport": "provider_native_sse",
+            "provider_sse_complete": False,
+        })
+        check = evaluation.sample_validation(case, unterminated_sse)
+        self.assertFalse(check["protocol_complete"])
+        self.assertFalse(check["eligible_for_blind_review"])
+        self.assertIn("protocol_incomplete", {item["code"] for item in check["issues"]})
+
+        legacy_stream_audit = copy.deepcopy(base)
+        legacy_stream_audit["result"].update({
+            "request_audit": {"effective_parameters": {"stream": True}},
+            "provider_sse_complete": False,
+        })
+        check = evaluation.sample_validation(case, legacy_stream_audit)
+        self.assertFalse(check["protocol_complete"])
+        self.assertFalse(check["eligible_for_blind_review"])
+        self.assertIn("protocol_incomplete", {item["code"] for item in check["issues"]})
+
     def test_unfrozen_length_requirements_use_shared_chinese_rules(self) -> None:
         case = copy.deepcopy(self.plan["cases"][0])
         case.pop("output_contract")
@@ -257,6 +325,36 @@ class EvaluationTests(unittest.TestCase):
         case["output_contract"] = {"minimum_characters": 600, "maximum_characters": 850}
         case["instruction"] = "续写六百百字。"
         self.assertEqual(evaluation.output_contract(case)["source"], "frozen_output_contract")
+
+    def test_soft_target_is_preserved_for_frozen_literary_cases_without_changing_hard_gate(self) -> None:
+        case = copy.deepcopy(self.plan["cases"][0])
+        case.pop("output_contract")
+        case["instruction"] = "续写600至850字。目标约680字。保持林岚视角。"
+        derived = evaluation.output_contract(case)
+        self.assertEqual(derived["target_characters"], 680)
+        self.assertEqual((derived["minimum_characters"], derived["maximum_characters"]),
+                         (600, 850))
+
+        case["output_contract"] = {
+            key: derived[key]
+            for key in ("minimum_characters", "maximum_characters", "target_characters")
+        }
+        frozen = evaluation.output_contract(case)
+        self.assertEqual(frozen["target_characters"], 680)
+        baseline = next(arm for arm in self.plan["arms"] if arm["source"] == "plain-context")
+        messages = evaluation.messages_for(case, baseline, self.plan_path, self.config)
+        self.assertIn("正文长度目标约680字，允许600至850字。", messages[0]["content"])
+
+        record = {"status": "complete", "result": {
+            "text": "甲" * 680, "safe_to_apply": True,
+            "completion_state": "complete", "finish_reason": "stop",
+        }}
+        self.assertTrue(evaluation.sample_validation(case, record)["eligible_for_blind_review"])
+        for size in (599, 851):
+            record["result"]["text"] = "甲" * size
+            check = evaluation.sample_validation(case, record)
+            self.assertFalse(check["eligible_for_blind_review"])
+            self.assertIn("length_out_of_range", {item["code"] for item in check["issues"]})
 
     def test_sample_validation_uses_shared_writing_markers_and_preserves_original_text(self) -> None:
         case = self.plan["cases"][0]
@@ -1011,6 +1109,23 @@ class EvaluationTests(unittest.TestCase):
         evaluation.write_json(self.out / "run.json", run)
         evaluation.Ledger(self.out, self.plan).reserve("possible-paid-request", "writer", "writer-fixture")
         with self.assertRaises(ValueError):
+            evaluation.freeze_run(self.out, self.plan, "writer-fixture",
+                                  plan_path=self.plan_path, config=self.config)
+
+    def test_old_snapshot_calibration_rejects_credentials_in_frozen_messages(self) -> None:
+        evaluation.freeze_run(self.out, self.plan, "writer-fixture",
+                              plan_path=self.plan_path, config=self.config)
+        path = self.out / "frozen-writer-requests.json"
+        records = evaluation.read_json(path)
+        first = next(iter(records.values()))
+        first["payload"]["messages"][0]["content"] += self.config["api_key"]
+        first.pop("body_utf8")
+        evaluation.write_json(path, records)
+        run_path = self.out / "run.json"
+        run = evaluation.read_json(run_path)
+        run["writer_requests_sha256"] = evaluation.sha(records)
+        evaluation.write_json(run_path, run)
+        with self.assertRaisesRegex(ValueError, "旧评测素材意外包含凭据"):
             evaluation.freeze_run(self.out, self.plan, "writer-fixture",
                                   plan_path=self.plan_path, config=self.config)
 
