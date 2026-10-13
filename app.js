@@ -93,14 +93,19 @@ function candidateOutputIssues(candidate){
  const text=candidate.text||'';const chars=Array.from(text).filter(char=>!/\s/u.test(char)).length;
  const contract=validation.contract||validation.output_contract||{};
  const issues=[];
+ const seenCodes=new Set();
+ const addIssue=(code,message)=>{
+  if(!message||seenCodes.has(code))return;
+  seenCodes.add(code);issues.push(message);
+ };
  if(contract.minimum_characters!=null&&chars<contract.minimum_characters||
   contract.maximum_characters!=null&&chars>contract.maximum_characters){
   const requirement=contract.minimum_characters!=null&&contract.maximum_characters!=null?
    `${contract.minimum_characters}至${contract.maximum_characters}字`:contract.minimum_characters!=null?
     `不少于${contract.minimum_characters}字`:`不超过${contract.maximum_characters}字`;
-  issues.push(`候选${chars}字，要求${requirement}`);
+  addIssue('length_out_of_range',`候选${chars}字，要求${requirement}`);
  }
- if(!text.trim())issues.push('候选没有有效正文');
+ if(!text.trim())addIssue('empty_output','候选没有有效正文');
  const tagged=/^[ \t]*<\s*(?:think|analysis|reasoning)\s*>/im.test(text);
  const planning=['continue','polish'].includes(candidate.task)&&text.split(/\r?\n/).some(line=>{
   const trimmed=line.trimStart();if(!trimmed||`"'“”‘’「」『』﹁﹂‹›«»《》〈〉`.includes(trimmed[0]))return false;
@@ -109,9 +114,12 @@ function candidateOutputIssues(candidate){
    WRITING_META_PATTERN.test(line)||
    /^\s*(?:We need to|The user (?:asks|wants|requested))\b/i.test(line);
  });
- if(tagged||planning)issues.push('候选包含明显的模型规划或思考标记，请整理后再采纳');
+ if(tagged||planning)addIssue('planning_contamination','候选包含明显的模型规划或思考标记，请整理后再采纳');
  for(const issue of validation.issues||[]){
-  if(!['length_out_of_range','planning_contamination','empty_output'].includes(issue.code))issues.push(issue.description);
+  const code=typeof issue?.code==='string'&&issue.code?issue.code:`backend_issue_${issues.length}`;
+  const description=typeof issue?.description==='string'&&issue.description?
+   issue.description:'候选输出未通过后端检查，请整理后再采纳';
+  addIssue(code,description);
  }
  return issues;
 }
