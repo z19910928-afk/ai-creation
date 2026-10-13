@@ -1,0 +1,146 @@
+{
+  "acceptance": {
+    "maximum_hard_violation_rate": 0,
+    "minimum_distinct_stories_for_tier_claim": 30,
+    "minimum_genres": 1,
+    "minimum_preference_lower_95": 0.4
+  },
+  "arms": [
+    {
+      "id": "baseline",
+      "label": "通用固定材料基线",
+      "source": "plain-context"
+    },
+    {
+      "id": "moyu",
+      "label": "墨屿实际提示",
+      "source": "moyu-prompt"
+    }
+  ],
+  "budget": {
+    "consecutive_unknown_stop_threshold": 1,
+    "currency_cost": "unknown_until_provider_prices_are_recorded",
+    "max_requests": 2,
+    "reported_tokens_stop_threshold": 12000
+  },
+  "candidate_arm": "moyu",
+  "cases": [
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "月牙钥匙藏在林岚左靴内侧。",
+            "id": "mystery-tide-fact-1",
+            "source_quote": "月牙钥匙藏在林岚左靴内侧。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "涨潮时间是22点10分。",
+            "id": "mystery-tide-fact-2",
+            "source_quote": "涨潮时间是22点10分。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "林岚不知道陆衡的凶手。",
+            "id": "mystery-tide-fact-3",
+            "source_quote": "林岚不知道陆衡的凶手。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "林岚手机没有信号。",
+            "id": "mystery-tide-fact-4",
+            "source_quote": "林岚手机没有信号。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。",
+          "body_complete": true,
+          "chapter_hash": "9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076",
+          "id": "mystery-tide",
+          "plan": {
+            "chapter_goal": "仓库的第二把锁",
+            "pov": "林岚"
+          },
+          "source_range": {
+            "end": 81,
+            "start": 0
+          },
+          "title": "仓库的第二把锁"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604",
+            "excerpt": "陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。",
+            "id": "mystery-tide-previous",
+            "source_range": {
+              "end": 73,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "悬疑",
+      "id": "mystery-tide",
+      "instruction": "续写600至850字。林岚必须在22点10分涨潮前离开仓库；用旧码头和左靴内侧的月牙钥匙推进选择。限林岚视角，不能凭空知道谁杀了陆衡。",
+      "output_contract": {
+        "maximum_characters": 850,
+        "minimum_characters": 600
+      },
+      "rules": [
+        {
+          "description": "月牙钥匙不能改到口袋或右靴。",
+          "id": "key-location"
+        },
+        {
+          "description": "涨潮固定22点10分。",
+          "id": "tide-time"
+        },
+        {
+          "description": "林岚不能直接知道凶手身份。",
+          "id": "limited-pov"
+        },
+        {
+          "description": "不能用没有信号的手机即时联网获救。",
+          "id": "no-mobile-rescue"
+        }
+      ],
+      "task": "continue"
+    }
+  ],
+  "created_at": "2026-10-13T21:42:22+0000",
+  "judging": {
+    "blind": true,
+    "both_orders": true,
+    "criteria": [
+      "continuity",
+      "character_motivation",
+      "causality",
+      "style",
+      "task_fit"
+    ],
+    "human_review_required_for_author_efficiency": true,
+    "minimum_distinct_judge_models": 2
+  },
+  "max_judge_output_tokens": 2200,
+  "max_output_tokens": 2000,
+  "protocol": "moyu-literary-v1",
+  "repetitions": 1,
+  "scope": "独立协议烟雾试评：仅检验显式关闭思考后的候选协议与字数闸门，不构成文学质量、作者效率或第一梯队证据。",
+  "seed": 20261013,
+  "writer_parameters": {
+    "temperature": 0.65,
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "writer_stream": false
+}

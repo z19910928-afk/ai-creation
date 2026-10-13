@@ -94,6 +94,7 @@ function candidateOutputIssues(candidate){
  const contract=validation.contract||validation.output_contract||{};
  const issues=[];
  const seenCodes=new Set();
+ const textRecomputedCodes=new Set(['length_out_of_range','planning_contamination','empty_output']);
  const addIssue=(code,message)=>{
   if(!message||seenCodes.has(code))return;
   seenCodes.add(code);issues.push(message);
@@ -115,11 +116,19 @@ function candidateOutputIssues(candidate){
    /^\s*(?:We need to|The user (?:asks|wants|requested))\b/i.test(line);
  });
  if(tagged||planning)addIssue('planning_contamination','候选包含明显的模型规划或思考标记，请整理后再采纳');
- for(const issue of validation.issues||[]){
+ const backendIssues=Array.isArray(validation.issues)?validation.issues:[];
+ for(const issue of backendIssues){
   const code=typeof issue?.code==='string'&&issue.code?issue.code:`backend_issue_${issues.length}`;
+  if(textRecomputedCodes.has(code))continue;
   const description=typeof issue?.description==='string'&&issue.description?
    issue.description:'候选输出未通过后端检查，请整理后再采纳';
   addIssue(code,description);
+ }
+ if(validation.protocol_complete===false&&!seenCodes.has('protocol_incomplete')){
+  addIssue('protocol_incomplete','模型回复未具备完整正文协议证据，请重新生成后再采纳');
+ }
+ if(validation.eligible===false&&!issues.length&&!backendIssues.length){
+  addIssue('validation_ineligible','候选未通过后端完整性检查，请重新生成后再采纳');
  }
  return issues;
 }

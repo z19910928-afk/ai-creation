@@ -1,0 +1,35 @@
+{
+  "protocol": "moyu-literary-preflight-v1",
+  "as_of": "2026-10-14",
+  "status": "stopped_after_first_request_gate_failure",
+  "plan_path": "docs/audits/2026-10-14/literary-pilot-v14-probe/plan.json",
+  "plan_sha256": "4e3b94c1d0dc5e040ff749aabba2b1359dc59b3268a8a3a96568ecc8f75fa5b8",
+  "new_run_identity": "d94b44a1d4b5424daf559fe043be104b",
+  "external_requests_sent": 1,
+  "credentials_read": true,
+  "credentials_persisted": false,
+  "stop_reason": [
+    "baseline candidate exceeded the frozen 600-850 non-whitespace character contract",
+    "provider returned non-empty reasoning fields despite thinking.type=disabled"
+  ],
+  "global_stop_gate": {
+    "max_requests": 60,
+    "reported_tokens_stop_threshold": 180000
+  },
+  "cumulative_before": {
+    "requests_reserved": 37,
+    "trusted_complete_tokens": 73118,
+    "requests_without_trusted_complete_usage": 10,
+    "currency_cost": "unmeasured"
+  },
+  "remaining_by_known_usage": {
+    "requests": 23,
+    "reported_tokens": 106882
+  },
+  "local_stop_gate": {
+    "max_requests": 2,
+    "reported_tokens_stop_threshold": 12000,
+    "consecutive_unknown_stop_threshold": 1
+  },
+  "scope": "仅执行独立协议烟雾试评；不构成文学质量、作者效率或第一梯队证据。"
+}

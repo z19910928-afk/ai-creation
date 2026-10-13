@@ -627,6 +627,15 @@ async function main(){
   const edited='😀林岚把灯罩扣紧，沿着潮水留下的白线走向空船。';
   await desktop.page.locator('#aiOutput').fill(edited);
   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+  await desktop.page.evaluate(()=>{
+   aiDraft.output_validation.issues=[];aiDraft.output_validation.eligible=false;aiDraft.output_validation.protocol_complete=true;
+   displayCandidate(aiDraft);
+  });
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  await desktop.page.evaluate(()=>{
+   aiDraft.output_validation.eligible=true;displayCandidate(aiDraft);
+  });
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
   await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').click();
   await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
   assert.equal(await currentBody(firstId),body+'\n\n'+edited);
