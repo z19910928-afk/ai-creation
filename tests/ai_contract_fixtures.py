@@ -23,15 +23,29 @@ def main() -> None:
         sock.bind(("127.0.0.1", 0))
         port = sock.getsockname()[1]
     env = {**os.environ, "MOYU_DB": tempfile.mktemp(suffix=".sqlite3"), "MOYU_HOST": "127.0.0.1", "MOYU_PORT": str(port), "MOYU_AI_BASE_URL": "", "MOYU_AI_MODEL": ""}
-    process = subprocess.Popen([os.sys.executable, "server.py"], cwd=ROOT, env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    log = tempfile.TemporaryFile()
+    process = subprocess.Popen([os.sys.executable, "server.py"], cwd=ROOT, env=env,
+                               stdout=log, stderr=subprocess.STDOUT)
     base = f"http://127.0.0.1:{port}"
     try:
-        for _ in range(50):
+        ready = False
+        for _ in range(200):
+            if process.poll() is not None:
+                log.seek(0)
+                details = log.read().decode("utf-8", "replace")[-4000:]
+                raise RuntimeError(f"server exited before health check: {details}")
             try:
-                with urllib.request.urlopen(base + "/api/health", timeout=1):
+                with urllib.request.urlopen(base + "/api/health", timeout=1) as response:
+                    if response.status != 200:
+                        raise RuntimeError(f"health returned HTTP {response.status}")
+                    ready = True
                     break
             except Exception:
                 time.sleep(0.05)
+        if not ready:
+            log.seek(0)
+            details = log.read().decode("utf-8", "replace")[-4000:]
+            raise RuntimeError(f"server did not become healthy within 10 seconds: {details}")
         with urllib.request.urlopen(base + "/api/state", timeout=3) as response:
             chapter = json.load(response)["chapters"][0]
         profile = urllib.parse.quote(json.dumps({"max_tokens": 4_000, "chapter_top_k": 0, "recent_window": 0, "memory_top_k": 0, "record_top_k": 0}))
@@ -81,8 +95,10 @@ def main() -> None:
             body = response.read().decode()
         assert "event: run" in body and "event: delta" in body and "event: done" in body
     finally:
-        process.terminate()
-        process.wait(timeout=3)
+        if process.poll() is None:
+            process.terminate()
+            process.wait(timeout=3)
+        log.close()
     print("AI contract fixtures: ok")
 
 
