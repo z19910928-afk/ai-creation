@@ -271,6 +271,25 @@ class ProseOutputHTTPTests(unittest.TestCase):
         self.assertEqual(stored["result"]["text"], text)
         self.assertEqual(stored["author_decision"], "pending")
 
+    def test_complete_one_character_stop_is_retained_but_not_adoptable(self):
+        text = "铁"
+        job = self.enqueue(text, instruction="续写正文，控制在600至850字。")
+        completed = self.process(job)
+        result = completed["result"]
+        self.assertEqual(result["finish_reason"], "stop")
+        self.assertEqual(result["completion_state"], "complete")
+        self.assertTrue(result["safe_to_apply"])
+        validation = result["output_validation"]
+        self.assertEqual(validation["characters"], 1)
+        self.assertFalse(validation["eligible"])
+        self.assertIn("length_out_of_range", {issue["code"] for issue in validation["issues"]})
+        rejected = self.assert_rejected_without_changes(job, text)
+        self.assertIn("1字", rejected["error"])
+        status, stored = self.request("GET", "/api/ai/jobs/" + job["id"])
+        self.assertEqual(status, 200, stored)
+        self.assertEqual(stored["result"]["text"], text)
+        self.assertEqual(stored["author_decision"], "pending")
+
     def test_edited_oversize_and_planning_still_fail_without_side_effects(self):
         job = self.enqueue("雨" * 12)
         completed = self.process(job)
