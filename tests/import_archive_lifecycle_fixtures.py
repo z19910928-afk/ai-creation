@@ -107,6 +107,14 @@ def _expected_restored_row(table: str, row: dict, mapping: dict):
         expected[key] = value
     if table == "project":
         expected["name"] = expected["name"] + " · 恢复副本"
+    if table == "app_ai_job":
+        context = json.loads(expected["context_json"])
+        context["_restored_read_only"] = True
+        expected["context_json"] = json.dumps(context, ensure_ascii=False)
+    if table == "ai_run":
+        consent = json.loads(expected["consent_json"])
+        consent["restored_read_only"] = True
+        expected["consent_json"] = json.dumps(consent, ensure_ascii=False)
     if table == "app_ai_job" and row["status"] in {"queued", "running"}:
         expected.update(
             status="failed",

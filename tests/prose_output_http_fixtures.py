@@ -18,6 +18,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 import server  # noqa: E402
+import moyu_revision  # noqa: E402
 
 
 SELECTED = "😀她把铜环留在桌上。 \n\t"
@@ -31,6 +32,7 @@ def encode(value):
 
 class LocalProseProvider(BaseHTTPRequestHandler):
     text = ""
+    incomplete = False
     calls = []
     lock = threading.Lock()
 
@@ -39,6 +41,18 @@ class LocalProseProvider(BaseHTTPRequestHandler):
         with self.lock:
             self.calls.append(payload)
             text = self.text
+            incomplete = self.incomplete
+        if incomplete:
+            body = ("data: " + json.dumps({
+                "model": "local-prose-contract",
+                "choices": [{"index": 0, "delta": {"content": text}, "finish_reason": None}],
+            }, ensure_ascii=False) + "\n\n").encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/event-stream")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if (payload.get("response_format") or {}).get("type") in {"json_object", "json_schema"}:
             text = json.dumps({"content": text}, ensure_ascii=False)
         body = encode({
@@ -90,6 +104,7 @@ class ProseOutputHTTPTests(unittest.TestCase):
         with LocalProseProvider.lock:
             LocalProseProvider.calls.clear()
             LocalProseProvider.text = ""
+            LocalProseProvider.incomplete = False
 
         class AppHandler(server.Handler):
             def log_message(self, *_args):
@@ -208,6 +223,33 @@ class ProseOutputHTTPTests(unittest.TestCase):
             self.application(job, text, decision=decision, **extra),
         )
         self.assertEqual(status, 400, rejected)
+        self.assertEqual(self.manuscript_snapshot(), snapshot)
+        with LocalProseProvider.lock:
+            self.assertEqual(len(LocalProseProvider.calls), calls)
+        return rejected
+
+    def revision_request(self, job, text, *, request_id="fixture-revision", notes="减少重复描写"):
+        return {
+            "request_id": request_id, "candidate_hash": server.hash_text(text),
+            "notes": notes, "defer": True,
+        }
+
+    def revision_counts(self):
+        with server.connect() as conn:
+            return tuple(conn.execute("SELECT COUNT(*) FROM " + table).fetchone()[0]
+                         for table in ("app_ai_job", "app_candidate_revision",
+                                       "app_quota_reservation"))
+
+    def assert_revision_rejected(self, job, payload, *, expected_status=400):
+        before = self.revision_counts()
+        snapshot = self.manuscript_snapshot()
+        with LocalProseProvider.lock:
+            calls = len(LocalProseProvider.calls)
+        status, rejected = self.request(
+            "POST", f"/api/ai/runs/{job['ai_run_id']}/revise", payload,
+        )
+        self.assertEqual(status, expected_status, rejected)
+        self.assertEqual(self.revision_counts(), before)
         self.assertEqual(self.manuscript_snapshot(), snapshot)
         with LocalProseProvider.lock:
             self.assertEqual(len(LocalProseProvider.calls), calls)
@@ -385,6 +427,205 @@ class ProseOutputHTTPTests(unittest.TestCase):
         current = next(item for item in self.state()["chapters"] if item["id"] == self.chapter_id)
         self.assertEqual(current["body"], BODY + "\n\n" + UNICODE_PROSE)
         self.assertNotIn("思考过程", current["body"])
+
+    def test_oversize_revision_preserves_full_parent_and_applies_one_child_once(self):
+        text = "潮" * 18 + "\n\t"
+        parent = self.enqueue(text)
+        original = self.process(parent)
+        self.assertFalse(original["result"]["output_validation"]["eligible"])
+        with LocalProseProvider.lock:
+            parent_payload = copy.deepcopy(LocalProseProvider.calls[0])
+        with server.connect() as conn:
+            original_run = dict(conn.execute(
+                "SELECT output_hash,token_json,cost_json FROM ai_run WHERE id=?",
+                (parent["ai_run_id"],)).fetchone())
+            original_job = conn.execute(
+                "SELECT result_json FROM app_ai_job WHERE id=?", (parent["id"],)).fetchone()[0]
+        contract = self.frozen_contract(parent)
+        body_before = self.state()["chapters"]
+        request = self.revision_request(parent, text)
+        status, created = self.request(
+            "POST", f"/api/ai/runs/{parent['ai_run_id']}/revise", request,
+        )
+        self.assertEqual(status, 202, created)
+        self.assertFalse(created["idempotent"])
+        child = created["job"]
+        self.assertEqual(child["source"], parent["source"])
+        self.assertEqual(self.frozen_contract(child), contract)
+        binding = child["candidate_revision"]
+        self.assertEqual(binding, {
+            "operation": "revise_candidate", "parent_run_id": parent["ai_run_id"],
+            "root_run_id": parent["ai_run_id"], "parent_characters": 18,
+        })
+        self.assertEqual(self.state()["chapters"], body_before)
+        self.assertEqual(self.revision_counts(), (2, 1, 2))
+        with LocalProseProvider.lock:
+            self.assertEqual(len(LocalProseProvider.calls), 1)
+        status, repeated = self.request(
+            "POST", f"/api/ai/runs/{parent['ai_run_id']}/revise", request,
+        )
+        self.assertEqual(status, 202, repeated)
+        self.assertTrue(repeated["idempotent"])
+        self.assertEqual(repeated["job"]["id"], child["id"])
+        self.assertEqual(repeated["job"]["candidate_revision"], binding)
+        self.assertEqual(self.revision_counts(), (2, 1, 2))
+        changed_notes = {**request, "notes": "另加结尾"}
+        self.assert_revision_rejected(parent, changed_notes, expected_status=409)
+        with LocalProseProvider.lock:
+            LocalProseProvider.text = "雨" * 12
+        completed = self.process(child)
+        self.assertEqual(completed["candidate_revision"], binding)
+        self.assertEqual(completed["result"]["candidate_revision"], binding)
+        self.assertTrue(completed["result"]["output_validation"]["eligible"])
+        self.assertEqual(completed["result"]["output_validation"]["contract"], contract)
+        with LocalProseProvider.lock:
+            self.assertEqual(len(LocalProseProvider.calls), 2)
+            child_payload = copy.deepcopy(LocalProseProvider.calls[-1])
+        self.assertEqual(
+            {key: value for key, value in parent_payload.items() if key != "messages"},
+            {key: value for key, value in child_payload.items() if key != "messages"},
+        )
+        self.assertEqual(child_payload["messages"][1:-1], parent_payload["messages"][1:])
+        self.assertIn(parent_payload["messages"][0]["content"],
+                      child_payload["messages"][0]["content"])
+        material = json.loads(child_payload["messages"][-1]["content"])
+        self.assertEqual(material["candidate_text"], text)
+        self.assertFalse(material["candidate_adopted"])
+        self.assertEqual(material["actual_characters"], 18)
+        self.assertEqual(material["output_contract"], contract)
+        self.assertEqual(material["author_notes"], request["notes"])
+        status, after_completed = self.request(
+            "POST", f"/api/ai/runs/{parent['ai_run_id']}/revise", request,
+        )
+        self.assertEqual(status, 202, after_completed)
+        self.assertTrue(after_completed["idempotent"])
+        self.process(child)
+        self.assertEqual(self.revision_counts(), (2, 1, 2))
+        with LocalProseProvider.lock:
+            self.assertEqual(len(LocalProseProvider.calls), 2)
+        status, read_child = self.request("GET", "/api/ai/jobs/" + child["id"])
+        self.assertEqual(status, 200, read_child)
+        self.assertEqual(read_child["candidate_revision"], binding)
+        self.assertNotIn("notes", binding)
+        self.assertNotIn("candidate_text", binding)
+        with server.connect() as conn:
+            self.assertEqual(dict(conn.execute(
+                "SELECT output_hash,token_json,cost_json FROM ai_run WHERE id=?",
+                (parent["ai_run_id"],)).fetchone()), original_run)
+            self.assertEqual(conn.execute(
+                "SELECT result_json FROM app_ai_job WHERE id=?",
+                (parent["id"],)).fetchone()[0], original_job)
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM app_candidate_revision WHERE parent_run_id=?",
+                (parent["ai_run_id"],)).fetchone()[0], 1)
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM app_ai_job WHERE id=?", (child["id"],)).fetchone()[0], 1)
+        status, read_parent = self.request("GET", "/api/ai/jobs/" + parent["id"])
+        self.assertEqual(status, 200, read_parent)
+        self.assertEqual(read_parent["result"]["text"], text)
+        self.assertEqual(read_parent["author_decision"], "pending")
+        status, applied = self.request(
+            "POST", f"/api/ai/runs/{child['ai_run_id']}/apply",
+            self.application(child, "雨" * 12),
+        )
+        self.assertEqual(status, 200, applied)
+        self.assertTrue(applied["applied"])
+        current = next(item for item in self.state()["chapters"] if item["id"] == self.chapter_id)
+        self.assertEqual(current["body"], BODY + "\n\n" + "雨" * 12)
+
+    def test_json_polish_revision_keeps_selection_scope_and_replaces_only_selection(self):
+        text = "潮" * 13 + "\n\t"
+        parent = self.enqueue(
+            text, task="polish", instruction="润色正文，保持原文的80%至120%。",
+            response_format="json",
+        )
+        original = self.process(parent)
+        self.assertEqual(moyu_revision.candidate_text(original["result"]), text)
+        self.assertFalse(original["result"]["output_validation"]["eligible"])
+        parent_transport = original["result"]["text"]
+        contract = self.frozen_contract(parent)
+        status, created = self.request(
+            "POST", f"/api/ai/runs/{parent['ai_run_id']}/revise",
+            self.revision_request(parent, text),
+        )
+        self.assertEqual(status, 202, created)
+        child = created["job"]
+        self.assertEqual(child["task"], "polish")
+        self.assertEqual(child["source"], parent["source"])
+        self.assertEqual(self.frozen_contract(child), contract)
+        with LocalProseProvider.lock:
+            LocalProseProvider.text = UNICODE_PROSE
+        completed = self.process(child)
+        self.assertEqual(completed["result"]["structured"]["content"], UNICODE_PROSE)
+        with LocalProseProvider.lock:
+            material = json.loads(LocalProseProvider.calls[-1]["messages"][-1]["content"])
+        self.assertEqual(material["candidate_text"], text)
+        self.assertNotEqual(material["candidate_text"], parent_transport)
+        status, applied = self.request(
+            "POST", f"/api/ai/runs/{child['ai_run_id']}/apply",
+            self.application(child, UNICODE_PROSE),
+        )
+        self.assertEqual(status, 200, applied)
+        self.assertTrue(applied["applied"])
+        selected = parent["source"]["range"]
+        current = next(item for item in self.state()["chapters"] if item["id"] == self.chapter_id)
+        self.assertEqual(current["body"], BODY[:selected["start"]] + UNICODE_PROSE + BODY[selected["end"]:])
+        status, stored = self.request("GET", "/api/ai/jobs/" + parent["id"])
+        self.assertEqual(status, 200, stored)
+        self.assertEqual(stored["result"]["text"], parent_transport)
+        self.assertEqual(stored["result"]["structured"]["content"], text)
+
+    def test_revision_rejects_manually_edited_parent_before_any_new_job_or_call(self):
+        text = "潮" * 18
+        parent = self.enqueue(text)
+        self.process(parent)
+        rejected = self.assert_revision_rejected(
+            parent, self.revision_request(parent, text + "改"),
+        )
+        self.assertIn("候选已被编辑", rejected["error"])
+
+    def test_revision_rejects_already_adopted_parent_before_any_new_job_or_call(self):
+        text = "雨" * 12
+        parent = self.enqueue(text)
+        self.process(parent)
+        status, applied = self.request(
+            "POST", f"/api/ai/runs/{parent['ai_run_id']}/apply",
+            self.application(parent, text),
+        )
+        self.assertEqual(status, 200, applied)
+        rejected = self.assert_revision_rejected(parent, self.revision_request(parent, text))
+        self.assertIn("已有采纳或拒绝记录", rejected["error"])
+
+    def test_revision_rejects_old_manuscript_before_any_new_job_or_call(self):
+        text = "潮" * 18
+        parent = self.enqueue(text)
+        self.process(parent)
+        status, changed = self.request("PATCH", "/api/chapters/" + self.chapter_id, {
+            "body": BODY + "\n作者后来补了一句。",
+        })
+        self.assertEqual(status, 200, changed)
+        self.assert_revision_rejected(
+            parent, self.revision_request(parent, text), expected_status=409,
+        )
+
+    def test_revision_rejects_unknown_provider_execution_without_resending(self):
+        text = "潮" * 18
+        parent = self.enqueue(text)
+        with LocalProseProvider.lock:
+            LocalProseProvider.incomplete = True
+        status, incomplete = self.request(
+            "POST", f"/api/ai/jobs/{parent['id']}/process", {},
+        )
+        self.assertEqual(status, 200, incomplete)
+        self.assertEqual(incomplete["status"], "failed")
+        self.assertEqual(incomplete["result"]["completion_state"], "unknown")
+        self.assertFalse(incomplete["result"]["safe_to_apply"])
+        with server.connect() as conn:
+            self.assertEqual(conn.execute(
+                "SELECT status FROM ai_run WHERE id=?",
+                (parent["ai_run_id"],)).fetchone()[0], "unknown")
+        rejected = self.assert_revision_rejected(parent, self.revision_request(parent, text))
+        self.assertIn("已完整结束", rejected["error"])
 
 
 if __name__ == "__main__":

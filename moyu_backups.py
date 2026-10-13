@@ -155,6 +155,18 @@ def remap_value(value, mapping):
     return value
 
 
+def remap_ai_record(value, mapping, key=""):
+    # Request audits and generated prose are historical bytes, not identifiers.
+    if key in {"request_audit", "text", "content", "body", "body_tail", "quote", "source_quote"}:
+        return copy.deepcopy(value)
+    if isinstance(value, list):
+        return [remap_ai_record(item, mapping) for item in value]
+    if isinstance(value, dict):
+        return {mapping.get(name, name): remap_ai_record(item, mapping, name)
+                for name, item in value.items()}
+    return mapping.get(value, value) if isinstance(value, str) else value
+
+
 def transplant(conn, payload, new_project, title=None):
     """Restore as an independent book, keeping the current book and its history."""
     started = time.perf_counter()
@@ -203,6 +215,8 @@ def transplant(conn, payload, new_project, title=None):
                         # their hashes verbatim. They remain readable only;
                         # canceled workflows cannot confirm or re-dispatch.
                         json.loads(value)
+                    elif table in {"ai_run", "app_ai_job"}:
+                        row[key] = json.dumps(remap_ai_record(json.loads(value), mapping), ensure_ascii=False)
                     else:
                         row[key] = json.dumps(remap_value(json.loads(value), mapping), ensure_ascii=False)
                 elif isinstance(value, str):
@@ -211,11 +225,19 @@ def transplant(conn, payload, new_project, title=None):
                 raise ValueError("备份包含其他作品资料")
             if table == "project":
                 row["name"] = title or row["name"] + " · 恢复副本"
-            if table == "app_ai_job" and row["status"] in {"running", "queued"}:
-                row.update(status="failed", error="从备份恢复；旧请求不会自动再次调用模型",
-                           cancel_requested=1)
-            if table == "ai_run" and row["status"] in {"running", "queued"}:
-                row.update(status="unknown", error="备份中的外部请求状态未知，未重复执行")
+            if table == "app_ai_job":
+                context = json.loads(row["context_json"])
+                context["_restored_read_only"] = True
+                row["context_json"] = json.dumps(context, ensure_ascii=False)
+                if row["status"] in {"running", "queued"}:
+                    row.update(status="failed", error="从备份恢复；旧请求不会自动再次调用模型",
+                               cancel_requested=1)
+            if table == "ai_run":
+                consent = json.loads(row["consent_json"])
+                consent["restored_read_only"] = True
+                row["consent_json"] = json.dumps(consent, ensure_ascii=False)
+                if row["status"] in {"running", "queued"}:
+                    row.update(status="unknown", error="备份中的外部请求状态未知，未重复执行")
             if table == "app_planning_workflow":
                 row.update(status="canceled", cancel_reason=PLANNING_RESTORE_REASON)
                 row["version"] = int(row["version"]) + 1

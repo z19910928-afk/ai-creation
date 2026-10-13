@@ -44,6 +44,7 @@ import moyu_context as context_pipeline
 import moyu_backups as complete_backups
 import moyu_output
 import moyu_planning as planning
+import moyu_revision
 
 
 ROOT = Path(__file__).resolve().parent
@@ -1154,6 +1155,11 @@ def ai_job_public(row: sqlite3.Row | dict[str, Any], include_result: bool = True
     # projections. They remain in the local SQLite job record for the worker;
     # this prototype does not provide at-rest encryption.
     context = _json_object(item.pop("context_json", None), {})
+    if context.get("_source"):
+        item["source"] = context["_source"]
+    if context.get("_candidate_revision"):
+        item["candidate_revision"] = moyu_revision.public_binding(context["_candidate_revision"])
+    item["restored_read_only"] = bool(context.get("_restored_read_only"))
     if context.get("planning_workflow"):
         item["planning_workflow"] = context["planning_workflow"]
     item.pop("instruction", None)
@@ -1166,13 +1172,23 @@ def ai_job_public(row: sqlite3.Row | dict[str, Any], include_result: bool = True
         ).fetchone()
         if saved is not None:
             decision = saved["author_decision"] or "pending"
-            latest_decision = _json_object(saved["consent_json"], {}).get("latest_decision")
+            consent = _json_object(saved["consent_json"], {})
+            latest_decision = consent.get("latest_decision")
+            item["restored_read_only"] |= bool(consent.get("restored_read_only"))
     public_decision = "edited" if decision == "partial" else decision
     item["author_decision"] = public_decision
     if latest_decision:
         item["latest_decision"] = latest_decision
     if isinstance(item.get("result"), dict):
+        audit = item["result"].get("request_audit")
+        if isinstance(audit, dict):
+            item["result"]["request_audit"] = {
+                key: value for key, value in audit.items() if key != "payload"
+            }
         item["result"]["author_decision"] = public_decision
+        item["result"]["restored_read_only"] = item["restored_read_only"]
+        if item.get("candidate_revision"):
+            item["result"]["candidate_revision"] = item["candidate_revision"]
         if latest_decision:
             item["result"]["latest_decision"] = latest_decision
     return item
@@ -1200,6 +1216,7 @@ def create_ai_job(
         conn.execute("UPDATE app_state_version SET version=version WHERE project_id=?", (project_id(),))
     validate_review_candidate_source(conn, task, context)
     validate_planning_job_source(conn, context, creating=True)
+    validate_candidate_revision_source(conn, task, context)
     context = dict(context)
     if "_output_contract" not in context:
         context["_output_contract"] = prose_output_contract(task, context, instruction)
@@ -1231,6 +1248,7 @@ def create_ai_job(
         "output_contract": context.get("_output_contract"),
         "provider_config": {key: value for key, value in config.items() if key != "api_key"},
         "request_audit": preview["request_audit"],
+        "candidate_revision": context.get("_candidate_revision"),
     }
     conn.execute(
         "INSERT INTO ai_run(id,project_id,branch_id,mode,provider,model,model_snapshot,system_prompt_hash,prompt_hash,input_hash,output_hash,sampling_json,tool_calls_json,seed,started_at,ended_at,status,error,context_item_ids_json,token_json,latency_ms,cost_json,author_decision,consent_json) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
@@ -1253,8 +1271,88 @@ def create_ai_job(
         ),
     )
     append_event(conn, run_id, "ai_run.queued", {"job_id": job_id, "task": task, "retry_of": retry_of})
-    return {"id": job_id, "ai_run_id": run_id, "task": task, "max_tokens": max_tokens, "contract": contract,
-            "source": context.get("_source"), "status": "queued", "created_at": created}
+    queued = {"id": job_id, "ai_run_id": run_id, "task": task, "max_tokens": max_tokens, "contract": contract,
+              "source": context.get("_source"), "status": "queued", "created_at": created}
+    if context.get("_candidate_revision"):
+        queued["candidate_revision"] = moyu_revision.public_binding(context["_candidate_revision"])
+    return queued
+
+
+def revise_ai_candidate(conn: sqlite3.Connection, run_id: str,
+                        data: dict[str, Any]) -> dict[str, Any]:
+    """Create one independently metered child while preserving the parent."""
+    if set(data) - {"request_id", "candidate_hash", "notes", "defer"}:
+        raise ValueError("整理只接受原候选身份和整理要求，不能改变模型、材料或字数范围")
+    run_id = checked_id(run_id, "AI run id")
+    request_id_value = data.get("request_id")
+    if not isinstance(request_id_value, str) or not request_id_value.strip():
+        raise ValueError("整理请求编号缺失或格式无效，请重新打开候选")
+    request_id = checked_id(request_id_value, "revision request id")
+    candidate_hash = data.get("candidate_hash")
+    if not isinstance(candidate_hash, str) or not re.fullmatch(r"[0-9a-f]{64}", candidate_hash):
+        raise ValueError("原候选指纹缺失，请重新打开候选")
+    notes = data.get("notes", "")
+    if not isinstance(notes, str) or len(notes) > 2000:
+        raise ValueError("整理要求最多2000字")
+    request_hash = hash_text(json_text({"parent_run_id": run_id, "candidate_hash": candidate_hash,
+                                       "notes": notes}))
+    conn.commit()
+    conn.execute("BEGIN IMMEDIATE")
+    restored = conn.execute(
+        "SELECT j.context_json,r.consent_json FROM app_ai_job j JOIN ai_run r ON r.id=j.ai_run_id "
+        "WHERE r.id=? AND j.project_id=? AND j.branch_id=?",
+        (run_id, project_id(), branch_id()),
+    ).fetchone()
+    if restored and (_json_object(restored["context_json"], {}).get("_restored_read_only") or
+                     _json_object(restored["consent_json"], {}).get("restored_read_only")):
+        raise ValueError("恢复的候选仅供阅读，请按当前稿件生成新候选")
+    previous = conn.execute(
+        "SELECT * FROM app_candidate_revision WHERE project_id=? AND branch_id=? "
+        "AND (request_id=? OR parent_run_id=?)",
+        (project_id(), branch_id(), request_id, run_id),
+    ).fetchall()
+    if previous:
+        if any(row["parent_run_id"] != run_id or row["request_hash"] != request_hash for row in previous):
+            raise BranchHeadConflict("original revision request", "different revision request")
+        child = conn.execute("SELECT * FROM app_ai_job WHERE id=? AND project_id=? AND branch_id=?",
+                             (previous[0]["job_id"], project_id(), branch_id())).fetchone()
+        if child is None:
+            raise ValueError("整理记录缺失，请核对任务记录，未重复发送")
+        return {"job": ai_job_public(child, conn=conn), "idempotent": True}
+    job, run, result, context = revision_parent(conn, run_id)
+    text = moyu_revision.candidate_text(result)
+    if hash_text(text) != candidate_hash:
+        raise ValueError("候选已被编辑，请先回看模型原候选再整理")
+    source = context.get("_source")
+    chapter = next((item for item in chapter_rows(conn) if item["id"] == job["chapter_id"]), None)
+    if not source or candidate_source(conn, job["task"], chapter, source) != source:
+        raise ValueError("原稿身份已变化，请按当前稿件生成新候选")
+    validate_review_candidate_source(conn, job["task"], context)
+    consent = _json_object(run["consent_json"], {})
+    config = retry_provider_config(conn, consent.get("provider_config"))
+    audit = consent.get("request_audit") or {}
+    prepared = prepare_frozen_ai_request(job["task"], job["response_format"], job["max_tokens"],
+                                         config, audit.get("payload"))
+    if (audit.get("endpoint") != prepared["endpoint"] or
+            audit.get("request_sha256") != prepared["request_audit"]["request_sha256"] or
+            audit.get("messages_sha256") != prepared["request_audit"]["messages_sha256"]):
+        raise ValueError("原任务完整请求校验失败，未发送整理")
+    contract = prose_output_contract(job["task"], context, job["instruction"])
+    payload = moyu_revision.build_revision_request(
+        prepared["payload"], job["task"], text, contract, notes)
+    binding = {"operation": "revise_candidate", "parent_run_id": run_id,
+               "root_run_id": (context.get("_candidate_revision") or {}).get("root_run_id", run_id),
+               "parent_hash": candidate_hash, "parent_characters": moyu_output.count_characters(text),
+               "request_id": request_id, "request_hash": request_hash}
+    context = {**context, "_output_contract": contract, "_candidate_revision": binding}
+    queued = create_ai_job(conn, job["task"], context, job["instruction"], job["response_format"],
+                           job["max_tokens"], provider_config=config, frozen_request=payload)
+    conn.execute("INSERT INTO app_candidate_revision VALUES(?,?,?,?,?,?,?,?)",
+                 (run_id, project_id(), branch_id(), request_id, request_hash,
+                  candidate_hash, queued["id"], now()))
+    append_event(conn, queued["ai_run_id"], "ai_run.candidate_revision",
+                 moyu_revision.public_binding(binding))
+    return {"job": queued, "idempotent": False}
 
 
 def retry_ai_job(conn: sqlite3.Connection, job_id: str,
@@ -1281,6 +1379,23 @@ def retry_ai_job(conn: sqlite3.Connection, job_id: str,
     if old_run is None:
         raise RuntimeError("任务运行记录缺失，请核对服务商记录后建立新任务。")
     consent = _json_object(old_run["consent_json"], {})
+    context = json.loads(row["context_json"] or "{}")
+    if context.get("_restored_read_only") or consent.get("restored_read_only"):
+        raise RuntimeError("恢复的任务仅供阅读，请按当前稿件生成新候选")
+    if context.get("_candidate_revision"):
+        successor = conn.execute(
+            "SELECT j.*,r.status run_status,r.consent_json retry_consent "
+            "FROM app_ai_job j JOIN ai_run r ON r.id=j.ai_run_id "
+            "WHERE j.retry_of=? AND j.project_id=? AND j.branch_id=? ORDER BY j.rowid LIMIT 1",
+            (row["ai_run_id"], project_id(), branch_id()),
+        ).fetchone()
+        if successor:
+            if (successor["run_status"] == "unknown" or
+                    _json_object(successor["retry_consent"], {}).get("billing_state") == "unknown"):
+                raise RuntimeError("这次整理的重试结果或费用尚不明确，未重复发送")
+            public = {key: successor[key] for key in successor.keys()
+                      if key not in {"run_status", "retry_consent"}}
+            return {**ai_job_public(public, conn=conn), "idempotent": True}
     if old_run["status"] == "unknown" or consent.get("billing_state") == "unknown":
         raise RuntimeError("上次请求是否完成或计费尚不明确，请先核对服务商记录，再手动发起新任务")
     if row["status"] not in {"failed", "canceled"} or old_run["status"] not in {"failed", "canceled"}:
@@ -1291,11 +1406,11 @@ def retry_ai_job(conn: sqlite3.Connection, job_id: str,
     for field in ("task", "chapter_id", "instruction", "response_format"):
         if field in data and data[field] != row[field]:
             raise RuntimeError("重试保留原任务要求，修改要求请建立新任务。")
-    context = json.loads(row["context_json"] or "{}")
     if context.get("planning_workflow"):
         raise RuntimeError("请到创作规划页面只重做当前阶段，避免重复规划请求")
     try:
         validate_review_candidate_source(conn, row["task"], context)
+        validate_candidate_revision_source(conn, row["task"], context)
     except ValueError as exc:
         raise RuntimeError(str(exc)) from None
     audit = consent.get("request_audit") or {}
@@ -1354,6 +1469,8 @@ def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, 
     context = json.loads(job["context_json"] or "{}")
     result = dict(result or {})
     result.setdefault("source", context.get("_source"))
+    if context.get("_candidate_revision"):
+        result["candidate_revision"] = moyu_revision.public_binding(context["_candidate_revision"])
     canceled = bool(current["cancel_requested"]) or isinstance(error, ProviderCanceled)
     if canceled:
         status, run_status, error_text = "canceled", "canceled", "canceled by author"
@@ -1457,6 +1574,7 @@ def _process_ai_job_claimed(job_id: str) -> dict[str, Any]:
         try:
             validate_review_candidate_source(conn, row["task"], json.loads(row["context_json"] or "{}"))
             validate_planning_job_source(conn, json.loads(row["context_json"] or "{}"))
+            validate_candidate_revision_source(conn, row["task"], json.loads(row["context_json"] or "{}"))
             if consent.get("retry_of"):
                 config = retry_provider_config(conn, snapshot)
             else:
@@ -1910,6 +2028,17 @@ def init_db() -> None:
             );
             CREATE INDEX IF NOT EXISTS idx_app_ai_job_queue ON app_ai_job(project_id, branch_id, status, created_at);
             CREATE INDEX IF NOT EXISTS idx_app_ai_job_run ON app_ai_job(ai_run_id);
+            CREATE TABLE IF NOT EXISTS app_candidate_revision(
+              parent_run_id TEXT PRIMARY KEY REFERENCES ai_run(id),
+              project_id TEXT NOT NULL REFERENCES project(id),
+              branch_id TEXT NOT NULL REFERENCES branch(id),
+              request_id TEXT NOT NULL,
+              request_hash TEXT NOT NULL,
+              candidate_hash TEXT NOT NULL,
+              job_id TEXT NOT NULL UNIQUE REFERENCES app_ai_job(id),
+              created_at TEXT NOT NULL,
+              UNIQUE(project_id,branch_id,request_id)
+            );
             CREATE TABLE IF NOT EXISTS app_ai_chunk(
               id TEXT PRIMARY KEY,
               project_id TEXT NOT NULL REFERENCES project(id),
@@ -3928,6 +4057,67 @@ def candidate_source(conn, task, chapter, raw=None):
             "mode": mode, "range": {"start": start, "end": end, "quote": body[start:end]}}
 
 
+def revision_parent(conn, run_id):
+    job = conn.execute("SELECT * FROM app_ai_job WHERE ai_run_id=? AND project_id=? AND branch_id=?",
+                       (run_id, project_id(), branch_id())).fetchone()
+    run = conn.execute("SELECT * FROM ai_run WHERE id=? AND project_id=? AND branch_id=?",
+                       (run_id, project_id(), branch_id())).fetchone()
+    if not job or not run:
+        raise ValueError("原候选未找到，请回到来源作品")
+    context = _json_object(job["context_json"], {})
+    consent = _json_object(run["consent_json"], {})
+    result = _json_object(job["result_json"], {})
+    if context.get("_restored_read_only") or consent.get("restored_read_only"):
+        raise ValueError("恢复的候选仅供阅读，请按当前稿件生成新候选")
+    if (job["task"] not in {"continue", "polish"} or context.get("planning_workflow")
+            or run["status"] != "success" or job["status"] != "success" or job["cancel_requested"]
+            or result.get("mode") != "provider" or result.get("safe_to_apply") is not True
+            or result.get("completion_state") != "complete" or result.get("finish_reason") != "stop"
+            or result.get("truncated")):
+        raise ValueError("只能整理已完整结束的正文候选，未完成或离线结果继续保留供阅读")
+    if (run["author_decision"] != "pending" or
+            conn.execute("SELECT 1 FROM app_ai_run_decision WHERE ai_run_id=?", (run_id,)).fetchone() or
+            conn.execute("SELECT 1 FROM app_candidate_application WHERE ai_run_id=?", (run_id,)).fetchone()):
+        raise ValueError("原候选已有采纳或拒绝记录，请按当前稿件生成新候选")
+    if not isinstance(result.get("text"), str) or hash_text(result["text"]) != run["output_hash"]:
+        raise ValueError("原候选记录校验失败，未发送整理")
+    if result.get("response_format") == "json":
+        try:
+            transported = json.loads(result["text"])
+        except json.JSONDecodeError:
+            raise ValueError("原候选JSON记录校验失败，未发送整理") from None
+        if transported != result.get("structured"):
+            raise ValueError("原候选正文与完整返回记录不一致，未发送整理")
+        from moyu_provider import TASK_SCHEMAS, validate_json
+        validate_json(transported, TASK_SCHEMAS[job["task"]])
+    moyu_revision.candidate_text(result)
+    return job, run, result, context
+
+
+def validate_candidate_revision_source(conn, task, context):
+    if context.get("_restored_read_only"):
+        raise ValueError("恢复的任务仅供阅读，请按当前稿件生成新候选")
+    binding = context.get("_candidate_revision")
+    if binding is None:
+        return
+    if not isinstance(binding, dict) or binding.get("operation") != "revise_candidate":
+        raise ValueError("整理来源记录无效")
+    parent, _, result, original = revision_parent(
+        conn, checked_id(binding.get("parent_run_id"), "parent run id"))
+    if (task != parent["task"] or original.get("_source") != context.get("_source")
+            or original.get("_output_contract") != context.get("_output_contract")
+            or hash_text(moyu_revision.candidate_text(result)) != binding.get("parent_hash")):
+        raise ValueError("整理不能改变原候选、字数要求或应用范围")
+    source = context.get("_source")
+    chapter = next((item for item in chapter_rows(conn) if item["id"] == parent["chapter_id"]), None)
+    try:
+        current = candidate_source(conn, task, chapter, source) if source else None
+    except BranchHeadConflict:
+        current = None
+    if not source or current != source:
+        raise ValueError("原稿已经变化，整理候选保留供参考，请按新稿重新生成")
+
+
 def validate_review_candidate_source(conn, task, context):
     binding = context.get("_review_source")
     if binding is None:
@@ -4178,6 +4368,8 @@ def apply_candidate(conn, run_id, data):
     if run["author_decision"] == "rejected":
         raise ValueError("候选已被拒绝，请重新生成")
     context = _json_object(job["context_json"], {})
+    if context.get("_restored_read_only") or consent.get("restored_read_only"):
+        raise ValueError("恢复的候选仅供阅读，请按当前稿件生成新候选")
     if context.get("planning_workflow"):
         raise ValueError("请在创作规划页面确认阶段和采用完整规划")
     validate_review_candidate_source(conn, job["task"], context)
@@ -4530,6 +4722,28 @@ class Handler(SimpleHTTPRequestHandler):
                     result["decisions"] = [dict(row) for row in conn.execute("SELECT id,decision,output_hash,reason,created_at,actor_id FROM app_ai_run_decision WHERE ai_run_id=? AND project_id=? AND branch_id=? ORDER BY created_at", (run_id, project_id(), branch_id()))]
                     chunk_summary = conn.execute("SELECT COUNT(*) count,COALESCE(MAX(seq),0) last_seq FROM app_ai_chunk WHERE ai_run_id=? AND project_id=? AND branch_id=?", (run_id, project_id(), branch_id())).fetchone()
                     result["stream"] = {"chunk_count": int(chunk_summary["count"]), "last_seq": int(chunk_summary["last_seq"]), "replayable": bool(chunk_summary["count"]), "resume": f"/api/ai/runs/{run_id}/stream"}
+                    job = conn.execute(
+                        "SELECT * FROM app_ai_job WHERE ai_run_id=? AND project_id=? AND branch_id=?",
+                        (run_id, project_id(), branch_id()),
+                    ).fetchone()
+                    if job is not None:
+                        result["job"] = ai_job_public(job, conn=conn)
+                    child = conn.execute(
+                        "WITH RECURSIVE lineage(id,ai_run_id) AS ("
+                        "SELECT j.id,j.ai_run_id FROM app_candidate_revision v "
+                        "JOIN app_ai_job j ON j.id=v.job_id "
+                        "WHERE v.parent_run_id=? AND v.project_id=? AND v.branch_id=? "
+                        "AND j.project_id=? AND j.branch_id=? "
+                        "UNION SELECT j.id,j.ai_run_id FROM app_ai_job j "
+                        "JOIN lineage l ON j.retry_of=l.ai_run_id "
+                        "WHERE j.project_id=? AND j.branch_id=?) "
+                        "SELECT j.* FROM lineage l JOIN app_ai_job j ON j.id=l.id "
+                        "ORDER BY j.rowid DESC LIMIT 1",
+                        (run_id, project_id(), branch_id(), project_id(), branch_id(),
+                         project_id(), branch_id()),
+                    ).fetchone()
+                    if child is not None:
+                        result["candidate_revision_child"] = ai_job_public(child, conn=conn)
                     return self.send_json(200, result)
                 if parsed.path == "/api/assertions":
                     query = parse_qs(parsed.query)
@@ -5547,6 +5761,13 @@ class Handler(SimpleHTTPRequestHandler):
                     conn.execute("UPDATE ai_run SET status=?,ended_at=?,error=?,consent_json=? WHERE id=?", ("canceled", now(), "canceled by author", json_text(consent), run_id))
                     append_event(conn, run_id, "ai_run.canceled", {"reason": data.get("reason") or "author requested"})
                     return self.send_json(200, {"ai_run_id": run_id, "status": "canceled"})
+                if parsed.path.startswith("/api/ai/runs/") and parsed.path.endswith("/revise"):
+                    run_id = checked_id(parsed.path.split("/")[-2], "AI run id")
+                    revised = revise_ai_candidate(conn, run_id, data)
+                    conn.commit()
+                    if not revised["idempotent"] and not data.get("defer"):
+                        start_ai_worker(revised["job"]["id"])
+                    return self.send_json(202, revised)
                 if parsed.path.startswith("/api/ai/runs/") and parsed.path.endswith("/retry"):
                     original = checked_id(parsed.path.split("/")[-2], "AI run id")
                     row = conn.execute("SELECT id FROM ai_run WHERE id=? AND project_id=? AND branch_id=?",

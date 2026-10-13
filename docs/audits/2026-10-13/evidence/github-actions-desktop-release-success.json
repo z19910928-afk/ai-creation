@@ -1,0 +1,160 @@
+{
+  "scope": "GitHub Actions on the exact uploaded desktop repair commit; independent Linux runtime and free local providers; does not prove literary quality, supplier cost, or public production deployment.",
+  "verified_at": "2026-10-13T16:57:13.272Z",
+  "run": {
+    "id": 38434003558,
+    "head_sha": "eaca3586ddd2d8210f1ed62b1d1e22cd2c383886",
+    "head_branch": "codex/full-function-audit",
+    "status": "completed",
+    "conclusion": "success",
+    "html_url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/38434003558",
+    "created_at": "2026-10-13T16:52:08Z",
+    "updated_at": "2026-10-13T16:56:03Z",
+    "run_attempt": 1
+  },
+  "jobs": [
+    {
+      "id": 115423172940,
+      "name": "checks",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-13T16:52:11Z",
+      "completed_at": "2026-10-13T16:56:02Z",
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:52:12Z",
+          "completed_at": "2026-10-13T16:52:12Z"
+        },
+        {
+          "number": 2,
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:52:12Z",
+          "completed_at": "2026-10-13T16:52:14Z"
+        },
+        {
+          "number": 3,
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:52:14Z",
+          "completed_at": "2026-10-13T16:52:14Z"
+        },
+        {
+          "number": 4,
+          "name": "Set up Node",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:52:14Z",
+          "completed_at": "2026-10-13T16:52:15Z"
+        },
+        {
+          "number": 5,
+          "name": "Syntax checks",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:52:15Z",
+          "completed_at": "2026-10-13T16:52:15Z"
+        },
+        {
+          "number": 6,
+          "name": "Contract fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:52:15Z",
+          "completed_at": "2026-10-13T16:54:10Z"
+        },
+        {
+          "number": 7,
+          "name": "Evaluation fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:54:10Z",
+          "completed_at": "2026-10-13T16:54:10Z"
+        },
+        {
+          "number": 8,
+          "name": "Editor merge regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:54:10Z",
+          "completed_at": "2026-10-13T16:54:10Z"
+        },
+        {
+          "number": 9,
+          "name": "Install browser regression runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:54:10Z",
+          "completed_at": "2026-10-13T16:54:33Z"
+        },
+        {
+          "number": 10,
+          "name": "Real browser regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:54:33Z",
+          "completed_at": "2026-10-13T16:55:29Z"
+        },
+        {
+          "number": 11,
+          "name": "Planning browser regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:55:29Z",
+          "completed_at": "2026-10-13T16:55:42Z"
+        },
+        {
+          "number": 12,
+          "name": "Five chapter author flow",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:55:42Z",
+          "completed_at": "2026-10-13T16:55:59Z"
+        },
+        {
+          "number": 22,
+          "name": "Post Set up Node",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:55:59Z",
+          "completed_at": "2026-10-13T16:55:59Z"
+        },
+        {
+          "number": 23,
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:55:59Z",
+          "completed_at": "2026-10-13T16:55:59Z"
+        },
+        {
+          "number": 24,
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:55:59Z",
+          "completed_at": "2026-10-13T16:56:00Z"
+        },
+        {
+          "number": 25,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at": "2026-10-13T16:56:00Z",
+          "completed_at": "2026-10-13T16:56:00Z"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "This workflow tests offline fixtures and local simulated providers.",
+    "Known workflow image/runtime deprecation annotations are not test failures.",
+    "The full returned-model literary comparison and real author efficiency remain unmeasured."
+  ]
+}

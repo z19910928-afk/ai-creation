@@ -1,0 +1,31 @@
+{
+  "blind_grades": 0,
+  "body_sha256": "729c3fe156b6a98444e9ecb167a2352d01efceb05973bab7ef33603a05a0559c",
+  "budget": {
+    "max_requests": 2,
+    "reported_tokens_stop_threshold": 120871
+  },
+  "created_at": "2026-10-13T18:11:54.709544+00:00",
+  "cumulative_before": {
+    "complete_tokens": 59129,
+    "currency_cost": "unknown",
+    "known_lower_bound": 59129,
+    "known_tokens_stop_threshold": 180000,
+    "missing_complete_usage": 10,
+    "request_cap": 60,
+    "requests_reserved": 33
+  },
+  "execution_source_sha256": "fed37da9b94af53fec399ace16a8cc4ab9609ebe7baa7c7c8586907621a42c1a",
+  "first_stage": "nonstream",
+  "independent_stories_added": 0,
+  "new_requests_cap": 2,
+  "parent_sha256": {
+    "frozen-writer-requests.json": "0b155b870a4e1f58170037825a56b051a7c107dcb08cb1c83263667d27a80f87",
+    "samples/mystery-tide--1--moyu.json": "8fb372259ab09d5733a124f37a43c78e28f8927156089feb0180e7a7385316a4"
+  },
+  "preregistered_protocol_sha256": "dcabeba9bf4a25f4b1a2d7e2b7a2480a53de00831b8692b0f4309d4ed83dde2e",
+  "protocol": "moyu-transport-diagnosis-v1",
+  "provider_source_sha256": "7c73cd1aac355cf83285cdd111952ac35841d735e1eddc3ebdaf94dbbbdb7f95",
+  "run_id": "7fb292dbc3f8480f88f05f8f891129b1",
+  "second_stage": "stream_only_after_all_gates_pass"
+}

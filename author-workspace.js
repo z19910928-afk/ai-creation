@@ -103,6 +103,7 @@ function authorEditorView(){
  <textarea class="ai-output" id="aiOutput" aria-label="AI 候选结果">${esc(aiDraft?.text||'')}</textarea>
  <div class="ai-result-meta"><span>${esc(aiStatus.model||'未配置模型')}</span><div class="ai-actions">
  <button class="ghost-btn" id="aiCopy" ${aiDraft?'':'disabled'}>复制</button><button class="ghost-btn" id="aiClear">拒绝 / 停止</button>
+ <button class="ghost-btn" id="aiOriginal" hidden>回看原候选</button><button class="ghost-btn" id="aiRevise" disabled>整理候选</button>
  <button class="primary-btn" id="aiAdopt" ${aiDraft?.complete?'':'disabled'}>比较并采纳</button></div></div></section>`:
  '<div class="empty">还没有章节。</div>'}</section></div>`;
 }
@@ -132,7 +133,7 @@ function authorEditBody(value,{history=true}={}){
  const body=document.querySelector('#chapterBody');if(body)setEditorInputValue(body,value);
  save();const count=document.querySelector('#liveCount');if(count)count.textContent=`${Array.from(value.replace(/\s/g,'')).length} 字`;
  document.querySelector('#projectMeta').textContent=`${state.chapters.length} 章 · ${words()} 字`;
- const pill=document.querySelector('.review-pill');if(pill)pill.textContent='审稿：已过期';captureSelection();
+ const pill=document.querySelector('.review-pill');if(pill)pill.textContent='审稿：已过期';captureSelection();updateCandidateRevisionControls();
 }
 
 function authorUndo(reverse=false){
@@ -1117,6 +1118,8 @@ function authorBind(){
   });
   document.querySelector('[data-editor-undo]')?.addEventListener('click',()=>authorUndo());
   document.querySelector('[data-editor-redo]')?.addEventListener('click',()=>authorUndo(true));
+  document.querySelector('#aiRevise')?.addEventListener('click',reviseAI);
+  document.querySelector('#aiOriginal')?.addEventListener('click',showOriginalCandidate);
   authorUpdateUndoControls();
  }
  if(view==='plot'){

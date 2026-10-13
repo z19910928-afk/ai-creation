@@ -1,0 +1,53 @@
+{
+  "protocol": "moyu-transport-diagnosis-v1",
+  "stage": "nonstream",
+  "status": "stopped_after_first_stage",
+  "all_gates_passed": false,
+  "record": "samples/nonstream.json",
+  "record_sha256": "cee342d295c726731d6a9de7ac087fd0a148cae770fc4e22c3c21554aa044117",
+  "request_id": "diag_aa961015b3069719a98bc479390a8cea",
+  "request_sha256": "729c3fe156b6a98444e9ecb167a2352d01efceb05973bab7ef33603a05a0559c",
+  "messages_sha256": "7b5ce37662062b573541ae504e4d7c3449cc30fde97b7851e012d447c0a17c76",
+  "requested_model": "glm-5.1",
+  "returned_model": "glm-5.1",
+  "stream": false,
+  "content_type": "application/json",
+  "http_status": 200,
+  "finish_reason": "stop",
+  "completion_state": "complete",
+  "safe_to_apply": true,
+  "characters": 1,
+  "text_sha256": "8f615d2ef8793ad92b95d29a2aefe718cf0b4e499d1ce6defc8f9cdee9cdfb33",
+  "usage": {
+    "prompt_tokens": 1747,
+    "completion_tokens": 3000,
+    "total_tokens": 4747
+  },
+  "observer": {
+    "events": 1,
+    "content_pieces": 1,
+    "content_characters": 1,
+    "reasoning_nonempty_pieces": 1,
+    "reasoning_characters": 4923,
+    "refusal_nonempty_pieces": 0,
+    "unexplained_shapes": 0,
+    "body_matches_product": true
+  },
+  "failed_gates": [
+    "nonempty_reasoning_content_observed",
+    "output_length_out_of_range"
+  ],
+  "second_stage": {
+    "executed": false,
+    "reason": "First stage failed the frozen stop conditions; no streaming retry or comparison was sent."
+  },
+  "cumulative_after": {
+    "requests_reserved": 34,
+    "complete_tokens": 63876,
+    "known_lower_bound": 63876,
+    "missing_complete_usage": 10,
+    "request_cap": 60,
+    "known_tokens_stop_threshold": 180000,
+    "currency_cost": "unknown"
+  }
+}

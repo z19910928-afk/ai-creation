@@ -13,7 +13,7 @@ const root=path.resolve(__dirname,'..');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-browser-regression-'));
 const results={passed:false,scope:'真实浏览器、隔离SQLite、免费本机模拟提供方',cases:[],artifacts:temporary};
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
-let app,provider,browser,base,providerText='来源甲章的候选。',providerDelay=600,reviewMode='single',planningFailure=false;
+let app,provider,browser,base,providerText='来源甲章的候选。',providerDelay=600,providerStreamGate=null,reviewMode='single',planningFailure=false;
 let serverLog='',providerPort;
 const providerRequests=[];
 async function freePort(){
@@ -94,7 +94,9 @@ async function main(){
     response.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache'});
     const middle=Math.max(1,Math.floor(text.length/2));
     response.write(`data: ${JSON.stringify({choices:[{delta:{content:text.slice(0,middle)},finish_reason:null}]})}\n\n`);
-    setTimeout(()=>{
+    const streamGate=providerStreamGate;
+    setTimeout(async()=>{
+     if(streamGate)await streamGate;
      if(response.destroyed)return;
      response.write(`data: ${JSON.stringify({choices:[{delta:{content:text.slice(middle)},finish_reason:'stop'}],usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})}\n\n`);
      response.end('data: [DONE]\n\n');
@@ -628,14 +630,178 @@ async function main(){
   assert.equal(await currentBody(firstId),body+'\n\n'+edited);
   await desktop.page.locator('#aiInstruction').fill('');
  });
+ await test('整理超限候选保留父原文，双击仅一次调用且合限子候选等待明确采纳',async()=>{
+  const body=await currentBody(firstId),parentText='😀原候选超过作者要求，林岚守住钥匙。'.repeat(5);
+  providerText=parentText;providerDelay=600;
+  await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiInstruction').fill('续写20至30字。');
+  await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(text=>aiDraft?.complete&&aiDraft.originalText===text,parentText,{timeout:15000});
+  await desktop.page.waitForFunction(()=>!document.querySelector('#aiRevise').disabled);
+  const parentRun=await desktop.page.evaluate(()=>aiDraft.ai_run_id);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  await desktop.page.locator('#aiRevise').click();await desktop.page.locator('[data-revise-dialog]').waitFor();
+  assert.match(await desktop.page.locator('[data-revise-dialog]').innerText(),/20至30字/);
+  assert.match(await desktop.page.locator('[data-revise-dialog]').innerText(),/单独计入模型用量/);
+  const notes='保留林岚守住钥匙，按原范围重新组织，保留结尾。';
+  await desktop.page.locator('#candidateRevisionNotes').fill(notes);
+  const requestId=await desktop.page.evaluate(()=>aiDraft.revision_request.request_id);
+  await desktop.page.locator('[data-revise-dialog] [data-close]').click();
+  assert.equal(await currentBody(firstId),body);
+  await desktop.page.locator('#aiRevise').click();await desktop.page.locator('[data-revise-dialog]').waitFor();
+  assert.equal(await desktop.page.evaluate(()=>aiDraft.revision_request.request_id),requestId);
+  assert.equal(await desktop.page.locator('#candidateRevisionNotes').inputValue(),notes);
+  const revised='😀林岚按住钥匙，循着灯塔钟声走向岸边空船。';
+  providerText=revised;const calls=providerRequests.length;
+  await desktop.page.locator('[data-revise-submit]').dblclick();
+  await desktop.page.waitForFunction(parent=>aiDraft?.complete&&aiDraft.candidate_revision?.parent_run_id===parent,parentRun,{timeout:15000});
+  const childRun=await desktop.page.evaluate(()=>aiDraft.ai_run_id);
+  assert.notEqual(childRun,parentRun);assert.equal(providerRequests.length,calls+1);
+  assert.equal(await desktop.page.locator('#aiOutput').inputValue(),revised);
+  assert.equal(await desktop.page.evaluate(()=>aiDraft.decision),'pending');
+  assert.equal(await desktop.page.evaluate(()=>aiDraft.output_validation.eligible),true);
+  assert.equal(await currentBody(firstId),body);
+  assert.deepEqual(await desktop.page.evaluate(parent=>{
+   const candidate=candidateStore.get(parent);return {text:candidate.text,originalText:candidate.originalText,decision:candidate.decision};
+  },parentRun),{text:parentText,originalText:parentText,decision:'pending'});
+  const revisionMaterial=JSON.parse(providerRequests.at(-1).messages.at(-1).content);
+  assert.equal(revisionMaterial.candidate_text,parentText);assert.equal(revisionMaterial.author_notes,notes);
+  assert.equal(revisionMaterial.output_contract.minimum_characters,20);assert.equal(revisionMaterial.output_contract.maximum_characters,30);
+  await desktop.page.locator('[data-view="tasks"]').click();
+  const row=desktop.page.locator('.task-row').filter({has:desktop.page.locator(`[data-task-open="${childRun}"]`)});
+  assert.match(await row.innerText(),/整理候选/);
+  await desktop.page.locator(`[data-task-open="${childRun}"]`).click();
+  await desktop.page.locator('#aiOriginal').click();await desktop.page.locator('[data-original-text]').waitFor();
+  assert.equal(await desktop.page.locator('[data-original-text]').innerText(),parentText);
+  await desktop.page.locator('[data-original-candidate] [data-close]').click();
+  await desktop.page.screenshot({path:path.join(temporary,'desktop-revised-candidate.png'),fullPage:true});
+  await desktop.page.reload();await desktop.page.waitForFunction(()=>backendOnline);
+  await desktop.page.locator('[data-view="editor"]').click();
+  await desktop.page.waitForFunction(child=>aiDraft?.complete&&aiDraft.ai_run_id===child,childRun);
+  assert.equal(await desktop.page.locator('#aiOutput').inputValue(),revised);
+  assert.equal(await currentBody(firstId),body);
+  const originalReads=[];
+  await desktop.page.route('**/api/ai/queue*',async route=>{
+   const response=await route.fetch(),data=await response.json();
+   data.jobs=(data.jobs||[]).filter(job=>job.ai_run_id!==parentRun&&job.ai_run_id!==childRun);
+   await route.fulfill({response,json:data});
+  });
+  await desktop.page.route(`**/api/ai/runs/${parentRun}`,async route=>{
+   originalReads.push(route.request().url());await route.continue();
+  });
+  await desktop.page.evaluate(parent=>{candidateStore.delete(parent);persistCandidates()},parentRun);
+  await desktop.page.locator('#aiOriginal').click();await desktop.page.locator('[data-original-text]').waitFor();
+  assert.equal(await desktop.page.locator('[data-original-text]').innerText(),parentText);
+  assert.ok(originalReads.length>0);
+  await desktop.page.locator('[data-original-candidate] [data-close]').click();
+  const recoveredChild=await desktop.page.evaluate(async({parentRun,childRun})=>{
+   const parent=candidateStore.get(parentRun);candidateStore.delete(childRun);persistCandidates();
+   const child=await recoverCandidateRevision(parent);displayCandidate(child);return child?.ai_run_id;
+  },{parentRun,childRun});
+  assert.equal(recoveredChild,childRun);assert.equal(providerRequests.length,calls+1);
+  const readsWithCache=originalReads.length;
+  assert.equal(await desktop.page.evaluate(async parent=>(await recoverCandidateRevision(candidateStore.get(parent)))?.ai_run_id,parentRun),childRun);
+  assert.ok(originalReads.length>readsWithCache);
+  await desktop.page.unroute('**/api/ai/queue*');
+  await desktop.page.unroute(`**/api/ai/runs/${parentRun}`);
+  await desktop.page.locator('#aiAdopt').click();await desktop.page.locator('[data-apply]').dblclick();
+  await desktop.page.waitForFunction(()=>!document.querySelector('[data-apply]'));await waitSaved(desktop.page);
+  assert.equal(await currentBody(firstId),body+'\n\n'+revised);
+  assert.equal((await currentBody(firstId)).split(revised).length-1,1);
+  assert.equal(await desktop.page.evaluate(parent=>candidateStore.get(parent).decision,parentRun),'pending');
+  const childJob=(await api('/api/ai/queue')).jobs.find(item=>item.ai_run_id===childRun);
+  assert.equal(childJob.author_decision,'accepted');
+  assert.equal(childJob.candidate_revision.parent_run_id,parentRun);
+  results.candidate_revision={parent_run_id:parentRun,child_run_id:childRun,provider_calls:1,
+   parent_preserved:true,child_explicitly_adopted_once:true,recovered_outside_queue_list:true,
+   mechanical_and_workflow_only:true,facts_and_literature_accepted:false};
+  await desktop.page.locator('#aiInstruction').fill('');
+ });
+ await test('手工编辑过的父候选禁止模型整理，正文和原候选均继续保留',async()=>{
+  const body=await currentBody(firstId);providerText='林岚握住钥匙，听见远处钟声。';
+  await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(text=>aiDraft?.complete&&aiDraft.originalText===text,providerText,{timeout:15000});
+  await desktop.page.waitForFunction(()=>!document.querySelector('#aiRevise').disabled);
+  const original=providerText,calls=providerRequests.length;
+  const edited='林岚手工保留的新句子。';
+  await desktop.page.locator('#aiOutput').fill(edited);
+  assert.equal(await desktop.page.locator('#aiRevise').isEnabled(),false);
+  await desktop.page.evaluate(()=>reviseAI());
+  assert.match(await desktop.page.locator('#toast').innerText(),/手工编辑/);
+  assert.equal(await desktop.page.locator('[data-revise-dialog]').count(),0);
+  assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),body);
+  assert.equal(await desktop.page.evaluate(()=>aiDraft.originalText),original);
+  assert.equal(await desktop.page.locator('#aiOutput').inputValue(),edited);
+  await desktop.page.locator('#aiClear').click();
+ });
+ await test('整理确认期间原稿变化会阻止发送，过期候选保留供阅读',async()=>{
+  providerText='林岚把钥匙压在掌心，望向空船。';
+  await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(text=>aiDraft?.complete&&aiDraft.originalText===text,providerText,{timeout:15000});
+  await desktop.page.waitForFunction(()=>!document.querySelector('#aiRevise').disabled);
+  const original=providerText,calls=providerRequests.length;
+  await desktop.page.locator('#aiRevise').click();await desktop.page.locator('[data-revise-dialog]').waitFor();
+  await desktop.page.evaluate(()=>authorEditBody(chapter().body+'\n作者在整理确认期间增加的新稿。'));await waitSaved(desktop.page);
+  await desktop.page.locator('[data-revise-submit]').click();
+  await desktop.page.waitForFunction(()=>document.querySelector('[data-revise-dialog] .form-error')?.textContent.includes('原稿'));
+  assert.equal(providerRequests.length,calls);
+  assert.equal(await desktop.page.evaluate(()=>aiDraft.originalText),original);
+  assert.match(await currentBody(firstId),/整理确认期间增加的新稿/);
+  await desktop.page.locator('[data-revise-dialog] [data-close]').click();
+  assert.equal(await desktop.page.locator('#aiRevise').isEnabled(),false);
+  await desktop.page.evaluate(()=>reviseAI());assert.equal(providerRequests.length,calls);
+  assert.equal(await desktop.page.locator('[data-revise-dialog]').count(),0);
+  await desktop.page.locator('#aiClear').click();
+ });
+ await test('整理回应丢失后刷新只读取已有任务，保持请求身份且不重复模型调用',async()=>{
+  const body=await currentBody(firstId),original='林岚守住钥匙，候选尚未整理。'.repeat(5);
+  providerText=original;
+  await desktop.page.locator('#aiInstruction').fill('续写20至30字。');await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(text=>aiDraft?.complete&&aiDraft.originalText===text,original,{timeout:15000});
+  await desktop.page.waitForFunction(()=>!document.querySelector('#aiRevise').disabled);
+  const parentRun=await desktop.page.evaluate(()=>aiDraft.ai_run_id);
+  await desktop.page.locator('#aiRevise').click();await desktop.page.locator('[data-revise-dialog]').waitFor();
+  await desktop.page.locator('#candidateRevisionNotes').fill('保持钥匙归属，完整整理到原字数范围。');
+  const identity=await desktop.page.evaluate(()=>({...aiDraft.revision_request}));
+  let submissions=0;
+  await desktop.page.route('**/api/ai/runs/*/revise',async route=>{
+   submissions++;await route.fetch();await route.abort('failed');
+  });
+  providerText='林岚攥紧钥匙，沿着钟声找到岸边，守灯人仍未现身。';
+  const calls=providerRequests.length;
+  await desktop.page.locator('[data-revise-submit]').click();
+  await desktop.page.waitForFunction(()=>document.querySelector('[data-revise-dialog] .form-error')?.textContent.includes('提交结果尚未确认'));
+  assert.equal(submissions,1);assert.equal(await currentBody(firstId),body);
+  await desktop.page.reload();await desktop.page.waitForFunction(()=>backendOnline);
+  await desktop.page.locator('[data-view="editor"]').click();
+  await desktop.page.waitForFunction(parent=>candidateStore.get(parent)?.revision_request?.child_run_id,parentRun,{timeout:15000});
+  assert.equal(await desktop.page.evaluate(parent=>candidateStore.get(parent).revision_request.request_id,parentRun),identity.request_id);
+  assert.equal(submissions,1);
+  await desktop.page.locator('#aiRevise').click();
+  await desktop.page.waitForFunction(parent=>aiDraft?.complete&&aiDraft.candidate_revision?.parent_run_id===parent,parentRun,{timeout:15000});
+  assert.equal(providerRequests.length,calls+1);assert.equal(submissions,1);
+  assert.equal(await desktop.page.evaluate(()=>aiDraft.decision),'pending');
+  assert.equal(await currentBody(firstId),body);
+  await desktop.page.locator('#aiOriginal').click();await desktop.page.locator('[data-original-text]').waitFor();
+  assert.equal(await desktop.page.locator('[data-original-text]').innerText(),original);
+  await desktop.page.locator('[data-original-candidate] [data-close]').click();
+  await desktop.page.unroute('**/api/ai/runs/*/revise');
+  await desktop.page.locator('#aiClear').click();
+  await desktop.page.locator('#aiInstruction').fill('');
+ });
  await test('模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用',async()=>{
   const before=await currentBody(firstId);
   providerText='我们需要分析任务。\n林岚把钥匙压在掌心。';
   await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
   await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.text==='我们需要分析任务。\n林岚把钥匙压在掌心。',null,{timeout:15000});
+  await desktop.page.waitForFunction(()=>!streamReaders.size);
+  assert.equal(await desktop.page.evaluate(()=>aiDraft.complete),true);
   assert.equal(await desktop.page.locator('#aiOutput').inputValue(),providerText);
   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
   assert.match(await desktop.page.locator('#aiStatus').innerText(),/规划|思考/);
+  await desktop.page.waitForFunction(()=>!document.querySelector('#aiRevise').disabled);
+  const calls=providerRequests.length;
+  await desktop.page.locator('#aiRevise').click();await desktop.page.locator('[data-revise-dialog]').waitFor();
+  await desktop.page.locator('[data-revise-dialog] [data-close]').click();assert.equal(providerRequests.length,calls);
   for(const text of ['我们得精心写一段。\n林岚把钥匙压在掌心。','让我构思情节。\n林岚把钥匙压在掌心。']){
    await desktop.page.locator('#aiOutput').fill(text);
    assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
@@ -647,6 +813,65 @@ async function main(){
   assert.equal(await currentBody(firstId),before);
   await desktop.page.locator('#aiClear').click();
  });
+ await test('队列先完成后人工编辑，迟到流式分片不覆盖候选、缓存或原稿',async()=>{
+  const before=await currentBody(firstId),original='林岚握住钥匙，沿着钟声走向空船。',edited='林岚保留钥匙，先停在岸边辨认钟声。';
+  await desktop.page.waitForFunction(()=>!streamReaders.size);
+  providerText=original;providerDelay=80;
+  let releaseProvider,streamObserved,streamBuffered,held;
+  const heldQueue=[],queueRoute=/\/api\/ai\/queue(?:\?|$)/;
+  providerStreamGate=new Promise(resolve=>releaseProvider=resolve);
+  const observed=new Promise(resolve=>streamObserved=resolve),buffered=new Promise(resolve=>streamBuffered=resolve);
+  const streamRoute=/\/api\/ai\/runs\/[^/]+\/stream(?:\?|$)/;
+  await desktop.page.route(streamRoute,async route=>{
+   streamObserved();
+   const response=await route.fetch(),body=await response.text();
+   held={route,response,body};streamBuffered();
+  });
+  try{
+   await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
+   await observed;
+   await desktop.page.waitForFunction(()=>aiDraft?.job_id&&!aiDraft.complete);
+   const identity=await desktop.page.evaluate(()=>({run_id:aiDraft.ai_run_id,job_id:aiDraft.job_id}));
+   releaseProvider();providerStreamGate=null;
+   await buffered;
+   assert.match(held.body,/event: delta/);assert.match(held.body,/event: done/);
+   await desktop.page.waitForFunction(({run_id,job_id})=>aiDraft?.ai_run_id===run_id&&aiDraft.complete&&
+    queueJobs.some(job=>job.id===job_id&&job.status==='success'),identity,{timeout:15000});
+   assert.equal(await desktop.page.evaluate(id=>streamReaders.has(id),identity.job_id),true);
+   await desktop.page.locator('#aiOutput').fill(edited);
+   assert.equal(await desktop.page.evaluate(()=>aiDraft.originalText),original);
+   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+   await desktop.page.route(queueRoute,route=>{
+    if(route.request().method()==='GET')heldQueue.push(route);else return route.continue();
+   });
+   await held.route.fulfill({response:held.response,body:held.body});held=null;
+   await desktop.page.waitForFunction(id=>!streamReaders.has(id),identity.job_id);
+   const candidate=await desktop.page.evaluate(({run_id})=>({
+    run_id:aiDraft.ai_run_id,complete:aiDraft.complete,text:aiDraft.text,originalText:aiDraft.originalText,
+    decision:aiDraft.decision,stored_text:candidateStore.get(run_id).text,
+    cached_text:JSON.parse(storage.get(cacheKey(':candidates'))).find(item=>item.ai_run_id===run_id).text
+   }),identity);
+   assert.deepEqual(candidate,{run_id:identity.run_id,complete:true,text:edited,originalText:original,
+    decision:'pending',stored_text:edited,cached_text:edited});
+   assert.equal(await desktop.page.locator('#aiOutput').inputValue(),edited);
+   assert.doesNotMatch(await desktop.page.locator('#aiStatus').innerText(),/正在生成/);
+   assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
+   assert.equal(await currentBody(firstId),before);
+   await desktop.page.unroute(queueRoute);
+   for(const route of heldQueue.splice(0))await route.continue();
+   await desktop.page.waitForFunction(()=>!queueLoading);
+   await desktop.page.evaluate(()=>refreshQueue());
+   assert.equal(await desktop.page.locator('#aiOutput').inputValue(),edited);
+   assert.equal(await desktop.page.evaluate(()=>aiDraft.complete),true);
+   await desktop.page.locator('#aiClear').click();
+  }finally{
+   releaseProvider();providerStreamGate=null;
+   if(held)await held.route.abort();
+   await desktop.page.unroute(streamRoute);
+   await desktop.page.unroute(queueRoute);
+   for(const route of heldQueue.splice(0))await route.abort();
+  }
+ });
  assert.deepEqual(desktop.errors,[]);await desktop.context.close();
  const compact=await open({width:1280,height:800});
  await test('1280×800电脑窗口无横向溢出，编辑和生成控件可用',async()=>{
@@ -656,6 +881,36 @@ async function main(){
   await compact.page.screenshot({path:path.join(temporary,'compact-desktop-editor.png'),fullPage:true});
  });
  assert.deepEqual(compact.errors,[]);await compact.context.close();
+ const readOnly=await open();
+ await test('复制作品的完整历史候选同步只读标记，旧完整缓存也不能整理或采纳',async()=>{
+  const sourceBody=await currentBody(firstId),calls=providerRequests.length;
+  const copied=await api('/api/projects/default-project/duplicate','POST',{title:'仅供阅读的候选副本'});
+  const project=copied.project.id;
+  const jobs=(await api('/api/ai/queue','GET',undefined,project)).jobs;
+  const child=jobs.find(job=>job.status==='success'&&job.candidate_revision);
+  assert.ok(child);assert.equal(child.restored_read_only,true);
+  await readOnly.page.evaluate(async copied=>{authorProjects.push(copied);await authorSwitchProject(copied.id)},copied.project);
+  await readOnly.page.locator('[data-view="tasks"]').click();
+  await readOnly.page.locator(`[data-task-open="${child.ai_run_id}"]`).waitFor();
+  await readOnly.page.locator(`[data-task-open="${child.ai_run_id}"]`).click();
+  assert.equal(await readOnly.page.locator('#aiOutput').getAttribute('readonly'),'');
+  assert.equal(await readOnly.page.locator('#aiAdopt').isEnabled(),false);
+  assert.equal(await readOnly.page.locator('#aiRevise').isEnabled(),false);
+  assert.equal(await readOnly.page.locator('#aiClear').isEnabled(),false);
+  await readOnly.page.evaluate(async()=>{
+   aiDraft.restored_read_only=false;persistCandidates();await refreshQueue();
+  });
+  await readOnly.page.waitForFunction(()=>aiDraft?.restored_read_only===true);
+  assert.equal(await readOnly.page.locator('#aiAdopt').isEnabled(),false);
+  await readOnly.page.evaluate(async()=>{await reviseAI();await adoptAI()});
+  assert.equal(await readOnly.page.locator('[data-revise-dialog]').count(),0);
+  assert.equal(await readOnly.page.locator('[data-apply]').count(),0);
+  assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),sourceBody);
+  await readOnly.page.locator('#aiOriginal').click();await readOnly.page.locator('[data-original-text]').waitFor();
+  assert.ok((await readOnly.page.locator('[data-original-text]').innerText()).length>0);
+  await readOnly.page.locator('[data-original-candidate] [data-close]').click();
+ });
+ assert.deepEqual(readOnly.errors,[]);await readOnly.context.close();
  const workspace=await open();
  await test('两作品切换隔离，卷章场景保存后建立目录',async()=>{
   await workspace.page.locator('[data-view="library"]').click();await workspace.page.locator('[data-action="createProject"]').click();

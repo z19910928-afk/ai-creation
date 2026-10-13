@@ -2,7 +2,9 @@
 
 审查日期：2026-10-13；交付记录更新至上海时间2026-10-14，目录沿用原审查日期。墨屿固定基线为 `62f1c66a7b16bb84f2940dc1af48e685aaf58818`。以下基线探针在独立临时数据库和新浏览器缓存中运行；当时未修改原产品代码、真实作品或用户数据库。生成文本来自离线逻辑或免费本机模拟，不含真实收费模型调用。
 
-当前工程入口为[电脑端交付复验](compatibility-python311-node24-desktop-release-final.json)，实际运行于上海时间2026-10-14 00:11:10至00:13:55：50个执行项、35份Python测试与49个真实浏览器场景通过，64份源码前后相同。本文先保留基线及历史快照，最新范围和附件列在末尾“电脑端交付完整快照”；历史失败或旧通过结果不直接代表当前状态。
+最新工程入口为[候选整理电脑端完整复验](compatibility-python311-node24-candidate-revision-final.json)，实际运行于上海时间2026-10-14 02:03:08至02:06:19：51个执行项、36份Python测试与55个真实电脑浏览器场景通过，66份源码前后相同，13份附件指纹核验，详细范围列在末尾。历史[电脑端交付复验](compatibility-python311-node24-desktop-release-final.json)于00:11:10至00:13:55通过50项/49场景、64份源码不变，仅证明当时版本；本次中间失败与新成功分别保留，旧通过不覆盖本次代码。
+
+工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`，[增强检查运行38434003558](github-actions-desktop-release-success.json)于上海时间2026-10-14 00:52:11至00:56:02完成并成功；详细范围见历史远程记录。该成功不覆盖本次候选整理；分支未合并main，工程通过不代表文学、第一梯队或公网部署通过。
 
 ## 墨屿直接验证
 
@@ -36,7 +38,7 @@
 
 ## 运行环境与复跑
 
-基线探针实际使用 Python 3.12.14、Node 24.19.0、Chrome，以及 Codex 自带的 Playwright。后续修复已在本机补验原持续检查所用的 Python 3.11/Node 20 组合，详见末尾记录。当前持续检查已改为 Python 3.11/Node 24，并加入编辑器和真实浏览器回归。GitHub 基线 `62f1c66` 的旧版检查已成功；本轮增强版尚未远程执行，不能声称覆盖了所有系统与运行版本。当前产品验收以电脑端为范围，手机记录保留为历史补充。
+基线探针实际使用Python 3.12.14、Node 24.19.0、Chrome，以及Codex自带的Playwright。后续修复补验Python 3.11/Node 20与当前Python 3.11/Node 24组合；GitHub基线 `62f1c66` 的旧版成功只覆盖其旧配置。当前增强配置的独立远程结果见[运行38434003558](github-actions-desktop-release-success.json)，它只对应工程提交 `eaca358`，不能声称覆盖所有系统与运行版本。当前产品验收以电脑端为范围，手机记录保留为历史补充。
 
 以下为历史基线探针的维护记录，用户不需要执行。脚本分析当时基线，不能直接用于断言当前产品失败或通过。复验应先准备固定基线的隔离副本，输出使用新的目录和文件名；不要覆盖本目录已有JSON或截图。当前源码的检查入口在仓库[使用说明](../../../../README.md)中。
 
@@ -60,7 +62,7 @@ python3 scripts/evaluation_runner.py \
 
 ## 修复后的本机兼容复验
 
-复验日期为 2026-10-13，运行环境为 macOS arm64、Python 3.11.17、Node 20.20.2、Playwright 1.62.1、Chrome 155.0.8059.40。只使用临时数据库、新浏览器缓存和免费本机模拟提供方；没有读取真实凭据、增加收费请求或修改真实作品。这是历史 Node 20 本机证据；当前 Node 24 增强版远端持续检查尚未运行。
+复验日期为2026-10-13，运行环境为macOS arm64、Python 3.11.17、Node 20.20.2、Playwright 1.62.1、Chrome 155.0.8059.40。只使用临时数据库、新浏览器缓存和免费本机模拟提供方；没有读取真实凭据、增加收费请求或修改真实作品。这是历史Node 20本机证据；当时增强Node 24远程检查尚未运行，2026-10-14的新提交远程结果另列本文末尾。
 
 | 文件 | 实际范围 | 结果与限制 |
 | --- | --- | --- |
@@ -76,7 +78,7 @@ python3 scripts/evaluation_runner.py \
 
 这些通过结果证明本机流程和协议兼容，不证明真实供应商的最终费用、线上部署、跨设备恢复或文学效果达到第一梯队。文学诊断账本、冻结请求及未知费用必须另行保留和核对。
 
-分阶段规划回归入口为[SQLite工作流](../../../../tests/planning_workflow_fixtures.py)、[真实本机HTTP](../../../../tests/planning_http_fixtures.py)和[规划备份恢复](../../../../tests/planning_backup_fixtures.py)，已在最新电脑端完整快照中执行。恢复副本中的历史规划只供阅读；要调用模型需在副本中重新创建规划，历史候选不会自动采纳或重发。
+分阶段规划回归入口为[SQLite工作流](../../../../tests/planning_workflow_fixtures.py)、[真实本机HTTP](../../../../tests/planning_http_fixtures.py)和[规划备份恢复](../../../../tests/planning_backup_fixtures.py)，已在下文历史电脑端完整快照中执行。恢复副本中的历史规划只供阅读；要调用模型需在副本中重新创建规划，历史候选不会自动采纳或重发。
 
 ## 电脑端 Node 24 历史快照
 
@@ -98,7 +100,7 @@ python3 scripts/evaluation_runner.py \
 
 五章测试开发时的失败仍保留：[状态字段断言](desktop-author-flow-fixture-status-failure.json)、[导出预检等待](desktop-author-flow-preflight-wait-failure.json)和[完稿等待](desktop-author-flow-completion-wait-failure.json)。前者误要求API必须返回`stale:false`字段；后两者分别误等待已被页面预检阻止的导出请求，以及在异步完稿保存结束前读取状态。修正为核对有效审稿版本、实际阻断窗口加直接只读导出409、等待完稿窗口消失后回读。没有通过修改正文、API写审稿状态或删除旧失效链接绕过流程。
 
-三项浏览器入口已接入[自动检查配置](../../../../.github/workflows/ci.yml)。本机通过不代表GitHub本轮增强配置已经远程执行；历史`62f1c66`远程成功只覆盖其旧配置。
+该历史快照中，三项浏览器入口已接入[自动检查配置](../../../../.github/workflows/ci.yml)，但当时本机成功没有远程执行结论；历史 `62f1c66` 远程成功只覆盖其旧配置。历史工程提交 `eaca358` 的增强检查成功另有[独立运行记录](github-actions-desktop-release-success.json)，不能回写成旧快照当时已远程通过，也不覆盖新增候选整理。
 
 ## 用量与候选修复历史快照
 
@@ -122,7 +124,7 @@ python3 scripts/evaluation_runner.py \
 
 | 文件 | 实际范围 | 结果与限制 |
 | --- | --- | --- |
-| [完整报告](compatibility-python311-node24-desktop-release-final.json) | 当前冻结源码50项完整检查 | `passed=true`、`source_unchanged=true`，64份源码运行前后指纹相同。修复每日额度读取，流式首片检查采用同步事件确认先收到首片再允许模型结束；指定离线/模拟范围通过，不代表真实供应商费用或文学质量。 |
+| [完整报告](compatibility-python311-node24-desktop-release-final.json) | 当时冻结源码50项完整检查 | `passed=true`、`source_unchanged=true`，64份源码运行前后指纹相同。修复每日额度读取，流式首片检查采用同步事件确认先收到首片再允许模型结束；指定离线/模拟范围通过，不代表本次整理改动、真实供应商费用或文学质量。 |
 | [固定评测](fixed-evaluation-python311-node24-desktop-release-final.json) | 固定JSON样本与预先门槛 | 全部通过；结果仍须结合固定样本来源，不能当作真实小说文学成绩。 |
 | [基础浏览器](browser-python311-node24-desktop-release-final.json) | 37个真实页面场景、连续20轮写作；1440×1000与1280×800电脑窗口 | 保稿、采纳、局部选区、记忆/审稿、规划、作品隔离、用量设置、旧书及完整恢复通过。新增三方撤销/重做保留另一窗口文字、同起点插入/删改双向冲突、格式快捷键、远端覆盖撤销位置时拒绝、作用域历史隔离、真实中文组合输入保稿及迟到合并切章保护。组合输入覆盖指定Chrome事件，不代表所有系统输入法。 |
 | [规划保稿](planning-browser-python311-node24-desktop-release-final.json) | 5个规划场景 | 连续保存、采用等待期间跨页锁定、保存失败刷新恢复、两窗口双方选择和第二轮建章保留原章全部字段通过。 |
@@ -134,4 +136,52 @@ python3 scripts/evaluation_runner.py \
 
 未来复查可以先只读比较报告的 `source_files_sha256_after` 与当前文件，再核对 `artifacts` 的每个附件指纹；只读一致性核查不是重新运行测试。源码或检查条件改变时应使用新结果文件，保留本次快照，不覆盖历史证据。
 
-最新工程复验只使用临时数据库、独立浏览器状态和免费本机提供方，未增加收费请求、未使用真实作品。增强版GitHub检查等待推送后实际执行；本机成功和文件名中的 `release` 不代表远程通过、公网部署或第一梯队。真实[第十二轮](../literary-pilot-v12/report.md)首对942/868字均超600至850字、输出0/6、有效评审0/12；含独立协议诊断累计31条请求预留、49642个可信完整tokens与已知下界，10条缺完整用量、实际金额未知。原始请求、账本和候选保持不变。
+该历史工程复验只使用临时数据库、独立浏览器状态和免费本机提供方，未增加收费请求、未使用真实作品。对应工程提交的增强GitHub成功证据另列下节，文件名中的 `release` 本身不代表发布结论。真实[第十二轮](../literary-pilot-v12/report.md)首对942/868字均超600至850字、输出0/6、有效评审0/12、题材3/1/0/0；截至该轮，含独立协议诊断累计31条请求预留、49642个可信完整tokens与已知下界，10条缺完整用量、实际金额未知。原始请求、账本和候选保持不变；新增整理诊断与当前累计另列末尾。
+
+## 历史GitHub增强检查与本机启动
+
+[公开远程成功记录](github-actions-desktop-release-success.json)绑定工程修复提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886`、分支 `codex/full-function-audit`、运行 `38434003558`。分支内容与该本机提交已核对一致；运行和 `checks` 作业状态均为 `completed`、结论均为 `success`，等待执行完成的命令退出0。
+
+作业于上海时间2026-10-14 00:52:11至00:56:02执行（UTC为 `2026-10-13T16:52:11Z` 至 `2026-10-13T16:56:02Z`），语法、全部Python契约测试、固定评测、12项编辑器合并、37个基础浏览器、5个规划和7个五章作者场景均通过。这是在Linux上的独立远程工程运行，提供方仍为免费本机模拟。运行环境弃用提示不是检查失败，也不等于文学或供应商费用验收。
+
+本机交付另外实际启动服务，`/api/health` 返回 `ok=true`、数据库版本11，真实电脑编辑页面正常打开。电脑入口为 `http://127.0.0.1:4173`，作品保存于被Git忽略的本机 `moyu.sqlite3`，连接凭据保存于本机 `~/.moyu/credentials/` 私有文件；数据库、凭据和本机页面状态均不随源码上传。此启动检查不额外发送模型请求。
+
+远程成功只属于上述工程提交，不覆盖本次候选整理代码，后续文档或源码提交需分别记录对应检查；本分支尚未合并main，尚无公网部署验收，不能据工程检查宣称第一梯队或文学达标。
+
+## 原候选整理与真实失败
+
+本次实现保留父候选全文，沿用冻结模型、参数、输出预算、字数和稿件范围；单父单子、独立用量、重复请求幂等，只有作者明确采纳才写正文。失联先只读核对已有任务，执行或费用未知不重发，恢复结果不自动采纳。备份恢复与独立作品副本保留历史候选、父子关系、用量和原请求指纹；历史候选只读，不能继续采纳、整理、重试或自动收费。
+
+纯请求组装与公开关联由[候选整理模块](../../../../moyu_revision.py)实现；`public_binding` 仅公开 `operation`、`parent_run_id`、`root_run_id`、`parent_characters`，不公开全文、整理备注或 `request_id`。回归入口为[候选整理保护](../../../../tests/candidate_revision_fixtures.py)、[正文HTTP流程](../../../../tests/prose_output_http_fixtures.py)和[备份恢复](../../../../tests/import_archive_lifecycle_fixtures.py)，已在下节新完整快照中执行；结论仅限指定样本和实际免费模拟流程。
+
+[真实失败诊断](../literary-revision-v1/diagnosis.md)只读核对双方父稿、冻结请求、原返回和账本：第十二轮基线942字、墨屿868字完整保留；同一故事双方各追加一次整理，均为 `glm-5.1`、`stop`、完整协议，但两份正文都是“铁”1字，整理输出合格0/2。用量分别4740和4747、合计9487 tokens；当前累计33条请求预留、59129个可信完整tokens及已知下界，仍有10条缺完整用量，实际金额未知。未修复首稿、未新增独立故事、未发送盲评，文学质量、事实安全、作者效率与第一梯队均未证明。
+
+## 候选整理中间检查失败
+
+[中间完整检查](compatibility-python311-node24-candidate-revision-release.json)实际运行于上海时间2026-10-14 01:44:03至01:45:48（UTC为 `2026-10-13T17:44:03.104Z` 至 `2026-10-13T17:45:48.360Z`），51项中48项通过、3项退出1，整体 `passed=false`、`source_unchanged=false`。运行期间 `server.py` 和 `tests/frontend_browser_regressions.cjs` 前后指纹变化，不能作为冻结源码完整通过证据。
+
+失败项为基础浏览器、规划浏览器和五章作者链，三项都报 `browserType.launch: Executable doesn't exist`，找不到Playwright缓存中的浏览器可执行文件；场景为空，没有完成真实页面验收。JSON不能单独证明浏览器配置的最终根因，也不能据空场景宣称业务断言通过或失败。
+
+[固定评测中间结果](fixed-evaluation-python311-node24-candidate-revision-release.json)与原完整报告分别保留；没有修改旧报告、原日志或截图来掩盖这次失败。随后配置真实浏览器并冻结源码，独立完成下节 `candidate-revision-final` 新验证；新成功不回写或删除旧失败。
+
+## 最新候选整理电脑端完整快照
+
+上海时间2026-10-14 02:03:08至02:06:19（报告UTC为 `2026-10-13T18:03:08.348Z` 至 `2026-10-13T18:06:19.784Z`）完整执行51项并通过。环境为macOS arm64、Python 3.11.17、Node 24.19.0与真实Chrome；36份Python测试、8项JavaScript语法、固定评测、12项编辑器检查和三组浏览器运行共同完成。候选整理保护19项、正文HTTP15项实际通过；43个基础、5个规划、7个五章场景合计55个真实电脑浏览器场景，包含20轮连续写作和五章10次专用候选检查，后两项不能再算独立场景。
+
+| 文件 | 实际范围 | 结果与限制 |
+| --- | --- | --- |
+| [完整报告](compatibility-python311-node24-candidate-revision-final.json) | 本次冻结源码51项完整检查 | `passed=true`、`source_unchanged=true`，66份源码前后指纹相同；使用临时数据库与免费本机模拟提供方，不读取真实密钥、不增加收费请求。 |
+| [固定评测](fixed-evaluation-python311-node24-candidate-revision-final.json) | 固定JSON样本与预先门槛 | 实际执行通过，不作为真实小说或文学质量成绩。 |
+| [基础浏览器](browser-python311-node24-candidate-revision-final.json) | 43个真实电脑页面场景、20轮连续写作 | 整理父稿保留、双击一次调用、合限子候选等待采纳、手改父稿拒绝、原稿变化阻断、回应丢失后只读恢复与身份保留通过；缓存存在仍读取固定任务、迟到流不覆盖已编辑候选、复制副本历史只读也通过。其他保存、选区、记忆、审稿、作品隔离和用量场景继续通过。 |
+| [规划保稿](planning-browser-python311-node24-candidate-revision-final.json) | 5个真实规划场景 | 连续保存、采用等待跨页锁定、保存失败刷新恢复、两窗口冲突选择、第二轮建章保留原章字段通过。 |
+| [五章作者链](desktop-author-flow-python311-node24-candidate-revision-final.json) | 7个五章电脑场景、10次专用候选检查 | 普通正文的记忆确认、审稿、归档、伏笔回收失效和重锚、完稿刷新及真实MD/EPUB下载核对通过；作者写入经可见控件，五章正文逐字保护。 |
+| [电脑编辑器](node24-candidate-revision-final-desktop-editor.png)、[紧凑电脑](node24-candidate-revision-final-compact-desktop-editor.png)、[电脑规划](node24-candidate-revision-final-desktop-planning.png)、[整理子候选](node24-candidate-revision-final-desktop-revised-candidate.png)、[第二轮规划](node24-candidate-revision-final-planning-second-round.png) | 基础与规划运行的5张截图 | 按原路径登记；功能结论依据操作和数据回读，截图不证明事实或文学质量。 |
+| [五章电脑](node24-candidate-revision-final-desktop-five-chapter-author.png)、[1280五章](node24-candidate-revision-final-compact-desktop-five-chapter-author.png)、[回收失效阻断](node24-candidate-revision-final-desktop-stale-payoff-blocked.png)、[完稿状态](node24-candidate-revision-final-desktop-final-complete.png) | 五章运行的4张截图 | 与下载、正文、原稿指纹和来源身份核对一同归档。 |
+
+总报告SHA-256为 `62bbf70fa6ae53b244ee730b7bca0947727de1ac4a135b72bbce5b3ccf27ab14`；4份JSON与9张PNG共13份附件均在报告中登记真实 `candidate-revision-final` 路径，逐个指纹核验通过，无需改名映射。66份源码前后指纹一致不包括本次结果后的文档变更；后续工程源码变化仍需新快照。
+
+这份最新本机完整复验覆盖本次候选整理的工程流程与机械字数门。真实整理仍是两份1字失败；文学质量、事实安全、作者效率与第一梯队均未证明。对应源码上传与远程检查尚未登记，历史 `eaca358`/`38434003558` 成功不覆盖本次代码；分支未合并main，公网部署未验收。
+
+## 回复模式诊断记录
+
+[回复模式诊断](../literary-transport-v1/report.md)在相同冻结墨屿整理输入上先执行一次不分段请求。返回200、`glm-5.1`、`stop`、完整用量4747 tokens，但正文仍只有1字“铁”，同时观察到非空 `reasoning_content`；因此第二次流式请求按停止条件未执行。该真实请求新增一条，累计34条预留、63876个可信完整tokens，10条缺完整用量，费用未知。它是接口行为诊断，不是文学质量或第一梯队证据。

@@ -1,0 +1,21 @@
+{
+  "blind_grades_authorized_in_this_diagnosis": false,
+  "cumulative_known_tokens_stop_threshold": 180000,
+  "cumulative_request_cap": 60,
+  "human_notes": "",
+  "new_requests_cap": 2,
+  "operation": "one_explicit_candidate_revision",
+  "parent_evidence_sha256": {
+    "docs/audits/2026-10-13/literary-pilot-v12/frozen-writer-requests.json": "c3944c02ac07599e90697cb3317555fe4653c0c4e0645948424893fb13c91d65",
+    "docs/audits/2026-10-13/literary-pilot-v12/plan.json": "fe037355ecf6aa0b1b363582d8c9a25de0036a17eb0b63b1762cc8cfa7140bea",
+    "docs/audits/2026-10-13/literary-pilot-v12/samples/mystery-tide--1--baseline.json": "a95676b28d727ec8fb9f843bd92ca4ccf09af7dbe225b0e78e173a14d0de9a7c",
+    "docs/audits/2026-10-13/literary-pilot-v12/samples/mystery-tide--1--moyu.json": "8299883e9f795a9f3c758fd8991eb874cbdea0ecf80941fcdc8d761f46c5e5d4",
+    "moyu_output.py": "29b63ae90c98a9095976dba574c382f61e0ac7149c2e49e16f830c57505aecdf",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78"
+  },
+  "parent_run_id": "ec3efcac73f745dca0f7e3eef037dd7f",
+  "prior_complete_tokens": 49642,
+  "prior_missing_complete_usage_records": 10,
+  "prior_requests_including_protocol_diagnostic": 31,
+  "scope": "Retrospective paired revision diagnosis of the v12 first story; not a new first-draft result, independent story, or tier proof."
+}
