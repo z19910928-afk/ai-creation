@@ -1,0 +1,103 @@
+# Ai-Novel 全功能专项与 MuMu、Arboris 独立交叉复核
+
+审查日期：2026-10-14。专责代理：`comprehensive_ai_novel`。本轮重新读取官方固定源码，并对照墨屿当前 `64fe155387e0a3c2d902b60a2d82822f2457af0d` 及同时进行的未提交修复。没有将旧 `62f1c66` 审查结论直接用作当前缺口。
+
+本次只读产品源码；新增运行仅使用原函数、合成故事和内存数据库。未启动上游整机，未读取密钥或真实数据库，未调用模型。用户要求不需要手机端，本报告仅讨论电脑端。
+
+## 来源与证据口径
+
+官方 API 本次确认 Ai-Novel 默认分支仍是 `dev`，提交 `8b85b2b6f29af4c69241be7c42417dbe4795db30`，树 `396b02c000b9d1eaa42767789d9c794e276df1c8`。与旧审查相同是重新核实结果。README 自称 Lite 并推荐 `lite`，本报告没有把另一个分支混入。API 许可证为空，固定归档未找到 LICENSE；仅研究功能设计，不复制实现、提示词或素材。[来源元数据](../evidence/ai-novel-source-metadata.json)保留官方地址、提交和指纹。
+
+- **E**：沿实际源码确认入口、保存和后续消费。
+- **R**：本次实际运行，限定在所述组件和合成数据。
+- **D**：文档声明，不能升级成实际可用。
+- **U**：没有本次运行证据。源码中的测试存在不等于本次已执行。
+
+## 结论与优先级
+
+墨屿当前已具有书架、隔离任务、逐片落盘、取消与未知执行保护、选区差异采纳、卷章场景、章后提取、作者确认、证据失效、伏笔回收及完整恢复。不能重复写成这些功能全部缺失。
+
+本次独立确认的高价值差距有两项：**参考库仍停在查看和搜索，作者选中的片段无法加入本次写作材料；用途设置只有不同模型，参数和风格仍是作品全局设置，缺少可保存和切换的任务预设。** 大稿的按章读取和目录渲染也是需要量测的效率方向，但本次没有性能成绩，不把它写成已复现卡顿。
+
+主流程已实施设定知情范围持久化、规划约定和卷场景进入正文、归档接入已规划章节，以及长名称电脑导航；[已归档共享源码验收](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)记录该指定中间快照的成功结果。本报告不重复将这些保存及消费断点列为未修复。后续范围、嵌套归属、材料、章序与真实旧报告保护已取得[独立专项证据](../evidence/README.md#范围材料与历史结果依赖)；当前[指南与确认完整性整轮](../evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)于上海2026-10-15 02:39:43至02:46:58完成85项全部通过，95份来源不变，10组真实电脑浏览器125场景、11份JSON和32张截图共43份附件指纹一致。本报告独立读取及重算SHA，未重跑上游整站；源码推送、远程检查、真实服务、文学质量及第一梯队地位分别验收，后两项仍未证明。
+
+[材料修后77项](../evidence/compatibility-python311-node24-materials-comprehensive-refined-release.json)后来通过、122个电脑场景和40附件一致，仍未覆盖随后新发现的报告指南断点：只改故事前提或创作约定、不重新建立章节，旧章后分析仍能写入，缺指南审稿和旧说明仍有效。[章后指南12项](../evidence/analysis-guidance-after-fix.json)及[审稿指南11项](../evidence/review-guidance-after-fix.json)首修后均通过，保存原指南、独立记录自身决定后的来源，外部变动不能由读取自动升级；免费旧说明绑定当前指南。77项只记中间快照，旧前提纠正与当前完整新验见[指南阶段](../evidence/README.md#保存报告的创作指南依赖)，不改写文学成绩。
+
+## 全功能对照
+
+以下上游路径相对固定 Ai-Novel 源码根目录；墨屿路径相对本仓库。行号对应本轮读取时刻，主流程随后修改可能改变行号。
+
+| 能力 | Ai-Novel 当前链路 | 墨屿当前实现与差距 |
+| --- | --- | --- |
+| 多作品和作者入口 | E：`frontend/src/App.tsx:143-203` 项目路由和 guard，章节 API 检查项目/大纲 | 已有书架、新建/复制/归档/切换和作品请求身份，不再判缺失；多用户协作并非当前单用户目标 |
+| 总纲、卷和细纲 | E：`chapter_context_service.py:124-244` 按卷取当前章情节点及前后章规划，普通生成 `prepare_service.py:150` 消费 render values | 已有可编辑卷章稳定场景及四阶段规划；修前普通正文未消费完整蓝图，修后有界当前约定与卷章场景进入续写、润色和故事审稿。[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的指南HTTP10项通过；未来规划明确是计划，不冒充已发生事实 |
+| 分层历史 | E：`chapter_context_service.py:32-121` 近20章摘要、近2章正文、远期骨架；只取前文 | 墨屿已有近章、段落检索、已确认记忆和范围预算；卷级摘要与更大作品压缩策略仍需真实小说测增益 |
+| 作者要求与检索 | E：`chapter_generation/memory_service.py:38-65` 用本次要求和章纲构造 query；`vector_retrieval.py:573` 有向量、混合与重排入口 | 墨屿当前要求已参与本地段落检索，来源含修订/范围/hash；缺向量和重排不等于效果必然落后，必须用标注集比较 |
+| 未来秘密和人物知情 | E：smart context 有早章限定；额外 memory pack 与 `query_project` 没有目标章/POV参数 | 墨屿已有统一范围判定；修前设定持久化遗漏已修，[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的范围HTTP23项覆盖真实保存/回读、早章排除及复制/恢复。后续范围指南扩展14项、嵌套归属12项与材料扩展29项另有指定通过证据；不能扩大为所有真实资料链安全 |
+| 参考资料进入写作 | E：`ImportPage.tsx:266` 发起导入；`import_export_service.py:133-194` 保存分块并重建所属 KB；`vector_chunk_builder.py:105-175` 接入导入文档；`memory_retrieval_service.py:383-414` 将默认检索结果转为 prompt block | **R+E：**墨屿参考资料可保存和搜索，但 `author-workspace.js:765-781` 只显示结果；`moyu_context.py:722-744` 无参考资料入口。需作者显式加入本次资料，保持非正典边界 |
+| 写后摘要与事实 | E：`useChapterGeneration.ts:245-274` 把正文和摘要放入编辑态；章节 done 可触发后续任务 | 墨屿普通正文提取、原句预览、逐项确认、旧稿拒绝和下一章交接已实现；模型提取准确率、遗漏率仍 U |
+| 人物设定 | E：独立人物页和人物模型有专用数据；章节上下文格式化选定人物 | 墨屿目前通用卡以名称、别名、描述为主。欲望、限制、能力、弧光可做便捷字段，但不得把作者设定自动升格为角色已知事实 |
+| 候选、局部修订和撤销 | E：Ai-Novel 历史可回放，生成可先进入未保存编辑态；`useChapterGeneration.ts:219,241` 流式写入表单 | 墨屿有基稿/范围绑定、差异、显式采纳、追加修订和撤销；保留此优势，不能照搬流式直接覆盖编辑框 |
+| 多章任务 | E：`useBatchGeneration.ts:179-186,221-280` 创建、暂停、恢复、取消及失败重试；后端命令/worker持久化 | 墨屿任务中心不等于跨章批量作者工作流。可后续增加逐章“候选→确认→记忆→下一章”编排，默认不连锁收费、不自动采纳 |
+| 用途参数与提示预设 | **E+R：**`usePromptsPageState.ts:567-577` 保存用途设置；resolver `:54-96` 消费用途参数并回退；Prompt Studio 保存、启用和普通生成 render 链真实可达 | 墨屿 `authorRenderSettings:589-619` 仅用途模型，`moyu_settings.py:194-230` 风格/参数全局；`server.ai_prompt_preview:534-557` 实际全局消费。缺任务预设和命名风格版本 |
+| 字数与模型协议 | E：Ai-Novel 有目标字数表单和启发式输出额度；`length_control.py:14-21` 不是实际字数合格保证 | 墨屿已有冻结字数契约、完整协议、思考与超长阻断、保留父稿整理；真实输出仍不合格。不能把上游目标输入或自动重试视作文学通过 |
+| 模型与凭据 | E：Ai-Novel 多提供方、任务覆盖和私有配置；本轮不检查用户实际凭据 | 墨屿有用途模型、温度、输出上限、额度、掩码及本机私密文件。连接健康只依据当次检测；不得上传旧密钥 |
+| 导入、备份和交付 | E：Ai-Novel 文档导入、项目包往返、MD/DOCX等出口和回归文件存在 | 墨屿 TXT/MD/EPUB 预览、原字节来源、独立参考库、完整 ZIP、MD/EPUB往返已实现；DOCX/PDF和自动定时备份仍缺 |
+| 大作品效率 | E：Ai-Novel `chapter_meta`、按章详情存储和 `ChapterVirtualList` 限定渲染窗口 | 墨屿 `chapter_rows/state_from_db` 读全章正文，电脑目录直接 map 全部章节；应先量测300/1000章首开、切章和连续输入，未测前不称卡顿已复现 |
+| 效果和工程质量 | E：测试文件覆盖任务、预设、导入、向量、权限等；README 部分旧表明确退役 | U：本次没跑上游整机或模型。墨屿工程回归与文学失败分别记录；测试文件数量不能用于第一梯队排名 |
+
+## 新差距的最小实施范围
+
+### 参考片段加入本次资料
+
+当前源码链是 `导入→保存参考文档/原字节→按原句搜索→只读显示`。`moyu_import.search_references:793-845` 已返回文档/分节身份、字符范围、quote hash和 `use=reference_not_story_fact`，可以复用这些数据，不必重建检索系统。
+
+本次 R 在内存库保存合成参考，真实调用参考搜索得到1条命中，标签正确；再把命中提供给当前 `assemble_context`，它没有消费参考字段，专用原句不在输出材料中。[组件结果](../evidence/ai-novel-independent-component-probe.json)同时记录四份源文件前后相同。这个 R 只证明组件边界，没有冒充整站HTTP或真实模型表现。
+
+建议增量：参考搜索结果提供“加入本次资料”和移除；按作品/分支/文档/分节/范围/hash服务端重新读取，冻结进当前任务；预览与发送共用结果，并显示用途为参考。默认不自动加入，不能生成正典、记忆来源或审稿事实证据。复用现有预算、过期、范围和候选确认，超限明确拒绝。
+
+验收应覆盖：指定片段确实出现在最终发送材料；未选片段与其他书为0；加入/移除、切书、刷新不串材料；过期hash拒绝；参考文本内伪指令不成为系统要求；单次选择不自动请求模型、不改正文/正典；备份或复制后不能沿用错误身份。
+
+**上游校准：**Ai-Novel非默认KB选择在管理/调试API可达，但普通正文 `memory_retrieval_service.py:383` 未传 `kb_ids`，会默认查询 default。不能声称任意选择的KB都会随普通正文任务消费；这里成立的是导入 default KB 的分块可进入默认向量材料链。
+
+### 用途与风格预设
+
+Ai-Novel 普通页面保存用途覆盖，resolver 优先覆盖、删除后回默认，本次运行原函数也确认了这个顺序。Prompt Studio 的保存 `usePromptStudio.ts:299-344`、启用 `:386-417`、持久化 `prompt_studio_service.py:569-604,631-683`，再到 `prepare_service.py:259` 和 `prompt_preset_render.py:54` 的活跃预设读取，构成 E，不只是模板字段。
+
+墨屿可先做少量命名风格和续写/润色/规划/审稿用途参数，沿用当前模型设置页。保留系统事实、来源、字数与确认硬约束；不开放任意模板覆盖这些边界。任务冻结预设身份、版本和实际参数，预览与发送一致；切换或删除预设不改旧候选，也不重发未知请求。
+
+验收：两个用途的温度和上限各自生效，温度0可保存；删除覆盖后正确回默认；缺变量和非法值在调用前拒绝；改预设后旧候选仍按原契约检查；复制和完整备份后预设保留、密钥不包含其中。
+
+### 导入名称的完整字符口径
+
+修前 E 发现 `authorImportPreview:727,736` 使用原生 `maxlength=200/500`，后端 `moyu_import.validate_import_selection:590,601` 按 Python完整字符计数。一个 emoji在浏览器占两个UTF-16单位，当时导入作品/参考名和章节名未统一；本专责没有把源码推断记成静默丢字。随后已由SF03统一前端完整字符校验，[storyforge已归档17项生命周期验证](../evidence/storyforge-lifecycle-layout-final.json)实际键盘编辑200/500完整字符并保存，201/501在保存前拒绝；[共享源码中间整轮验收](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)也包含该流程。这些证据不覆盖之后的材料与历史数据兼容修复，后续新快照以[总入口](../README.md)验收为准。
+
+### 后续共享报告来源保护
+
+[77项材料中间整轮](../evidence/compatibility-python311-node24-materials-comprehensive-refined-release.json)之后继续发现仅改变故事前提或创作约定时旧章后报告仍可确认；[章后12项首修后](../evidence/analysis-guidance-after-fix.json)、[审稿11项首修后](../evidence/review-guidance-after-fix.json)分别通过，原指南冻结、正常自身决定后单独更新当前决定来源。[部分来源修前8项](../evidence/analysis-partial-source-before-fix.json)进一步得到6个失败测试组、2个通过，覆盖没有实际run但存在私有来源的合成报告；[冻结同8项修后](../evidence/analysis-partial-source-after-fix.json)全部通过、0请求、0收费、11份来源相同。缺原材料/指南不由孤立或空决定标记兜底，免费旧审稿说明绑定当前全作品材料及指南，资料变化后旧理由失效。
+
+[章后指南同3场景电脑修后](../evidence/analysis-guidance-browser-after-fix.json)通过、3次免费、0收费，两种电脑尺寸旧报告只读、强制确认409零写入，当前分步确认保持可用。原审稿11项最新复验亦通过；各阶段原件、控制边界及新完整整轮从[集中索引](../evidence/README.md)核对。本节不证明参考片段消费已实现，也不代替真实模型提取准确率、性能或文学收益。
+
+相同原句在新报告中确认取得[复用同7项](../evidence/analysis-candidate-reuse-after-fix.json)、[五类记录同13项](../evidence/analysis-candidate-typed-after-fix.json)和[人物身份同8项](../evidence/analysis-character-identity-after-fix.json)通过，分别15、72、13次免费、0收费。未变内容沿用原正式记录；已改、撤回、身份歧义、非人物状态或关系两端及来源证据损坏不恢复。typed的13为测试组，36观察场景、29显式子测试另记，42条结果不能作42测试；早期隔离失败与规范修前在[确认完整性索引](../evidence/README.md#跨报告确认复用证据与人物身份)保留，不扩成真实提取准确率。
+
+## 独立交叉裁决
+
+### MuMuAINovel
+
+本次独立官方 API 核对 `main=99f0aec6ce3b1c65652d20007be930ebba6a6d20`、树 `992469d7bafe16c76e1488741f68df19e86e035c`，随后直接读取官方固定原文，不仅阅读其他代理摘要。
+
+- 确认 E：`chapter_context_service.py:31-45` 人物最新状态 helper没有当前章参数；`:560` 在生成上下文使用它。
+- 本次 R：执行原helper的语法树，合成第50章死亡及第49章秘密均被格式化。只证明原组件未按目标章过滤，不声称本次运行MuMu整站或模型已剧透。
+- 同时确认 E：`:769-775` 相关记忆搜索明确传 `(1,current-1)`。裁决是“人物最新值另有风险入口”，不是“所有MuMu记忆都无前文章节限制”。这支持墨屿对每条材料入口统一范围验收。
+
+### Arboris
+
+本次独立官方 API 核对 `main=dd80c69bc30a80d68b375bd504c6bc308164ff9e`、树 `08647938cbd5a602a27f5e7aa228742a4b1d8c4b`，直接读取 `frontend/src/api/novel.ts:224-249` 及 `frontend/src/components/writing-desk/workspace/ChapterContent.vue:312-367`。
+
+- 确认 E：普通生成与选版请求是 `/chapters/generate` 和 `/chapters/select`，不能拿 advanced/finalize类文件数量当普通作者流程已经消费。
+- **修正过度否定的风险：**普通 `ChapterContent` 确实调用定向 optimizer，传对话、环境、心理和节奏维度，预览后再调用应用接口。不能把它与未接普通页的高级服务一并判为没有入口。
+- 下调证据级别：本次未运行Arboris整机，不能从代码链推出其润色质量、恢复可靠性或已解决视角边界。墨屿可增加便捷维度选择，同时继续采用现有范围候选和追加修订。
+
+## 保留的限制
+
+本报告没有启动上游完整前后端，没有真实embedding、模型文学对照、人物审稿准确率、性能或生产验收。旧结构化记忆、Worldbook、项目表格在 Ai-Novel README:268-288 明确退役，不能从旧迁移文件推定当前功能。当前工程修复、源码审查和第一梯队效果证明是不同工作；文学预算边界和失败账本不因本次审查改变。

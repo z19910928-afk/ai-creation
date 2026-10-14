@@ -42,14 +42,16 @@ function normalizeAliases(value){
 }
 function normalizeState(x){
  const goal=Number(x?.project?.goal);
- if(!x||!x.project||typeof x.project.title!=='string'||x.project.title.length>200||
+ if(!x||!x.project||typeof x.project.title!=='string'||Array.from(x.project.title).length>200||
   !Number.isFinite(goal)||goal<0||goal>1e9||!Array.isArray(x.chapters)||
   !Array.isArray(x.records)||!Array.isArray(x.memory)||!x.plot||typeof x.plot!=='object')return null;
- const text=(value,limit)=>typeof value==='string'&&value.length<=limit;
+ const text=(value,limit)=>typeof value==='string'&&(value.length<=limit||Array.from(value).length<=limit);
  if(!text(x.project.summary??'',50000)||!text(x.project.genre??'',100))return null;
  if(x.chapters.some(c=>!c||!safeId(c.id)||!text(c.title,500)||!text(c.body,2000000)||
   !['草稿','进行中','完成'].includes(c.status)))return null;
- if(x.records.some(r=>!r||!safeId(r.id)||!text(r.type,100)||!text(r.name,500)||!text(r.description,20000)||normalizeAliases(r.aliases)===null))return null;
+ if(x.records.some(r=>!r||!safeId(r.id)||!text(r.type,100)||!text(r.name,500)||!text(r.description,20000)||normalizeAliases(r.aliases)===null||
+  (r.knowledge_scope!==undefined&&(!r.knowledge_scope||typeof r.knowledge_scope!=='object'||Array.isArray(r.knowledge_scope)))||
+  (r.known_by!==undefined&&(!Array.isArray(r.known_by)||r.known_by.some(value=>typeof value!=='string')))))return null;
  const statuses=['待确认','已确认','已拒绝','已撤回','已过期','已替代','待重新定位','candidate','accepted','rejected','stale','superseded','retracted'];
  if(x.memory.some(m=>!m||!safeId(m.id)||!text(m.name,500)||!text(m.note??'',20000)||
   !statuses.includes(m.status)||(typeof m.confidence==='number'&&(!Number.isFinite(m.confidence)||m.confidence<0||m.confidence>1))))return null;
@@ -78,6 +80,53 @@ let candidateStore=loadCandidates();let queueJobs=[];let queueTimer=null;let que
 const streamReaders=new Map();const jobSources=new Map();let savedSelection=null;let adopting=false;let searchRequestSeq=0;
 const revisionInFlight=new Set();const revisionOpening=new Set();let revisionControlSeq=0;
 const editorInputBindings=new WeakMap();
+const instructionDraftFallback=new Map();
+const instructionDraftTasks=new Set(['continue','polish','scene','outline','brainstorm','summary','check']);
+let instructionDraftBinding=null;
+function instructionDraftKey(c=chapter()){
+ if(!c?.id)return null;
+ return `${KEY}:instruction-draft:${JSON.stringify([requestedProject||state.project?.id||'default-project',
+  state.branch_id||state.project?.branch_id||'main',c.id])}`;
+}
+function loadInstructionDraft(key){
+ const fallback=instructionDraftFallback.get(key);
+ if(fallback)return fallback;
+ try{
+  const draft=JSON.parse(storage.get(key)||'null');
+  if(draft&&instructionDraftTasks.has(draft.task)&&typeof draft.instruction==='string'&&draft.instruction.length<=2000)
+   return {task:draft.task,instruction:draft.instruction};
+ }catch{}
+ return {task:'continue',instruction:''};
+}
+function cacheInstructionDraft(binding=instructionDraftBinding){
+ if(!binding||!binding.task.isConnected||!binding.instruction.isConnected)return false;
+ const draft={task:instructionDraftTasks.has(binding.task.value)?binding.task.value:'continue',
+  instruction:binding.instruction.value};
+ if(draft.task===binding.saved.task&&draft.instruction===binding.saved.instruction&&!instructionDraftFallback.has(binding.key))return true;
+ instructionDraftFallback.set(binding.key,draft);
+ const persisted=storage.set(binding.key,JSON.stringify(draft));
+ if(persisted)instructionDraftFallback.delete(binding.key);
+ else if(!binding.warned){binding.warned=true;toast('浏览器无法保存创作要求，刷新前请保持此页打开')}
+ binding.saved=draft;return persisted;
+}
+function bindInstructionDraft(){
+ const task=document.querySelector('#aiTask'),instruction=document.querySelector('#aiInstruction'),key=instructionDraftKey();
+ if(!task||!instruction||!key){instructionDraftBinding=null;return}
+ if(instructionDraftBinding?.task===task&&instructionDraftBinding.instruction===instruction)return;
+ const saved=loadInstructionDraft(key);task.value=saved.task;instruction.value=saved.instruction;
+ const binding={key,task,instruction,saved,warned:false};instructionDraftBinding=binding;
+ // A detached editor must not overwrite a newer draft after a page or book switch.
+ const capture=()=>{if(instructionDraftBinding===binding)cacheInstructionDraft(binding)};
+ task.addEventListener('input',capture);task.addEventListener('change',capture);
+ instruction.addEventListener('input',capture);instruction.addEventListener('change',capture);
+ const clear=document.createElement('button');clear.type='button';clear.id='aiInstructionClear';clear.className='ghost-btn';
+ clear.textContent='清空要求';clear.title='清空本章补充要求，恢复续写';clear.setAttribute('aria-label','清空当前章节任务和补充要求');
+ clear.addEventListener('click',()=>{
+  if(instructionDraftBinding!==binding||!instruction.isConnected)return;
+  task.value='continue';instruction.value='';cacheInstructionDraft(binding);instruction.focus();
+ });
+ document.querySelector('.ai-controls')?.append(clear);
+}
 function loadCandidates(){try{const rows=JSON.parse(storage.get(cacheKey(':candidates'))||'[]');return new Map(Array.isArray(rows)?rows.map(row=>[row.ai_run_id,row]):[])}catch{return new Map()}}
 function persistCandidates(){return storage.set(cacheKey(':candidates'),JSON.stringify([...candidateStore.values()]))}
 function rememberCandidateView(candidate){
@@ -179,7 +228,7 @@ function isAnalysisCandidate(candidate){return ['chapter_analysis','semantic_rev
 function terminalCandidateFailure(candidate){return ['failed','canceled','unknown','interrupted'].includes(candidate?.job_status)}
 function candidateReadOnly(candidate){
  return !candidate?.complete||terminalCandidateFailure(candidate)||candidate.truncated||isAnalysisCandidate(candidate)||
-  ['accepted','rejected'].includes(candidate?.decision)||!!candidate?.restored_read_only;
+  ['accepted','rejected'].includes(candidate?.decision)||!!candidate?.restored_read_only||!!candidate?.materials_read_only;
 }
 function editCandidateText(event){
  if(candidateReadOnly(aiDraft)){displayCandidate(aiDraft);return}
@@ -224,14 +273,14 @@ function displayCandidate(candidate){
  }
  const status=document.querySelector('#aiStatus');
  const outputIssues=analysis?[]:candidateOutputIssues(candidate);
- if(status)status.textContent=candidate?.restored_read_only?'恢复的候选仅供阅读，请按当前稿件生成新候选':decided?`${taskName} · ${candidate.decision==='accepted'?'已采纳':'已拒绝'} · 历史记录`:candidate?(candidate.complete?
+ if(status)status.textContent=candidate?.restored_read_only?'恢复的候选仅供阅读，请按当前稿件生成新候选':decided?`${taskName} · ${candidate.decision==='accepted'?'已采纳':'已拒绝'} · 历史记录`:candidate?.materials_read_only?candidate.material_issue||'使用的资料已变化，候选仅供阅读，请生成新候选':candidate?(candidate.complete?
   outputIssues.length?`候选需要整理：${outputIssues.join('；')}`:
    `${analysis?`${taskName}已生成`:'候选已准备好'} · ${candidate.model||'创作助手'}${candidate.truncated?' · 输出不完整，仅可阅读':''}`:
   incomplete?`${taskName}${taskStatus(candidate.completion_state==='unknown'?'unknown':candidate.job_status)} · ${candidate.error||'任务未完整结束'} · ${candidate.text?'已保留片段，仅供阅读和复制':'没有已保存的片段'}`:
    candidate.error?`${taskName}未完成：${candidate.error}`:`${analysis?`${taskName}正在生成`:'正在生成'} · 已收到 ${Array.from(candidate.text||'').length} 字`):'';
  const adopt=document.querySelector('#aiAdopt');if(adopt){
   adopt.textContent=analysis?`查看${taskName}`:'比较并采纳';
-  adopt.disabled=!candidate?.complete||incomplete||candidate.truncated||outputIssues.length>0||decided||adopting||!!candidate.restored_read_only;
+  adopt.disabled=!candidate?.complete||incomplete||candidate.truncated||outputIssues.length>0||decided||adopting||!!candidate.restored_read_only||!!candidate.materials_read_only&&!analysis;
  }
  const clear=document.querySelector('#aiClear');if(clear)clear.disabled=!candidate||incomplete||decided||!!candidate.restored_read_only;
  const copy=document.querySelector('#aiCopy');if(copy)copy.disabled=!preview||analysis&&!candidate.complete&&!incomplete;
@@ -265,6 +314,7 @@ function candidateRevisionChild(candidate){
 function candidateRevisionReason(candidate){
  if(!candidate||!['continue','polish'].includes(candidate.task))return '只支持整理续写或润色正文';
  if(candidate.restored_read_only)return '恢复的候选仅供阅读，请生成新候选';
+ if(candidate.materials_read_only)return candidate.material_issue||'使用的资料已变化，请生成新候选';
  if(terminalCandidateFailure(candidate))return '未完成的片段仅供阅读和复制，不能整理';
  const validation=candidate.output_validation;
  if(!hasProviderValidationShape(candidate,validation))
@@ -323,7 +373,9 @@ function receiveCandidateJob(job){
  const savedDecision=job.author_decision||result.author_decision;
  const decision=['accepted','partial','edited'].includes(savedDecision)?'accepted':savedDecision==='rejected'?'rejected':draft?.decision||'pending';
  const metadata={candidate_revision:job.candidate_revision||result.candidate_revision||draft?.candidate_revision,
-  restored_read_only:!!(job.restored_read_only||result.restored_read_only),job_status:job.status,created_at:job.created_at||draft?.created_at};
+  restored_read_only:!!(job.restored_read_only||result.restored_read_only),
+  materials_read_only:!!(job.materials_read_only||result.materials_read_only),
+  material_issue:job.material_issue||result.material_issue||'',job_status:job.status,created_at:job.created_at||draft?.created_at};
  if(!draft)draft={task:job.task,text:'',originalText:'',ai_run_id:job.ai_run_id,job_id:job.id,source,complete:false,last_seq:0};
  const incomplete=['canceled','failed','unknown','interrupted'].includes(job.status);
  if(job.result&&!draft.complete&&(job.status==='success'||incomplete)){
@@ -678,16 +730,16 @@ function showMergeConflict(){
   const saved=await syncBackend();if(saved)toast('合并后的文字已经保存');
  };
 }
-function durableOperation(path,method='POST',body={},guard=null){
+function durableOperation(path,method='POST',body={},guard=null,onCommitted=null){
  const owner=requestedProject;
  const operation=operationChain.catch(()=>{}).then(()=>{
   if(owner!==requestedProject)throw new Error('作品已切换，请回到原作品重新操作');
   if(guard&&!guard())throw new Error('操作已过期，请重新操作');
-  return performDurableOperation(path,method,body,guard);
+  return performDurableOperation(path,method,body,guard,onCommitted);
  });
  operationChain=operation.catch(()=>{});return operation;
 }
-async function performDurableOperation(path,method='POST',body={},guard=null){
+async function performDurableOperation(path,method='POST',body={},guard=null,onCommitted=null){
  if(!backendOnline)throw new Error('需要恢复连接后完成此操作，当前草稿已保留');
  if(!await syncBackend())throw new Error('请先保存或合并当前草稿');
  if(guard&&!guard())throw new Error('操作已过期，请重新操作');
@@ -696,6 +748,7 @@ async function performDurableOperation(path,method='POST',body={},guard=null){
   const response=await fetch(path,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||`操作失败（${response.status}）`);
+  if(onCommitted)onCommitted(data);
   if(owner===requestedProject){
    const returned=normalizeState(data.state);
    const remote=returned?.project?.id===owner?returned:await readServerState();
@@ -775,6 +828,7 @@ async function generateAI(options={}){
  const fixedSource=options.source&&typeof options.source==='object'?options.source:null;
  const reviewSource=options.review_source&&typeof options.review_source==='object'?options.review_source:null;
  const c=chapter();if(!c)return toast('请先选择章节');
+ cacheInstructionDraft();
  const task=document.querySelector('#aiTask')?.value||'continue';
  const instruction=document.querySelector('#aiInstruction')?.value||'';const requestBody=c.body;
  const status=document.querySelector('#aiStatus');const owner=requestedProject;
@@ -824,6 +878,7 @@ async function adoptAI(){
  const draft=aiDraft;if(terminalCandidateFailure(draft))return toast('未完成的片段仅供阅读和复制，不能采纳');
  if(!draft?.complete||!draft.text.trim())return toast('请等待候选完整生成');
  if(draft.restored_read_only)return toast('恢复的候选仅供阅读，请按当前稿件生成新候选');
+ if(draft.materials_read_only&&!isAnalysisCandidate(draft))return toast(draft.material_issue||'使用的资料已变化，请生成新候选');
  if(draft.task==='chapter_analysis')return actions.chapterAnalysis();
  if(draft.task==='semantic_review')return actions.reviewChapter();
  if(adopting||['accepted','rejected'].includes(draft.decision))return;
@@ -968,7 +1023,7 @@ function renderTaskList(){
   const running=['queued','running'].includes(job.status);const error=job.error||draft?.error||'';
   const incomplete=['failed','canceled','unknown','interrupted'].includes(job.status);
   const billing=job.result?.billing_state||draft?.billing_state;
-  const retryable=!planning&&!job.restored_read_only&&['failed','canceled'].includes(job.status)&&
+  const retryable=!planning&&!job.restored_read_only&&!job.materials_read_only&&['failed','canceled'].includes(job.status)&&
    ['usage_reported','not_dispatched'].includes(billing)&&job.result?.completion_state!=='unknown'&&
    draft?.completion_state!=='unknown';
   return `<article class="task-row"><div><strong>${esc(revision?'整理候选':({continue:'续写',polish:'润色',outline:'规划',scene:'场景计划',summary:'章节回顾',check:'连续性检查',chapter_analysis:'章后记忆',semantic_review:'故事审稿'})[job.task]||job.task)}</strong>
@@ -1099,7 +1154,7 @@ async function epubExport(){
  let gate;try{gate=await verifiedFinalGate()}catch(error){toast(error.message);return}
  if(!gate.allowed){showFinalizationCheck();toast('EPUB 导出已阻断：请先处理终稿检查项，或填写作者覆盖理由。');return}
  if(!backendOnline){toast('EPUB 导出需要启动 SQLite 服务；当前可先导出 Markdown。');return}
- try{const headers={};if(gate.override?.reason)headers['X-Moyu-Export-Override']=gate.override.reason;const response=await fetch(`${API_BASE}/export/epub`,{headers});if(!response.ok){const detail=await response.json().catch(()=>({}));throw new Error(detail.error||`HTTP ${response.status}`)}const blob=await response.blob();const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=exportFilename('epub');document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('已导出 EPUB（包内包含损失清单）')}catch(error){toast(`EPUB 导出失败：${error.message}`)}
+ try{const headers={};if(gate.override?.reason)headers['X-Moyu-Export-Override']=encodeURIComponent(gate.override.reason);const response=await fetch(`${API_BASE}/export/epub`,{headers});if(!response.ok){const detail=await response.json().catch(()=>({}));throw new Error(detail.error||`HTTP ${response.status}`)}const blob=await response.blob();const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=exportFilename('epub');document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('已导出 EPUB（包内包含损失清单）')}catch(error){toast(`EPUB 导出失败：${error.message}`)}
 }
 function finalizationIssues(){
  const issues=[];const p=state.project||{};
@@ -1136,7 +1191,7 @@ async function showFinalizationCheck(){
  const overrideButton=issues.length&&!gate.override?'<button class="ghost-btn" data-override>作者覆盖并记录原因</button>':'';
  wrap.innerHTML=`<div class="modal"><h3>终稿检查</h3>${body}<div class="modal-actions"><button class="ghost-btn" data-close>关闭</button>${overrideButton}${complete}${exportButton}</div></div>`;document.body.append(wrap);
  wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
- wrap.querySelector('[data-override]')?.addEventListener('click',()=>{const reason=prompt('请填写作者覆盖理由（至少 8 个字符）。此理由会和当前稿件指纹一起保存在本机。','');if(reason===null)return;if(reason.trim().length<8)return toast('覆盖理由至少需要 8 个字符');try{localStorage.setItem(finalOverrideKey(),JSON.stringify({reason:reason.trim(),at:new Date().toLocaleString(),issues}));wrap.remove();showFinalizationCheck();toast('已记录作者覆盖理由；本稿可导出。')}catch{toast('无法保存覆盖理由，请先导出 JSON 备份')}});
+ wrap.querySelector('[data-override]')?.addEventListener('click',()=>{const reason=prompt('请填写作者覆盖理由（至少 8 个字符）。此理由会和当前稿件指纹一起保存在本机。','');if(reason===null)return;if(Array.from(reason.trim()).length<8)return toast('覆盖理由至少需要 8 个字符');try{localStorage.setItem(finalOverrideKey(),JSON.stringify({reason:reason.trim(),at:new Date().toLocaleString(),issues}));wrap.remove();showFinalizationCheck();toast('已记录作者覆盖理由；本稿可导出。')}catch{toast('无法保存覆盖理由，请先导出 JSON 备份')}});
  wrap.querySelector('[data-export]').onclick=()=>{wrap.remove();markdownExport()};
  wrap.querySelector('[data-complete]')?.addEventListener('click',async event=>{
   const button=event.currentTarget;button.disabled=true;
@@ -1151,8 +1206,8 @@ async function showFinalizationCheck(){
 }
 function words(){return state.chapters.reduce((n,c)=>n+c.body.replace(/\s/g,'').length,0)}
 function chapter(id=activeChapter){return state.chapters.find(c=>c.id===id)}
-function render(){const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
- document.querySelector('#projectTitle').textContent=state.project.title;document.querySelector('#projectMeta').textContent=`${state.chapters.length} 章 · ${words()} 字`;
+function render(){cacheInstructionDraft();const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
+ document.querySelector('#projectTitle').textContent=state.project.title;document.querySelector('#projectTitle').title=state.project.title;document.querySelector('#projectMeta').textContent=`${state.chapters.length} 章 · ${words()} 字`;
  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
  document.querySelector('#main').innerHTML=(views[view]||views.dashboard)();bind();ensureFinishButton();saveIndicator();updateTaskCount();
  if(view==='editor')displayCandidate(aiDraft);if(view==='tasks'){renderTaskList();scheduleQueue(0)}
@@ -1268,7 +1323,7 @@ const views={
 dashboard:()=>`<div class="view-head"><div><h2>早上好，继续写下去</h2><p>把脑海里的世界，变成可以回看的故事。</p></div>${state.project.book_status==='complete'?'': '<button class="primary-btn" data-action="newChapter">＋ 新建章节</button>'}</div>${workflowCard()}<div class="stats"><div class="stat-card"><div class="stat-label">当前字数</div><div class="stat-value">${words().toLocaleString()}</div><div class="stat-note">目标 ${Number(state.project.goal||0).toLocaleString()} 字</div></div><div class="stat-card"><div class="stat-label">章节</div><div class="stat-value">${state.chapters.length}</div><div class="stat-note">${state.chapters.filter(c=>c.status==='完成').length} 章已完成</div></div><div class="stat-card"><div class="stat-label">设定卡片</div><div class="stat-value">${state.records.length}</div><div class="stat-note">人物、地点与其他设定</div></div><div class="stat-card"><div class="stat-label">写作进度</div><div class="stat-value">${state.project.goal?Math.min(100,Math.round(words()/state.project.goal*100)):0}%</div><div class="stat-note">按作品目标计算</div></div></div><div class="dashboard-grid"><section class="panel"><div class="panel-title"><h3>最近章节</h3><span>${state.chapters.length} 个章节</span></div><div class="chapter-list">${state.chapters.slice().reverse().slice(0,5).map((c,i)=>`<div class="chapter-row" data-chapter="${safeId(c.id)}"><div class="chapter-number">${state.chapters.indexOf(c)+1}</div><div><strong>${esc(c.title)}</strong><small>${new Date(c.updated).toLocaleDateString('zh-CN')} · ${c.body.replace(/\s/g,'').length} 字</small></div><div class="chapter-status">${esc(c.status)}</div></div>`).join('')}</div></section><section class="panel"><div class="panel-title"><h3>写作提示</h3><span>今天</span></div><div class="record-card" style="box-shadow:none"><span class="record-tag">场景练习</span><h4>让角色做一个无法撤回的选择</h4><p>选择前，写出他最害怕失去什么；选择后，让环境立刻产生一个具体变化。</p></div><div class="record-card" style="box-shadow:none;margin-top:10px"><span class="record-tag">小目标</span><h4>今天写 500 字</h4><p>不修改、不查资料，只把一个场景写完。完成比完美更重要。</p></div></section></div>`,
 editor:()=>{let c=chapter();return `<div class="view-head"><div><h2>章节 + AI 写作</h2><p>先完成，再让助手给候选。所有 AI 内容都先预览，只有你点击采纳才会进入正文。</p></div>${state.project.book_status==='complete'?'':isFreshProject()?'<button class="primary-btn" data-action="startWriting">从故事设定开始</button>':'<button class="primary-btn" data-action="newChapter">＋ 新建章节</button>'}</div><div class="editor-layout"><aside class="chapter-sidebar"><h3>章节目录</h3>${state.chapters.map((x,i)=>`<button class="chapter-select ${x.id===c?.id?'active':''}" data-chapter="${safeId(x.id)}">第 ${i+1} 章 · ${esc(x.title)}<small>${x.body.replace(/\s/g,'').length} 字 · ${esc(x.status)}</small></button>`).join('')}</aside><section class="editor-card">${c?`<div class="editor-toolbar"><button data-format="bold"><b>粗体</b></button><button data-format="quote">引用</button><button data-format="scene">场景分隔</button><button class="ghost-btn" data-action="reviewChapter">审查本章</button><button class="ghost-btn" data-action="revisionHistory">历史版本</button><span class="editor-meta">Markdown · 本地自动保存</span></div><input class="title-input" id="chapterTitle" value="${esc(c.title)}" aria-label="章节标题"><textarea class="chapter-editor" id="chapterBody" aria-label="章节正文">${esc(c.body)}</textarea><div class="chapter-plan"><div class="panel-title"><h3>本章任务卡</h3><span>写前目标 · 写后回顾</span></div><div class="plan-grid"><label>本章目标<input id="chapterGoal" value="${esc(c.chapter_goal)}" placeholder="角色要得到什么，必须付出什么代价？"></label><label>视角<input id="chapterPov" value="${esc(c.pov)}" placeholder="例如：林岚 / 第一人称"></label><label>场景计划<textarea id="chapterScenePlan" placeholder="入口、阻力、转折、出口">${esc(c.scene_plan)}</textarea></label><label>伏笔动作<textarea id="chapterForeshadowing" placeholder="埋下、推进或回收哪些线索？">${esc(c.foreshadowing_op)}</textarea></label><label>章节回顾<textarea id="chapterRecap" placeholder="发生了什么，谁的状态改变？">${esc(c.recap)}</textarea></label><label>下一章任务<textarea id="chapterNextBrief" placeholder="下一章从哪个未解决的问题开始？">${esc(c.next_brief)}</textarea></label><label>章节出口 / 钩子<textarea id="chapterHook" placeholder="读者必须继续读下去的具体问题或变化">${esc(c.hook)}</textarea></label></div></div><div class="editor-footer"><span>⌘ S 保存</span><span id="liveCount">${c.body.replace(/\s/g,'').length} 字</span><select id="chapterStatus"><option ${c.status==='草稿'?'selected':''}>草稿</option><option ${c.status==='进行中'?'selected':''}>进行中</option><option ${c.status==='完成'?'selected':''}>完成</option></select><span class="review-pill">审查：${esc(c.review_status==='passed'?'通过':c.review_status==='needs_revision'?'需修改':'未审查')}</span></div><div class="ai-copilot"><div class="ai-copilot-head"><div><h3>AI 创作助手</h3><p>召回当前章节、任务卡、相邻章节、设定卡和已确认记忆，生成可审阅候选。</p></div><span class="ai-badge" id="aiBadge">${aiStatus.mode==='provider'?'模型已连接':'离线模式'}</span></div><div class="ai-controls"><select id="aiTask" aria-label="AI 任务"><option value="continue">续写当前场景</option><option value="scene">生成场景卡</option><option value="outline">规划故事走向</option><option value="brainstorm">发散三个走向</option><option value="polish">润色当前章节</option><option value="summary">总结当前章节</option><option value="check">连续性检查</option></select><input id="aiInstruction" maxlength="2000" placeholder="补充要求，例如：保持克制、增加动作细节…"><button class="primary-btn" id="aiGenerate">生成候选</button></div><p class="ai-status" id="aiStatus">${aiDraft?'已保留上次候选。':'候选只会在你点击采纳后进入正文。'}</p><textarea class="ai-output" id="aiOutput" aria-label="AI 候选结果" placeholder="生成结果会显示在这里，你可以先编辑再采纳。">${aiDraft?esc(aiDraft.text):''}</textarea><div class="ai-result-meta"><span>当前助手：${esc(aiStatus.model||'离线创作助手')} · 记忆优先人工确认</span><div class="ai-actions"><button class="ghost-btn" id="aiCopy" ${aiDraft?'':'disabled'}>复制候选</button><button class="ghost-btn" id="aiClear">清空</button><button class="primary-btn" id="aiAdopt" ${aiDraft?'':'disabled'}>采纳</button></div></div></div>`:'<div class="empty">还没有章节，点击右上角开始。</div>'}</section></div>`},
 memory:()=>`<div class="view-head"><div><h2>记忆中枢</h2><p>把长篇里的关键事实变成可追溯、可确认的记忆，避免写长后遗忘。</p></div><button class="primary-btn" data-action="refreshMemory">↻ 刷新记忆</button></div><div class="panel"><div class="panel-title"><h3>记忆工作流</h3><span>候选 → 确认 → 回忆</span></div><p style="color:var(--muted);font-size:13px;line-height:1.8">在章节中使用标记：<b>【人物】沈砚</b>、<b>【物品】旧钥匙</b>、<b>【伏笔】门后的脚步</b>。系统会把它们捕获为候选记忆；你确认后，未来的连续性检查才会把它当成事实。每条候选都保留原文摘录、章节和字符范围，来源缺失或版本变化时会标记为证据失效。</p></div><div class="record-grid memory-grid" style="margin-top:17px">${state.memory.map(m=>`<article class="record-card memory-card"><span class="record-tag memory-status">${esc(m.type)} · ${esc(memoryStatusLabel(m.status,m.stale))}</span><h4>${esc(m.name)}</h4><p class="memory-evidence"><strong>来源章节：</strong><span class="memory-source-chapter">${esc(memorySourceText(m))}</span><br><strong>来源范围：</strong><span class="memory-source-span">${esc(memorySpanText(m))}</span><br><strong>原文摘录：</strong><span class="memory-source-quote">${esc(memoryQuoteText(m))}</span><br><strong>证据状态：</strong><span class="memory-source-status">${esc(m.source_span_status||'未验证')}</span>${m.stale?'<br><strong class="check-bad">需要重新定位</strong>':''}${m.assertion_id?'<br><strong>正典 assertion：</strong><span class="memory-source-status">'+esc(m.assertion_id)+'</span>':''}<br>${esc(m.note)}</p><div class="memory-actions"><button class="ghost-btn" data-memory-evidence="${safeId(m.id)}">查看证据</button><button class="ghost-btn" data-memory-reanchor="${safeId(m.id)}">重新定位</button><button class="ghost-btn" data-memory="${safeId(m.id)}" ${m.status==='已确认'&&!m.stale?'disabled':''}>${m.status==='已确认'&&!m.stale?'已确认':'确认记忆'}</button><button class="ghost-btn danger-btn" data-memory-reject="${safeId(m.id)}">拒绝</button><button class="ghost-btn" data-memory-review="${safeId(m.id)}">重新审查</button></div></article>`).join('')||'<div class="empty">还没有捕获到候选记忆。去章节里用【人物】、【物品】或【伏笔】标记关键内容。</div>'}</div>`,
-world:()=>`<div class="view-head"><div><h2>设定库</h2><p>把需要连续记住的东西，放在故事外面。</p></div><button class="primary-btn" data-action="newRecord">＋ 新建设定</button></div><div class="record-grid">${state.records.map(r=>`<article class="record-card"><span class="record-tag">${esc(r.type)}</span><h4>${esc(r.name)}</h4>${Array.isArray(r.aliases)&&r.aliases.length?`<small class="record-aliases">别名：${esc(r.aliases.join('、'))}</small>`:''}<p>${esc(r.description)}</p><button class="ghost-btn" style="margin-top:13px;font-size:11px" data-record="${safeId(r.id)}">编辑</button></article>`).join('')||'<div class="empty">还没有设定卡片。</div>'}</div>`,
+world:()=>`<div class="view-head"><div><h2>设定库</h2><p>把需要连续记住的东西，放在故事外面。</p></div><button class="primary-btn" data-action="newRecord">＋ 新建设定</button></div><div class="record-grid">${state.records.map(r=>`<article class="record-card"><span class="record-tag">${esc(r.type)}</span><h4>${esc(r.name)}</h4>${Array.isArray(r.aliases)&&r.aliases.length?`<small class="record-aliases">别名：${esc(r.aliases.join('、'))}</small>`:''}<p>${esc(r.description)}</p><small class="record-scope">${esc(recordScopeLabel(r))}</small><button class="ghost-btn" style="margin-top:13px;font-size:11px" data-record="${safeId(r.id)}">编辑</button></article>`).join('')||'<div class="empty">还没有设定卡片。</div>'}</div>`,
 plot:()=>`<div class="view-head"><div><h2>情节与伏笔</h2><p>让每一条线索都有去处，让每一次回收都更有力量。</p></div><button class="primary-btn" data-action="newPlot">＋ 新增伏笔</button></div><div class="plot-board">${[['setup','埋下线索'],['develop','推进中'],['payoff','已回收']].map(([k,t])=>`<section class="plot-col"><h4>${t} <span style="color:var(--muted);font-weight:400">${state.plot[k].length}</span></h4>${state.plot[k].map((x,i)=>`<div class="plot-item">${esc(typeof x==='string'?x:x.text)}<small>点击卡片后可在下一版移动状态</small></div>`).join('')||'<div class="empty" style="padding:18px">暂无记录</div>'}</section>`).join('')}</div>`,
 story:()=>{const editable=backendOnline;const actionButtons=editable?'<div class="story-actions"><button class="ghost-btn" data-action="addRelationship">＋关系</button><button class="ghost-btn" data-action="addTimeline">＋事件</button><button class="ghost-btn" data-action="addForeshadow">＋伏笔链接</button></div>':'';const edit=(kind,id)=>editable?`<div class="story-card-actions"><button class="ghost-btn" data-action="edit${kind}" data-story-id="${safeId(id)}">编辑</button><button class="ghost-btn danger-btn" data-action="delete${kind}" data-story-id="${safeId(id)}">删除</button></div>`:'';return `<div class="view-head"><div><h2>故事结构</h2><p>把人物关系、时间线和伏笔生命周期变成可编辑的故事地图，写作前先校准，写作后再回看。</p></div><div class="view-head-actions"><button class="ghost-btn" data-action="refreshStory">↻ 刷新结构</button>${actionButtons}</div></div>${editable?'':'<section class="workflow-card"><div><span class="workflow-kicker">故事结构需要后端服务</span><h3>启动 SQLite 后编辑关系与时间线</h3><p>当前仍可在章节和设定库离线写作；启动本地服务后，这里的结构记录会和 AI 上下文、审查结果同步。</p></div><button class="primary-btn" data-action="refreshStory">重新连接</button></section>'}<section class="panel story-panel-wide"><div class="panel-title"><div><h3>关系图谱</h3><p class="panel-subtitle">从结构记录快速查看人物、势力和地点之间的稳定关系。</p></div><span>${storyMap.relationships.length} 条关系</span></div>${storyGraphSvg(storyMap.relationships)}</section><section class="panel story-panel-wide"><div class="panel-title"><div><h3>时间线总览</h3><p class="panel-subtitle">按排序序号和时间标记排列，计划事件与已发生事件一眼可见。</p></div><span>${storyMap.timeline.length} 个事件</span></div>${storyTimelineHtml(storyMap.timeline)}</section><section class="panel story-panel-wide"><div class="panel-title"><div><h3>人物状态知识范围</h3><p class="panel-subtitle">审查当前章节注入 AI 的状态边界，明确每条状态为何可见或被过滤。</p></div><span>${storyMap.character_states?.length||0} 条状态</span></div>${knowledgeScopeHtml()}</section><div class="story-grid"><section class="panel"><div class="panel-title"><h3>人物关系明细</h3><span>${storyMap.relationships.length} 条</span></div>${storyMap.relationships.map(r=>`<article class="result story-card"><strong>${esc(r.from_name)} → ${esc(r.to_name)}</strong><p>${esc(r.relation_type)} · ${esc(r.note||'')}</p>${edit('Relationship',r.id)}</article>`).join('')||'<div class="empty">暂无关系。点击“＋关系”把人物、势力或物品连接起来。</div>'}</section><section class="panel"><div class="panel-title"><h3>时间线明细</h3><span>${storyMap.timeline.length} 个事件</span></div>${storyMap.timeline.map(t=>`<article class="result story-card"><strong>${esc(t.event_time||'未定时间')} · ${esc(t.title)}</strong><p>${esc(t.summary||'')}</p><small>${t.chapter_id?'已绑定章节':'未绑定章节'} · ${esc(t.status||'planned')}</small>${edit('Timeline',t.id)}</article>`).join('')||'<div class="empty">暂无事件。先记录一个改变局面的瞬间。</div>'}</section></div><section class="panel story-panel-wide"><div class="panel-title"><h3>伏笔生命周期</h3><span>${storyMap.foreshadowing.length} 条链接</span></div>${storyMap.foreshadowing.map(f=>`<article class="result story-card"><strong>${esc(f.kind==='plant'?'埋下':f.kind==='develop'?'推进':'回收')} · ${esc(f.text)}</strong><p>${esc(f.chapter_title||'未绑定章节')} · ${esc(f.note||'')}</p>${edit('Foreshadow',f.id)}</article>`).join('')||'<div class="empty">暂无伏笔链接。先在“情节与伏笔”创建卡片，再绑定发生章节。</div>'}</section><section class="panel story-panel-wide"><div class="panel-title"><h3>冲突提示</h3><span>${storyMap.conflicts.length} 个</span></div>${storyMap.conflicts.map(c=>`<article class="result check-bad"><strong>冲突实体：${esc(c.entity_id)}</strong><p>记忆 ${esc(c.memory_id||'')} · ${esc(c.status||'')}，请回到记忆中枢核对证据。</p></article>`).join('')||'<div class="empty">当前没有检测到记忆冲突。</div>'}</section>`},
 search:()=>`<div class="view-head"><div><h2>全文搜索</h2><p>搜索章节正文和设定卡片。</p></div></div><div class="search-box"><input id="searchInput" placeholder="搜索人物、句子、关键词…"><button class="primary-btn" data-action="search">搜索</button></div><div id="searchResults"><div class="empty">输入关键词，开始检索。</div></div>`
@@ -1294,7 +1349,9 @@ function bind(){
  }
  if(status)status.onchange=()=>{const c=chapter();if(!c)return;c.status=status.value;c.review_status='unreviewed';c.updated=Date.now();save();toast(`章节状态已更新为“${c.status}”`)};
  document.querySelector('#searchInput')?.addEventListener('keydown',e=>e.key==='Enter'&&actions.search());document.querySelectorAll('[data-record]').forEach(b=>b.onclick=()=>editRecord(b.dataset.record));document.querySelectorAll('[data-memory]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memory,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`)));document.querySelectorAll('[data-memory-evidence]').forEach(b=>b.onclick=()=>showMemoryEvidence(b.dataset.memoryEvidence));document.querySelectorAll('[data-memory-reanchor]').forEach(b=>b.onclick=()=>reanchorMemory(b.dataset.memoryReanchor));document.querySelectorAll('[data-memory-reject]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReject,'rejected').catch(error=>toast(`记忆拒绝失败：${error.message}`)));document.querySelectorAll('[data-memory-review]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReview,'candidate').catch(error=>toast(`记忆更新失败：${error.message}`)));document.querySelector('#aiGenerate')?.addEventListener('click',generateAI);document.querySelector('#aiAdopt')?.addEventListener('click',adoptAI);document.querySelector('#aiCopy')?.addEventListener('click',async()=>{if(!aiDraft)return;try{await navigator.clipboard.writeText(document.querySelector('#aiOutput').value);toast('候选已复制')}catch{document.querySelector('#aiOutput').select()}});document.querySelector('#aiClear')?.addEventListener('click',clearAI);document.querySelector('#aiOutput')?.addEventListener('input',editCandidateText);const generateButton=document.querySelector('#aiGenerate');if(generateButton&&!generateButton.parentElement.querySelector('[data-context-preview]')){const preview=document.createElement('button');preview.className='ghost-btn';preview.dataset.contextPreview='1';preview.textContent='上下文预览';preview.onclick=()=>actions.contextPreview();generateButton.after(preview);const contract=document.createElement('button');contract.className='ghost-btn';contract.textContent='任务契约';contract.onclick=aiPromptContract;preview.after(contract)}
+ bindInstructionDraft();
 }
+window.addEventListener('beforeunload',()=>cacheInstructionDraft());
 document.addEventListener('click',e=>{const button=e.target.closest?.('[data-chapter]');if(button?.dataset.chapter)localStorage.setItem(ACTIVE_KEY,button.dataset.chapter)});
 document.addEventListener('click',e=>{const assertion=e.target.closest?.('[data-assertion-review]');if(!assertion)return;e.preventDefault();e.stopPropagation();reviewAssertion(assertion.dataset.assertionReview,assertion.dataset.assertionState,assertion.dataset.memoryId)},true);
 document.addEventListener('click',e=>{const reject=e.target.closest?.('[data-memory-reject]');const review=e.target.closest?.('[data-memory-review]');const accept=e.target.closest?.('[data-memory]');const id=reject?.dataset.memoryReject||review?.dataset.memoryReview||accept?.dataset.memory;if(!id)return;e.preventDefault();e.stopPropagation();if(reject){const reason=prompt('可选：为什么拒绝这条记忆？','')??'';decideMemory(id,'rejected',reason).catch(error=>toast(`记忆拒绝失败：${error.message}`))}else if(review)decideMemory(id,'candidate').catch(error=>toast(`记忆重新审查失败：${error.message}`));else decideMemory(id,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`))},true);
@@ -1323,6 +1380,63 @@ actions.reviewChapter=async()=>{const c=chapter();if(!c)return toast('请先选�
 actions.startWriting=()=>modal('开始一个新故事',`<p class="modal-help">先回答五个问题，墨屿会建立故事骨架并把你带进第一章。之后每一章都沿着“写作 → 记忆确认 → 回顾 → 下一章”推进。</p><label>作品名</label><input id="wTitle" placeholder="例如：雾中的第七码头"><label>一句话故事设定</label><textarea id="wPremise" placeholder="谁，在什么处境下，想得到什么？"></textarea><label>类型</label><input id="wGenre" placeholder="例如：悬疑 / 科幻 / 言情"><label>主角</label><input id="wHero" placeholder="姓名或身份"><label>眼前阻力</label><textarea id="wConflict" placeholder="什么正在阻止主角？本章必须付出什么代价？"></textarea>`,w=>{const title=w.querySelector('#wTitle').value.trim(),premise=w.querySelector('#wPremise').value.trim(),genre=w.querySelector('#wGenre').value.trim(),hero=w.querySelector('#wHero').value.trim(),conflict=w.querySelector('#wConflict').value.trim();if(!title||!premise||!hero||!conflict){toast('请至少填写作品名、故事设定、主角和眼前阻力');return false}state.project={...state.project,title,genre,summary:premise,book_status:'writing'};let first=state.chapters[0];if(!first||first.title==='第一章 还没有开始的故事'){first={id:crypto.randomUUID(),title:'第一章 · 起点',body:'',status:'草稿',updated:Date.now()};state.chapters=[first]}first.title='第一章 · 起点';first.body=`场景目标：让读者看见主角此刻最想得到什么。\n\n眼前阻力：${conflict}\n\n【人物】${hero}\n\n从一个正在发生的动作开始：`;first.status='进行中';first.chapter_goal=conflict;first.review_status='unreviewed';first.review={};first.updated=Date.now();activeChapter=first.id;localStorage.setItem(ACTIVE_KEY,first.id);if(!state.records.some(r=>r.type==='人物'&&r.name===hero))state.records.push({id:crypto.randomUUID(),type:'人物',name:hero,description:`主角。欲望来自：${premise}`});if(!state.plot.setup.some(x=>(typeof x==='string'?x:x.text)===conflict))state.plot.setup.push(conflict);view='editor';aiDraft=null});
 actions.continueWriting=()=>{if(state.project.book_status==='complete')return toast('全书已完稿，请先在终稿检查中恢复写作');const current=state.chapters.find(c=>c.status!=='完成')||state.chapters[state.chapters.length-1];if(!current)return actions.startWriting();activeChapter=current.id;view='editor';render()};
 actions.finishChapter=()=>{if(state.project.book_status==='complete')return toast('全书已完稿，请先在终稿检查中恢复写作');const c=chapter();if(!c||c.body.replace(/\s/g,'').length<60)return toast('先写出至少一小段正文，再归档本章');const previousStatus=c.status;c.status='完成';captureMemories();const report=localReview(c);if(report.blocking.length&&!confirm(`本章还有 ${report.blocking.length} 个阻断项，仍要归档吗？`)){c.status=previousStatus;return}c.review=report;c.review_status=report.status;c.reviewed_at=report.checked_at;c.updated=Date.now();const next={id:crypto.randomUUID(),title:`第 ${state.chapters.length+1} 章`,body:'',status:'草稿',updated:Date.now()};state.chapters.push(next);activeChapter=next.id;localStorage.setItem(ACTIVE_KEY,next.id);aiDraft=null;view='editor';save();render();toast('本章已归档，下一章已经准备好')};
-function editRecord(id){const r=id?state.records.find(x=>x.id===id):{type:'人物',name:'',description:'',aliases:[]};modal(id?'编辑设定':'新建设定',`<label>类型</label><input id="recordType" value="${esc(r.type)}" placeholder="人物 / 地点 / 势力 / 物品"><label>名称</label><input id="recordName" value="${esc(r.name)}"><label>别名 <span class="modal-help">用逗号分隔，例如：阿岚、小岚</span></label><input id="recordAliases" value="${esc((Array.isArray(r.aliases)?r.aliases:[]).join('、'))}" placeholder="阿岚、小岚"><label>描述</label><textarea id="recordDesc">${esc(r.description)}</textarea>`,w=>{const aliases=normalizeAliases((w.querySelector('#recordAliases').value||'').split(/[、,，\n]/));if(!aliases){toast('别名最多 20 个，每个不超过 100 字');return false}r.type=w.querySelector('#recordType').value||'其他';r.name=w.querySelector('#recordName').value||'未命名';r.aliases=aliases;r.description=w.querySelector('#recordDesc').value;if(!id)state.records.push({...r,id:crypto.randomUUID()})})}
+function recordKnowledgeOwners(record){
+ const scope=record.knowledge_scope||{},lists=[record.known_by,scope.known_by,scope.characters,scope.entities]
+  .filter(value=>Array.isArray(value)&&(value.length||record.private||scope.private));
+ if(!lists.length)return record.private||scope.private?[]:null;
+ return lists[0].filter(value=>lists.every(list=>list.includes(value)));
+}
+function recordScopeLabel(record){
+ const scope=record.knowledge_scope||{},owners=recordKnowledgeOwners(record),parts=[];
+ const start=chapterNumberFromScope(scope.available_from||record.available_from||record.valid_start||scope.valid_start);
+ const end=chapterNumberFromScope(record.valid_end||scope.valid_end);
+ if(start)parts.push(`第 ${start} 章起`);if(end)parts.push(`至第 ${end} 章`);
+ parts.push(owners===null?'所有视角':owners.length?`知情：${owners.map(id=>state.records.find(item=>item.id===id)?.name||id).join('、')}`:'仅作者可见');
+ const mode=record.epistemic_mode||scope.epistemic_mode;
+ if(mode&&mode!=='world_truth')parts.push({character_belief:'人物认知',author_plan:'作者计划',narrator:'叙述信息',inference:'推测'}[mode]||mode);
+ return parts.join(' · ');
+}
+function editRecord(id){
+ const r=id?state.records.find(x=>x.id===id):{type:'人物',name:'',description:'',aliases:[]};if(!r)return;
+ const owner=requestedProject,branch=state.branch_id||'main',scope=r.knowledge_scope||{},owners=recordKnowledgeOwners(r);
+ const start=chapterNumberFromScope(scope.available_from||r.available_from||r.valid_start||scope.valid_start)||'';
+ const end=chapterNumberFromScope(r.valid_end||scope.valid_end)||'';
+ const visibility=owners===null?'all':owners.length?'people':'author';
+ const modes={world_truth:'世界事实',character_belief:'人物认知或误信',author_plan:'尚未发生的作者计划',narrator:'叙述信息',inference:'推测'};
+ authorForm(id?'编辑设定':'新建设定',`<label>类型</label><input id="recordType" value="${esc(r.type)}" placeholder="人物 / 地点 / 势力 / 物品">
+ <label>名称</label><input id="recordName" value="${esc(r.name)}" required>
+ <label>别名</label><input id="recordAliases" value="${esc((Array.isArray(r.aliases)?r.aliases:[]).join('、'))}" placeholder="阿岚、小岚">
+ <label>描述</label><textarea id="recordDesc">${esc(r.description)}</textarea>
+ <fieldset class="record-scope-fields"><legend>写作可见范围</legend>
+ <label>信息类型<select id="recordMode">${Object.entries(modes).map(([value,label])=>`<option value="${value}" ${(r.epistemic_mode||scope.epistemic_mode||'world_truth')===value?'selected':''}>${label}</option>`).join('')}</select></label>
+ <label>可用视角<select id="recordVisibility"><option value="all" ${visibility==='all'?'selected':''}>所有视角</option><option value="people" ${visibility==='people'?'selected':''}>仅指定知情人物</option><option value="author" ${visibility==='author'?'selected':''}>仅作者可见</option></select></label>
+ <label>知情人物<select id="recordKnown" multiple size="3">${storyEntityMultiOptions(owners||[])}</select></label>
+ <div class="settings-fields"><label>第几章起可用<input id="recordAvailable" type="number" min="1" max="10000" value="${start}" placeholder="不限"></label>
+ <label>到第几章有效<input id="recordUntil" type="number" min="1" max="10000" value="${end}" placeholder="不限"></label></div></fieldset>`,async w=>{
+  if(owner!==requestedProject||branch!==(state.branch_id||'main'))throw new Error('作品已经切换，请重新打开设定');
+  const aliases=normalizeAliases((w.querySelector('#recordAliases').value||'').split(/[、,，\n]/));
+  if(!aliases)throw new Error('别名最多20个，每个不超过100字');
+  const selected=w.querySelector('#recordVisibility').value;
+  const known=selected==='people'?[...w.querySelector('#recordKnown').selectedOptions].map(option=>option.value):[];
+  if(selected==='people'&&!known.length)throw new Error('请选择至少一位知情人物');
+  const available=w.querySelector('#recordAvailable').value,until=w.querySelector('#recordUntil').value;
+  if(available&&until&&Number(until)<Number(available))throw new Error('结束章节不能早于开始章节');
+  const nextScope={...scope,known_by:known,private:selected!=='all',epistemic_mode:w.querySelector('#recordMode').value,
+   available_from:available,valid_start:available,valid_end:until};
+  delete nextScope.characters;delete nextScope.entities;
+  const payload={type:w.querySelector('#recordType').value.trim()||'其他',name:w.querySelector('#recordName').value.trim(),
+   aliases,description:w.querySelector('#recordDesc').value,knowledge_scope:nextScope,known_by:known,
+   private:nextScope.private,epistemic_mode:nextScope.epistemic_mode,available_from:available,valid_start:available,valid_end:until};
+  if(!payload.name)throw new Error('请填写设定名称');
+  if(Array.from(payload.name).length>500||Array.from(payload.type).length>100||Array.from(payload.description).length>20000)
+   throw new Error('设定名称、类型或描述超过支持的字数');
+  if(backendOnline)await durableOperation(id?`/api/records/${encodeURIComponent(id)}`:'/api/records',id?'PATCH':'POST',payload);
+  else{
+   const target=id?state.records.find(item=>item.id===id):{id:crypto.randomUUID()};
+   Object.assign(target,payload);if(!id)state.records.push(target);save();
+  }
+  render();toast(backendOnline?'设定和可见范围已保存到本机':'设定和可见范围已保留为本页草稿');
+ });
+}
 function toast(t){const x=document.querySelector('#toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1500)}
 document.querySelectorAll('.nav-item').forEach(b=>b.onclick=()=>{view=b.dataset.view;render()});document.querySelector('#editProjectBtn').onclick=()=>modal('编辑作品信息',`<label>作品名</label><input id="pTitle" value="${esc(state.project.title)}"><label>一句话简介</label><textarea id="pSummary">${esc(state.project.summary)}</textarea><label>目标字数</label><input id="pGoal" type="number" value="${state.project.goal||50000}">`,w=>{state.project.title=w.querySelector('#pTitle').value||'未命名长篇';state.project.summary=w.querySelector('#pSummary').value;state.project.goal=Number(w.querySelector('#pGoal').value)||50000});document.querySelector('#finalCheckBtn').onclick=showFinalizationCheck;document.querySelector('#markdownExportBtn').onclick=markdownExport;document.querySelector('#epubExportBtn').onclick=epubExport;document.querySelector('#exportBtn').onclick=()=>{downloadText(exportFilename('json'),JSON.stringify(state,null,2),'application/json;charset=utf-8');toast('已导出 JSON 备份')};document.querySelector('#importBtn').onclick=()=>document.querySelector('#fileInput').click();document.querySelector('#fileInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{try{const imported=normalizeState(JSON.parse(rd.result));if(!imported)throw new Error('invalid');delete imported.version;delete imported.full_state;state=imported;activeChapter=state.chapters[0]?.id;save();render();toast('已导入作品')}catch{toast('文件格式不正确')}};rd.readAsText(f)};document.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='s'){e.preventDefault();save();toast('已保存')}});render();hydrate();loadAIStatus();

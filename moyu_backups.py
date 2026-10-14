@@ -13,6 +13,7 @@ import uuid
 import zipfile
 from pathlib import Path
 
+from moyu_records import decode_scope
 from scripts.sqlite_backup import backup_database, verify_backup
 
 
@@ -21,6 +22,8 @@ SKIP_TABLES = {"migration_ledger", "app_backup_artifact", "app_search_document",
 PLANNING_TABLES = {"app_planning_workflow", "app_planning_attempt",
                    "app_planning_event", "app_planning_application"}
 PLANNING_RESTORE_REASON = "从备份恢复的规划仅供阅读，请重新开始规划；旧模型请求不会自动再次执行。"
+PROJECT_TITLE_LIMIT = 200
+RESTORE_TITLE_SUFFIX = " · 恢复副本"
 
 
 def install_schema(conn):
@@ -174,6 +177,21 @@ def transplant(conn, payload, new_project, title=None):
     allowed = set(tables(conn))
     if set(data) - allowed or "project" not in data or len(data["project"]) != 1:
         raise ValueError("备份包含不支持的数据表")
+    if not isinstance(data["project"][0], dict):
+        raise ValueError("备份记录损坏")
+    if title is None or title == "":
+        original_title = data["project"][0].get("name")
+        if not isinstance(original_title, str):
+            raise ValueError("备份中的作品名无效")
+        restored_title = original_title[:PROJECT_TITLE_LIMIT - len(RESTORE_TITLE_SUFFIX)] + RESTORE_TITLE_SUFFIX
+    else:
+        if not isinstance(title, str):
+            raise ValueError("作品名需要为文字")
+        restored_title = title.strip()
+        if not restored_title:
+            raise ValueError("请填写作品名")
+        if len(restored_title) > PROJECT_TITLE_LIMIT:
+            raise ValueError("作品名不能超过200字")
     # Child planning records have no direct project column. Check their
     # workflow ownership before remapping any identity or inserting any row.
     planning_workflows = {row.get("id") for row in data.get("app_planning_workflow", [])
@@ -210,7 +228,9 @@ def transplant(conn, payload, new_project, title=None):
                 if isinstance(value, dict) and set(value) == {"$blob"}:
                     row[key] = base64.b64decode(value["$blob"], validate=True)
                 elif key.endswith("_json") and isinstance(value, str):
-                    if table in PLANNING_TABLES:
+                    if table == "app_entity_scope" and key == "scope_json":
+                        row[key] = json.dumps(remap_value(decode_scope(value), mapping), ensure_ascii=False)
+                    elif table in PLANNING_TABLES:
                         # Preserve the historical frozen candidate/source and
                         # their hashes verbatim. They remain readable only;
                         # canceled workflows cannot confirm or re-dispatch.
@@ -224,7 +244,7 @@ def transplant(conn, payload, new_project, title=None):
             if row.get("project_id") not in (None, new_project):
                 raise ValueError("备份包含其他作品资料")
             if table == "project":
-                row["name"] = title or row["name"] + " · 恢复副本"
+                row["name"] = restored_title
             if table == "app_ai_job":
                 context = json.loads(row["context_json"])
                 context["_restored_read_only"] = True

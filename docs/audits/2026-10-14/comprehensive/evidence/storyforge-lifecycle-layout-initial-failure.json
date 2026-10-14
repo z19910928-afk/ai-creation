@@ -1,0 +1,60 @@
+{
+  "passed": false,
+  "scope": "桌面真实浏览器、隔离 SQLite、免费本机提供方；规划归档、已保存作品重开、Unicode 导入及旧审稿作者决定",
+  "cases": [],
+  "artifacts": "Private isolated artifacts retained locally; initial 1280 capture failed before a screenshot was written.",
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36"
+    },
+    {
+      "path": "server.py",
+      "sha256": "a0b250e2b5ab784a5132a32c8a9fce9459765e318cb9ad204fec44f1e46a8468"
+    },
+    {
+      "path": "moyu_analysis.py",
+      "sha256": "22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0"
+    },
+    {
+      "path": "moyu_workspace.py",
+      "sha256": "7dc1d33adfae0099391a26b5eed8ff729117f89b562f7a746f2bf373c07fbae2"
+    },
+    {
+      "path": "moyu_context.py",
+      "sha256": "12ec0e0cf80a37dff57eaf52a69dbb2291a427263fd70d09ee636cd2327262f2"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "715a87da60608fd98d2ae9fd1f61d2b6816c91e8d5e7fdab0a923f0b1218e398"
+    },
+    {
+      "path": "tests/author_workspace_lifecycle_browser_regressions.cjs",
+      "sha256": "46e152ca4df2676a2b14da52df7afed8ab39fd741ed58a71e66e0a2966a584a8"
+    }
+  ],
+  "desktop_layout": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "handoff": {
+        "width": 968,
+        "height": 70,
+        "label_width": 968,
+        "within": true,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      }
+    }
+  ],
+  "error": "AssertionError [ERR_ASSERTION]: {\"width\":808,\"height\":70,\"label_width\":808,\"within\":false,\"unobstructed\":true,\"readonly\":true,\"value\":\"交接只作上章说明，不替换后续章的目标和场景。\"}\n    at <workspace>/tests/author_workspace_lifecycle_browser_regressions.cjs:328:14\n    at async test (<workspace>/tests/author_workspace_lifecycle_browser_regressions.cjs:105:3)\n    at async main (<workspace>/tests/author_workspace_lifecycle_browser_regressions.cjs:273:3)",
+  "evidence_note": "Initial capture diagnosis only: 1440 passed its bounds check, 1280 had correct size and unobstructed center but failed the full viewport bounds check. No lifecycle completion or final layout acceptance is claimed.",
+  "recorded_at": "2026-10-14T15:59:38.777Z"
+}

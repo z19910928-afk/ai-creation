@@ -1,0 +1,13 @@
+{
+  "repository": "xiamuceer-j/MuMuAINovel",
+  "default_branch": "main",
+  "commit": "99f0aec6ce3b1c65652d20007be930ebba6a6d20",
+  "tree": "992469d7bafe16c76e1488741f68df19e86e035c",
+  "checked_at_utc": "2026-10-14T14:42:52.652Z",
+  "commit_at_utc": "2026-10-10T05:45:16Z",
+  "pushed_at_utc": "2026-10-10T05:45:33Z",
+  "stars_at_capture": 3181,
+  "license": "GPL-3.0",
+  "archive_sha256": "f98fd3c8a09da8086f64bbd1456ceef7d51bd073089853ac207446e025ff1c81",
+  "method": "gh official REST API pinned commit tarball; source only; no upstream scripts executed"
+}

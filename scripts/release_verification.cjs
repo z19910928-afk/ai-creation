@@ -1,0 +1,186 @@
+'use strict';
+
+const crypto = require('node:crypto');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const {spawn} = require('node:child_process');
+
+const root = path.resolve(__dirname, '..');
+const tag = process.env.MOYU_VERIFY_TAG;
+if (!tag || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(tag)) throw new Error('Set a new MOYU_VERIFY_TAG for this source snapshot');
+const suffix = 'python311-node24-' + tag;
+const evidence = path.resolve(root, process.env.MOYU_VERIFY_EVIDENCE || 'docs/audits/2026-10-14/comprehensive/evidence');
+const output = path.join(evidence, 'compatibility-' + suffix + '.json');
+const logs = path.join(root, 'artifacts/release-verification-' + tag);
+if (fs.existsSync(output)) throw new Error('Verification evidence already exists; use a new tag');
+if (Number(process.versions.node.split('.')[0]) !== 24) throw new Error('This release check requires Node 24');
+const python = process.env.MOYU_VERIFY_PYTHON || 'python3';
+const environment = {...process.env, MOYU_TEST_PYTHON: python,
+  PATH: [path.dirname(process.execPath), ...(path.isAbsolute(python) ? [path.dirname(python)] : []),
+    process.env.PATH || ''].join(path.delimiter),
+  MOYU_AI_BASE_URL: '', MOYU_AI_MODEL: '', MOYU_AI_API_KEY: '', MOYU_SECRET_KEY: ''};
+const filesIn = (directory, pattern) => fs.readdirSync(path.join(root, directory))
+  .filter(name => pattern.test(name)).sort().map(name => path.posix.join(directory, name).replace(/^\.\//, ''));
+const pythonFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/)];
+const javascriptFiles = [...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/)];
+const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
+const safeText = text => text.replaceAll(root, '.').replaceAll(process.env.HOME || '\u0000', '<private-home>')
+  .replaceAll(os.tmpdir(), '<temporary-root>')
+  .replace(/\/(?:private\/)?tmp\/[^"'\\\s]+/g, '<temporary-path>')
+  .replace(/\/(?:private\/)?var\/folders\/[^"'\\\s]+/g, '<temporary-path>');
+const safeValue = value => {
+  if (typeof value === 'string') return safeText(value);
+  if (Array.isArray(value)) return value.map(safeValue);
+  if (value && typeof value === 'object') return Object.fromEntries(
+    Object.entries(value).map(([key, child]) => [key, safeValue(child)]));
+  return value;
+};
+const fingerprints = () => {
+  const currentFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/),
+    ...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/),
+    '.github/workflows/ci.yml', 'index.html', 'styles.css'];
+  return Object.fromEntries(currentFiles.map(file => [file, hash(fs.readFileSync(path.join(root, file)))]));
+};
+const report = {passed: false, scope: 'Python3.11/Node24 release; macOS arm64; isolated desktop tests and free local providers.',
+  started_at: new Date().toISOString(), platform: `${process.platform}/${process.arch}`,
+  runtimes: {node: process.version}, source_files_sha256_before: fingerprints(), checks: []};
+fs.mkdirSync(logs, {recursive: true});
+fs.mkdirSync(evidence, {recursive: true});
+const save = () => fs.writeFileSync(output, JSON.stringify(safeValue(report), null, 2) + '\n');
+
+async function run(name, command, arguments_, timeout = 180000) {
+  console.log(JSON.stringify({check: name, status: 'running'}));
+  const started = Date.now();
+  const result = await new Promise(resolve => {
+    let text = '', expired = false, spawnError;
+    const child = spawn(command, arguments_, {cwd: root, env: environment, stdio: ['ignore', 'pipe', 'pipe']});
+    const timer = setTimeout(() => {expired = true; child.kill('SIGTERM');}, timeout);
+    child.stdout.on('data', chunk => text += chunk.toString());
+    child.stderr.on('data', chunk => text += chunk.toString());
+    child.on('error', error => spawnError = error.message);
+    child.on('close', (code, signal) => {
+      clearTimeout(timer);
+      resolve({code, signal, expired, spawnError, text});
+    });
+  });
+  const logPath = path.join(logs, String(report.checks.length + 1).padStart(2, '0') + '.log');
+  fs.writeFileSync(logPath, result.text + (result.spawnError || ''));
+  report.checks.push({name, exit_code: result.code, signal: result.signal, timeout: result.expired,
+    duration_seconds: Math.round((Date.now() - started) / 10) / 100,
+    output_tail: safeText(result.text).slice(-5000), local_log: path.relative(root, logPath),
+    passed: result.code === 0 && !result.expired && !result.spawnError});
+  save();
+  console.log(JSON.stringify({check: name, status: report.checks.at(-1).passed ? 'passed' : 'failed'}));
+  return result;
+}
+
+function saveArtifact(name, filename, bytes) {
+  const artifact = path.join(evidence, filename);
+  if (fs.existsSync(artifact)) throw new Error('Evidence already exists: ' + filename);
+  fs.writeFileSync(artifact, bytes);
+  report.artifacts ||= [];
+  report.artifacts.push({name, file: path.relative(root, artifact), sha256: hash(bytes)});
+}
+
+function saveStructuredEvidence(name, filename, value) {
+  saveArtifact(name, filename, Buffer.from(JSON.stringify(safeValue(value), null, 2) + '\n'));
+}
+
+const requiredScreenshots = {
+  analysis_guidance_browser_regressions: ['analysis-guidance-stale-desktop.png',
+    'analysis-guidance-stale-1280x900.png'],
+  frontend_browser_regressions: ['desktop-editor.png', 'compact-desktop-editor.png', 'desktop-planning.png',
+    'desktop-revised-candidate.png', 'desktop-interrupted-fragment.png', 'desktop-interrupted-task.png',
+    'desktop-backup-open-failure.png', 'desktop-backup-restored.png', 'desktop-long-title-navigation.png',
+    'compact-desktop-long-title-navigation.png', 'short-desktop-long-title-navigation.png',
+    'desktop-record-knowledge-scope.png', 'desktop-review-repair.png'],
+  planning_browser_regressions: ['planning-second-round.png'],
+  model_settings_browser_regressions: ['model-settings-failed.png', 'model-settings-success.png', 'desktop-settings.png'],
+  desktop_author_flow_regressions: ['desktop-five-chapter-author.png', 'compact-desktop-five-chapter-author.png',
+    'desktop-stale-payoff-blocked.png', 'desktop-final-complete.png'],
+  instruction_draft_browser_regressions: ['instruction-draft-desktop.png', 'instruction-draft-desktop-1280x900.png'],
+  author_workspace_lifecycle_browser_regressions: ['planned-next-chapter.png',
+    'planned-next-chapter-1280x900.png', 'stale-review-author-explanation.png'],
+  export_override_browser_regressions: ['export-override-desktop.png'],
+  material_dependency_browser_regressions: ['material-stale-candidate-desktop.png',
+    'material-stale-candidate-1280x900.png', 'material-stale-analysis-desktop.png'],
+};
+const optionalScreenshots = {
+  planning_browser_regressions: ['planning-browser-failure.png'],
+  desktop_author_flow_regressions: ['desktop-author-flow-failure.png'],
+};
+
+function structuredBrowserResult(text) {
+  const starts = [...text.matchAll(/(?:^|\n)(?=\{)/g)].map(match =>
+    match.index + (match[0] === '\n' ? 1 : 0));
+  for (const start of starts.reverse()) {
+    try {
+      const value = JSON.parse(text.slice(start));
+      if (value && typeof value.passed === 'boolean') return value;
+    } catch {}
+  }
+  return null;
+}
+
+async function runBrowser(script) {
+  const name = path.basename(script, '.cjs');
+  const browser = await run('Browser: ' + name, process.execPath, [script], 300000);
+  const browserResult = structuredBrowserResult(browser.text);
+  if (browserResult) {
+    const localArtifacts = browserResult.artifacts;
+    browserResult.artifacts = 'Private temporary DB and logs retained locally; screenshots are listed in this report.';
+    saveStructuredEvidence(name, name + '-' + suffix + '.json', browserResult);
+    report.checks.at(-1).scenario_count = Array.isArray(browserResult.cases) ? browserResult.cases.length : 0;
+    if (browserResult.passed !== true || browserResult.source_unchanged === false) {
+      report.checks.at(-1).passed = false;
+      report.checks.at(-1).structured_browser_result_failed = true;
+    }
+    for (const filename of [...(requiredScreenshots[name] || []), ...(optionalScreenshots[name] || [])]) {
+      const source = localArtifacts && path.join(localArtifacts, filename);
+      if (source && fs.existsSync(source)) {
+        saveArtifact(name, tag + '-' + filename, fs.readFileSync(source));
+      } else if ((requiredScreenshots[name] || []).includes(filename)) {
+        report.checks.at(-1).passed = false;
+        (report.checks.at(-1).missing_screenshots ||= []).push(filename);
+      }
+    }
+  } else {
+    report.checks.at(-1).passed = false;
+    report.checks.at(-1).missing_structured_browser_result = true;
+  }
+  save();
+}
+
+async function main() {
+  const version = await run('Python runtime', python, ['--version']);
+  report.runtimes.python = version.text.trim();
+  if (!/^Python 3\.11\./.test(report.runtimes.python)) throw new Error('This release check requires Python 3.11');
+  await run('Python syntax', python, ['-m', 'py_compile', ...pythonFiles]);
+  for (const file of javascriptFiles) await run('JavaScript syntax: ' + file, process.execPath, ['--check', file]);
+  for (const file of filesIn('tests', /_fixtures\.py$/)) await run('Python fixtures: ' + file, python, [file]);
+  const fixedOutput = path.join(logs, 'fixed-evaluation.json');
+  await run('Fixed evaluation', python, ['scripts/evaluation_runner.py', '--fixtures-dir', 'tests/fixtures', '--output', fixedOutput]);
+  if (fs.existsSync(fixedOutput)) {
+    saveStructuredEvidence('Fixed evaluation', 'fixed-evaluation-' + suffix + '.json', JSON.parse(fs.readFileSync(fixedOutput, 'utf8')));
+  }
+  await run('Editor merge regressions', process.execPath, ['tests/editor_sync_fixtures.cjs']);
+  for (const script of filesIn('tests', /(?:_browser_regressions|desktop_author_flow_regressions)\.cjs$/)) await runBrowser(script);
+  report.source_files_sha256_after = fingerprints();
+  report.source_unchanged = JSON.stringify(report.source_files_sha256_before) === JSON.stringify(report.source_files_sha256_after);
+  report.finished_at = new Date().toISOString();
+  report.desktop_scenario_count = report.checks.reduce((count, check) => count + (check.scenario_count || 0), 0);
+  report.passed = report.source_unchanged && report.checks.every(check => check.passed);
+  save();
+  console.log(JSON.stringify({passed: report.passed, checks: report.checks.length,
+    source_unchanged: report.source_unchanged, report: path.relative(root, output)}));
+  if (!report.passed) process.exitCode = 1;
+}
+
+main().catch(error => {
+  report.fatal_error = safeText(error.message);
+  report.finished_at = new Date().toISOString();
+  save();
+  console.error(report.fatal_error);
+  process.exitCode = 1;
+});

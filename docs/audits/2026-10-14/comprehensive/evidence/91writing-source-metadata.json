@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-14T15:01:46.573Z",
+  "repository": "ponysb/91Writing",
+  "repository_url": "https://github.com/ponysb/91Writing",
+  "default_branch": "main",
+  "commit": "df3de0362e8e4028b76dffa78c5bba7b8bbd20a1",
+  "tree": "1ef0ad52fea393cc509250eacbb129f939453708",
+  "committed_at_utc": "2025-08-12T06:09:47Z",
+  "repository_updated_at_utc": "2026-10-10T14:23:17Z",
+  "repository_pushed_at_utc": "2025-10-14T07:16:20Z",
+  "archived": false,
+  "license_api": "MIT",
+  "source_method": "Official GitHub repository, commit, recursive tree and blob APIs; every downloaded blob verified against the pinned Git blob SHA-1 and byte length.",
+  "source_scope": "Selected author-facing source files; full archive transfer timed out and was not used as evidence.",
+  "api_urls": [
+    "https://api.github.com/repos/ponysb/91Writing",
+    "https://api.github.com/repos/ponysb/91Writing/commits/main",
+    "https://api.github.com/repos/ponysb/91Writing/git/trees/1ef0ad52fea393cc509250eacbb129f939453708?recursive=1"
+  ],
+  "files": [
+    {
+      "path": "LICENSE",
+      "git_blob_sha": "d43fc0495b7537979157aced2c95686560987f28",
+      "sha256": "232b3eedbd0b0aadf0b753144d49ed48b17bb12f2bff3794ad32c2e861ff7b62",
+      "bytes": 1061,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/LICENSE"
+    },
+    {
+      "path": "README.md",
+      "git_blob_sha": "28129c23bae77e71354fa8b16de9cca8171f3779",
+      "sha256": "e09d28ce007da973741dd5353254799241267fdc2ef9926adb0c7fbe9ae52b26",
+      "bytes": 18643,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/README.md"
+    },
+    {
+      "path": "package.json",
+      "git_blob_sha": "90355bab6c4d49e799120c0d0ccf4947b239a051",
+      "sha256": "0192a3749a0ebb1682d80387ccfa0e7ba84aa3bcbc42e5c54a7360a3ae24b88f",
+      "bytes": 1001,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/package.json"
+    },
+    {
+      "path": "src/App.vue",
+      "git_blob_sha": "ff2d8aba21a1837a7ddc7f0c0b56391dd7f03d0b",
+      "sha256": "725ff7e2a9b875fa13feab5a0e4bc161c368d918a1346c89e6e1188315c44739",
+      "bytes": 1611,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/App.vue"
+    },
+    {
+      "path": "src/components/ApiConfig.vue",
+      "git_blob_sha": "8ef4aa4f1d65b4b0ed31f06fb339eed0ce1c7d96",
+      "sha256": "2167c834b3a8221b84fde6a240bbef0201b39151c30acd91cf6062912d956c10",
+      "bytes": 25653,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/components/ApiConfig.vue"
+    },
+    {
+      "path": "src/components/BackupManager.vue",
+      "git_blob_sha": "91b890675769db4dbd3e396dd43bda095236196c",
+      "sha256": "5d6736b7c175f554950445cf581394b5045171774b6a28247e2dc4bda524943b",
+      "bytes": 23906,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/components/BackupManager.vue"
+    },
+    {
+      "path": "src/router/index.js",
+      "git_blob_sha": "2dd015c09a197d5af6a557f39393c2e9b93975d6",
+      "sha256": "1727bb761118b1d9216d82c4cfa1fc6b48a741eb696885c808fd9a2347534e7a",
+      "bytes": 2372,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/router/index.js"
+    },
+    {
+      "path": "src/services/api.js",
+      "git_blob_sha": "848573511860f9548024f4063db1713ddd5d8da7",
+      "sha256": "115d9e7c4fddfbd0b00d0eb46af035daaf9dd9514cd23e09b1a6ef3fab18b1d6",
+      "bytes": 32393,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/services/api.js"
+    },
+    {
+      "path": "src/views/BookAnalysis.vue",
+      "git_blob_sha": "3f22f1e4af878f125693891dd8af325ced5f8951",
+      "sha256": "37d539846d2078cb429e8a828168ac684cfadde1d4eb53bccadd7c4768c41d39",
+      "bytes": 76155,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/BookAnalysis.vue"
+    },
+    {
+      "path": "src/views/NovelManagement.vue",
+      "git_blob_sha": "f5d52e98b906d76371ece2e2d36d1a1607d43725",
+      "sha256": "62efce8c7d02b36616257a3bda939b0e5272be20502e86525aabfecd8c83ef47",
+      "bytes": 62607,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/NovelManagement.vue"
+    },
+    {
+      "path": "src/views/PromptsLibrary.vue",
+      "git_blob_sha": "5398781d2d83cac0d1c4bb61f7ea4d02e4a2fd9a",
+      "sha256": "a0cf579218a5aa6609237e3f7d17463d52a136d7cbcdef0ae81d710a58d988ef",
+      "bytes": 47296,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/PromptsLibrary.vue"
+    },
+    {
+      "path": "src/views/Settings.vue",
+      "git_blob_sha": "6fe7a6fa935d1ea2ca6f7822d3482aca918cd4e6",
+      "sha256": "04de5e273343c940cb65f17a7c7026bd47b2fad37c014e5763722c3214b12add",
+      "bytes": 26956,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/Settings.vue"
+    },
+    {
+      "path": "src/views/Writer.vue",
+      "git_blob_sha": "e6526f90ec967ebb1fb1599b8670ae8a1638a478",
+      "sha256": "37feae23bdb9596c06a6182cacba36596964ff9e92defe52749c2d75e09fa778",
+      "bytes": 357086,
+      "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/Writer.vue"
+    }
+  ],
+  "upstream_runtime_tested": false,
+  "external_model_calls": 0
+}

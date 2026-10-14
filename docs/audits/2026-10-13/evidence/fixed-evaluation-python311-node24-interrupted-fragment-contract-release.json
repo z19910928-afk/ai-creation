@@ -5,7 +5,7 @@
       "errors": [],
       "executable": {
         "command": [
-          "/private/tmp/moyu-compat-20261013-Y2tKoW/python/bin/python3.11",
+          "<private-temporary-path>",
           "tests/corrupt_import_fixtures.py"
         ],
         "passed": true,
@@ -877,7 +877,7 @@
       "errors": [],
       "executable": {
         "command": [
-          "/private/tmp/moyu-compat-20261013-Y2tKoW/python/bin/python3.11",
+          "<private-temporary-path>",
           "tests/longform_knowledge_scope_fixtures.py"
         ],
         "passed": true,
@@ -1376,7 +1376,7 @@
       "errors": [],
       "executable": {
         "command": [
-          "/private/tmp/moyu-compat-20261013-Y2tKoW/python/bin/python3.11",
+          "<private-temporary-path>",
           "tests/backup_recovery_fixtures.py"
         ],
         "passed": true,
@@ -1817,7 +1817,7 @@
       "errors": [],
       "executable": {
         "command": [
-          "/private/tmp/moyu-compat-20261013-Y2tKoW/python/bin/python3.11",
+          "<private-temporary-path>",
           "tests/reversible_patch_fixtures.py"
         ],
         "passed": true,
@@ -2258,7 +2258,7 @@
       "errors": [],
       "executable": {
         "command": [
-          "/private/tmp/moyu-compat-20261013-Y2tKoW/python/bin/python3.11",
+          "<private-temporary-path>",
           "tests/schema_negative_fixtures.py"
         ],
         "passed": true,

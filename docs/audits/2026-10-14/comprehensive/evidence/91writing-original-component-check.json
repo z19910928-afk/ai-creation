@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-14T15:05:17.215Z",
+  "repository": "ponysb/91Writing",
+  "commit": "df3de0362e8e4028b76dffa78c5bba7b8bbd20a1",
+  "method": "Execute unchanged original source function blocks in an isolated Node VM with synthetic refs; no full upstream app, database, external API or model execution.",
+  "source_files": [
+    {
+      "path": ".audit-cache/2026-10-14/comprehensive/91writing/src/views/Writer.vue",
+      "sha256": "37feae23bdb9596c06a6182cacba36596964ff9e92defe52749c2d75e09fa778"
+    },
+    {
+      "path": ".audit-cache/2026-10-14/comprehensive/91writing/src/views/PromptsLibrary.vue",
+      "sha256": "a0cf579218a5aa6609237e3f7d17463d52a136d7cbcdef0ae81d710a58d988ef"
+    }
+  ],
+  "variable_rendering": [
+    {
+      "name": "ordinary_variable",
+      "template": "人物：{角色}",
+      "values": {
+        "角色": "林岚"
+      },
+      "expected": "人物：林岚",
+      "actual": "人物：林岚",
+      "matches_expected": true
+    },
+    {
+      "name": "literal_dollar_ampersand",
+      "template": "人物：{角色}",
+      "values": {
+        "角色": "$&"
+      },
+      "expected": "人物：$&",
+      "actual": "人物：{角色}",
+      "matches_expected": false
+    },
+    {
+      "name": "regex_metacharacters_in_variable",
+      "template": "人物：{角色(名)}",
+      "values": {
+        "角色(名)": "林岚"
+      },
+      "expected": "人物：林岚",
+      "actual": "人物：{角色(名)}",
+      "matches_expected": false
+    },
+    {
+      "name": "missing_variable_retained",
+      "template": "人物：{角色}",
+      "values": {
+        "角色": ""
+      },
+      "expected": "人物：{角色}",
+      "actual": "人物：{角色}",
+      "matches_expected": true
+    }
+  ],
+  "import_validation": [
+    {
+      "name": "valid_prompt",
+      "valid": true,
+      "error": null,
+      "threw": false
+    },
+    {
+      "name": "non_string_required_title",
+      "threw": true,
+      "error": "TypeError"
+    }
+  ],
+  "external_model_calls": 0
+}

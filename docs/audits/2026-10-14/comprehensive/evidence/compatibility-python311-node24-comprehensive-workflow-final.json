@@ -1,0 +1,994 @@
+{
+  "passed": false,
+  "scope": "Python3.11/Node24 release; macOS arm64; isolated desktop tests and free local providers.",
+  "started_at": "2026-10-14T15:50:00.499Z",
+  "platform": "darwin/arm64",
+  "runtimes": {
+    "node": "v24.19.0",
+    "python": "Python 3.11.17"
+  },
+  "source_files_sha256_before": {
+    "moyu_analysis.py": "22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "moyu_context.py": "3f1b2a7041481091d8247724ae7c38720d0e38ca6c53101e3f7b912491406483",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8",
+    "moyu_workspace.py": "973227adea1b08f4f4137ea05ffbecd927ecaa49ade2d31fd5ce663230d96202",
+    "server.py": "27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720",
+    "scripts/apply_migration.py": "dd05512dfa69d7c8331b82c52a9af146f13a3921e9309f8a9616ead834044f14",
+    "scripts/evaluation_runner.py": "9f6554aee771bfcafe70e1e1e08e7259c8759efceeead4be4a342cabd7171af0",
+    "scripts/literary_evaluation.py": "746f30b47cd794e32c897d372b65d6bf6f7299b0df3bb4617a66dcc7f374c8c8",
+    "scripts/provider_shape_diagnostic.py": "9ee57e3d9c7bc22e3d97bbf974ae50654dcd30b2b08d966a909783c537bca23e",
+    "scripts/recovery_drill.py": "a4b567864328a35e1c2c94ecc97d9e4204bdc85e5b48e3339742f57ca8d0eadf",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "tests/ai_contract_fixtures.py": "2a61ae2944a17edbec96b20f5eb74e887ecc1e1d6df5217db58f2ca09cbd35c4",
+    "tests/ai_queue_fixtures.py": "0b1980bc030cfcb26ef031920c8f5dc4356b8b252b04adb42ae4bc7db371bda5",
+    "tests/assertion_workflow_fixtures.py": "d45d1cf0a64970759b025b9ce47f66efdb823f600f92b4b4f25e4b963fa17700",
+    "tests/backup_recovery_fixtures.py": "061ea33f60b160b70e8aaff75535b7b64a5faec098c49b81c6fa593c2c6b2152",
+    "tests/blueprint_guidance_http_fixtures.py": "cd15bf8ce483836848ab7330e3e32932521dfdc5a3a73ef04acd8f0b31485452",
+    "tests/branch_cas_fixtures.py": "21da9bcf4c91d2be0ce3ae99921b0bd06563adfa82993a0f5ceea747bf6e3cc7",
+    "tests/candidate_revision_fixtures.py": "d39b45e513977d06df4cf84b8fd07cc1108fd859c86c7ba86fcdf432b2b6372e",
+    "tests/chapter_analysis_workflow_fixtures.py": "bbb01527139c5455610dddffc22de3215081d1d9321a0c9325bfcafcfaba83ba",
+    "tests/chapter_commit_fixtures.py": "7c34c78a90573e053917f4af04677b386c75b8eb7173980ce263404de6026fea",
+    "tests/character_state_fixtures.py": "3846f19bc3f685e65b81250934dabcad7e6567dbf2e74a6228d7cf1ed334a1c4",
+    "tests/context_http_fixtures.py": "add018506a3f25f1e0d8471e802f6444dd82cf6e60a0cce38c958b0bf6a68622",
+    "tests/context_pipeline_fixtures.py": "136b776a798b677a38e3a3e46b5b8b22a46bc1b2487441af9a13a8ad69b29ee6",
+    "tests/corrupt_import_fixtures.py": "2271f184bad571d656a54342a6c6d437d25850c30ed97a19bb6661ca503f0ea4",
+    "tests/frontend_story_fixtures.py": "419e03d451c7b7b1e148e8651434b65cef947d3c976ee8c458a8b1885f12d1da",
+    "tests/import_archive_lifecycle_fixtures.py": "ea142f2e57bf91c72a05e22c28b51a855ac1ea3a873903f477a8cbe5e1aaf410",
+    "tests/literary_evaluation_fixtures.py": "e7ebdc1a5b770ed6c5c0308aae98e1367777280ccfc17a36f435418787f0a4aa",
+    "tests/longform_knowledge_scope_fixtures.py": "2a67c5e1f2283030bc75a78a60fca5564c501bff2ff2de82d56f521085f6b6fd",
+    "tests/manuscript_import_fixtures.py": "38f15132b33611befc1c9122a0e45afae20d5fda19047734bda74e7ee9e20eb5",
+    "tests/model_settings_fixtures.py": "7d720c4d0b79d653a035594f6e701aac2f57a98b2faeea668be5a61482269763",
+    "tests/output_contract_fixtures.py": "e489776c512e197c3f6235e50af3d7896a57eff457929206f8bc0fc4f69fdf37",
+    "tests/planning_backup_fixtures.py": "ec7652e156eddd46f06447936057ee0073ce8b6ebd1ce680e06fef04f13f60d0",
+    "tests/planning_http_fixtures.py": "002aaca7a48b412431cf62f8f88de9ad683f93573bf88f7ba48ab3c30f5af4de",
+    "tests/planning_workflow_fixtures.py": "7cc7101ee5a943910de1c9110ad29e47329a36eac4abaa14d60988ce8edf1d6f",
+    "tests/projection_health_fixtures.py": "22a0d9a5fe00573e17b9865e988d4468296690940b85b3f0f1d0516744389214",
+    "tests/prose_output_http_fixtures.py": "34a97b91045291d32ed5cea99e8a6176138ddac6eb751380649055ee939c808c",
+    "tests/provider_protocol_fixtures.py": "d79bad2abf713cf1cd04a6163a76d2dd45b447fdbd32784b5c828bdaa3279015",
+    "tests/provider_queue_integration_fixtures.py": "66a518dc573f06242c8cf9339297c8eb19ffd4361afdf21967ac695127d37ea2",
+    "tests/publication_assistant_fixtures.py": "cc440251c4871338c4bab8876b8a1cac413ca03c3c816d1823aa756a41c6c6b9",
+    "tests/range_patch_fixtures.py": "6083a6a1b73465653f28986a26e805672adb4857f6f3b9c2815ca29a0f2c9a2b",
+    "tests/record_scope_http_fixtures.py": "2051bcdff3e15c249c5053267d0653efb46fb3cc593c4c459ee8c110a6a59c87",
+    "tests/repository_privacy_fixtures.py": "20b0ce88a3fee5a52b12722cfcb4fe27d239c4d290c4f5583bcf96e908227ed3",
+    "tests/reversible_patch_fixtures.py": "b10c446a82bec642989cc2673df11600331bc5b780fdbeabb76c0f0d4a5d1f2c",
+    "tests/runtime_continuity_fixtures.py": "a9fe62e7afa7e712181f6cd2d4c2795fe05b629a22ce82219a5c3d348ed6a0f5",
+    "tests/schema_negative_fixtures.py": "81f29f9425214dfd9e773e94fd29b8f18867f436318857927ee737e6a5083585",
+    "tests/search_fixtures.py": "a782b1ac09fdf2654a3da09c3946101541f74986c494491cff06e919ad753189",
+    "tests/story_review_publication_http_fixtures.py": "813f14f20310117c28b4e5bac6039e06f172446beb2b567a7dbc8184da64cfb6",
+    "tests/story_review_repair_http_fixtures.py": "76fba57168cafcae37680db38a93983b7bd78e4386bde4e25e0fe8e4a987845a",
+    "tests/story_structure_fixtures.py": "7803c9248361b148902ad2577f285db2242d437a1314c0571c0b0ae60458f7bc",
+    "tests/stream_resume_fixtures.py": "2340b44603602e7ff66d1c5c53cf80be89843eb3c57bb3f90af191d8f5ab3bcf",
+    "tests/strict_feature_fixtures.py": "e1380922b77fd3064fef9b814bb97f83959da8b3937cb280f098f9e49918fb61",
+    "tests/workspace_workflow_fixtures.py": "d69f627af1002f50acd386e49c300a84500f93082e928ce8416d41fcf8f71f75",
+    "app.js": "bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a",
+    "author-workspace.js": "794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "scripts/publish_audit_archive.cjs": "4457bcaf03f8c11303090b7169da88bd2a690f8771d8fc0bf4dd6cffd49edf01",
+    "scripts/release_verification.cjs": "f0300f2952400bac3f8e39d9ab7ecf53caa1adbf0905ae5d9b3801638aa88ac6",
+    "tests/author_workspace_lifecycle_browser_regressions.cjs": "b5b77f3834f8ee7fc68f2081c549d21ec4df164143a557c15cc8e35555482b54",
+    "tests/desktop_author_flow_regressions.cjs": "42469ec378744f01531db7c26fb4c9e59ba2919b6a252b68c714fabbb74397b4",
+    "tests/editor_sync_fixtures.cjs": "e63c47079c73ec3859ac2f429da02d7ac8944f4d081047a57b98357233625525",
+    "tests/export_override_browser_regressions.cjs": "40b3296307aab830a02ad3b01eaafaf6c72910a556c296c91951bbc28382c619",
+    "tests/frontend_browser_regressions.cjs": "9904c91fbb2392d41cf81f7656b2e7a5a38354695d78bbf02343c6bc581224f8",
+    "tests/instruction_draft_browser_regressions.cjs": "dfb7cefe4c3bd13fe753034a07635bba4e9b98752151d43ec41124b87fd8026d",
+    "tests/model_settings_browser_regressions.cjs": "43187e9d784d69263d34c222f5afd2f0f0bd4908f423fa6fcf3719fda3177225",
+    "tests/planning_browser_regressions.cjs": "4e6bb2546e262de8b5ff9b383891011394a02fd3de7111514b5e9923e137cff5",
+    "tests/search_browser_regressions.cjs": "2cb2ffeaf0140684229abfb7b4c9c19921b2c328a3ad9e519c2c376c7cf1240f",
+    ".github/workflows/ci.yml": "ef57a7d8f589554ab64b173dbb14df40fe4908158e35e75b877f0607657522aa",
+    "index.html": "5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3",
+    "styles.css": "2e24180ed7755a0ed861e89cb0f689e49c820ce4f24776fe4b67047ced3a5f2b"
+  },
+  "checks": [
+    {
+      "name": "Python runtime",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.01,
+      "output_tail": "Python 3.11.17\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/01.log",
+      "passed": true
+    },
+    {
+      "name": "Python syntax",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.17,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/02.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: app.js",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.03,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/03.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: author-workspace.js",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/04.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: editor-sync.js",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/05.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: scripts/publish_audit_archive.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/06.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: scripts/release_verification.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/07.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/author_workspace_lifecycle_browser_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/08.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/desktop_author_flow_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/09.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/editor_sync_fixtures.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/10.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/export_override_browser_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/11.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/frontend_browser_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/12.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/instruction_draft_browser_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/13.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/model_settings_browser_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/14.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/planning_browser_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/15.log",
+      "passed": true
+    },
+    {
+      "name": "JavaScript syntax: tests/search_browser_regressions.cjs",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/16.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/ai_contract_fixtures.py",
+      "exit_code": 1,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.17,
+      "output_tail": "Traceback (most recent call last):\n  File \"./tests/ai_contract_fixtures.py\", line 106, in <module>\n    main()\n  File \"./tests/ai_contract_fixtures.py\", line 52, in main\n    with urllib.request.urlopen(base + f\"/api/context?chapter_id={chapter['id']}&retrieval_profile={profile}\", timeout=5) as response:\n         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<private-temporary-path>\", line 216, in urlopen\n    return opener.open(url, data, timeout)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<private-temporary-path>\", line 525, in open\n    response = meth(req, response)\n               ^^^^^^^^^^^^^^^^^^^\n  File \"<private-temporary-path>\", line 634, in http_response\n    response = self.parent.error(\n               ^^^^^^^^^^^^^^^^^^\n  File \"<private-temporary-path>\", line 563, in error\n    return self._call_chain(*args)\n           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<private-temporary-path>\", line 496, in _call_chain\n    result = func(*args)\n             ^^^^^^^^^^^\n  File \"<private-temporary-path>\", line 643, in http_error_default\n    raise HTTPError(req.full_url, code, msg, hdrs, fp)\nurllib.error.HTTPError: HTTP Error 400: Bad Request\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/17.log",
+      "passed": false
+    },
+    {
+      "name": "Python fixtures: tests/ai_queue_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.27,
+      "output_tail": "AI queue fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/18.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/assertion_workflow_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.23,
+      "output_tail": "assertion workflow fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/19.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/backup_recovery_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.04,
+      "output_tail": "backup/recovery fixtures passed: online backup, digest, corruption rejection, restore, generic drill, RPO/RTO\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/20.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/blueprint_guidance_http_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.26,
+      "output_tail": "{\"passed\": true, \"checks\": 9, \"free_provider_calls\": 4, \"paid_provider_calls\": 0, \"scope\": \"isolated real HTTP; frozen guidance, POV and conservative budget\"}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/21.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/branch_cas_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.21,
+      "output_tail": "branch CAS fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/22.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/candidate_revision_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 12.5,
+      "output_tail": "test_backup_restore_and_duplicate_keep_lineage_readable_without_dispatch_or_apply (__main__.CandidateRevisionTests.test_backup_restore_and_duplicate_keep_lineage_readable_without_dispatch_or_apply) ... ok\ntest_failed_revision_concurrent_retries_create_one_successor_and_hide_saved_prompt (__main__.CandidateRevisionTests.test_failed_revision_concurrent_retries_create_one_successor_and_hide_saved_prompt) ... ok\ntest_json_polish_revision_keeps_selected_percentage_contract_and_original_prompt (__main__.CandidateRevisionTests.test_json_polish_revision_keeps_selected_percentage_contract_and_original_prompt) ... ok\ntest_parallel_revision_reserves_only_one_last_quota_slot (__main__.CandidateRevisionTests.test_parallel_revision_reserves_only_one_last_quota_slot) ... ok\ntest_queued_revision_refuses_changed_manuscript_and_releases_reservation (__main__.CandidateRevisionTests.test_queued_revision_refuses_changed_manuscript_and_releases_reservation) ... ok\ntest_queued_revision_refuses_parent_rejected_after_creation (__main__.CandidateRevisionTests.test_queued_revision_refuses_parent_rejected_after_creation) ... ok\ntest_replayed_revision_returns_completed_child_after_manuscript_changes (__main__.CandidateRevisionTests.test_replayed_revision_returns_completed_child_after_manuscript_changes) ... ok\ntest_restore_preserves_candidate_equal_to_old_id_and_full_frozen_payload (__main__.CandidateRevisionTests.test_restore_preserves_candidate_equal_to_old_id_and_full_frozen_payload) ... ok\ntest_retry_of_revision_refuses_changed_source_before_new_reservation (__main__.CandidateRevisionTests.test_retry_of_revision_refuses_changed_source_before_new_reservation) ... ok\ntest_revision_parent_cannot_cross_project_or_branch (__main__.CandidateRevisionTests.test_revision_parent_cannot_cross_project_or_branch) ... ok\ntest_revision_requires_an_explicit_valid_request_identity (__main__.CandidateRevisionTests.test_revision_requires_an_explicit_valid_request_identity) ... ok\ntest_run_detail_parent_and_child_are_not_visible_across_project_or_branch (__main__.CandidateRevisionTests.test_run_detail_parent_and_child_are_not_visible_across_project_or_branch) ... ok\ntest_run_detail_reads_parent_and_child_without_dispatch_or_recent_queue (__main__.CandidateRevisionTests.test_run_detail_reads_parent_and_child_without_dispatch_or_recent_queue) ... ok\ntest_run_detail_returns_latest_revision_retry_in_a_multistep_chain (__main__.CandidateRevisionTests.test_run_detail_returns_latest_revision_retry_in_a_multistep_chain) ... ok\ntest_same_request_identity_cannot_be_reused_for_another_parent (__main__.CandidateRevisionTests.test_same_request_identity_cannot_be_reused_for_another_parent) ... ok\ntest_tampered_json_body_cannot_disagree_with_original_transport (__main__.CandidateRevisionTests.test_tampered_json_body_cannot_disagree_with_original_transport) ... ok\ntest_tampered_parent_transport_cannot_create_a_revision (__main__.CandidateRevisionTests.test_tampered_parent_transport_cannot_create_a_revision) ... ok\ntest_unknown_child_cannot_be_bypassed_with_another_revision_identity (__main__.CandidateRevisionTests.test_unknown_child_cannot_be_bypassed_with_another_revision_identity) ... ok\ntest_unknown_retry_successor_blocks_both_retry_routes (__main__.CandidateRevisionTests.test_unknown_retry_successor_blocks_both_retry_routes) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 12.409s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/23.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_analysis_workflow_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.05,
+      "output_tail": "test_accepting_review_does_not_claim_fix_and_empty_report_is_unverified (__main__.AnalysisWorkflowTests.test_accepting_review_does_not_claim_fix_and_empty_report_is_unverified) ... ok\ntest_caller_rollback_remains_in_control_after_decision (__main__.AnalysisWorkflowTests.test_caller_rollback_remains_in_control_after_decision) ... ok\ntest_edit_invalidates_automatic_summary_but_preserves_author_changes (__main__.AnalysisWorkflowTests.test_edit_invalidates_automatic_summary_but_preserves_author_changes) ... ok\ntest_edited_candidate_cannot_replace_its_original_quote (__main__.AnalysisWorkflowTests.test_edited_candidate_cannot_replace_its_original_quote) ... ok\ntest_evidence_review_decisions_and_stale_prior_chapter (__main__.AnalysisWorkflowTests.test_evidence_review_decisions_and_stale_prior_chapter) ... ok\ntest_late_analysis_and_old_confirmation_cannot_change_new_manuscript (__main__.AnalysisWorkflowTests.test_late_analysis_and_old_confirmation_cannot_change_new_manuscript) ... ok\ntest_mixed_callback_failure_rolls_back_all_candidates (__main__.AnalysisWorkflowTests.test_mixed_callback_failure_rolls_back_all_candidates) ... ok\ntest_model_review_can_only_quote_actual_sent_passage (__main__.AnalysisWorkflowTests.test_model_review_can_only_quote_actual_sent_passage) ... ok\ntest_review_repair_source_invalid_binding_never_changes_author_decision (__main__.AnalysisWorkflowTests.test_review_repair_source_invalid_binding_never_changes_author_decision) ... ok\ntest_review_repair_source_keeps_exact_second_duplicate_and_emoji_offsets (__main__.AnalysisWorkflowTests.test_review_repair_source_keeps_exact_second_duplicate_and_emoji_offsets) ... ok\ntest_review_repair_source_rechecks_all_related_passages_and_scope (__main__.AnalysisWorkflowTests.test_review_repair_source_rechecks_all_related_passages_and_scope) ... ok\ntest_review_repair_source_rejects_ambiguous_quote_without_exact_range (__main__.AnalysisWorkflowTests.test_review_repair_source_rejects_ambiguous_quote_without_exact_range) ... ok\ntest_review_repair_source_rejects_changed_manuscript (__main__.AnalysisWorkflowTests.test_review_repair_source_rejects_changed_manuscript) ... ok\ntest_review_repair_source_requires_explicit_evidence_for_multiple_passages (__main__.AnalysisWorkflowTests.test_review_repair_source_requires_explicit_evidence_for_multiple_passages) ... ok\ntest_review_repair_source_returns_revision_bound_replace_range (__main__.AnalysisWorkflowTests.test_review_repair_source_returns_revision_bound_replace_range) ... ok\ntest_same_revision_generation_and_decision_retry_are_idempotent (__main__.AnalysisWorkflowTests.test_same_revision_generation_and_decision_retry_are_idempotent) ... ok\ntest_saved_normal_prose_and_confirmed_handoff (__main__.AnalysisWorkflowTests.test_saved_normal_prose_and_confirmed_handoff) ... ok\ntest_scope_and_deleted_source_are_checked (__main__.AnalysisWorkflowTests.test_scope_and_deleted_source_are_checked) ... ok\ntest_unresolved_character_candidate_can_be_rejected_without_canon_write (__main__.AnalysisWorkflowTests.test_unresolved_character_candidate_can_be_rejected_without_canon_write) ... ok\ntest_unresolved_character_knowledge_requires_resolution_before_confirmation (__main__.AnalysisWorkflowTests.test_unresolved_character_knowledge_requires_resolution_before_confirmation) ... ok\n\n----------------------------------------------------------------------\nRan 20 tests in 0.012s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/24.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_commit_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.18,
+      "output_tail": "chapter commit fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/25.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/character_state_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.18,
+      "output_tail": "character state fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/26.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/context_http_fixtures.py",
+      "exit_code": 1,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.8,
+      "output_tail": "Traceback (most recent call last):\n  File \"./tests/context_http_fixtures.py\", line 438, in <module>\n    main()\n  File \"./tests/context_http_fixtures.py\", line 254, in main\n    assert context[\"context_budget\"][\"estimated_utf8_bytes\"] == actual_material_bytes, context[\"context_budget\"]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: {'profile': {'max_tokens': 24000, 'chapter_top_k': 1, 'recent_window': 1, 'memory_top_k': 3, 'record_top_k': 5}, 'retrieval': 'paragraph_bm25_cjk+recency+evidence', 'material_controlled': False, 'current_manuscript_fixed': True, 'query_hash': 'b5fa523158d154384460ea9a614d2518fc2051cead1f2a7f785362d42b555fc8', 'author_instruction_used': True, 'alias_matches': ['keeper', 'lan'], 'ambiguous_aliases': [], 'knowledge_scope': {'pov_entity_ids': ['lan'], 'narrator_mode': 'limited', 'filtered': [{'id': 'future-memory', 'kind': 'memory', 'reasons': ['future_source']}, {'id': 'future-time', 'kind': 'timeline', 'reasons': ['future_source', 'author_plan']}, {'id': 'villain-only', 'kind': 'character_state', 'reasons': ['pov_knowledge']}, {'id': 'chapter-28:rev_cbd7a169b29f48dea2aa43ca56787dc7:0:19', 'kind': 'chapter', 'reasons': ['future_source']}, {'id': 'chapter-29:rev_9dbe70e23cdc422aa2a9a1326190e0e3:0:22', 'kind': 'chapter', 'reasons': ['future_source']}, {'id': 'chapter-30:rev_94e79e6395fb4611a6fee9083ddd9522:0:896', 'kind': 'chapter', 'reasons': ['future_source']}, {'id': 'chapter-30:rev_94e79e6395fb4611a6fee9083ddd9522:896:1681', 'kind': 'chapter', 'reasons': ['future_source']}, {'id': 'chapter-30:rev_94e79e6395fb4611a6fee9083ddd9522:1682:1703', 'kind': 'chapter', 'reasons': ['future_source']}, {'id': 'chapter-30:rev_94e79e6395fb4611a6fee9083ddd9522:1704:2599', 'kind': 'chapter', 'reasons': ['future_source']}, {'id': 'chapter-30:rev_94e79e6395fb4611a6fee9083ddd9522:2599:3490', 'kind': 'chapter', 'reasons': ['future_source']}, {'id': 'chapter-30:rev_94e79e6395fb4611a6fee9083ddd9522:3490:4060', 'kind': 'chapter', 'reasons': ['future_source']}], 'filtered_count': 11, 'warnings': []}, 'max_tokens': 24000, 'max_context_utf8_bytes': 22143, 'prompt_reserve_bytes': 1857, 'token_estimator': 'utf8_bytes_conservative_estimate', 'token_count_exact': False, 'actual_input_tokens': None, 'truncation': {'applied': False, 'removed': [], 'clipped': [], 'pinned': []}, 'estimated_chars': 9027, 'estimated_tokens': 13708, 'estimated_utf8_bytes': 11851, 'context_item_ids': ['chapter-3', 'chapter-27', 'valid-memory', 'keeper', 'lan', 'ent_151908d5f55b42a2995aae7e40730095', 'ent_e3c8b349ebbc484292b63dfff00b83c4', 'villain'], 'retrieved_count': 1, 'previous_count': 1, 'retrieval_tiers': {'lexical': 1, 'recency': 1, 'evidence': 1, 'record': 5, 'author_plan': 0}}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/27.log",
+      "passed": false
+    },
+    {
+      "name": "Python fixtures: tests/context_pipeline_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.45,
+      "output_tail": "test_actual_30_100_300_chapter_retrieval (__main__.ContextPipelineTests.test_actual_30_100_300_chapter_retrieval) ... ok\ntest_body_scope_and_alias_ambiguity (__main__.ContextPipelineTests.test_body_scope_and_alias_ambiguity) ... ok\ntest_complete_and_selected_chapter_budget (__main__.ContextPipelineTests.test_complete_and_selected_chapter_budget) ... ok\ntest_instruction_changes_actual_ranked_material (__main__.ContextPipelineTests.test_instruction_changes_actual_ranked_material) ... ok\ntest_knowledge_scope_intersects_owner_declarations (__main__.ContextPipelineTests.test_knowledge_scope_intersects_owner_declarations) ... ok\ntest_memory_revision_scope_and_evidence_are_checked (__main__.ContextPipelineTests.test_memory_revision_scope_and_evidence_are_checked) ... ok\ntest_mutually_exclusive_scene_owners_remain_closed (__main__.ContextPipelineTests.test_mutually_exclusive_scene_owners_remain_closed) ... ok\ntest_ordinary_prose_analysis_dedup_and_staleness (__main__.ContextPipelineTests.test_ordinary_prose_analysis_dedup_and_staleness) ... ok\ntest_paragraph_chunks_do_not_change_source (__main__.ContextPipelineTests.test_paragraph_chunks_do_not_change_source) ... ok\ntest_private_chapter_and_ownerless_scene_remain_closed (__main__.ContextPipelineTests.test_private_chapter_and_ownerless_scene_remain_closed) ... ok\ntest_scene_permissions_narrow_chapter_knowledge (__main__.ContextPipelineTests.test_scene_permissions_narrow_chapter_knowledge) ... ok\ntest_semantic_review_requires_both_quotes_and_author_decision (__main__.ContextPipelineTests.test_semantic_review_requires_both_quotes_and_author_decision) ... ok\ntest_shared_search_scope (__main__.ContextPipelineTests.test_shared_search_scope) ... ok\ntest_small_budget_preserves_current_revision_and_exact_body (__main__.ContextPipelineTests.test_small_budget_preserves_current_revision_and_exact_body) ... ok\ntest_sources_reject_stale_wrong_and_ambiguous_quotes (__main__.ContextPipelineTests.test_sources_reject_stale_wrong_and_ambiguous_quotes) ... ok\ntest_story_time_belief_and_plans (__main__.ContextPipelineTests.test_story_time_belief_and_plans) ... ok\ntest_zero_limits_and_author_pinning (__main__.ContextPipelineTests.test_zero_limits_and_author_pinning) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 1.393s\n\nOK\n{\n  \"benchmark\": [\n    {\n      \"chapters\": 30,\n      \"labelled_queries\": 5,\n      \"actual_passage_recall\": 1.0,\n      \"missed_passages\": [],\n      \"illegal_material_count\": 0,\n      \"illegal_materials\": [],\n      \"context_build_seconds\": [\n        0.0594,\n        0.0104,\n        0.0107,\n        0.0103,\n        0.0102\n      ],\n      \"scope\": \"actual assemble_context output after budget; local lexical retrieval; fixed synthetic prose; no model\"\n    },\n    {\n      \"chapters\": 100,\n      \"labelled_queries\": 5,\n      \"actual_passage_recall\": 1.0,\n      \"missed_passages\": [],\n      \"illegal_material_count\": 0,\n      \"illegal_materials\": [],\n      \"context_build_seconds\": [\n        0.1544,\n        0.0355,\n        0.0342,\n        0.033,\n        0.033\n      ],\n      \"scope\": \"actual assemble_context output after budget; local lexical retrieval; fixed synthetic prose; no model\"\n    },\n    {\n      \"chapters\": 300,\n      \"labelled_queries\": 5,\n      \"actual_passage_recall\": 1.0,\n      \"missed_passages\": [],\n      \"illegal_material_count\": 0,\n      \"illegal_materials\": [],\n      \"context_build_seconds\": [\n        0.4461,\n        0.1014,\n        0.1033,\n        0.1023,\n        0.1044\n      ],\n      \"scope\": \"actual assemble_context output after budget; local lexical retrieval; fixed synthetic prose; no model\"\n    }\n  ],\n  \"passed\": true\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/28.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/corrupt_import_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.01,
+      "output_tail": "corrupt import fixtures passed: 5 rejected\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/29.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/frontend_story_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "frontend story fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/30.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/import_archive_lifecycle_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.81,
+      "output_tail": "127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/references/reference_27ac2f2f4f4b4dfda086d99112aa6720 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/references/reference_27ac2f2f4f4b4dfda086d99112aa6720/search?q=%E7%BA%A2%E9%93%9C%E7%BD%97%E7%9B%98 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/references/reference_27ac2f2f4f4b4dfda086d99112aa6720 HTTP/1.1\" 404 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/references/reference_27ac2f2f4f4b4dfda086d99112aa6720/search?q=%E7%BA%A2%E9%93%9C%E7%BD%97%E7%9B%98 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/references/reference_27ac2f2f4f4b4dfda086d99112aa6720 HTTP/1.1\" 404 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/references/reference_27ac2f2f4f4b4dfda086d99112aa6720/search?q=%E7%BA%A2%E9%93%9C%E7%BD%97%E7%9B%98 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/references HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 500 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/backups/backup_05131b25417342bdb9afb3f05acb4e67/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/ai/queue/drain HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/ai/queue?status=queued HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/backups/backup_05131b25417342bdb9afb3f05acb4e67/restore HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"POST /api/import/apply HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:50:18+00:00] \"GET /api/projects HTTP/1.1\" 200 -\nimport/archive HTTP lifecycle fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/31.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/literary_evaluation_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 25.43,
+      "output_tail": "_report_revalidates_evidence_in_saved_complete_grades) ... ok\ntest_returned_judge_aliases_cannot_satisfy_distinct_model_story_coverage (__main__.EvaluationTests.test_returned_judge_aliases_cannot_satisfy_distinct_model_story_coverage) ... ok\ntest_reviewed_story_gate_requires_both_orders_for_each_judge_and_keeps_thirty_threshold (__main__.EvaluationTests.test_reviewed_story_gate_requires_both_orders_for_each_judge_and_keeps_thirty_threshold) ... ok\ntest_reviewed_story_gate_requires_thirty_stories_for_every_comparator (__main__.EvaluationTests.test_reviewed_story_gate_requires_thirty_stories_for_every_comparator) ... ok\ntest_same_grades_in_new_runs_have_distinct_external_request_ids_and_resume_skips_them (__main__.EvaluationTests.test_same_grades_in_new_runs_have_distinct_external_request_ids_and_resume_skips_them) ... ok\ntest_same_stream_setting_and_usage_request_apply_to_all_writer_arms (__main__.EvaluationTests.test_same_stream_setting_and_usage_request_apply_to_all_writer_arms) ... ok\ntest_same_writer_samples_in_new_runs_have_distinct_external_request_ids (__main__.EvaluationTests.test_same_writer_samples_in_new_runs_have_distinct_external_request_ids) ... ok\ntest_sample_validation_accepts_quoted_markers_and_ordinary_novel_monologues (__main__.EvaluationTests.test_sample_validation_accepts_quoted_markers_and_ordinary_novel_monologues) ... ok\ntest_sample_validation_blocks_reasoning_field_when_request_disabled_it (__main__.EvaluationTests.test_sample_validation_blocks_reasoning_field_when_request_disabled_it) ... ok\ntest_sample_validation_enforces_absolute_relative_lengths_and_planning_markers (__main__.EvaluationTests.test_sample_validation_enforces_absolute_relative_lengths_and_planning_markers) ... ok\ntest_sample_validation_rejects_inconsistent_truncation_and_sse_tail (__main__.EvaluationTests.test_sample_validation_rejects_inconsistent_truncation_and_sse_tail) ... ok\ntest_sample_validation_uses_shared_writing_markers_and_preserves_original_text (__main__.EvaluationTests.test_sample_validation_uses_shared_writing_markers_and_preserves_original_text) ... ok\ntest_saved_sample_genre_mismatch_cannot_count_as_reviewed_story (__main__.EvaluationTests.test_saved_sample_genre_mismatch_cannot_count_as_reviewed_story) ... ok\ntest_saved_sample_task_mismatch_cannot_count_as_reviewed_story (__main__.EvaluationTests.test_saved_sample_task_mismatch_cannot_count_as_reviewed_story) ... ok\ntest_self_grading_or_single_judge_is_rejected (__main__.EvaluationTests.test_self_grading_or_single_judge_is_rejected) ... ok\ntest_single_judge_plan_is_rejected_by_direct_judge_and_report_calls (__main__.EvaluationTests.test_single_judge_plan_is_rejected_by_direct_judge_and_report_calls) ... ok\ntest_single_valid_judge_hard_violation_is_preserved_without_both_orders (__main__.EvaluationTests.test_single_valid_judge_hard_violation_is_preserved_without_both_orders) ... ok\ntest_soft_target_is_preserved_for_frozen_literary_cases_without_changing_hard_gate (__main__.EvaluationTests.test_soft_target_is_preserved_for_frozen_literary_cases_without_changing_hard_gate) ... ok\ntest_tampered_frozen_request_is_rejected_before_dispatch (__main__.EvaluationTests.test_tampered_frozen_request_is_rejected_before_dispatch) ... ok\ntest_thirty_generated_stories_without_grades_preserve_observed_and_reviewed_scope (__main__.EvaluationTests.test_thirty_generated_stories_without_grades_preserve_observed_and_reviewed_scope) ... ok\ntest_thirty_planned_stories_without_candidates_do_not_pass_reviewed_story_gate (__main__.EvaluationTests.test_thirty_planned_stories_without_candidates_do_not_pass_reviewed_story_gate) ... ok\ntest_two_judge_aliases_returning_one_model_do_not_prove_two_judges (__main__.EvaluationTests.test_two_judge_aliases_returning_one_model_do_not_prove_two_judges) ... ok\ntest_two_new_request_limit_pauses_and_resume_uses_only_new_ids (__main__.EvaluationTests.test_two_new_request_limit_pauses_and_resume_uses_only_new_ids) ... ok\ntest_two_unknown_failures_stop_without_reserving_or_dispatching_a_third (__main__.EvaluationTests.test_two_unknown_failures_stop_without_reserving_or_dispatching_a_third) ... ok\ntest_unfrozen_length_requirements_use_shared_chinese_rules (__main__.EvaluationTests.test_unfrozen_length_requirements_use_shared_chinese_rules) ... ok\ntest_v5_archived_body_is_detected_without_rewriting_historical_record (__main__.EvaluationTests.test_v5_archived_body_is_detected_without_rewriting_historical_record) ... ok\ntest_writer_interrupt_during_final_ledger_save_preserves_complete_response (__main__.EvaluationTests.test_writer_interrupt_during_final_ledger_save_preserves_complete_response) ... ok\ntest_wrong_saved_request_hash_refuses_recovery_and_preserves_checkpoint (__main__.EvaluationTests.test_wrong_saved_request_hash_refuses_recovery_and_preserves_checkpoint) ... ok\n\n----------------------------------------------------------------------\nRan 95 tests in 25.347s\n\nOK\n/private<temporary-root>/moyu-literary-fixture-w40ger6y/fresh-run/plan.json\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/32.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/longform_knowledge_scope_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "longform knowledge-scope fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/33.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/manuscript_import_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.06,
+      "output_tail": "test_damaged_binary_empty_and_unsupported_files_are_rejected (__main__.ImportParsingTests.test_damaged_binary_empty_and_unsupported_files_are_rejected) ... ok\ntest_epub_duplicate_zip_members_and_crc_damage_are_rejected (__main__.ImportParsingTests.test_epub_duplicate_zip_members_and_crc_damage_are_rejected) ... ok\ntest_epub_inline_text_image_alt_and_empty_spine_item (__main__.ImportParsingTests.test_epub_inline_text_image_alt_and_empty_spine_item) ... ok\ntest_epub_traversal_entities_missing_member_and_remote_body_rejected (__main__.ImportParsingTests.test_epub_traversal_entities_missing_member_and_remote_body_rejected) ... ok\ntest_epub_two_public_doctype_is_local_and_entity_subset_is_rejected (__main__.ImportParsingTests.test_epub_two_public_doctype_is_local_and_entity_subset_is_rejected) ... ok\ntest_epub_uses_spine_order_and_preserves_notes_and_duplicate_titles (__main__.ImportParsingTests.test_epub_uses_spine_order_and_preserves_notes_and_duplicate_titles) ... ok\ntest_extreme_single_chapter_splits_without_loss (__main__.ImportParsingTests.test_extreme_single_chapter_splits_without_loss) ... ok\ntest_gb18030_and_utf8_bom_preserve_every_codepoint (__main__.ImportParsingTests.test_gb18030_and_utf8_bom_preserve_every_codepoint) ... ok\ntest_markdown_title_preface_and_fenced_pseudo_headings (__main__.ImportParsingTests.test_markdown_title_preface_and_fenced_pseudo_headings) ... ok\ntest_no_heading_is_one_exact_chapter (__main__.ImportParsingTests.test_no_heading_is_one_exact_chapter) ... ok\ntest_split_and_merge_preview_only_changes_boundaries_and_titles (__main__.ImportParsingTests.test_split_and_merge_preview_only_changes_boundaries_and_titles) ... ok\ntest_utf8_short_preface_duplicate_and_empty_chapter_are_retained (__main__.ImportParsingTests.test_utf8_short_preface_duplicate_and_empty_chapter_are_retained) ... ok\ntest_epub_original_bytes_and_format_losses_survive_archive (__main__.ReferenceWorkflowTests.test_epub_original_bytes_and_format_losses_survive_archive) ... ok\ntest_original_archive_is_exact_private_and_rollbackable (__main__.ReferenceWorkflowTests.test_original_archive_is_exact_private_and_rollbackable) ... ok\ntest_reference_exact_provenance_idempotency_and_search_scope (__main__.ReferenceWorkflowTests.test_reference_exact_provenance_idempotency_and_search_scope) ... ok\ntest_reference_search_reports_a_bounded_complete_section_subset (__main__.ReferenceWorkflowTests.test_reference_search_reports_a_bounded_complete_section_subset) ... ok\ntest_reference_write_caller_rollback_and_source_mismatch (__main__.ReferenceWorkflowTests.test_reference_write_caller_rollback_and_source_mismatch) ... ok\n\n----------------------------------------------------------------------\nRan 17 tests in 0.011s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/34.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/model_settings_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.09,
+      "output_tail": "test_authorization_failure_is_saved_with_unknown_charge (__main__.ModelSettingsTests.test_authorization_failure_is_saved_with_unknown_charge) ... ok\ntest_configuration_change_during_probe_invalidates_success (__main__.ModelSettingsTests.test_configuration_change_during_probe_invalidates_success) ... ok\ntest_disabled_thinking_with_reasoning_fails_without_exposing_reasoning (__main__.ModelSettingsTests.test_disabled_thinking_with_reasoning_fails_without_exposing_reasoning) ... ok\ntest_extra_punctuation_is_not_the_exact_requested_reply (__main__.ModelSettingsTests.test_extra_punctuation_is_not_the_exact_requested_reply) ... ok\ntest_legacy_stop_only_success_is_read_as_unverified_without_rewriting_audit (__main__.ModelSettingsTests.test_legacy_stop_only_success_is_read_as_unverified_without_rewriting_audit) ... ok\ntest_length_finish_is_not_protocol_complete (__main__.ModelSettingsTests.test_length_finish_is_not_protocol_complete) ... ok\ntest_missing_model_name_cannot_verify_requested_identity (__main__.ModelSettingsTests.test_missing_model_name_cannot_verify_requested_identity) ... ok\ntest_model_mismatch_is_preserved_and_not_reported_healthy (__main__.ModelSettingsTests.test_model_mismatch_is_preserved_and_not_reported_healthy) ... ok\ntest_one_character_stop_records_completion_but_fails_response (__main__.ModelSettingsTests.test_one_character_stop_records_completion_but_fails_response) ... ok\ntest_partial_usage_does_not_turn_known_connection_into_failure (__main__.ModelSettingsTests.test_partial_usage_does_not_turn_known_connection_into_failure) ... ok\ntest_reasoning_alias_and_unknown_shapes_fail_probe_but_null_is_allowed (__main__.ModelSettingsTests.test_reasoning_alias_and_unknown_shapes_fail_probe_but_null_is_allowed) ... ok\ntest_requested_reasoning_does_not_fail_a_valid_probe (__main__.ModelSettingsTests.test_requested_reasoning_does_not_fail_a_valid_probe) ... ok\ntest_same_settings_preserve_valid_probe_but_model_change_clears_it (__main__.ModelSettingsTests.test_same_settings_preserve_valid_probe_but_model_change_clears_it) ... ok\ntest_valid_reply_matches_requested_model_and_current_rules (__main__.ModelSettingsTests.test_valid_reply_matches_requested_model_and_current_rules) ... ok\n\n----------------------------------------------------------------------\nRan 14 tests in 1.029s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/35.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/output_contract_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.05,
+      "output_tail": "ute_range) ... ok\ntest_imperative_lengths_with_have_are_enforced (__main__.OutputContractTests.test_imperative_lengths_with_have_are_enforced) ... ok\ntest_imperative_story_lengths_are_not_output_requirements (__main__.OutputContractTests.test_imperative_story_lengths_are_not_output_requirements) ... ok\ntest_invalid_numerals_do_not_silently_remove_or_change_length_gate (__main__.OutputContractTests.test_invalid_numerals_do_not_silently_remove_or_change_length_gate) ... ok\ntest_no_explicit_length_does_not_invent_a_contract (__main__.OutputContractTests.test_no_explicit_length_does_not_invent_a_contract) ... ok\ntest_non_body_tasks_do_not_flag_authorial_words_as_planning (__main__.OutputContractTests.test_non_body_tasks_do_not_flag_authorial_words_as_planning) ... ok\ntest_non_whitespace_count_includes_punctuation (__main__.OutputContractTests.test_non_whitespace_count_includes_punctuation) ... ok\ntest_normal_novel_monologues_with_similar_words_are_not_overfiltered (__main__.OutputContractTests.test_normal_novel_monologues_with_similar_words_are_not_overfiltered) ... ok\ntest_numbers_in_story_instructions_are_not_length_requirements (__main__.OutputContractTests.test_numbers_in_story_instructions_are_not_length_requirements) ... ok\ntest_one_sided_contracts_do_not_infer_bounds_from_soft_target (__main__.OutputContractTests.test_one_sided_contracts_do_not_infer_bounds_from_soft_target) ... ok\ntest_planning_markers_are_high_confidence_and_line_anchored (__main__.OutputContractTests.test_planning_markers_are_high_confidence_and_line_anchored) ... ok\ntest_prompt_constraints_are_noop_for_structured_tasks (__main__.OutputContractTests.test_prompt_constraints_are_noop_for_structured_tasks) ... ok\ntest_prompt_constraints_for_unspecified_length_only_adds_safe_output_rule (__main__.OutputContractTests.test_prompt_constraints_for_unspecified_length_only_adds_safe_output_rule) ... ok\ntest_prompt_constraints_preserve_contract_and_do_not_rewrite_author_text (__main__.OutputContractTests.test_prompt_constraints_preserve_contract_and_do_not_rewrite_author_text) ... ok\ntest_prompt_uses_stored_target_and_preserves_original_bytes (__main__.OutputContractTests.test_prompt_uses_stored_target_and_preserves_original_bytes) ... ok\ntest_quantities_distances_years_and_story_text_are_not_soft_targets (__main__.OutputContractTests.test_quantities_distances_years_and_story_text_are_not_soft_targets) ... ok\ntest_quoted_output_bounds_are_enforced_without_changing_author_text (__main__.OutputContractTests.test_quoted_output_bounds_are_enforced_without_changing_author_text) ... ok\ntest_quoted_story_bounds_and_dialogue_do_not_become_output_requirements (__main__.OutputContractTests.test_quoted_story_bounds_and_dialogue_do_not_become_output_requirements) ... ok\ntest_relative_polish_can_use_a_verified_count_without_source_text (__main__.OutputContractTests.test_relative_polish_can_use_a_verified_count_without_source_text) ... ok\ntest_relative_polish_uses_request_scope_not_outer_full_chapter (__main__.OutputContractTests.test_relative_polish_uses_request_scope_not_outer_full_chapter) ... ok\ntest_relative_requirement_without_request_range_stays_unresolved (__main__.OutputContractTests.test_relative_requirement_without_request_range_stays_unresolved) ... ok\ntest_relative_soft_target_uses_verified_request_range (__main__.OutputContractTests.test_relative_soft_target_uses_verified_request_range) ... ok\ntest_short_bounded_continue_keeps_author_events_and_original_length_gate (__main__.OutputContractTests.test_short_bounded_continue_keeps_author_events_and_original_length_gate) ... ok\ntest_short_fragment_guidance_is_scoped_to_bounded_continuation (__main__.OutputContractTests.test_short_fragment_guidance_is_scoped_to_bounded_continuation) ... ok\ntest_soft_target_alone_does_not_invent_a_range (__main__.OutputContractTests.test_soft_target_alone_does_not_invent_a_range) ... ok\ntest_soft_target_is_not_a_new_hard_acceptance_limit (__main__.OutputContractTests.test_soft_target_is_not_a_new_hard_acceptance_limit) ... ok\ntest_soft_target_outside_range_and_conflicting_targets_are_rejected (__main__.OutputContractTests.test_soft_target_outside_range_and_conflicting_targets_are_rejected) ... ok\ntest_unresolved_and_one_sided_relative_contracts_do_not_adopt_soft_target (__main__.OutputContractTests.test_unresolved_and_one_sided_relative_contracts_do_not_adopt_soft_target) ... ok\ntest_v5_marker_phrases_in_quoted_dialogue_are_not_overfiltered (__main__.OutputContractTests.test_v5_marker_phrases_in_quoted_dialogue_are_not_overfiltered) ... ok\ntest_v5_writing_self_talk_and_explicit_body_plans_are_detected (__main__.OutputContractTests.test_v5_writing_self_talk_and_explicit_body_plans_are_detected) ... ok\ntest_validate_checks_punctuation_and_whitespace_boundaries (__main__.OutputContractTests.test_validate_checks_punctuation_and_whitespace_boundaries) ... ok\n\n----------------------------------------------------------------------\nRan 45 tests in 0.006s\n\nOK\n{\"passed\": true}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/36.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_backup_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.06,
+      "output_tail": "test_capture_includes_workflow_children_and_excludes_foreign_book (__main__.PlanningBackupTests.test_capture_includes_workflow_children_and_excludes_foreign_book) ... ok\ntest_capture_rows_are_stable_and_candidate_hashes_are_preserved (__main__.PlanningBackupTests.test_capture_rows_are_stable_and_candidate_hashes_are_preserved) ... ok\ntest_completed_application_final_hash_matches_restored_frozen_blueprint (__main__.PlanningBackupTests.test_completed_application_final_hash_matches_restored_frozen_blueprint) ... ok\ntest_invalid_child_workflow_is_rejected_before_target_mutation (__main__.PlanningBackupTests.test_invalid_child_workflow_is_rejected_before_target_mutation) ... ok\ntest_queued_and_running_attempts_restore_as_unknown (__main__.PlanningBackupTests.test_queued_and_running_attempts_restore_as_unknown) ... ok\ntest_restored_workflows_cannot_dispatch_or_confirm_and_refresh_is_read_only (__main__.PlanningBackupTests.test_restored_workflows_cannot_dispatch_or_confirm_and_refresh_is_read_only) ... ok\ntest_transplant_maps_relational_ids_but_keeps_historical_planning_json (__main__.PlanningBackupTests.test_transplant_maps_relational_ids_but_keeps_historical_planning_json) ... ok\ntest_transplant_preserves_completed_candidate_for_reading_but_does_not_resume_job (__main__.PlanningBackupTests.test_transplant_preserves_completed_candidate_for_reading_but_does_not_resume_job) ... ok\ntest_unknown_external_attempt_never_becomes_queued_on_restore (__main__.PlanningBackupTests.test_unknown_external_attempt_never_becomes_queued_on_restore) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 0.011s\n\nOK\n{\"passed\": true}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/37.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_http_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 10.49,
+      "output_tail": "test_archive_restores_confirmed_plan_and_application_without_model_calls (__main__.PlanningHTTPTests.test_archive_restores_confirmed_plan_and_application_without_model_calls) ... ok\ntest_archive_restores_unconfirmed_unknown_and_queued_workflows_without_dispatch (__main__.PlanningHTTPTests.test_archive_restores_unconfirmed_unknown_and_queued_workflows_without_dispatch) ... ok\ntest_cancel_queued_stage_releases_reservation_without_dispatch_or_losing_prior_confirmation (__main__.PlanningHTTPTests.test_cancel_queued_stage_releases_reservation_without_dispatch_or_losing_prior_confirmation) ... ok\ntest_concurrent_start_creates_one_job_and_one_reservation (__main__.PlanningHTTPTests.test_concurrent_start_creates_one_job_and_one_reservation) ... ok\ntest_duplicate_start_and_unconfirmed_start_do_not_duplicate_jobs_or_reservations (__main__.PlanningHTTPTests.test_duplicate_start_and_unconfirmed_start_do_not_duplicate_jobs_or_reservations) ... ok\ntest_external_blueprint_change_blocks_stage_start_confirmation_and_final_application (__main__.PlanningHTTPTests.test_external_blueprint_change_blocks_stage_start_confirmation_and_final_application) ... ok\ntest_four_stages_preserve_confirmations_and_only_final_apply_updates_blueprint (__main__.PlanningHTTPTests.test_four_stages_preserve_confirmations_and_only_final_apply_updates_blueprint) ... ok\ntest_model_changed_stable_ids_fail_without_replacing_confirmed_plan (__main__.PlanningHTTPTests.test_model_changed_stable_ids_fail_without_replacing_confirmed_plan) ... ok\ntest_new_planning_materialization_creates_new_chapters_and_preserves_previous_manuscript (__main__.PlanningHTTPTests.test_new_planning_materialization_creates_new_chapters_and_preserves_previous_manuscript) ... ok\ntest_source_changes_while_queued_block_provider_dispatch_and_release_reservation (__main__.PlanningHTTPTests.test_source_changes_while_queued_block_provider_dispatch_and_release_reservation) ... ok\ntest_task_detail_and_queue_expose_only_the_planning_identity (__main__.PlanningHTTPTests.test_task_detail_and_queue_expose_only_the_planning_identity) ... ok\ntest_third_stage_failure_retries_only_that_stage_and_preserves_confirmed_stages (__main__.PlanningHTTPTests.test_third_stage_failure_retries_only_that_stage_and_preserves_confirmed_stages) ... ok\ntest_unknown_dispatch_cannot_start_a_second_attempt_or_lose_prior_confirmations (__main__.PlanningHTTPTests.test_unknown_dispatch_cannot_start_a_second_attempt_or_lose_prior_confirmations) ... ok\ntest_workflows_are_isolated_by_project_and_branch (__main__.PlanningHTTPTests.test_workflows_are_isolated_by_project_and_branch) ... ok\ntest_wrong_confirmation_identity_cannot_advance_or_write_any_data (__main__.PlanningHTTPTests.test_wrong_confirmation_identity_cannot_advance_or_write_any_data) ... ok\n\n----------------------------------------------------------------------\nRan 15 tests in 10.393s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/38.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_workflow_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.22,
+      "output_tail": "test_all_four_confirmed_stages_build_valid_blueprint_without_writing_application_data (__main__.PlanningWorkflowTests.test_all_four_confirmed_stages_build_valid_blueprint_without_writing_application_data) ... ok\ntest_caller_rollback_owns_the_full_workflow_and_queue_transaction (__main__.PlanningWorkflowTests.test_caller_rollback_owns_the_full_workflow_and_queue_transaction) ... ok\ntest_cancel_queued_and_running_attempts_preserves_unknown_cost (__main__.PlanningWorkflowTests.test_cancel_queued_and_running_attempts_preserves_unknown_cost) ... ok\ntest_changed_unknown_error_is_recorded_once_and_does_not_allow_retry (__main__.PlanningWorkflowTests.test_changed_unknown_error_is_recorded_once_and_does_not_allow_retry) ... ok\ntest_concurrent_start_creates_only_one_durable_job (__main__.PlanningWorkflowTests.test_concurrent_start_creates_only_one_durable_job) ... ok\ntest_confirm_requires_current_complete_attempt_and_matching_hash (__main__.PlanningWorkflowTests.test_confirm_requires_current_complete_attempt_and_matching_hash) ... ok\ntest_confirmation_event_failure_rolls_back_attempt_and_stage (__main__.PlanningWorkflowTests.test_confirmation_event_failure_rolls_back_attempt_and_stage) ... ok\ntest_create_callback_failure_rolls_back_attempt_and_quota (__main__.PlanningWorkflowTests.test_create_callback_failure_rolls_back_attempt_and_quota) ... ok\ntest_creation_defaults_and_unique_workflow_ids (__main__.PlanningWorkflowTests.test_creation_defaults_and_unique_workflow_ids) ... ok\ntest_cross_project_scope_and_branch_ownership_are_rejected (__main__.PlanningWorkflowTests.test_cross_project_scope_and_branch_ownership_are_rejected) ... ok\ntest_each_stage_receives_frozen_previously_confirmed_content (__main__.PlanningWorkflowTests.test_each_stage_receives_frozen_previously_confirmed_content) ... ok\ntest_failed_attempt_can_be_manually_retried_and_unknown_cannot (__main__.PlanningWorkflowTests.test_failed_attempt_can_be_manually_retried_and_unknown_cannot) ... ok\ntest_missing_foreign_or_changed_ids_are_rejected_before_confirmation (__main__.PlanningWorkflowTests.test_missing_foreign_or_changed_ids_are_rejected_before_confirmation) ... ok\ntest_new_workflows_have_disjoint_volume_chapter_and_scene_identities (__main__.PlanningWorkflowTests.test_new_workflows_have_disjoint_volume_chapter_and_scene_identities) ... ok\ntest_protocol_incomplete_and_invalid_structure_cannot_be_confirmed (__main__.PlanningWorkflowTests.test_protocol_incomplete_and_invalid_structure_cannot_be_confirmed) ... ok\ntest_queued_cancellation_without_dispatch_can_be_manually_retried (__main__.PlanningWorkflowTests.test_queued_cancellation_without_dispatch_can_be_manually_retried) ... ok\ntest_restart_preserves_attempt_and_refresh_is_idempotent (__main__.PlanningWorkflowTests.test_restart_preserves_attempt_and_refresh_is_idempotent) ... ok\ntest_saved_candidate_tampering_is_detected (__main__.PlanningWorkflowTests.test_saved_candidate_tampering_is_detected) ... ok\ntest_schema_install_preserves_open_transaction_and_plain_tuple_connections (__main__.PlanningWorkflowTests.test_schema_install_preserves_open_transaction_and_plain_tuple_connections) ... ok\ntest_schema_matches_four_stages_and_is_a_fresh_copy (__main__.PlanningWorkflowTests.test_schema_matches_four_stages_and_is_a_fresh_copy) ... ok\ntest_source_blueprint_version_or_content_change_blocks_new_stage_and_confirmation (__main__.PlanningWorkflowTests.test_source_blueprint_version_or_content_change_blocks_new_stage_and_confirmation) ... ok\ntest_start_has_one_local_job_and_unchanged_source_snapshot (__main__.PlanningWorkflowTests.test_start_has_one_local_job_and_unchanged_source_snapshot) ... ok\ntest_unchanged_active_job_polls_do_not_rewrite_attempt_or_append_events (__main__.PlanningWorkflowTests.test_unchanged_active_job_polls_do_not_rewrite_attempt_or_append_events) ... ok\ntest_unknown_can_recover_only_by_polling_the_same_durable_job (__main__.PlanningWorkflowTests.test_unknown_can_recover_only_by_polling_the_same_durable_job) ... ok\ntest_workflow_identities_stay_stable_across_retry_confirmation_and_restart (__main__.PlanningWorkflowTests.test_workflow_identities_stay_stable_across_retry_confirmation_and_restart) ... ok\n\n----------------------------------------------------------------------\nRan 25 tests in 0.169s\n\nOK\n{\"passed\": true}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/39.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/projection_health_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.18,
+      "output_tail": "projection health fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/40.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/prose_output_http_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 12.78,
+      "output_tail": "test_complete_one_character_stop_is_retained_but_not_adoptable (__main__.ProseOutputHTTPTests.test_complete_one_character_stop_is_retained_but_not_adoptable) ... ok\ntest_complete_oversize_is_retained_but_accepted_cannot_change_manuscript (__main__.ProseOutputHTTPTests.test_complete_oversize_is_retained_but_accepted_cannot_change_manuscript) ... ok\ntest_disabled_thinking_mismatch_blocks_application_and_revision_without_retry (__main__.ProseOutputHTTPTests.test_disabled_thinking_mismatch_blocks_application_and_revision_without_retry) ... ok\ntest_edited_oversize_and_planning_still_fail_without_side_effects (__main__.ProseOutputHTTPTests.test_edited_oversize_and_planning_still_fail_without_side_effects) ... ok\ntest_json_oversize_content_is_rechecked_on_accepted_and_edited_application (__main__.ProseOutputHTTPTests.test_json_oversize_content_is_rechecked_on_accepted_and_edited_application) ... ok\ntest_json_planning_content_is_blocked_until_author_cleans_the_body (__main__.ProseOutputHTTPTests.test_json_planning_content_is_blocked_until_author_cleans_the_body) ... ok\ntest_json_polish_revision_keeps_selection_scope_and_replaces_only_selection (__main__.ProseOutputHTTPTests.test_json_polish_revision_keeps_selection_scope_and_replaces_only_selection) ... ok\ntest_json_prose_applies_only_content_and_preserves_transport_record (__main__.ProseOutputHTTPTests.test_json_prose_applies_only_content_and_preserves_transport_record) ... ok\ntest_later_request_and_application_fields_cannot_expand_old_contract (__main__.ProseOutputHTTPTests.test_later_request_and_application_fields_cannot_expand_old_contract) ... ok\ntest_manual_unicode_cleanup_can_be_applied_once_with_original_contract (__main__.ProseOutputHTTPTests.test_manual_unicode_cleanup_can_be_applied_once_with_original_contract) ... ok\ntest_oversize_revision_preserves_full_parent_and_applies_one_child_once (__main__.ProseOutputHTTPTests.test_oversize_revision_preserves_full_parent_and_applies_one_child_once) ... ok\ntest_polish_relative_contract_uses_exact_selected_unicode_prose (__main__.ProseOutputHTTPTests.test_polish_relative_contract_uses_exact_selected_unicode_prose) ... ok\ntest_provider_issue_checks_old_alias_or_invalid_shapes_without_rewriting_record (__main__.ProseOutputHTTPTests.test_provider_issue_checks_old_alias_or_invalid_shapes_without_rewriting_record) ... ok\ntest_queued_settings_changes_do_not_change_frozen_contract_or_prompt (__main__.ProseOutputHTTPTests.test_queued_settings_changes_do_not_change_frozen_contract_or_prompt) ... ok\ntest_reasoning_alias_and_unknown_shapes_cannot_bypass_good_prose_with_manual_edits (__main__.ProseOutputHTTPTests.test_reasoning_alias_and_unknown_shapes_cannot_bypass_good_prose_with_manual_edits) ... ok\ntest_revision_rejects_already_adopted_parent_before_any_new_job_or_call (__main__.ProseOutputHTTPTests.test_revision_rejects_already_adopted_parent_before_any_new_job_or_call) ... ok\ntest_revision_rejects_manually_edited_parent_before_any_new_job_or_call (__main__.ProseOutputHTTPTests.test_revision_rejects_manually_edited_parent_before_any_new_job_or_call) ... ok\ntest_revision_rejects_old_manuscript_before_any_new_job_or_call (__main__.ProseOutputHTTPTests.test_revision_rejects_old_manuscript_before_any_new_job_or_call) ... ok\ntest_revision_rejects_unknown_provider_execution_without_resending (__main__.ProseOutputHTTPTests.test_revision_rejects_unknown_provider_execution_without_resending) ... ok\n\n----------------------------------------------------------------------\nRan 19 tests in 12.691s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/41.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/provider_protocol_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 3.08,
+      "output_tail": "on_changes (__main__.ProtocolTests.test_frozen_request_preserves_thinking_when_current_configuration_changes) ... ok\ntest_idle_and_total_deadline_stop_transport (__main__.ProtocolTests.test_idle_and_total_deadline_stop_transport) ... ok\ntest_interrupt_after_usage_keeps_partial_story_usage_and_protocol (__main__.ProtocolTests.test_interrupt_after_usage_keeps_partial_story_usage_and_protocol) ... ok\ntest_invalid_protocol_values_are_rejected (__main__.ProtocolTests.test_invalid_protocol_values_are_rejected) ... ok\ntest_invalid_reasoning_count_survives_bounded_shape_truncation (__main__.ProtocolTests.test_invalid_reasoning_count_survives_bounded_shape_truncation) ... ok\ntest_invalid_thinking_objects_and_efforts_are_rejected_before_dispatch (__main__.ProtocolTests.test_invalid_thinking_objects_and_efforts_are_rejected_before_dispatch) ... ok\ntest_invalid_token_types_never_become_reported_usage_or_lose_valid_counts (__main__.ProtocolTests.test_invalid_token_types_never_become_reported_usage_or_lose_valid_counts) ... ok\ntest_known_usage_survives_eof_and_partial_usage_survives_keyboard_interrupt (__main__.ProtocolTests.test_known_usage_survives_eof_and_partial_usage_survives_keyboard_interrupt) ... ok\ntest_length_with_done_is_not_complete (__main__.ProtocolTests.test_length_with_done_is_not_complete) ... ok\ntest_long_header_wait_and_json_thinking_use_total_deadline_not_stream_idle (__main__.ProtocolTests.test_long_header_wait_and_json_thinking_use_total_deadline_not_stream_idle) ... ok\ntest_model_name_does_not_add_or_convert_explicit_reasoning_parameters (__main__.ProtocolTests.test_model_name_does_not_add_or_convert_explicit_reasoning_parameters) ... ok\ntest_multiline_heartbeats_and_reported_usage (__main__.ProtocolTests.test_multiline_heartbeats_and_reported_usage) ... ok\ntest_nonstream_finish_reason_and_stream_json_fallback (__main__.ProtocolTests.test_nonstream_finish_reason_and_stream_json_fallback) ... ok\ntest_parameter_priority_keeps_saved_temperature_above_legacy_default (__main__.ProtocolTests.test_parameter_priority_keeps_saved_temperature_above_legacy_default) ... ok\ntest_partial_usage_survives_stream_error_length_eof_and_cancel (__main__.ProtocolTests.test_partial_usage_survives_stream_error_length_eof_and_cancel) ... ok\ntest_reasoning_alias_and_invalid_shapes_are_counted_without_retaining_contents (__main__.ProtocolTests.test_reasoning_alias_and_invalid_shapes_are_counted_without_retaining_contents) ... ok\ntest_reasoning_is_observed_without_becoming_story_or_saved_content (__main__.ProtocolTests.test_reasoning_is_observed_without_becoming_story_or_saved_content) ... ok\ntest_reasoning_only_empty_reply_retains_protocol_evidence (__main__.ProtocolTests.test_reasoning_only_empty_reply_retains_protocol_evidence) ... ok\ntest_redirect_is_not_followed (__main__.ProtocolTests.test_redirect_is_not_followed) ... ok\ntest_request_validation_prevents_malformed_calls (__main__.ProtocolTests.test_request_validation_prevents_malformed_calls) ... ok\ntest_response_size_is_bounded (__main__.ProtocolTests.test_response_size_is_bounded) ... ok\ntest_schema_accepts_valid_json_task (__main__.ProtocolTests.test_schema_accepts_valid_json_task) ... ok\ntest_secret_in_usage_field_names_is_redacted_recursively (__main__.ProtocolTests.test_secret_in_usage_field_names_is_redacted_recursively) ... ok\ntest_secret_redaction_spans_network_chunks (__main__.ProtocolTests.test_secret_redaction_spans_network_chunks) ... ok\ntest_specific_reasoning_setting_replaces_inherited_representation (__main__.ProtocolTests.test_specific_reasoning_setting_replaces_inherited_representation) ... ok\ntest_stream_usage_merges_partial_fields_without_summing_repeated_snapshots (__main__.ProtocolTests.test_stream_usage_merges_partial_fields_without_summing_repeated_snapshots) ... ok\ntest_stream_usage_regression_or_conflict_remains_untrusted_after_coherent_tail (__main__.ProtocolTests.test_stream_usage_regression_or_conflict_remains_untrusted_after_coherent_tail) ... ok\ntest_thinking_and_compatible_effort_must_agree_within_one_layer (__main__.ProtocolTests.test_thinking_and_compatible_effort_must_agree_within_one_layer) ... ok\ntest_timeout_cannot_automatically_retry (__main__.ProtocolTests.test_timeout_cannot_automatically_retry) ... ok\ntest_unknown_finish_keeps_redacted_raw_reason_and_field_shape (__main__.ProtocolTests.test_unknown_finish_keeps_redacted_raw_reason_and_field_shape) ... ok\ntest_usage_accounting_validates_saved_metadata_and_never_upgrades_unknown_evidence (__main__.ProtocolTests.test_usage_accounting_validates_saved_metadata_and_never_upgrades_unknown_evidence) ... ok\ntest_wrong_structured_types_fail_and_keep_candidate (__main__.ProtocolTests.test_wrong_structured_types_fail_and_keep_candidate) ... ok\ntest_zero_temperature_purpose_model_and_exact_request_audit (__main__.ProtocolTests.test_zero_temperature_purpose_model_and_exact_request_audit) ... ok\n\n----------------------------------------------------------------------\nRan 52 tests in 2.996s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/42.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/provider_queue_integration_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 22.5,
+      "output_tail": "onTests.test_invalid_explicit_output_limits_never_default_reserve_or_dispatch) ... ok\ntest_job_freezes_prompt_parameters_model_credential_and_source (__main__.IntegrationTests.test_job_freezes_prompt_parameters_model_credential_and_source) ... ok\ntest_job_refresh_reads_persisted_author_decision_after_accept_edit_and_undo (__main__.IntegrationTests.test_job_refresh_reads_persisted_author_decision_after_accept_edit_and_undo) ... ok\ntest_legacy_retry_cannot_bypass_daily_reservation_limit (__main__.IntegrationTests.test_legacy_retry_cannot_bypass_daily_reservation_limit) ... ok\ntest_legacy_run_retry_uses_durable_job_quota_and_original_limit (__main__.IntegrationTests.test_legacy_run_retry_uses_durable_job_quota_and_original_limit) ... ok\ntest_legacy_uncertain_usage_never_upgrades_from_coherent_raw_total (__main__.IntegrationTests.test_legacy_uncertain_usage_never_upgrades_from_coherent_raw_total) ... ok\ntest_missing_frozen_credential_fails_before_dispatch_and_releases_quota (__main__.IntegrationTests.test_missing_frozen_credential_fails_before_dispatch_and_releases_quota) ... ok\ntest_model_change_invalidates_old_probe (__main__.IntegrationTests.test_model_change_invalidates_old_probe) ... ok\ntest_original_json_retry_preserves_nonstream_schema_and_purpose_model (__main__.IntegrationTests.test_original_json_retry_preserves_nonstream_schema_and_purpose_model) ... ok\ntest_original_retry_preserves_exact_body_endpoint_and_private_credential (__main__.IntegrationTests.test_original_retry_preserves_exact_body_endpoint_and_private_credential) ... ok\ntest_original_retry_refuses_missing_or_tampered_request_record (__main__.IntegrationTests.test_original_retry_refuses_missing_or_tampered_request_record) ... ok\ntest_parallel_submission_cannot_over_reserve_quota_one (__main__.IntegrationTests.test_parallel_submission_cannot_over_reserve_quota_one) ... ok\ntest_partial_and_conflicting_usage_persist_unknown_quota_and_block_both_retry_routes (__main__.IntegrationTests.test_partial_and_conflicting_usage_persist_unknown_quota_and_block_both_retry_routes) ... ok\ntest_probe_consumes_the_same_atomic_daily_quota (__main__.IntegrationTests.test_probe_consumes_the_same_atomic_daily_quota) ... ok\ntest_probe_stream_usage_high_water_mark_survives_without_job_result (__main__.IntegrationTests.test_probe_stream_usage_high_water_mark_survives_without_job_result) ... ok\ntest_probe_with_partial_usage_is_healthy_but_bill_and_quota_remain_unknown (__main__.IntegrationTests.test_probe_with_partial_usage_is_healthy_but_bill_and_quota_remain_unknown) ... ok\ntest_provider_concurrency_is_bounded_by_two (__main__.IntegrationTests.test_provider_concurrency_is_bounded_by_two) ... ok\ntest_queued_cancel_releases_reserved_budget (__main__.IntegrationTests.test_queued_cancel_releases_reserved_budget) ... ok\ntest_recovered_queued_job_keeps_original_thinking_after_settings_change (__main__.IntegrationTests.test_recovered_queued_job_keeps_original_thinking_after_settings_change) ... ok\ntest_retry_does_not_replace_missing_original_key_with_new_key (__main__.IntegrationTests.test_retry_does_not_replace_missing_original_key_with_new_key) ... ok\ntest_running_cancel_stops_transport_and_retains_partial_ledger (__main__.IntegrationTests.test_running_cancel_stops_transport_and_retains_partial_ledger) ... ok\ntest_saved_and_explicit_output_boundaries_use_the_same_range (__main__.IntegrationTests.test_saved_and_explicit_output_boundaries_use_the_same_range) ... ok\ntest_saved_output_limit_reaches_both_http_generation_routes_and_task_models (__main__.IntegrationTests.test_saved_output_limit_reaches_both_http_generation_routes_and_task_models) ... ok\ntest_saved_usage_metadata_is_revalidated_without_losing_known_lower_bound (__main__.IntegrationTests.test_saved_usage_metadata_is_revalidated_without_losing_known_lower_bound) ... ok\ntest_settings_are_project_specific (__main__.IntegrationTests.test_settings_are_project_specific) ... ok\ntest_settings_do_not_put_secret_in_database_or_public_response (__main__.IntegrationTests.test_settings_do_not_put_secret_in_database_or_public_response) ... ok\ntest_settings_preserve_thinking_and_reject_invalid_or_conflicting_objects (__main__.IntegrationTests.test_settings_preserve_thinking_and_reject_invalid_or_conflicting_objects) ... ok\ntest_stream_usage_high_water_mark_survives_queued_run_persistence (__main__.IntegrationTests.test_stream_usage_high_water_mark_survives_queued_run_persistence) ... ok\ntest_total_only_and_zero_usage_remain_exact_without_estimate_fallback (__main__.IntegrationTests.test_total_only_and_zero_usage_remain_exact_without_estimate_fallback) ... ok\ntest_unconfigured_output_default_remains_3000 (__main__.IntegrationTests.test_unconfigured_output_default_remains_3000) ... ok\ntest_wrong_structured_output_is_failed_with_safe_partial (__main__.IntegrationTests.test_wrong_structured_output_is_failed_with_safe_partial) ... ok\n\n----------------------------------------------------------------------\nRan 54 tests in 22.398s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/43.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/publication_assistant_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.48,
+      "output_tail": "test_assistant_query_is_read_only_for_every_tool (__main__.PublicationAssistantFixtures.test_assistant_query_is_read_only_for_every_tool) ... ok\ntest_assistant_token_confirmation_and_scope_guards (__main__.PublicationAssistantFixtures.test_assistant_token_confirmation_and_scope_guards) ... ok\ntest_backup_restore_and_duplicate_require_independent_credentials (__main__.PublicationAssistantFixtures.test_backup_restore_and_duplicate_require_independent_credentials) ... ok\ntest_confirm_once_preserves_manuscript_and_restored_jobs_are_independent (__main__.PublicationAssistantFixtures.test_confirm_once_preserves_manuscript_and_restored_jobs_are_independent) ... ok\ntest_epub_damage_rejected_and_third_party_losses_remain_explicit (__main__.PublicationAssistantFixtures.test_epub_damage_rejected_and_third_party_losses_remain_explicit) ... ok\ntest_payoff_gate_requires_current_evidence_and_reanchor_preserves_link (__main__.PublicationAssistantFixtures.test_payoff_gate_requires_current_evidence_and_reanchor_preserves_link) ... ok\ntest_publication_gate_review_and_stale_review (__main__.PublicationAssistantFixtures.test_publication_gate_review_and_stale_review) ... ok\ntest_publication_roundtrip_and_actual_import (__main__.PublicationAssistantFixtures.test_publication_roundtrip_and_actual_import) ... ok\ntest_source_bounds_types_empty_chapters_and_marker_damage (__main__.PublicationAssistantFixtures.test_source_bounds_types_empty_chapters_and_marker_damage) ... ok\n\n----------------------------------------------------------------------\nRan 9 tests in 1.392s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/44.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/range_patch_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.19,
+      "output_tail": "range patch fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/45.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/record_scope_http_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.14,
+      "output_tail": "127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/ai HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"PATCH /api/records/ent_a755502b5faa452ab20a3df302c5b778 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"PATCH /api/records/ent_a755502b5faa452ab20a3df302c5b778 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:36+00:00] \"POST /api/records HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"POST /api/backups/backup_9aa127c20ab84bddb8c3da66c01b4823/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"GET /api/state HTTP/1.1\" 500 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"GET /api/state HTTP/1.1\" 500 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"GET /api/state HTTP/1.1\" 500 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"GET /api/state HTTP/1.1\" 500 -\n127.0.0.1 - - [2026-10-14T15:51:37+00:00] \"POST /api/ai/prompt-preview HTTP/1.1\" 400 -\n{\"passed\": true, \"checks\": 23, \"provider_calls\": 1, \"scope\": \"isolated HTTP, free local provider, legacy sync and archive recovery\"}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/46.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/repository_privacy_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.18,
+      "output_tail": "repository privacy fixtures: ok (Git index only)\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/47.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/reversible_patch_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "reversible patch fixtures passed: 2 restored\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/48.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/runtime_continuity_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.24,
+      "output_tail": "runtime continuity fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/49.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/schema_negative_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.02,
+      "output_tail": "schema regression fixtures passed: scope, append-only, canon evidence, export confirmation, migration ledger\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/50.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/search_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.21,
+      "output_tail": "search fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/51.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/story_review_publication_http_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.76,
+      "output_tail": "test_changed_body_requires_new_review_or_free_current_bound_author_resolution (__main__.StoryReviewPublicationHTTPTests.test_changed_body_requires_new_review_or_free_current_bound_author_resolution) ... ok\ntest_chinese_override_decodes_before_length_check_and_preserves_audit_reason (__main__.StoryReviewPublicationHTTPTests.test_chinese_override_decodes_before_length_check_and_preserves_audit_reason) ... ok\ntest_current_reasoned_ignore_and_explanation_clear_the_gate (__main__.StoryReviewPublicationHTTPTests.test_current_reasoned_ignore_and_explanation_clear_the_gate) ... ok\ntest_empty_draft_empty_report_has_no_false_evidence_conflict_or_quality_claim (__main__.StoryReviewPublicationHTTPTests.test_empty_draft_empty_report_has_no_false_evidence_conflict_or_quality_claim) ... ok\ntest_guidance_changes_invalidate_review_and_reject_late_saved_result (__main__.StoryReviewPublicationHTTPTests.test_guidance_changes_invalidate_review_and_reject_late_saved_result) ... ok\ntest_legacy_reports_without_guidance_marker_are_not_forced_into_a_migration (__main__.StoryReviewPublicationHTTPTests.test_legacy_reports_without_guidance_marker_are_not_forced_into_a_migration) ... ok\ntest_no_report_stays_free_and_does_not_require_semantic_review (__main__.StoryReviewPublicationHTTPTests.test_no_report_stays_free_and_does_not_require_semantic_review) ... ok\ntest_pending_and_author_accepted_issues_block_cached_review_all_stages_and_exports (__main__.StoryReviewPublicationHTTPTests.test_pending_and_author_accepted_issues_block_cached_review_all_stages_and_exports) ... ok\ntest_reasoned_override_is_preserved_in_commit_export_and_audit (__main__.StoryReviewPublicationHTTPTests.test_reasoned_override_is_preserved_in_commit_export_and_audit) ... ok\ntest_same_source_empty_rereview_does_not_erase_an_author_accepted_issue (__main__.StoryReviewPublicationHTTPTests.test_same_source_empty_rereview_does_not_erase_an_author_accepted_issue) ... ok\ntest_successful_review_of_new_sources_replaces_stale_problem_without_permanent_lock (__main__.StoryReviewPublicationHTTPTests.test_successful_review_of_new_sources_replaces_stale_problem_without_permanent_lock) ... ok\n\n----------------------------------------------------------------------\nRan 11 tests in 1.668s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/52.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/story_review_repair_http_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 4.88,
+      "output_tail": "test_exact_second_duplicate_with_emoji_prefix_uses_the_saved_range (__main__.StoryReviewRepairHTTPTests.test_exact_second_duplicate_with_emoji_prefix_uses_the_saved_range) ... ok\ntest_old_report_submission_does_not_create_job_or_reservation (__main__.StoryReviewRepairHTTPTests.test_old_report_submission_does_not_create_job_or_reservation) ... ok\ntest_other_chapter_edit_after_generation_rejects_application (__main__.StoryReviewRepairHTTPTests.test_other_chapter_edit_after_generation_rejects_application) ... ok\ntest_queued_repair_rechecks_report_before_provider_dispatch (__main__.StoryReviewRepairHTTPTests.test_queued_repair_rechecks_report_before_provider_dispatch) ... ok\ntest_restored_identical_body_does_not_reactivate_an_old_review (__main__.StoryReviewRepairHTTPTests.test_restored_identical_body_does_not_reactivate_an_old_review) ... ok\ntest_selected_multi_evidence_repair_applies_exactly_and_is_idempotent (__main__.StoryReviewRepairHTTPTests.test_selected_multi_evidence_repair_applies_exactly_and_is_idempotent) ... ok\ntest_wrong_range_binding_and_malformed_sources_do_not_reserve_or_dispatch (__main__.StoryReviewRepairHTTPTests.test_wrong_range_binding_and_malformed_sources_do_not_reserve_or_dispatch) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 4.779s\n\nOK\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/53.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/story_structure_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.23,
+      "output_tail": "story structure fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/54.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/stream_resume_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.68,
+      "output_tail": "stream resume fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/55.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/strict_feature_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.35,
+      "output_tail": "strict feature fixtures: ok\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/56.log",
+      "passed": true
+    },
+    {
+      "name": "Python fixtures: tests/workspace_workflow_fixtures.py",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.18,
+      "output_tail": "\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/backups/backup_194c5cb0aa3e4b3382c17bc696ed413b/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/backups/backup_e2ff915a17a147eeb6ba02ae02fd9cd4/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/backups/backup_a627cff1acad4bf2ba26745f66008c0f/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"POST /api/projects HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:47+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/backups/backup_00742d234e7141fc9f58f65a05ce2187/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/backups HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/backups/backup_5b846ea3eddb4c069f5ad51c3b38365d/restore HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/projects/default-project/duplicate HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"POST /api/backups/backup_8ccd38185b5846a79d558c7c40f0df72/restore HTTP/1.1\" 400 -\n127.0.0.1 - - [2026-10-14T15:51:48+00:00] \"GET /api/state HTTP/1.1\" 200 -\nworkspace HTTP workflows: ok; 7 title boundary restores, 4 explicit names, 8 rejected names\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/57.log",
+      "passed": true
+    },
+    {
+      "name": "Fixed evaluation",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.19,
+      "output_tail": "count\": 3, \"hits\": 1, \"na_count\": 0, \"na_precision\": false, \"na_recall\": false, \"precision\": 1.0, \"recall\": 0.3333333333333333, \"returned_count\": 1, \"sample_count\": 3}, \"10\": {\"gold_count\": 3, \"hits\": 3, \"na_count\": 0, \"na_precision\": false, \"na_recall\": false, \"precision\": 0.75, \"recall\": 1.0, \"returned_count\": 4, \"sample_count\": 3}, \"5\": {\"gold_count\": 3, \"hits\": 3, \"na_count\": 0, \"na_precision\": false, \"na_recall\": false, \"precision\": 0.75, \"recall\": 1.0, \"returned_count\": 4, \"sample_count\": 3}}, \"freshness\": {\"p50_ms\": {\"na\": false, \"na_count\": 0, \"sample_count\": 3, \"status\": \"measured\", \"value\": 2000.0}, \"p95_ms\": {\"na\": false, \"na_count\": 0, \"sample_count\": 3, \"status\": \"measured\", \"value\": 5600.0}}, \"knowledge_scope\": {\"leakage_rate\": null, \"measured\": false, \"na\": true, \"precision\": null, \"recall\": null, \"required_count\": 0, \"returned_count\": 0, \"sample_count\": 0, \"violations\": []}, \"merge_f1\": {\"f1\": 1.0, \"hits\": 1, \"na\": false, \"precision\": 1.0, \"predicted_count\": 1, \"recall\": 1.0, \"sample_count\": 1}, \"precision_at_1\": 1.0, \"precision_at_10\": 0.75, \"precision_at_5\": 0.75, \"recall_at_1\": 0.3333333333333333, \"recall_at_10\": 1.0, \"recall_at_5\": 1.0, \"recovery\": {\"rpo_p50_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 90.0}, \"rpo_p95_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 117.0}, \"rto_p50_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 450.0}, \"rto_p95_seconds\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 585.0}, \"success_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 1.0}}, \"reversible_patch_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 1.0}, \"revision_distance\": {\"median\": 6.0, \"na\": false, \"p95\": 9.7, \"sample_count\": 4}, \"split_f1\": {\"f1\": 1.0, \"hits\": 1, \"na\": false, \"precision\": 1.0, \"predicted_count\": 1, \"recall\": 1.0, \"sample_count\": 1}, \"stale_citation_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 2, \"status\": \"measured\", \"value\": 0.0}, \"unsupported_canon_rate\": {\"na\": false, \"na_count\": 0, \"sample_count\": 1, \"status\": \"measured\", \"value\": 0.0}}, \"model\": \"fixture-model\", \"na_count\": 0, \"passed\": true, \"prompt_version\": \"eval-v1\", \"sample_count\": {\"citations\": 2, \"conflicts\": 2, \"corrupt_imports\": 2, \"evidence_gold\": 3, \"evidence_returned\": 4, \"facts\": 2, \"freshness\": 3, \"knowledge_claims\": 0, \"patches\": 2, \"recoveries\": 2, \"revisions\": 4}, \"samples\": {\"citations\": 2, \"conflicts\": 2, \"corrupt_imports\": 2, \"evidence_gold\": 3, \"evidence_returned\": 4, \"facts\": 2, \"freshness\": 3, \"knowledge_claims\": 0, \"patches\": 2, \"recoveries\": 2, \"revisions\": 4}, \"schema_version\": \"1.1\", \"seed\": 42, \"threshold_results\": {\"branch_leakage\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"conflict_recall_hard\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 0.95}, \"status\": \"pass\"}, \"corrupt_import_acceptance_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"freshness_p50_ms\": {\"actual\": 2000.0, \"passed\": true, \"rule\": {\"max\": 5000}, \"status\": \"pass\"}, \"freshness_p95_ms\": {\"actual\": 5600.0, \"passed\": true, \"rule\": {\"max\": 30000}, \"status\": \"pass\"}, \"recovery_success_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"reversible_patch_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"rpo_p95_seconds\": {\"actual\": 117.0, \"passed\": true, \"rule\": {\"max\": 300}, \"status\": \"pass\"}, \"rto_p95_seconds\": {\"actual\": 585.0, \"passed\": true, \"rule\": {\"max\": 900}, \"status\": \"pass\"}, \"stale_citation_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"unsupported_canon_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}}, \"thresholds\": {\"branch_leakage\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"conflict_recall_hard\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 0.95}, \"status\": \"pass\"}, \"corrupt_import_acceptance_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"freshness_p50_ms\": {\"actual\": 2000.0, \"passed\": true, \"rule\": {\"max\": 5000}, \"status\": \"pass\"}, \"freshness_p95_ms\": {\"actual\": 5600.0, \"passed\": true, \"rule\": {\"max\": 30000}, \"status\": \"pass\"}, \"recovery_success_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"reversible_patch_rate\": {\"actual\": 1.0, \"passed\": true, \"rule\": {\"min\": 1}, \"status\": \"pass\"}, \"rpo_p95_seconds\": {\"actual\": 117.0, \"passed\": true, \"rule\": {\"max\": 300}, \"status\": \"pass\"}, \"rto_p95_seconds\": {\"actual\": 585.0, \"passed\": true, \"rule\": {\"max\": 900}, \"status\": \"pass\"}, \"stale_citation_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}, \"unsupported_canon_rate\": {\"actual\": 0.0, \"passed\": true, \"rule\": {\"max\": 0}, \"status\": \"pass\"}}, \"tolerance\": {\"epsilon\": 1e-09}}], \"passed\": true}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/58.log",
+      "passed": true
+    },
+    {
+      "name": "Editor merge regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 0.03,
+      "output_tail": "{\n  \"passed\": true,\n  \"cases\": [\n    \"保存回应推进版本，同时保留发送以后输入的新文字\",\n    \"独立记忆决定不阻止继续写正文\",\n    \"两窗口修改不同章节与新建章节可同时保留\",\n    \"中文及emoji非重叠改稿正确合并\",\n    \"同起点插入与删除或替换在双方向都保留冲突\",\n    \"删除结束边界的插入在双方向均保留全部改稿\",\n    \"逆向三方合并只撤销本页修改并保留另一窗口新增段落\",\n    \"撤销后重做保留期间收到的另一窗口改稿\",\n    \"撤销和重做位置被远端修改时拒绝合并\",\n    \"撤销删除或重做插入遇到同起点远端修改时拒绝合并\",\n    \"同一句不同修改留下冲突，两份正文均可读\",\n    \"删除与另一窗口编辑不能静默丢失编辑\"\n  ]\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/59.log",
+      "passed": true
+    },
+    {
+      "name": "Browser: author_workspace_lifecycle_browser_regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 14.38,
+      "output_tail": "\"state\":\"passed\"}\n{\"test\":\"copy保存后的both读取失败重开不重复提交\",\"state\":\"running\"}\n{\"test\":\"copy保存后的both读取失败重开不重复提交\",\"state\":\"passed\"}\n{\"test\":\"import保存后的origin读取失败重开不重复提交\",\"state\":\"running\"}\n{\"test\":\"import保存后的origin读取失败重开不重复提交\",\"state\":\"passed\"}\n{\"test\":\"import保存后的target读取失败重开不重复提交\",\"state\":\"running\"}\n{\"test\":\"import保存后的target读取失败重开不重复提交\",\"state\":\"passed\"}\n{\"test\":\"import保存后的both读取失败重开不重复提交\",\"state\":\"running\"}\n{\"test\":\"import保存后的both读取失败重开不重复提交\",\"state\":\"passed\"}\n{\"test\":\"参考导入保存后回读失败，重试只打开参考库\",\"state\":\"running\"}\n{\"test\":\"参考导入保存后回读失败，重试只打开参考库\",\"state\":\"passed\"}\n{\"test\":\"导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝\",\"state\":\"running\"}\n{\"test\":\"导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝\",\"state\":\"passed\"}\n{\"test\":\"新建作品200完整字符名称可保存，超限不会发出创建请求\",\"state\":\"running\"}\n{\"test\":\"新建作品200完整字符名称可保存，超限不会发出创建请求\",\"state\":\"passed\"}\n{\"test\":\"已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档\",\"state\":\"running\"}\n{\"test\":\"已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档\",\"state\":\"passed\"}\n{\n  \"passed\": true,\n  \"scope\": \"桌面真实浏览器、隔离 SQLite、免费本机提供方；规划归档、已保存作品重开、Unicode 导入及旧审稿作者决定\",\n  \"cases\": [\n    {\n      \"name\": \"五章规划归档首章仍五章，已有正文目标场景视角卷身份完整保留\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"归档跳过已完成后续章，刷新重复归档不会追加空章\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"无后续章仅新建一次，保存失败恢复复用身份且新章目标不覆盖交接\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"归档新章保存等待切章，迟到成功回应不强行切回\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"new保存后的origin读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"new保存后的target读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"new保存后的both读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"copy保存后的origin读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"copy保存后的target读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"copy保存后的both读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"import保存后的origin读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"import保存后的target读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"import保存后的both读取失败重开不重复提交\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"参考导入保存后回读失败，重试只打开参考库\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"新建作品200完整字符名称可保存，超限不会发出创建请求\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档\",\n      \"passed\": true\n    }\n  ],\n  \"artifacts\": \"<temporary-root>/moyu-author-lifecycle-PCiO6Z\",\n  \"source_files\": [\n    {\n      \"path\": \"app.js\",\n      \"sha256\": \"bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a\"\n    },\n    {\n      \"path\": \"author-workspace.js\",\n      \"sha256\": \"794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36\"\n    },\n    {\n      \"path\": \"server.py\",\n      \"sha256\": \"27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720\"\n    },\n    {\n      \"path\": \"moyu_analysis.py\",\n      \"sha256\": \"22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0\"\n    },\n    {\n      \"path\": \"moyu_workspace.py\",\n      \"sha256\": \"973227adea1b08f4f4137ea05ffbecd927ecaa49ade2d31fd5ce663230d96202\"\n    },\n    {\n      \"path\": \"moyu_context.py\",\n      \"sha256\": \"3f1b2a7041481091d8247724ae7c38720d0e38ca6c53101e3f7b912491406483\"\n    },\n    {\n      \"path\": \"styles.css\",\n      \"sha256\": \"2e24180ed7755a0ed861e89cb0f689e49c820ce4f24776fe4b67047ced3a5f2b\"\n    },\n    {\n      \"path\": \"tests/author_workspace_lifecycle_browser_regressions.cjs\",\n      \"sha256\": \"b5b77f3834f8ee7fc68f2081c549d21ec4df164143a557c15cc8e35555482b54\"\n    }\n  ],\n  \"recovery\": [\n    {\n      \"operation\": \"new\",\n      \"failureMode\": \"origin\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 1,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"new\",\n      \"failureMode\": \"target\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 2,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"new\",\n      \"failureMode\": \"both\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 2,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"copy\",\n      \"failureMode\": \"origin\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 1,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"copy\",\n      \"failureMode\": \"target\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 2,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"copy\",\n      \"failureMode\": \"both\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 2,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"import\",\n      \"failureMode\": \"origin\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 1,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"import\",\n      \"failureMode\": \"target\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 2,\n      \"opened\": true\n    },\n    {\n      \"operation\": \"import\",\n      \"failureMode\": \"both\",\n      \"posts\": 1,\n      \"originReads\": 1,\n      \"targetReads\": 2,\n      \"opened\": true\n    }\n  ],\n  \"provider_calls\": 1,\n  \"source_unchanged\": true\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/60.log",
+      "passed": true,
+      "scenario_count": 17
+    },
+    {
+      "name": "Browser: desktop_author_flow_regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 16.55,
+      "output_tail": "878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/chapters/4b81f713-9913-40f5-b92b-3ffe2344efc4/commit\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/chapters/4b81f713-9913-40f5-b92b-3ffe2344efc4/commit\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"PUT\",\n      \"route\": \"/api/state\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"PUT\",\n      \"route\": \"/api/state\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"PUT\",\n      \"route\": \"/api/state\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"PATCH\",\n      \"route\": \"/api/story/foreshadow-links/flink_ee25fd5def754268b04619a806d0ecb9\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"PATCH\",\n      \"route\": \"/api/plot/6d9fc086-b3f9-41d5-a838-1b859dda976b\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"POST\",\n      \"route\": \"/api/review\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    },\n    {\n      \"method\": \"PUT\",\n      \"route\": \"/api/state\",\n      \"project\": \"book_145b3e40e9f84195aa6878d779af5107\"\n    }\n  ],\n  \"source_files_sha256_after\": {\n    \"app.js\": \"bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a\",\n    \"author-workspace.js\": \"794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36\",\n    \"editor-sync.js\": \"0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7\",\n    \"index.html\": \"5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3\",\n    \"moyu_analysis.py\": \"22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0\",\n    \"moyu_assistant.py\": \"0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f\",\n    \"moyu_backups.py\": \"567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b\",\n    \"moyu_context.py\": \"3f1b2a7041481091d8247724ae7c38720d0e38ca6c53101e3f7b912491406483\",\n    \"moyu_import.py\": \"0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1\",\n    \"moyu_output.py\": \"898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8\",\n    \"moyu_planning.py\": \"abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317\",\n    \"moyu_provider.py\": \"86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222\",\n    \"moyu_publication.py\": \"fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4\",\n    \"moyu_records.py\": \"6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e\",\n    \"moyu_revision.py\": \"18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78\",\n    \"moyu_settings.py\": \"f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8\",\n    \"moyu_workspace.py\": \"973227adea1b08f4f4137ea05ffbecd927ecaa49ade2d31fd5ce663230d96202\",\n    \"server.py\": \"27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720\",\n    \"styles.css\": \"2e24180ed7755a0ed861e89cb0f689e49c820ce4f24776fe4b67047ced3a5f2b\",\n    \"tests/desktop_author_flow_regressions.cjs\": \"42469ec378744f01531db7c26fb4c9e59ba2919b6a252b68c714fabbb74397b4\"\n  },\n  \"source_unchanged\": true,\n  \"finished_at\": \"2026-10-14T15:52:17.752Z\"\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/61.log",
+      "passed": true,
+      "scenario_count": 7
+    },
+    {
+      "name": "Browser: export_override_browser_regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 4.1,
+      "output_tail": "{\"test\":\"没有作者理由时真实页面和下载接口都阻断未审稿文稿\",\"state\":\"running\"}\n{\"test\":\"没有作者理由时真实页面和下载接口都阻断未审稿文稿\",\"state\":\"passed\"}\n{\"test\":\"七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算\",\"state\":\"running\"}\n{\"test\":\"七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算\",\"state\":\"passed\"}\n{\"test\":\"从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留\",\"state\":\"running\"}\n{\"test\":\"从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留\",\"state\":\"passed\"}\n{\"test\":\"同一中文理由可实际下载EPUB，包内原稿及审计与Markdown一致\",\"state\":\"running\"}\n{\"test\":\"同一中文理由可实际下载EPUB，包内原稿及审计与Markdown一致\",\"state\":\"passed\"}\n{\"test\":\"导出后改稿会使旧中文理由失效，两种格式重新要求作者确认\",\"state\":\"running\"}\n{\"test\":\"导出后改稿会使旧中文理由失效，两种格式重新要求作者确认\",\"state\":\"passed\"}\n{\n  \"passed\": true,\n  \"scope\": \"真实桌面Chrome、隔离SQLite、实际下载中文例外文稿\",\n  \"cases\": [\n    {\n      \"name\": \"没有作者理由时真实页面和下载接口都阻断未审稿文稿\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"同一中文理由可实际下载EPUB，包内原稿及审计与Markdown一致\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"导出后改稿会使旧中文理由失效，两种格式重新要求作者确认\",\n      \"passed\": true\n    }\n  ],\n  \"artifacts\": \"<temporary-root>/moyu-export-override-yrNo0G\",\n  \"external_model_calls\": 0,\n  \"source_files\": [\n    {\n      \"path\": \"app.js\",\n      \"sha256\": \"bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a\"\n    },\n    {\n      \"path\": \"author-workspace.js\",\n      \"sha256\": \"794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36\"\n    },\n    {\n      \"path\": \"server.py\",\n      \"sha256\": \"27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720\"\n    },\n    {\n      \"path\": \"tests/export_override_browser_regressions.cjs\",\n      \"sha256\": \"40b3296307aab830a02ad3b01eaafaf6c72910a556c296c91951bbc28382c619\"\n    }\n  ],\n  \"short_reason_lengths\": [\n    {\n      \"codepoints\": 7,\n      \"utf16_units\": 7,\n      \"blocked\": true\n    },\n    {\n      \"codepoints\": 7,\n      \"utf16_units\": 14,\n      \"blocked\": true\n    }\n  ],\n  \"markdown\": {\n    \"bytes\": 2606,\n    \"source_sha256\": \"63360ba955b134116f2b51f2dc21dc09f830c001ee8696280f482e15d7306dee\",\n    \"audit_reason\": \"作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀\"\n  },\n  \"epub\": {\n    \"bytes\": 3346,\n    \"source_sha256\": \"63360ba955b134116f2b51f2dc21dc09f830c001ee8696280f482e15d7306dee\",\n    \"manifest_reason\": \"作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀\",\n    \"audit_reason\": \"作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀\"\n  },\n  \"screenshot\": \"export-override-desktop.png\",\n  \"downloads\": [\n    \"中文例外导出合成作品.md\",\n    \"中文例外导出合成作品.epub\"\n  ],\n  \"source_unchanged\": true\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/62.log",
+      "passed": true,
+      "scenario_count": 5
+    },
+    {
+      "name": "Browser: frontend_browser_regressions",
+      "exit_code": 1,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 74.17,
+      "output_tail": "0 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"GET /api/chapter-analysis?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"POST /api/chapter-analysis/chapter_analysis_269a9dfec7a24649bafdc8c8306e/confirm HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"PUT /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"GET /api/chapter-analysis?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \\\"PUT /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"PUT /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"PUT /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"POST /api/ai/queue HTTP/1.1\\\" 202 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/ai/runs/airun_f7a37cc3e5df40429270824a58bcd943/stream?after_seq=0 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"POST /api/story-reviews/story_review_32365fbc22e73ba11127d860d44b/issues/review_1e31d9a08d61c3ce7217d97dc900d7c9/decision HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"PUT /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"PUT /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"POST /api/ai/queue HTTP/1.1\\\" 202 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/ai/runs/airun_733e3fb6bb3a47899b8517df9522fe1b/stream?after_seq=0 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/ai/queue HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/ai/queue HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \\\"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:06+00:00] \\\"POST /api/story-reviews/story_review_8899ae19f9c3d39d062e8ecc030c/issues/review_70d8821e56ec6ead46f72994affbc084/decision HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:06+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:06+00:00] \\\"GET /api/state HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:09+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:13+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:17+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:21+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:25+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:29+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n127.0.0.1 - - [2026-10-14T15:53:33+00:00] \\\"GET /api/ai/queue?limit=100 HTTP/1.1\\\" 200 -\\n\"\n  }\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/63.log",
+      "passed": false,
+      "scenario_count": 26,
+      "structured_browser_result_failed": true,
+      "missing_screenshots": [
+        "desktop-editor.png",
+        "compact-desktop-editor.png",
+        "desktop-planning.png",
+        "desktop-revised-candidate.png",
+        "desktop-backup-open-failure.png",
+        "desktop-backup-restored.png",
+        "desktop-long-title-navigation.png",
+        "compact-desktop-long-title-navigation.png",
+        "short-desktop-long-title-navigation.png",
+        "desktop-record-knowledge-scope.png",
+        "desktop-review-repair.png"
+      ]
+    },
+    {
+      "name": "Browser: instruction_draft_browser_regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 9.37,
+      "output_tail": "assed\"}\n{\"test\":\"程序写入要求后重新渲染或立即刷新仍保存原控件身份\",\"state\":\"running\"}\n{\"test\":\"程序写入要求后重新渲染或立即刷新仍保存原控件身份\",\"state\":\"passed\"}\n{\"test\":\"显式清空恢复续写，刷新不复活旧要求且其他章节和作品不受影响\",\"state\":\"running\"}\n{\"test\":\"显式清空恢复续写，刷新不复活旧要求且其他章节和作品不受影响\",\"state\":\"passed\"}\n{\"test\":\"损坏或不支持的草稿被忽略，不影响编辑器和原稿\",\"state\":\"running\"}\n{\"test\":\"损坏或不支持的草稿被忽略，不影响编辑器和原稿\",\"state\":\"passed\"}\n{\"test\":\"浏览器存储失败时同页保留要求并提示，恢复存储后无需重新输入即可补存\",\"state\":\"running\"}\n{\"test\":\"浏览器存储失败时同页保留要求并提示，恢复存储后无需重新输入即可补存\",\"state\":\"passed\"}\n{\"test\":\"已保存生成任务继续使用原冻结要求，后改草稿和刷新不重发模型\",\"state\":\"running\"}\n{\"test\":\"已保存生成任务继续使用原冻结要求，后改草稿和刷新不重发模型\",\"state\":\"passed\"}\n{\"test\":\"两种电脑尺寸下清空与生成控件可见且互不遮挡\",\"state\":\"running\"}\n{\"test\":\"两种电脑尺寸下清空与生成控件可见且互不遮挡\",\"state\":\"passed\"}\n{\n  \"passed\": true,\n  \"scope\": \"真实桌面Chrome、隔离SQLite、本机免费模拟提供方\",\n  \"cases\": [\n    {\n      \"name\": \"切页查看设定与刷新后保留当前章任务及完整要求\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"不同章节任务草稿互相隔离，刷新仍回到该章草稿\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"两部作品各自保留要求，离开再回来不会串用\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"同作品同章的合成分支身份具有独立草稿\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"旧作品已卸载控件的迟到输入和清空事件不会改写任一作品草稿\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"程序写入要求后重新渲染或立即刷新仍保存原控件身份\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"显式清空恢复续写，刷新不复活旧要求且其他章节和作品不受影响\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"损坏或不支持的草稿被忽略，不影响编辑器和原稿\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"浏览器存储失败时同页保留要求并提示，恢复存储后无需重新输入即可补存\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"已保存生成任务继续使用原冻结要求，后改草稿和刷新不重发模型\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"两种电脑尺寸下清空与生成控件可见且互不遮挡\",\n      \"passed\": true\n    }\n  ],\n  \"artifacts\": \"<temporary-root>/moyu-instruction-draft-jtTldF\",\n  \"external_model_calls\": 0,\n  \"source_files\": [\n    {\n      \"path\": \"app.js\",\n      \"sha256\": \"bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a\"\n    },\n    {\n      \"path\": \"tests/instruction_draft_browser_regressions.cjs\",\n      \"sha256\": \"dfb7cefe4c3bd13fe753034a07635bba4e9b98752151d43ec41124b87fd8026d\"\n    }\n  ],\n  \"desktop_viewports\": [\n    {\n      \"viewport\": {\n        \"width\": 1440,\n        \"height\": 1000\n      },\n      \"controls\": [\n        {\n          \"id\": \"aiTask\",\n          \"x\": 442,\n          \"y\": 900.1875,\n          \"width\": 287.328125,\n          \"height\": 42,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"aiInstruction\",\n          \"x\": 737.328125,\n          \"y\": 900.1875,\n          \"width\": 574.671875,\n          \"height\": 42,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"aiGenerate\",\n          \"x\": 1320,\n          \"y\": 900.1875,\n          \"width\": 90,\n          \"height\": 42,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"\",\n          \"x\": 442,\n          \"y\": 950.1875,\n          \"width\": 287.328125,\n          \"height\": 38.390625,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"\",\n          \"x\": 737.328125,\n          \"y\": 950.1875,\n          \"width\": 574.671875,\n          \"height\": 38.390625,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"aiInstructionClear\",\n          \"x\": 1320,\n          \"y\": 950.1875,\n          \"width\": 90,\n          \"height\": 38.390625,\n          \"within\": true,\n          \"unobstructed\": true\n        }\n      ],\n      \"screenshot\": \"instruction-draft-desktop.png\"\n    },\n    {\n      \"viewport\": {\n        \"width\": 1280,\n        \"height\": 900\n      },\n      \"controls\": [\n        {\n          \"id\": \"aiTask\",\n          \"x\": 442,\n          \"y\": 482.1875,\n          \"width\": 234,\n          \"height\": 42,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"aiInstruction\",\n          \"x\": 684,\n          \"y\": 482.1875,\n          \"width\": 468,\n          \"height\": 42,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"aiGenerate\",\n          \"x\": 1160,\n          \"y\": 482.1875,\n          \"width\": 90,\n          \"height\": 42,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"\",\n          \"x\": 442,\n          \"y\": 532.1875,\n          \"width\": 234,\n          \"height\": 38.390625,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"\",\n          \"x\": 684,\n          \"y\": 532.1875,\n          \"width\": 468,\n          \"height\": 38.390625,\n          \"within\": true,\n          \"unobstructed\": true\n        },\n        {\n          \"id\": \"aiInstructionClear\",\n          \"x\": 1160,\n          \"y\": 532.1875,\n          \"width\": 90,\n          \"height\": 38.390625,\n          \"within\": true,\n          \"unobstructed\": true\n        }\n      ],\n      \"screenshot\": \"instruction-draft-desktop-1280x900.png\"\n    }\n  ],\n  \"local_mock_model_requests\": 1,\n  \"branch_identity_test\": \"Synthetic frontend branch identity; no branch-management UI claim.\",\n  \"source_unchanged\": true\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/64.log",
+      "passed": true,
+      "scenario_count": 11
+    },
+    {
+      "name": "Browser: model_settings_browser_regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 6.24,
+      "output_tail": "{\"test\":\"只保存设置不调用模型，电脑两种宽度表单均无横向遮挡\",\"state\":\"running\"}\n{\"test\":\"只保存设置不调用模型，电脑两种宽度表单均无横向遮挡\",\"state\":\"passed\"}\n{\"test\":\"合格默认模型检测即刻更新设置和助手状态，刷新保留同次结果\",\"state\":\"running\"}\n{\"test\":\"合格默认模型检测即刻更新设置和助手状态，刷新保留同次结果\",\"state\":\"passed\"}\n{\"test\":\"最近失败替换旧成功，跨页和刷新均显示失败且不重发模型\",\"state\":\"running\"}\n{\"test\":\"最近失败替换旧成功，跨页和刷新均显示失败且不重发模型\",\"state\":\"passed\"}\n{\"test\":\"回传模型不一致保留双方名称，不能显示所选模型检测成功\",\"state\":\"running\"}\n{\"test\":\"回传模型不一致保留双方名称，不能显示所选模型检测成功\",\"state\":\"passed\"}\n{\"test\":\"只有一字的完整stop回复保留完成证据，但页面持续显示不合格\",\"state\":\"running\"}\n{\"test\":\"只有一字的完整stop回复保留完成证据，但页面持续显示不合格\",\"state\":\"passed\"}\n{\"test\":\"关闭思考仍返回思考字段时不通过，页面和记录不展示思考内容\",\"state\":\"running\"}\n{\"test\":\"关闭思考仍返回思考字段时不通过，页面和记录不展示思考内容\",\"state\":\"passed\"}\n{\"test\":\"另一窗口修改设置使旧检测失效，页面回读当前模型且不报成功\",\"state\":\"running\"}\n{\"test\":\"另一窗口修改设置使旧检测失效，页面回读当前模型且不报成功\",\"state\":\"passed\"}\n{\"test\":\"同一作品保存新设置后，迟到旧检测不能覆盖页面内存或后续保存\",\"state\":\"running\"}\n{\"test\":\"同一作品保存新设置后，迟到旧检测不能覆盖页面内存或后续保存\",\"state\":\"passed\"}\n{\"test\":\"同一作品迟到旧保存响应不能覆盖新读取，后续保存不回写旧模型或调用模型\",\"state\":\"running\"}\n{\"test\":\"同一作品迟到旧保存响应不能覆盖新读取，后续保存不回写旧模型或调用模型\",\"state\":\"passed\"}\n{\"test\":\"设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置\",\"state\":\"running\"}\n{\"test\":\"设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置\",\"state\":\"passed\"}\n{\"test\":\"已发出的旧保存响应在离开设置页后不写回全局设置或状态\",\"state\":\"running\"}\n{\"test\":\"已发出的旧保存响应在离开设置页后不写回全局设置或状态\",\"state\":\"passed\"}\n{\"test\":\"设置PUT和检测在队列等待期间变旧时不发送旧操作\",\"state\":\"running\"}\n{\"test\":\"设置PUT和检测在队列等待期间变旧时不发送旧操作\",\"state\":\"passed\"}\n{\"test\":\"保存后的状态读取等待期间切换作品，不向另一作品发送检测\",\"state\":\"running\"}\n{\"test\":\"保存后的状态读取等待期间切换作品，不向另一作品发送检测\",\"state\":\"passed\"}\n{\"test\":\"检测完成后的状态读取迟到，不向另一作品页面回写旧成功\",\"state\":\"running\"}\n{\"test\":\"检测完成后的状态读取迟到，不向另一作品页面回写旧成功\",\"state\":\"passed\"}\n{\n  \"passed\": true,\n  \"scope\": \"电脑端模型设置、隔离SQLite、免费本机模拟提供方\",\n  \"started_at\": \"2026-10-14T15:53:47.660Z\",\n  \"cases\": [\n    {\n      \"name\": \"只保存设置不调用模型，电脑两种宽度表单均无横向遮挡\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"合格默认模型检测即刻更新设置和助手状态，刷新保留同次结果\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"最近失败替换旧成功，跨页和刷新均显示失败且不重发模型\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"回传模型不一致保留双方名称，不能显示所选模型检测成功\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"只有一字的完整stop回复保留完成证据，但页面持续显示不合格\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"关闭思考仍返回思考字段时不通过，页面和记录不展示思考内容\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"另一窗口修改设置使旧检测失效，页面回读当前模型且不报成功\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"同一作品保存新设置后，迟到旧检测不能覆盖页面内存或后续保存\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"同一作品迟到旧保存响应不能覆盖新读取，后续保存不回写旧模型或调用模型\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"已发出的旧保存响应在离开设置页后不写回全局设置或状态\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"设置PUT和检测在队列等待期间变旧时不发送旧操作\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"保存后的状态读取等待期间切换作品，不向另一作品发送检测\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"检测完成后的状态读取迟到，不向另一作品页面回写旧成功\",\n      \"passed\": true\n    }\n  ],\n  \"artifacts\": \"<temporary-root>/moyu-settings-browser-63K47B\",\n  \"source_files_sha256_before\": {\n    \"app.js\": \"bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a\",\n    \"author-workspace.js\": \"794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36\",\n    \"moyu_settings.py\": \"f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8\"\n  },\n  \"other_project\": \"book_da9eb9d290e440338ee9188953097f77\",\n  \"provider_requests\": 8,\n  \"source_files_sha256_after\": {\n    \"app.js\": \"bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a\",\n    \"author-workspace.js\": \"794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36\",\n    \"moyu_settings.py\": \"f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8\"\n  },\n  \"source_unchanged\": true,\n  \"finished_at\": \"2026-10-14T15:53:51.731Z\"\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/65.log",
+      "passed": true,
+      "scenario_count": 14
+    },
+    {
+      "name": "Browser: planning_browser_regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 12.92,
+      "output_tail": "{\"test\":\"同一规划输入框连续两次自动保存不会丢第二次修改\",\"state\":\"running\"}\n{\"test\":\"同一规划输入框连续两次自动保存不会丢第二次修改\",\"state\":\"passed\"}\n{\"test\":\"采用规划等待期间切页返回仍锁定输入，结束后新输入正常保存\",\"state\":\"running\"}\n{\"test\":\"采用规划等待期间切页返回仍锁定输入，结束后新输入正常保存\",\"state\":\"passed\"}\n{\"test\":\"规划保存失败后刷新仍能恢复本地规划草稿并阻止静默离开\",\"state\":\"running\"}\n{\"test\":\"规划保存失败后刷新仍能恢复本地规划草稿并阻止静默离开\",\"state\":\"passed\"}\n{\"test\":\"两标签同字段规划冲突保留双方并按作者选择保存\",\"state\":\"running\"}\n{\"test\":\"两标签同字段规划冲突保留双方并按作者选择保存\",\"state\":\"passed\"}\n{\"test\":\"第二套规划物化只新增章节并保留第一轮章节全部内容\",\"state\":\"running\"}\n{\"test\":\"第二套规划物化只新增章节并保留第一轮章节全部内容\",\"state\":\"passed\"}\n{\n  \"passed\": true,\n  \"scope\": \"规划输入保存、采用竞态、规划草稿恢复、第二轮物化；真实浏览器、隔离 SQLite、本机模拟提供方\",\n  \"cases\": [\n    {\n      \"name\": \"同一规划输入框连续两次自动保存不会丢第二次修改\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"采用规划等待期间切页返回仍锁定输入，结束后新输入正常保存\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"规划保存失败后刷新仍能恢复本地规划草稿并阻止静默离开\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"两标签同字段规划冲突保留双方并按作者选择保存\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"第二套规划物化只新增章节并保留第一轮章节全部内容\",\n      \"passed\": true\n    }\n  ],\n  \"artifacts\": \"<temporary-root>/moyu-planning-browser-wMGNFp\"\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/66.log",
+      "passed": true,
+      "scenario_count": 5
+    },
+    {
+      "name": "Browser: search_browser_regressions",
+      "exit_code": 0,
+      "signal": null,
+      "timeout": false,
+      "duration_seconds": 1.46,
+      "output_tail": "{\"test\":\"后端搜索失败时实际回退到本地草稿并可搜别名\",\"state\":\"running\"}\n{\"test\":\"后端搜索失败时实际回退到本地草稿并可搜别名\",\"state\":\"passed\"}\n{\"test\":\"后端返回损坏响应时回退到本地草稿\",\"state\":\"running\"}\n{\"test\":\"后端返回损坏响应时回退到本地草稿\",\"state\":\"passed\"}\n{\"test\":\"较早的搜索响应不会覆盖后来提交的关键词\",\"state\":\"running\"}\n{\"test\":\"较早的搜索响应不会覆盖后来提交的关键词\",\"state\":\"passed\"}\n{\"test\":\"搜索结果显示精确原文并按 Unicode 字符范围定位到章节\",\"state\":\"running\"}\n{\"test\":\"搜索结果显示精确原文并按 Unicode 字符范围定位到章节\",\"state\":\"passed\"}\n{\"test\":\"章节正文改变后，旧搜索证据不能定位到错误位置\",\"state\":\"running\"}\n{\"test\":\"章节正文改变后，旧搜索证据不能定位到错误位置\",\"state\":\"passed\"}\n{\n  \"passed\": true,\n  \"scope\": \"电脑端全文搜索、隔离 SQLite、本机模拟数据\",\n  \"cases\": [\n    {\n      \"name\": \"后端搜索失败时实际回退到本地草稿并可搜别名\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"后端返回损坏响应时回退到本地草稿\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"较早的搜索响应不会覆盖后来提交的关键词\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"搜索结果显示精确原文并按 Unicode 字符范围定位到章节\",\n      \"passed\": true\n    },\n    {\n      \"name\": \"章节正文改变后，旧搜索证据不能定位到错误位置\",\n      \"passed\": true\n    }\n  ],\n  \"artifacts\": \"<temporary-root>/moyu-search-browser-g2kObq\",\n  \"desktop_scenario_count\": 5,\n  \"seeded_chapter_id\": \"ch_a3429c2c534c4f13b2d887cf3a58f0af\",\n  \"seeded_project_version\": 1\n}\n",
+      "local_log": "artifacts/release-verification-comprehensive-workflow-final/67.log",
+      "passed": true,
+      "scenario_count": 5
+    }
+  ],
+  "artifacts": [
+    {
+      "name": "Fixed evaluation",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/fixed-evaluation-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "12171e8731d37a6b1df620aa93b8994bdb7660328f116aabaf812e529765656e"
+    },
+    {
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/author_workspace_lifecycle_browser_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "42216b63cc3dfa5446c19a557065be143341d0c27327deb214cf220eaa93c725"
+    },
+    {
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-planned-next-chapter.png",
+      "sha256": "ae4dcd9443123fef9ea70f7efb29479454313f34969408964167b6f11b8bb4c0"
+    },
+    {
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-planned-next-chapter-1280x900.png",
+      "sha256": "0778558d661fde3878dd7704ca0412640a305f2ee4091399694c1435109ef1b3"
+    },
+    {
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-stale-review-author-explanation.png",
+      "sha256": "a56e1062ac5d7bc7dd1a9c54959d066fa378416d0089ad46a09cdaacfef0937f"
+    },
+    {
+      "name": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/desktop_author_flow_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "c206a2f41abdd10f9bac1d3df914b3194c1531d91f63759c37851821e05f97ff"
+    },
+    {
+      "name": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-desktop-five-chapter-author.png",
+      "sha256": "aed55247a2c86476a97979d60fc7ee962a10808914003b330b4e75adc844009b"
+    },
+    {
+      "name": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-compact-desktop-five-chapter-author.png",
+      "sha256": "2468cf1d4e1c3b3e133377e0352e64b8fb28ee16df6b928af8a85d1fcc8ffb70"
+    },
+    {
+      "name": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-desktop-stale-payoff-blocked.png",
+      "sha256": "8e5eaf71c08c325194fbb58af94f047300d66c458179d2a9aa90df0f24a26bc2"
+    },
+    {
+      "name": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-desktop-final-complete.png",
+      "sha256": "ffba4ce3b9af6ac3e48db99987f7bf164910df0cfead6f69256a1621e4187396"
+    },
+    {
+      "name": "export_override_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/export_override_browser_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "a4cee292478c63433629ee9b7a868b0c261bf060df88576686db1b28753f2e16"
+    },
+    {
+      "name": "export_override_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-export-override-desktop.png",
+      "sha256": "d14befc56b917c631bd791c439483348f34e5d45f337a014f02f3c5cd1a7d4aa"
+    },
+    {
+      "name": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/frontend_browser_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "fbcf5a37038bca67cd94518a611bcb4f8fa0fe4392476ea955b4ed0a34fd494a"
+    },
+    {
+      "name": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-desktop-interrupted-fragment.png",
+      "sha256": "b443dc02cc5922592c6b180ec9510ffe355bf4d4c6ce6d50932b051a324f084e"
+    },
+    {
+      "name": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-desktop-interrupted-task.png",
+      "sha256": "c4e0a2a1de44214fd2c8a83558c975f44a9e0a67071091cdd73191a87fa5d0ee"
+    },
+    {
+      "name": "instruction_draft_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/instruction_draft_browser_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "f6b5b6bec8533325526d548660a9e241f48a2ab6ff4962a14c031b296ceed8c0"
+    },
+    {
+      "name": "instruction_draft_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-instruction-draft-desktop.png",
+      "sha256": "2409a02226298846af2a2ca198ecb71db14f56376d16e2e14459aac58647a43b"
+    },
+    {
+      "name": "instruction_draft_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-instruction-draft-desktop-1280x900.png",
+      "sha256": "0445e2c0f9bfdc471ece39e6c5896657690f085e9209b26953ee80c2819ca97a"
+    },
+    {
+      "name": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/model_settings_browser_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "7afe4628e53e0fc3435b30f7da1b236ef7c2fac9a418794205a1e8f3c731f12c"
+    },
+    {
+      "name": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-model-settings-failed.png",
+      "sha256": "fcd6a85354babbaafbab96d14846001103346dc72fd31eb13f80dfef0e58ea3a"
+    },
+    {
+      "name": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-model-settings-success.png",
+      "sha256": "7d094b802bac5e936802f5024db8218c4d4a8614544b406eea5809d2f6b6a47e"
+    },
+    {
+      "name": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-desktop-settings.png",
+      "sha256": "b9f0bfe50c3ed834b199f53af1835c826bba6b67e3e61818d9fbe828ab9bdde2"
+    },
+    {
+      "name": "planning_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/planning_browser_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "bdb9326a647d49fcdea33866ce96e5b9e11c13d9ab8d058e921cb085a862c604"
+    },
+    {
+      "name": "planning_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/comprehensive-workflow-final-planning-second-round.png",
+      "sha256": "0c77b20408b65e2b8fc214ed3c1b7d9d7872cb00c632340775e7af0abe31bc81"
+    },
+    {
+      "name": "search_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/search_browser_regressions-python311-node24-comprehensive-workflow-final.json",
+      "sha256": "f16a47c19a2728698c83d1317097fdd53dc8be3fb8b4e8665c34318253c76e07"
+    }
+  ],
+  "source_files_sha256_after": {
+    "moyu_analysis.py": "22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "moyu_context.py": "3f1b2a7041481091d8247724ae7c38720d0e38ca6c53101e3f7b912491406483",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8",
+    "moyu_workspace.py": "973227adea1b08f4f4137ea05ffbecd927ecaa49ade2d31fd5ce663230d96202",
+    "server.py": "27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720",
+    "scripts/apply_migration.py": "dd05512dfa69d7c8331b82c52a9af146f13a3921e9309f8a9616ead834044f14",
+    "scripts/evaluation_runner.py": "9f6554aee771bfcafe70e1e1e08e7259c8759efceeead4be4a342cabd7171af0",
+    "scripts/literary_evaluation.py": "746f30b47cd794e32c897d372b65d6bf6f7299b0df3bb4617a66dcc7f374c8c8",
+    "scripts/provider_shape_diagnostic.py": "9ee57e3d9c7bc22e3d97bbf974ae50654dcd30b2b08d966a909783c537bca23e",
+    "scripts/recovery_drill.py": "a4b567864328a35e1c2c94ecc97d9e4204bdc85e5b48e3339742f57ca8d0eadf",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "tests/ai_contract_fixtures.py": "2a61ae2944a17edbec96b20f5eb74e887ecc1e1d6df5217db58f2ca09cbd35c4",
+    "tests/ai_queue_fixtures.py": "0b1980bc030cfcb26ef031920c8f5dc4356b8b252b04adb42ae4bc7db371bda5",
+    "tests/assertion_workflow_fixtures.py": "d45d1cf0a64970759b025b9ce47f66efdb823f600f92b4b4f25e4b963fa17700",
+    "tests/backup_recovery_fixtures.py": "061ea33f60b160b70e8aaff75535b7b64a5faec098c49b81c6fa593c2c6b2152",
+    "tests/blueprint_guidance_http_fixtures.py": "cd15bf8ce483836848ab7330e3e32932521dfdc5a3a73ef04acd8f0b31485452",
+    "tests/branch_cas_fixtures.py": "21da9bcf4c91d2be0ce3ae99921b0bd06563adfa82993a0f5ceea747bf6e3cc7",
+    "tests/candidate_revision_fixtures.py": "d39b45e513977d06df4cf84b8fd07cc1108fd859c86c7ba86fcdf432b2b6372e",
+    "tests/chapter_analysis_workflow_fixtures.py": "bbb01527139c5455610dddffc22de3215081d1d9321a0c9325bfcafcfaba83ba",
+    "tests/chapter_commit_fixtures.py": "7c34c78a90573e053917f4af04677b386c75b8eb7173980ce263404de6026fea",
+    "tests/character_state_fixtures.py": "3846f19bc3f685e65b81250934dabcad7e6567dbf2e74a6228d7cf1ed334a1c4",
+    "tests/context_http_fixtures.py": "add018506a3f25f1e0d8471e802f6444dd82cf6e60a0cce38c958b0bf6a68622",
+    "tests/context_pipeline_fixtures.py": "136b776a798b677a38e3a3e46b5b8b22a46bc1b2487441af9a13a8ad69b29ee6",
+    "tests/corrupt_import_fixtures.py": "2271f184bad571d656a54342a6c6d437d25850c30ed97a19bb6661ca503f0ea4",
+    "tests/frontend_story_fixtures.py": "419e03d451c7b7b1e148e8651434b65cef947d3c976ee8c458a8b1885f12d1da",
+    "tests/import_archive_lifecycle_fixtures.py": "ea142f2e57bf91c72a05e22c28b51a855ac1ea3a873903f477a8cbe5e1aaf410",
+    "tests/literary_evaluation_fixtures.py": "e7ebdc1a5b770ed6c5c0308aae98e1367777280ccfc17a36f435418787f0a4aa",
+    "tests/longform_knowledge_scope_fixtures.py": "2a67c5e1f2283030bc75a78a60fca5564c501bff2ff2de82d56f521085f6b6fd",
+    "tests/manuscript_import_fixtures.py": "38f15132b33611befc1c9122a0e45afae20d5fda19047734bda74e7ee9e20eb5",
+    "tests/model_settings_fixtures.py": "7d720c4d0b79d653a035594f6e701aac2f57a98b2faeea668be5a61482269763",
+    "tests/output_contract_fixtures.py": "e489776c512e197c3f6235e50af3d7896a57eff457929206f8bc0fc4f69fdf37",
+    "tests/planning_backup_fixtures.py": "ec7652e156eddd46f06447936057ee0073ce8b6ebd1ce680e06fef04f13f60d0",
+    "tests/planning_http_fixtures.py": "002aaca7a48b412431cf62f8f88de9ad683f93573bf88f7ba48ab3c30f5af4de",
+    "tests/planning_workflow_fixtures.py": "7cc7101ee5a943910de1c9110ad29e47329a36eac4abaa14d60988ce8edf1d6f",
+    "tests/projection_health_fixtures.py": "22a0d9a5fe00573e17b9865e988d4468296690940b85b3f0f1d0516744389214",
+    "tests/prose_output_http_fixtures.py": "34a97b91045291d32ed5cea99e8a6176138ddac6eb751380649055ee939c808c",
+    "tests/provider_protocol_fixtures.py": "d79bad2abf713cf1cd04a6163a76d2dd45b447fdbd32784b5c828bdaa3279015",
+    "tests/provider_queue_integration_fixtures.py": "66a518dc573f06242c8cf9339297c8eb19ffd4361afdf21967ac695127d37ea2",
+    "tests/publication_assistant_fixtures.py": "cc440251c4871338c4bab8876b8a1cac413ca03c3c816d1823aa756a41c6c6b9",
+    "tests/range_patch_fixtures.py": "6083a6a1b73465653f28986a26e805672adb4857f6f3b9c2815ca29a0f2c9a2b",
+    "tests/record_scope_http_fixtures.py": "2051bcdff3e15c249c5053267d0653efb46fb3cc593c4c459ee8c110a6a59c87",
+    "tests/repository_privacy_fixtures.py": "20b0ce88a3fee5a52b12722cfcb4fe27d239c4d290c4f5583bcf96e908227ed3",
+    "tests/reversible_patch_fixtures.py": "b10c446a82bec642989cc2673df11600331bc5b780fdbeabb76c0f0d4a5d1f2c",
+    "tests/runtime_continuity_fixtures.py": "a9fe62e7afa7e712181f6cd2d4c2795fe05b629a22ce82219a5c3d348ed6a0f5",
+    "tests/schema_negative_fixtures.py": "81f29f9425214dfd9e773e94fd29b8f18867f436318857927ee737e6a5083585",
+    "tests/search_fixtures.py": "a782b1ac09fdf2654a3da09c3946101541f74986c494491cff06e919ad753189",
+    "tests/story_review_publication_http_fixtures.py": "813f14f20310117c28b4e5bac6039e06f172446beb2b567a7dbc8184da64cfb6",
+    "tests/story_review_repair_http_fixtures.py": "76fba57168cafcae37680db38a93983b7bd78e4386bde4e25e0fe8e4a987845a",
+    "tests/story_structure_fixtures.py": "7803c9248361b148902ad2577f285db2242d437a1314c0571c0b0ae60458f7bc",
+    "tests/stream_resume_fixtures.py": "2340b44603602e7ff66d1c5c53cf80be89843eb3c57bb3f90af191d8f5ab3bcf",
+    "tests/strict_feature_fixtures.py": "e1380922b77fd3064fef9b814bb97f83959da8b3937cb280f098f9e49918fb61",
+    "tests/workspace_workflow_fixtures.py": "d69f627af1002f50acd386e49c300a84500f93082e928ce8416d41fcf8f71f75",
+    "app.js": "bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a",
+    "author-workspace.js": "794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "scripts/publish_audit_archive.cjs": "4457bcaf03f8c11303090b7169da88bd2a690f8771d8fc0bf4dd6cffd49edf01",
+    "scripts/release_verification.cjs": "f0300f2952400bac3f8e39d9ab7ecf53caa1adbf0905ae5d9b3801638aa88ac6",
+    "tests/author_workspace_lifecycle_browser_regressions.cjs": "b5b77f3834f8ee7fc68f2081c549d21ec4df164143a557c15cc8e35555482b54",
+    "tests/desktop_author_flow_regressions.cjs": "42469ec378744f01531db7c26fb4c9e59ba2919b6a252b68c714fabbb74397b4",
+    "tests/editor_sync_fixtures.cjs": "e63c47079c73ec3859ac2f429da02d7ac8944f4d081047a57b98357233625525",
+    "tests/export_override_browser_regressions.cjs": "40b3296307aab830a02ad3b01eaafaf6c72910a556c296c91951bbc28382c619",
+    "tests/frontend_browser_regressions.cjs": "9904c91fbb2392d41cf81f7656b2e7a5a38354695d78bbf02343c6bc581224f8",
+    "tests/instruction_draft_browser_regressions.cjs": "dfb7cefe4c3bd13fe753034a07635bba4e9b98752151d43ec41124b87fd8026d",
+    "tests/model_settings_browser_regressions.cjs": "43187e9d784d69263d34c222f5afd2f0f0bd4908f423fa6fcf3719fda3177225",
+    "tests/planning_browser_regressions.cjs": "4e6bb2546e262de8b5ff9b383891011394a02fd3de7111514b5e9923e137cff5",
+    "tests/search_browser_regressions.cjs": "2cb2ffeaf0140684229abfb7b4c9c19921b2c328a3ad9e519c2c376c7cf1240f",
+    ".github/workflows/ci.yml": "ef57a7d8f589554ab64b173dbb14df40fe4908158e35e75b877f0607657522aa",
+    "index.html": "5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3",
+    "styles.css": "2e24180ed7755a0ed861e89cb0f689e49c820ce4f24776fe4b67047ced3a5f2b"
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-10-14T15:54:08.139Z",
+  "desktop_scenario_count": 90
+}

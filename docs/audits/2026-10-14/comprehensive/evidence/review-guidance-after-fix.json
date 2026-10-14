@@ -1,0 +1,254 @@
+{
+  "passed": true,
+  "checks": 11,
+  "cases": [
+    {
+      "name": "test_current_sealed_review_still_accepts_and_queues_bound_repair",
+      "passed": true
+    },
+    {
+      "name": "test_fake_run_without_private_context_preserves_component_contract",
+      "passed": true
+    },
+    {
+      "name": "test_late_real_run_save_rejects_missing_guidance_atomically",
+      "passed": true
+    },
+    {
+      "name": "test_late_real_run_save_rejects_old_guidance_atomically",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_free_explanation_expires_after_contract_only_change",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_free_explanation_expires_after_premise_only_change",
+      "passed": true
+    },
+    {
+      "name": "test_missing_guidance_rejects_acceptance_after_premise_only_change_atomically",
+      "passed": true
+    },
+    {
+      "name": "test_missing_guidance_rejects_direct_and_queued_repair_before_new_job",
+      "passed": true
+    },
+    {
+      "name": "test_missing_guidance_with_real_run_is_read_only_before_any_other_change",
+      "passed": true
+    },
+    {
+      "name": "test_other_book_blueprint_does_not_expire_free_current_legacy_explanation",
+      "passed": true
+    },
+    {
+      "name": "test_private_material_context_cannot_save_without_guidance_even_with_fake_run",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T18:07:50.365939+00:00",
+  "finished_at": "2026-10-14T18:08:02.237979+00:00",
+  "observations": [
+    {
+      "test": "test_current_sealed_review_still_accepts_and_queues_bound_repair",
+      "scenario": "current_review_control",
+      "accept_http_status": 200,
+      "direct_bound_source_matches": true,
+      "queue_http_status": 202,
+      "queued_task": "polish",
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_fake_run_without_private_context_preserves_component_contract",
+      "scenario": "component_only_compatibility",
+      "actual_run_absent": true,
+      "private_context_absent": true,
+      "report_stale": false,
+      "accept_http_status": 200,
+      "direct_bound_source_matches": true,
+      "provider_calls": 0
+    },
+    {
+      "test": "test_late_real_run_save_rejects_missing_guidance_atomically",
+      "scenario": "late_save_missing_guidance",
+      "actual_saved_job_and_run": true,
+      "material_source_present": true,
+      "late_save_rejected": true,
+      "database_unchanged": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_late_real_run_save_rejects_old_guidance_atomically",
+      "scenario": "late_save_old_guidance",
+      "actual_saved_job_and_run": true,
+      "material_source_present": true,
+      "late_save_rejected": true,
+      "database_unchanged": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_legacy_free_explanation_expires_after_contract_only_change",
+      "scenario": "legacy_resolution_guidance_changed",
+      "field": "contract",
+      "actual_saved_job_and_run": true,
+      "original_both_markers_absent": true,
+      "current_resolution_binds_guidance": true,
+      "first_explanation_http_status": 200,
+      "resolution_source_changed": true,
+      "previous_explanation_current": false,
+      "publication_blocked_after_change": true,
+      "old_resolution_http_status": 409,
+      "old_resolution_rejection_atomic": true,
+      "new_resolution_http_status": 200,
+      "new_explanation_current": true,
+      "publication_unblocked_after_current_explanation": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_legacy_free_explanation_expires_after_premise_only_change",
+      "scenario": "legacy_resolution_guidance_changed",
+      "field": "premise",
+      "actual_saved_job_and_run": true,
+      "original_both_markers_absent": true,
+      "current_resolution_binds_guidance": true,
+      "first_explanation_http_status": 200,
+      "resolution_source_changed": true,
+      "previous_explanation_current": false,
+      "publication_blocked_after_change": true,
+      "old_resolution_http_status": 409,
+      "old_resolution_rejection_atomic": true,
+      "new_resolution_http_status": 200,
+      "new_explanation_current": true,
+      "publication_unblocked_after_current_explanation": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_missing_guidance_rejects_acceptance_after_premise_only_change_atomically",
+      "scenario": "missing_guidance_acceptance",
+      "actual_saved_job_and_run": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "report_stale": true,
+      "accept_http_status": 409,
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_missing_guidance_rejects_direct_and_queued_repair_before_new_job",
+      "scenario": "missing_guidance_repair",
+      "actual_saved_job_and_run": true,
+      "direct_source_rejected": true,
+      "direct_database_unchanged": true,
+      "queue_http_status": 409,
+      "queue_code": "review_source_stale",
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_missing_guidance_with_real_run_is_read_only_before_any_other_change",
+      "scenario": "missing_guidance_read_only",
+      "actual_saved_job_and_run": true,
+      "material_source_present": true,
+      "report_stale": true,
+      "repair_target_count": 0,
+      "database_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_other_book_blueprint_does_not_expire_free_current_legacy_explanation",
+      "scenario": "other_book_guidance_control",
+      "resolution_source_unchanged": true,
+      "explanation_current": true,
+      "publication_unblocked": true,
+      "database_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "consent_and_request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_private_material_context_cannot_save_without_guidance_even_with_fake_run",
+      "scenario": "private_marker_requires_guidance",
+      "actual_run_absent": true,
+      "private_material_context_present": true,
+      "save_rejected": true,
+      "database_unchanged": true,
+      "provider_calls": 0
+    }
+  ],
+  "free_provider_calls": 9,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/review_guidance_http_fixtures.py": "70e162fb310c8488eeeed5eb4e084647179aa0b8f04cf20fcce7fde5edaf6bb9"
+  },
+  "source_files_sha256_after": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/review_guidance_http_fixtures.py": "70e162fb310c8488eeeed5eb4e084647179aa0b8f04cf20fcce7fde5edaf6bb9"
+  },
+  "frozen_sources_before_captured": true,
+  "frozen_sources_after_captured": true,
+  "source_unchanged": true,
+  "scope": "real saved AI jobs and runs in temporary synthetic SQLite; loopback HTTP; free local provider",
+  "claim_limit": "saved review guidance and author-decision integrity only; no real manuscript, credential, literary-quality or first-tier claim"
+}

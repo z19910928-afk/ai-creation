@@ -1,0 +1,43 @@
+{
+  "passed": false,
+  "checks": 2,
+  "cases": [
+    {
+      "name": "test_legacy_resolution_snapshot_tracks_added_and_deleted_same_book_records",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_legacy_http_fixtures.py\", line 274, in test_legacy_resolution_snapshot_tracks_added_and_deleted_same_book_records\n    self.assertNotIn(\"guidance_source\", baseline)\nAssertionError: 'guidance_source' unexpectedly found in {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_9bb4023da9df4cbda6f29049be76787d', 'source_revision_id': 'rev_cec4ff9dd601449287a80830cd9ed34c', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'evidence_sources': [{'chapter_id': 'ch_9bb4023da9df4cbda6f29049be76787d', 'revision_id': 'rev_cec4ff9dd601449287a80830cd9ed34c', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a'}], 'guidance_source': {'version': 2, 'blueprint_hash': '5fc6ee52d3eb3c5db81f23c9d17f98e1d894003e174c02870622a3bfaea36d1f', 'chapter_id': 'ch_9bb4023da9df4cbda6f29049be76787d', 'chapter_plan_hash': 'f0466efe9616562760dbf6a244f9914fd85828cc2042e95ba9210a48d8f10dcd'}, 'legacy_material_source': {'version': 1, 'purpose': 'author_resolution', 'project_id': 'default-project', 'branch_id': 'main', 'sha256': '118a06f6a4dd94d592fba6aceb3605d4234c6eec3f85cc29a07fef5fea2e5caa'}}\n"
+    },
+    {
+      "name": "test_legacy_reports_without_guidance_marker_are_not_forced_into_a_migration",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/story_review_publication_http_fixtures.py\", line 291, in test_legacy_reports_without_guidance_marker_are_not_forced_into_a_migration\n    report = self.save_report(legacy=True)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/story_review_publication_http_fixtures.py\", line 72, in save_report\n    report = moyu_analysis.save_review(conn, {\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"./moyu_analysis.py\", line 143, in wrapped\n    return function(conn, *args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"./moyu_analysis.py\", line 519, in save_review\n    raise AnalysisConflict(\"审稿结果缺少完整创作指南记录，请按当前指南重新审稿。\")\nmoyu_analysis.AnalysisConflict: 审稿结果缺少完整创作指南记录，请按当前指南重新审稿。\n"
+    }
+  ],
+  "started_at": "2026-10-14T18:10:28.682639+00:00",
+  "finished_at": "2026-10-14T18:10:30.397601+00:00",
+  "free_provider_calls": 1,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/story_review_publication_http_fixtures.py": "813f14f20310117c28b4e5bac6039e06f172446beb2b567a7dbc8184da64cfb6",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c"
+  },
+  "source_files_sha256_after": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/story_review_publication_http_fixtures.py": "813f14f20310117c28b4e5bac6039e06f172446beb2b567a7dbc8184da64cfb6",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c"
+  },
+  "source_unchanged": true,
+  "scope": "two earlier fixture assumptions after stricter model guidance validation; synthetic temporary databases; loopback only",
+  "claim_limit": "failures identify outdated fixture assumptions, not product vulnerabilities; no literary or first-tier claim"
+}

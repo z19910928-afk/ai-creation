@@ -1,0 +1,50 @@
+{
+  "checked_at_utc": "2026-10-14T14:49:11.822122+00:00",
+  "scope": "Original ai_context AST function and real assemble_context with in-memory stand-ins; no database, HTTP, browser, or AI request",
+  "server_sha256": "66be724062f36203125bb7025aabef42aa3cc29ab60e465f54bf096c36bcfa89",
+  "context_sha256": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+  "network_requests": 0,
+  "real_ai_requests": 0,
+  "results": [
+    {
+      "task": "continue",
+      "blueprint_reads": 0,
+      "global_contract_sent": false,
+      "global_outline_sent": false,
+      "volume_promise_sent": false,
+      "structured_scene_location_sent": false,
+      "structured_scene_pov_sent": false,
+      "flattened_scene_plan_sent": true
+    },
+    {
+      "task": "polish",
+      "blueprint_reads": 0,
+      "global_contract_sent": false,
+      "global_outline_sent": false,
+      "volume_promise_sent": false,
+      "structured_scene_location_sent": false,
+      "structured_scene_pov_sent": false,
+      "flattened_scene_plan_sent": true
+    },
+    {
+      "task": "scene",
+      "blueprint_reads": 1,
+      "global_contract_sent": true,
+      "global_outline_sent": true,
+      "volume_promise_sent": true,
+      "structured_scene_location_sent": false,
+      "structured_scene_pov_sent": false,
+      "flattened_scene_plan_sent": true
+    },
+    {
+      "task": "outline",
+      "blueprint_reads": 1,
+      "global_contract_sent": true,
+      "global_outline_sent": true,
+      "volume_promise_sent": true,
+      "structured_scene_location_sent": false,
+      "structured_scene_pov_sent": false,
+      "flattened_scene_plan_sent": true
+    }
+  ]
+}

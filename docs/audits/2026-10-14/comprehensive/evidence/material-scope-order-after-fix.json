@@ -1,0 +1,173 @@
+{
+  "passed": true,
+  "checks": 9,
+  "cases": [
+    {
+      "name": "test_current_foreshadow_title_can_generate_new_plan",
+      "passed": true
+    },
+    {
+      "name": "test_current_scope_after_early_deletion_can_generate_and_apply",
+      "passed": true
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_completed_candidate_apply",
+      "passed": true
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_frozen_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_original_retries",
+      "passed": true
+    },
+    {
+      "name": "test_foreshadow_plan_title_change_blocks_frozen_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_foreshadow_plan_title_change_blocks_original_retries",
+      "passed": true
+    },
+    {
+      "name": "test_omitted_foreshadow_title_does_not_expire_planning_task",
+      "passed": true
+    },
+    {
+      "name": "test_unconsumed_early_chapter_title_does_not_expire_task",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:12:34.756318+00:00",
+  "finished_at": "2026-10-14T17:12:43.081915+00:00",
+  "observations": [
+    {
+      "test": "test_current_foreshadow_title_can_generate_new_plan",
+      "scenario": "current_foreshadow_title_control",
+      "dispatch_status": "success",
+      "current_title_sent": true,
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_current_scope_after_early_deletion_can_generate_and_apply",
+      "scenario": "current_chapter_order_control",
+      "dispatch_status": "success",
+      "apply_http_status": 200,
+      "body_changed": true,
+      "future_card_absent": true
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_completed_candidate_apply",
+      "scenario": "deleted_early_chapter_old_apply",
+      "http_status": 400,
+      "applied": null,
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_frozen_dispatch",
+      "scenario": "deleted_early_chapter",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "request_hash_preserved": true,
+      "material_read_only": true,
+      "original_chapter_number": 3,
+      "current_chapter_number": 2
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_original_retries",
+      "scenario": "deleted_early_chapter_original_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409
+        },
+        {
+          "entry": "runs",
+          "status": 409
+        }
+      ],
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_foreshadow_plan_title_change_blocks_frozen_dispatch",
+      "scenario": "consumed_foreshadow_plan_title",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "request_hash_preserved": true,
+      "material_read_only": true,
+      "original_title": "第一章 还没有开始的故事",
+      "current_title": "伏笔来源章节的当前新标题"
+    },
+    {
+      "test": "test_foreshadow_plan_title_change_blocks_original_retries",
+      "scenario": "foreshadow_plan_title_original_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409
+        },
+        {
+          "entry": "runs",
+          "status": 409
+        }
+      ],
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_omitted_foreshadow_title_does_not_expire_planning_task",
+      "scenario": "omitted_foreshadow_title",
+      "dispatch_status": "success",
+      "free_provider_calls": 1,
+      "omitted_plan_absent": true
+    },
+    {
+      "test": "test_unconsumed_early_chapter_title_does_not_expire_task",
+      "scenario": "unconsumed_early_chapter_title",
+      "dispatch_status": "success",
+      "free_provider_calls": 1,
+      "source_title_absent": true
+    }
+  ],
+  "free_provider_calls": 5,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_materials.py": "01b1cff8817692032cd18f7629849af887d7fb1371f05f609708a4f9ef6785b9",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_scope_order_http_fixtures.py": "1e0ffdca4cb1acaad93c5420b6a35177abe7c8a3e638f590fc1e3d26a150b55a"
+  },
+  "source_files_sha256_after": {
+    "moyu_materials.py": "01b1cff8817692032cd18f7629849af887d7fb1371f05f609708a4f9ef6785b9",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_scope_order_http_fixtures.py": "1e0ffdca4cb1acaad93c5420b6a35177abe7c8a3e638f590fc1e3d26a150b55a"
+  },
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; real loopback HTTP; free local provider; no real manuscript or credential",
+  "claim_limit": "chapter-scope and source-title integrity only; no literary-quality or competitiveness claim"
+}

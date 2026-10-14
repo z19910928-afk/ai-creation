@@ -21,9 +21,12 @@ let authorSettingsSeq=0;
 let authorBackups=[];
 let authorReferences=[];
 let authorLoadToken=0;
+let authorEditorBlueprintRequest=null;
 let authorSwitchChain=Promise.resolve();
 const editorUndo=new Map();
 const editorRedo=new Map();
+const authorChapterFinishes=new Map();
+let authorFinishing=null;
 
 function authorBlueprintLocked(){
  return authorBlueprintApply?.owner===requestedProject&&authorBlueprintApply.branch===(state.branch_id||'main');
@@ -49,6 +52,13 @@ function authorReceiveBlueprint(data,draft){
  authorBlueprintDirty=!MoyuSync.equal(authorBlueprint,remote);
  authorBlueprintConflict=merged.conflicts.length?{base:draft.base||remote,remote,conflicts:merged.conflicts}:null;
  authorCacheBlueprint();authorRenderBlueprint();
+ const sidebar=view==='editor'&&document.querySelector('.chapter-sidebar');
+ if(!sidebar)return;
+ sidebar.innerHTML=authorChapterList();
+ sidebar.querySelectorAll('[data-chapter]').forEach(button=>button.onclick=()=>{
+  if(activeChapter!==button.dataset.chapter)aiDraft=null;
+  activeChapter=button.dataset.chapter;storage.set(cacheKey(':active'),activeChapter);view='editor';render();
+ });
 }
 
 async function authorJSON(path,options={}){
@@ -76,6 +86,7 @@ function authorChapterList(){
 
 function authorEditorView(){
  const c=chapter();
+ const previous=c?state.chapters[state.chapters.findIndex(item=>item.id===c.id)-1]:null;
  const reviewLabel={passed:'已通过',needs_revision:'需修改',stale:'已过期',pending:'未完成',failed:'失败'}[c?.review_status]||'未审稿';
  return `${authorPageHead('章节写作',state.project.book_status==='complete'?'':`<button class="primary-btn" data-action="newChapter">＋ 章节</button>`)}
  <div class="editor-layout"><aside class="chapter-sidebar">${authorChapterList()}</aside><section class="editor-card">
@@ -89,8 +100,10 @@ function authorEditorView(){
  <textarea class="chapter-editor" id="chapterBody" aria-label="章节正文">${esc(c.body)}</textarea>
  <div class="editor-footer"><span id="liveCount">${Array.from(c.body.replace(/\s/g,'')).length} 字</span>
  <select id="chapterStatus" aria-label="章节状态">${['草稿','进行中','完成'].map(label=>`<option ${c.status===label?'selected':''}>${label}</option>`).join('')}</select>
- <span class="review-pill">审稿：${reviewLabel}</span></div>
- <details class="chapter-plan" ${c.body?'':'open'}><summary>本章任务与回顾</summary><div class="plan-grid">
+ <span class="review-pill">审稿：${reviewLabel}</span>
+ ${state.project.book_status==='complete'?'':`<button class="ghost-btn" data-action="finishChapter" ${authorFinishing?'disabled':''}>完成本章，写下一章</button>`}</div>
+ <details class="chapter-plan" ${c.body?'':'open'}><summary>本章任务与回顾</summary>
+ ${previous?.next_brief?`<label>上章交接<textarea id="previousChapterHandoff" readonly>${esc(previous.next_brief)}</textarea></label>`:''}<div class="plan-grid">
  ${[['chapterGoal','chapter_goal','本章目标'],['chapterPov','pov','视角'],['chapterScenePlan','scene_plan','场景计划'],
  ['chapterForeshadowing','foreshadowing_op','伏笔动作'],['chapterRecap','recap','章节回顾'],['chapterNextBrief','next_brief','下一章任务'],
  ['chapterHook','hook','章节出口']].map(([id,key,label])=>`<label>${label}${['chapterGoal','chapterPov'].includes(id)?
@@ -245,6 +258,23 @@ async function authorLoadPage(){
  }}
 }
 
+function authorLoadEditorBlueprint(){
+ if(authorBlueprint||!backendOnline||!state.chapters.some(c=>c.volume_id&&!c.volume_title))return;
+ const owner=requestedProject,branch=state.branch_id||'main';
+ if(authorEditorBlueprintRequest?.owner===owner&&authorEditorBlueprintRequest.branch===branch)return;
+ const request={owner,branch};authorEditorBlueprintRequest=request;
+ request.promise=(async()=>{
+  try{
+   const data=await authorJSON('/api/blueprint',{headers:{'X-Moyu-Project':owner,'X-Moyu-Branch':branch}});
+   if(authorEditorBlueprintRequest!==request||owner!==requestedProject||branch!==(state.branch_id||'main')||
+    authorBlueprint||authorBlueprintDirty||authorBlueprintLocked())return;
+   let draft;try{draft=JSON.parse(storage.get(authorBlueprintDraftKey())||'null')}catch{}
+   authorReceiveBlueprint(data,draft);
+  }catch{}
+  finally{if(authorEditorBlueprintRequest===request)authorEditorBlueprintRequest=null}
+ })();
+}
+
 function authorRenderProjects(){
  const host=document.querySelector('#projectList');if(!host)return;
  host.innerHTML=authorProjects.map(p=>`<article class="book-row ${p.id===requestedProject?'current-book':''}"><div><h3>${esc(p.title)}</h3>
@@ -262,9 +292,12 @@ function authorSwitchProject(id){
 }
 
 async function authorPerformProjectSwitch(id){
- if(id===requestedProject){view='editor';render();return}
- if(backendOnline&&!await syncBackend())return toast('当前草稿需要先保存或合并，切换已暂停');
- if(authorBlueprintDirty&&!await authorSaveBlueprint())return;
+ if(id===requestedProject){
+  const loaded=backendOnline&&state.project.id===id||await hydrate();
+  view='editor';render();return !!loaded&&backendOnline&&requestedProject===id&&state.project.id===id;
+ }
+ if(backendOnline&&!await syncBackend()){toast('当前草稿需要先保存或合并，切换已暂停');return false}
+ if(authorBlueprintDirty&&!await authorSaveBlueprint())return false;
  cacheDraft();persistCandidates();clearTimeout(syncTimer);++authorLoadToken;
  for(const controller of streamReaders.values())controller.abort();
  streamReaders.clear();jobSources.clear();clearTimeout(queueTimer);
@@ -275,23 +308,60 @@ async function authorPerformProjectSwitch(id){
  clearTimeout(authorPlanningTimer);authorPlanning=null;authorPlanningRows=[];authorPlanningSelected=null;authorPlanningBusy=false;
  aiDraft=null;aiRunId=null;mergePending=null;saveError='';savedSelection=null;storyLoaded=false;storyLoadedChapter=null;
  storyMap={relationships:[],timeline:[],foreshadowing:[],conflicts:[],character_states:[],knowledge_scope:{}};
- view='dashboard';render();await hydrate();await loadAIStatus();scheduleQueue(0);
+ view='dashboard';render();const loaded=await hydrate();if(loaded)await loadAIStatus();scheduleQueue(0);
+ return !!loaded&&backendOnline&&requestedProject===id&&state.project.id===id;
 }
 
-actions.createProject=()=>authorForm('新建作品',`<label>作品名<input id="newBookTitle" maxlength="200" required></label>
+function authorRememberProject(project){
+ if(!project?.id)throw new Error('作品已经保存，但服务没有返回作品身份，请从书架重新打开');
+ const existing=authorProjects.findIndex(item=>item.id===project.id);
+ if(existing<0)authorProjects.push(project);else authorProjects[existing]={...authorProjects[existing],...project};
+ return project;
+}
+function authorLockCommittedForm(wrap){
+ wrap.querySelectorAll('input,textarea,select,[data-import-split],[data-import-merge]').forEach(control=>control.disabled=true);
+}
+async function authorOpenCommittedProject(project,wrap,label){
+ authorRememberProject(project);authorLockCommittedForm(wrap);
+ let opened=false;
+ try{opened=await authorSwitchProject(project.id)}catch{}
+ if(opened)return;
+ wrap.querySelector('[type="submit"],[data-import-confirm]').textContent='重新打开作品';
+ throw new Error(`${label}已经保存，但暂时无法打开。请重新打开这份作品，原作品继续保留。`);
+}
+actions.createProject=()=>{
+ let createdProject=null;
+ return authorForm('新建作品',`<label>作品名<input id="newBookTitle" required></label>
  <label>一句话故事<textarea id="newBookSummary" maxlength="50000"></textarea></label><label>题材<input id="newBookGenre" maxlength="100"></label>
  <label>目标字数<input id="newBookGoal" type="number" value="50000" min="0" max="1000000000"></label>`,async w=>{
-  const title=w.querySelector('#newBookTitle').value.trim();if(!title)throw new Error('请给新作品起个名字');
-  if(!await syncBackend())throw new Error('当前作品需要先保存或合并');
-  const data=await authorJSON('/api/projects',{method:'POST',body:JSON.stringify({title,summary:w.querySelector('#newBookSummary').value,genre:w.querySelector('#newBookGenre').value,goal:Number(w.querySelector('#newBookGoal').value)})});
-  const project=data.project||data.state?.project;authorProjects.push(project);await authorSwitchProject(project.id);
+  if(!createdProject){
+   const title=w.querySelector('#newBookTitle').value.trim();if(!title)throw new Error('请给新作品起个名字');
+   if(Array.from(title).length>200)throw new Error('作品名不能超过200字');
+   try{
+    await durableOperation('/api/projects','POST',{title,summary:w.querySelector('#newBookSummary').value,
+     genre:w.querySelector('#newBookGenre').value,goal:Number(w.querySelector('#newBookGoal').value)},null,data=>{
+      createdProject=authorRememberProject(data.project||data.state?.project);
+     });
+   }catch(error){if(!createdProject)throw error}
+  }
+  await authorOpenCommittedProject(createdProject,w,'新作品');toast('新作品已打开');
  });
+};
 async function authorDuplicateProject(id){
  const p=authorProjects.find(p=>p.id===id);
- authorForm('复制作品',`<label>新作品名<input id="copyTitle" value="${esc(p?.title||'作品')} · 副本" maxlength="200"></label>`,async w=>{
-  if(!await syncBackend())throw new Error('当前作品需要先保存或合并');
-  const data=await authorJSON(`/api/projects/${encodeURIComponent(id)}/duplicate`,{method:'POST',body:JSON.stringify({title:w.querySelector('#copyTitle').value.trim()})});
-  const project=data.project||data.state?.project;authorProjects.push(project);await authorSwitchProject(project.id);
+ const title=Array.from(p?.title||'作品').slice(0,195).join('')+' · 副本';
+ let copiedProject=null;
+ authorForm('复制作品',`<label>新作品名<input id="copyTitle" value="${esc(title)}"></label>`,async w=>{
+  if(!copiedProject){
+   const title=w.querySelector('#copyTitle').value.trim();if(!title)throw new Error('请给副本起个名字');
+   if(Array.from(title).length>200)throw new Error('作品名不能超过200字');
+   try{
+    await durableOperation(`/api/projects/${encodeURIComponent(id)}/duplicate`,'POST',{title},null,data=>{
+     copiedProject=authorRememberProject(data.project||data.state?.project);
+    });
+   }catch(error){if(!copiedProject)throw error}
+  }
+  await authorOpenCommittedProject(copiedProject,w,'作品副本');toast('作品副本已打开');
  });
 }
 async function authorArchiveProject(id,archived){
@@ -677,11 +747,22 @@ actions.createBackup=async()=>{
 };
 function authorRestoreBackup(id){
  const b=authorBackups.find(b=>b.id===id);
+ let restoredProject=null;
  authorForm('从备份恢复作品',`<p class="modal-help">将用 ${esc(b?.created_at||'所选时间')} 的完整备份建立一份独立作品。当前作品和历史继续保留。</p>
  <label class="confirmation-check"><input id="restoreConfirm" type="checkbox" required>我确认建立恢复副本</label>`,async w=>{
   if(!w.querySelector('#restoreConfirm').checked)throw new Error('请先确认恢复');
-  const result=await durableOperation(`/api/backups/${encodeURIComponent(id)}/restore`,'POST',{confirm:true});
-  authorProjects.push(result.project);await authorSwitchProject(result.project.id);toast('恢复副本已打开，原作品继续保留');
+  if(!restoredProject){
+   try{
+    await durableOperation(`/api/backups/${encodeURIComponent(id)}/restore`,'POST',{confirm:true},null,result=>{
+     restoredProject=result.project;authorProjects.push(restoredProject);
+    });
+   }catch(error){if(!restoredProject)throw error}
+  }
+  if(!await authorSwitchProject(restoredProject.id)){
+   w.querySelector('[type="submit"]').textContent='重新打开副本';
+   throw new Error('恢复副本已建立，但暂时无法打开。请重新打开这份副本，原作品继续保留。');
+  }
+  toast('恢复副本已打开，原作品继续保留');
  },'建立恢复副本');
 }
 actions.exportManuscript=()=>{downloadText(exportFilename('json'),JSON.stringify(state,null,2),'application/json;charset=utf-8');toast('稿件 JSON 已导出，不包含完整历史与任务')};
@@ -703,9 +784,10 @@ document.querySelector('#bookFileInput').onchange=async event=>{
 };
 function authorImportPreview(filename,preview){
  const chapters=MoyuSync.copy(preview.chapters||[]);if(!chapters.length)return toast('未找到可导入正文');
+ const owner=requestedProject;let committedResult=null;
  const wrap=document.createElement('div');wrap.className='modal-backdrop';
  wrap.innerHTML=`<div class="modal candidate-modal"><h3>分章预览</h3><p class="modal-help">${esc(filename)} · ${chapters.length} 章 · ${esc(preview.metadata?.encoding||'')}</p>
- <label>名称<input id="importBookTitle" value="${esc(preview.metadata?.suggested_title||filename.replace(/\.[^.]+$/,''))}" maxlength="200"></label>
+ <label>名称<input id="importBookTitle" value="${esc(preview.metadata?.suggested_title||filename.replace(/\.[^.]+$/,''))}"></label>
  <label>放到哪里<select id="importBookMode"><option value="manuscript">建立独立作品</option><option value="reference">当前作品的参考来源</option></select></label>
  ${(preview.warnings||[]).map(item=>`<p class="modal-help check-bad">${esc(typeof item==='string'?item:item.message||JSON.stringify(item))}</p>`).join('')}
  <div class="import-chapters"></div>
@@ -714,7 +796,7 @@ function authorImportPreview(filename,preview){
  const captureTitles=()=>{for(const input of wrap.querySelectorAll('[data-import-title]'))chapters[Number(input.dataset.importTitle)].title=input.value};
  const showChapters=()=>{
   wrap.querySelector('.import-chapters').innerHTML=chapters.map((c,index)=>`<details class="analysis-item" ${index===0?'open':''}><summary>${index+1}. ${esc(c.title)} · ${Array.from(c.body||'').length.toLocaleString()} 字</summary>
-  <label>标题<input data-import-title="${index}" value="${esc(c.title)}" maxlength="500"></label><label>正文<textarea data-import-body="${index}" readonly>${esc(c.body)}</textarea></label>
+  <label>标题<input data-import-title="${index}" value="${esc(c.title)}"></label><label>正文<textarea data-import-body="${index}" readonly>${esc(c.body)}</textarea></label>
   <div class="analysis-actions"><button class="ghost-btn" data-import-split="${index}">在光标处拆章</button>${index<chapters.length-1?`<button class="ghost-btn" data-import-merge="${index}">与下一章合并</button>`:''}</div></details>`).join('');
   wrap.querySelectorAll('[data-import-split]').forEach(button=>button.onclick=()=>{
    captureTitles();const index=Number(button.dataset.importSplit);const input=wrap.querySelector(`[data-import-body="${index}"]`);const position=input.selectionStart;
@@ -731,13 +813,32 @@ function authorImportPreview(filename,preview){
  wrap.querySelector('[data-import-confirm]').onclick=async()=>{
   const button=wrap.querySelector('[data-import-confirm]');button.disabled=true;
   try{
-   captureTitles();
-   const mode=wrap.querySelector('#importBookMode').value;const title=wrap.querySelector('#importBookTitle').value.trim();
-   if(!title)throw new Error('请填写名称');
-   const result=await durableOperation('/api/import/apply','POST',{preview_id:preview.preview_id,source_sha256:preview.source_sha256,title,mode,chapters});
+   if(!committedResult){
+    captureTitles();
+    const mode=wrap.querySelector('#importBookMode').value;const title=wrap.querySelector('#importBookTitle').value.trim();
+    if(!title)throw new Error('请填写名称');
+    if(Array.from(title).length>200)throw new Error('作品或参考书名称不能超过200字');
+    for(const [index,item] of chapters.entries()){
+     if(!item.title.trim())throw new Error(`请填写第${index+1}章名称`);
+     if(Array.from(item.title).length>500)throw new Error(`第${index+1}章名称不能超过500字`);
+    }
+    try{
+     await durableOperation('/api/import/apply','POST',{preview_id:preview.preview_id,source_sha256:preview.source_sha256,title,mode,chapters},null,result=>{
+      committedResult={...result,mode};
+      if(mode==='manuscript')authorRememberProject(result.project);
+      authorLockCommittedForm(wrap);
+     });
+    }catch(error){if(!committedResult)throw error}
+   }
+   if(committedResult.mode==='manuscript'){
+    await authorOpenCommittedProject(committedResult.project,wrap,'导入作品');view='editor';render();
+   }else{
+    button.textContent='重新打开参考库';
+    if(!await authorSwitchProject(owner))throw new Error('参考书已经保存，但暂时无法打开。请重新打开参考库，原作品继续保留。');
+    const data=await authorJSON('/api/references');
+    authorReferences=data.references||[];view='references';render();
+   }
    wrap.remove();
-   if(mode==='manuscript'){authorProjects.push(result.project);await authorSwitchProject(result.project.id);view='editor';render()}
-   else{view='references';render()}
    toast('所见章节已经完整导入');
   }catch(error){wrap.querySelector('.form-error').textContent=error.message;button.disabled=false}
  };
@@ -892,7 +993,7 @@ function authorShowAnalysis(analysis,chapterId){
  const stale=analysis?.stale||analysis?.status==='stale';
  const wrap=document.createElement('div');wrap.className='modal-backdrop';
  wrap.innerHTML=`<div class="modal analysis-modal"><h3>章后记忆确认</h3><p class="modal-help">${esc(chapter(chapterId)?.title||'')}
- ${stale?' · 原稿已变，此批候选需要重新提取':''}</p>
+ ${stale?' · 原稿或资料需要重新核对，此批候选仅供阅读':''}</p>
  ${analysis?`<label>章节回顾<textarea id="analysisSummary" ${summarySection.status==='accepted'?'readonly':''}>${esc(summary)}</textarea></label>
  <label class="confirmation-check"><input id="confirmAnalysisSummary" type="checkbox" ${summary.trim()&&summarySection.status!=='accepted'?'checked':''} ${summarySection.status==='accepted'?'disabled':''}>确认章节回顾</label>
  <label>下一章任务<textarea id="analysisHandoff" ${handoffSection.status==='accepted'?'readonly':''}>${esc(handoff)}</textarea></label>
@@ -982,6 +1083,32 @@ async function authorReviewCurrent(review,chapterId,owner,branch){
  }
  return current;
 }
+async function authorReviewDecisionCurrent(review,chapterId,owner,branch){
+ const sameBook=()=>owner===requestedProject&&branch===(state.branch_id||state.project?.branch_id||'main');
+ if(!sameBook())throw new Error('作品已经切换，请重新打开本章审稿');
+ if(!await syncBackend())throw new Error('当前稿件需要先保存或合并');
+ if(!sameBook())throw new Error('作品已经切换，请重新打开本章审稿');
+ const data=await authorJSON(`/api/story-reviews?chapter_id=${encodeURIComponent(chapterId)}`,
+  {headers:{'X-Moyu-Project':owner,'X-Moyu-Branch':branch}});
+ const current=authorReviewRows(data).find(row=>(row.id||row.review_id)===(review.id||review.review_id));
+ const c=chapter(chapterId),body=c?.body;
+ if(!current||current.project_id!==owner||current.branch_id!==branch||current.chapter_id!==chapterId||!c){
+  throw new Error('审稿问题已变化，请重新打开本章审稿');
+ }
+ const source=current.author_resolution_source;
+ if(current.stale||current.status==='stale'){
+  if(!source||source.project_id!==owner||source.branch_id!==branch||source.chapter_id!==chapterId||
+   source.source_revision_id!==c.revision_id||await sha256(body)!==source.chapter_hash){
+   throw new Error('当前稿件依据已经变化，请重新打开本章审稿');
+  }
+ }else if(current.source_revision_id!==c.revision_id||await sha256(body)!==current.chapter_hash){
+  throw new Error('审稿依据已经变化，请重新打开本章审稿');
+ }
+ if(!sameBook()||chapter(chapterId)?.body!==body||chapter(chapterId)?.revision_id!==c.revision_id){
+  throw new Error('当前稿件依据已经变化，请重新打开本章审稿');
+ }
+ return {review:current,guard:()=>sameBook()&&chapter(chapterId)?.body===body&&chapter(chapterId)?.revision_id===c.revision_id};
+}
 function authorReviewSelectSource(source,wrap){
  const c=chapter(source.chapter_id);wrap?.remove();activeChapter=c.id;storage.set(cacheKey(':active'),c.id);view='editor';render();
  const input=document.querySelector('#chapterBody');input.focus();
@@ -1000,9 +1127,13 @@ function authorShowStoryReview(review,chapterId){
  const stale=!!(review?.stale||review?.status==='stale');let preparing=false;
  const wrap=document.createElement('div');wrap.className='modal-backdrop';
  wrap.innerHTML=`<div class="modal analysis-modal"><h3>本章审稿</h3><p class="modal-help">${esc(chapter(chapterId)?.title||'')} ·
- ${stale?'当前稿已经变更，需要重新审稿':review?'已生成故事审稿报告':'尚未完成故事审稿'}</p>
+ ${stale?'审稿依据需要重新核对，可结合当前稿逐项说明忽略或解释理由，也可重新审稿':review?'已生成故事审稿报告':'尚未完成故事审稿'}</p>
  ${issues.map((item,index)=>{
   const evidence=item.evidence||[];const targets=item.repair_targets||[];const disabled=stale||item.stale||!targets.length;
+  const resolution=stale&&item.author_resolution_current?item.stale_resolution:null;
+  const decision=stale?resolution?.decision||'':item.decision||'';
+  const reason=stale?resolution?.reason||'':item.reason||'';
+  const decided=stale?!!resolution:!!decision&&decision!=='accepted';
   return `<section class="analysis-item" data-review-issue="${index}"><strong>${esc(item.category||item.kind||'审稿项')} · ${esc(item.title||item.message||'')}</strong>
  <p class="modal-help">${esc(item.description||item.message||'')}</p>${item.suggestion?`<p class="modal-help">修订建议：${esc(item.suggestion)}</p>`:''}
  ${evidence.map((source,evidenceIndex)=>`<div data-review-evidence="${evidenceIndex}"><small>${esc(chapter(source.source_chapter_id)?.title||'来源章节')} · 原句 ${evidenceIndex+1}</small>
@@ -1011,10 +1142,11 @@ function authorShowStoryReview(review,chapterId){
  <option value="">选择要修订的原句</option>${targets.map(target=>`<option value="${target.evidence_index}">原句 ${target.evidence_index+1} · ${esc(target.chapter_title||'来源章节')}</option>`).join('')}</select></label>`:
  `<input type="hidden" data-review-target="${index}" value="${targets[0]?.evidence_index??''}">`}
  <button class="primary-btn" data-review-repair="${index}" ${disabled?'disabled':''}>生成局部修订候选</button></div>
- <div class="analysis-actions"><select data-review-choice="${index}" ${stale||item.stale||item.decision?'disabled':''}><option value="">待处理</option><option value="accepted" ${item.decision==='accepted'?'selected':''}>需要修订</option>
- <option value="ignored" ${item.decision==='ignored'?'selected':''}>忽略建议</option><option value="explained" ${item.decision==='explained'?'selected':''}>补充解释</option></select>
- <input data-review-reason="${index}" placeholder="处理理由" value="${esc(item.reason||'')}" maxlength="2000" ${stale||item.stale||item.decision?'readonly':''}></div>
- <p class="modal-help" data-review-decision-note="${index}" ${item.decision==='accepted'?'':'hidden'}>已记为需要修订，正文尚未因此修改；改稿后需要重新审稿。</p></section>`;
+ <div class="analysis-actions"><select data-review-choice="${index}" ${decided?'disabled':''}><option value="">待处理</option><option value="accepted" ${decision==='accepted'?'selected':''} ${stale?'disabled':''}>需要修订</option>
+ <option value="ignored" ${decision==='ignored'?'selected':''}>忽略建议</option><option value="explained" ${decision==='explained'?'selected':''}>补充解释</option></select>
+ <input data-review-reason="${index}" placeholder="处理理由" value="${esc(reason)}" maxlength="2000" ${decided?'readonly':''}></div>
+ <p class="modal-help" data-review-decision-note="${index}" ${decision==='accepted'?'':'hidden'}>已记为需要修订，正文尚未因此修改；可说明解释或忽略理由，改稿后也可重新审稿。</p>
+ ${resolution?'<p class="modal-help">已结合当前稿保存作者处理理由。</p>':''}</section>`;
  }).join('')||'<p class="modal-help">尚无可处理的故事问题。</p>'}
  ${(review?.uncertainties||payload.uncertainties||[]).map(text=>`<p class="modal-help">${esc(text)}</p>`).join('')}
  <p class="form-error" role="alert"></p><div class="modal-actions"><button class="ghost-btn" data-close>关闭</button><button class="ghost-btn" data-base-review>基础归档检查</button>
@@ -1060,43 +1192,98 @@ function authorShowStoryReview(review,chapterId){
   finally{preparing=false;button.disabled=stale}
  });
  wrap.querySelectorAll('[data-review-choice]').forEach(select=>select.onchange=async()=>{
+  if(wrap.dataset.reviewRefreshRequired==='1')return;
   const index=Number(select.dataset.reviewChoice);const item=issues[index];const reason=wrap.querySelector(`[data-review-reason="${index}"]`).value.trim();
-  if(!select.value)return;
-  if(!reason){wrap.querySelector('.form-error').textContent='请填写简短处理理由，再选择处理结果';select.value=item.decision||'';return}
-  select.disabled=true;
+  const prior=stale?item.author_resolution_current?item.stale_resolution?.decision||'':'':item.decision||'';
+  const decision=select.value;if(!decision)return;
+  if(!reason){wrap.querySelector('.form-error').textContent='请填写简短处理理由，再选择处理结果';select.value=prior;return}
+  select.disabled=true;let decisionSaved=false,savedReview=null;
   try{
-   await authorReviewCurrent(review,chapterId,owner,branch);
-   await durableOperation(`/api/story-reviews/${encodeURIComponent(review.id||review.review_id)}/issues/${encodeURIComponent(item.id||item.issue_id)}/decision`,
-    'POST',{decision:select.value,reason});item.decision=select.value;item.reason=reason;wrap.querySelector('.form-error').textContent='';
-   wrap.querySelector(`[data-review-reason="${index}"]`).readOnly=true;
-   wrap.querySelector(`[data-review-decision-note="${index}"]`).hidden=select.value!=='accepted';
-   toast(select.value==='accepted'?'已记为需要修订，正文仍需改稿并重新审稿':'审稿处理决定已保存');
-  }catch(error){wrap.querySelector('.form-error').textContent=error.message;select.value=item.decision||''}finally{select.disabled=!!item.decision||stale}
+   const ready=await authorReviewDecisionCurrent(review,chapterId,owner,branch);
+   const currentStale=!!(ready.review.stale||ready.review.status==='stale');
+   if(currentStale&&decision==='accepted')throw new Error('旧审稿只能结合当前稿说明忽略或解释理由，请重新打开本章审稿');
+   try{
+    await durableOperation(`/api/story-reviews/${encodeURIComponent(review.id||review.review_id)}/issues/${encodeURIComponent(item.id||item.issue_id)}/decision`,
+     'POST',{decision,reason,...(currentStale?{resolution_source:ready.review.author_resolution_source}:{})},
+     ready.guard,result=>{decisionSaved=true;savedReview=result.review});
+   }catch(error){if(!decisionSaved)throw error}
+   if(!savedReview)throw new Error('处理回应缺少审稿报告，请重新打开本章审稿核对结果');
+   if(!ready.guard())throw new Error('处理理由已经保存，当前稿件随后发生变化，请重新打开本章审稿');
+   let current;
+   try{
+    const data=await authorJSON(`/api/story-reviews?chapter_id=${encodeURIComponent(chapterId)}`,
+     {headers:{'X-Moyu-Project':owner,'X-Moyu-Branch':branch}});
+    current=authorReviewRows(data).find(row=>(row.id||row.review_id)===(savedReview.id||savedReview.review_id));
+    if(!current)throw new Error('missing saved review');
+   }catch{throw new Error('处理理由已保存，但最新审稿暂时无法读取。请重新打开本章审稿核对结果。')}
+   if(!ready.guard())throw new Error('处理理由已经保存，当前稿件随后发生变化，请重新打开本章审稿');
+   wrap.remove();authorShowStoryReview(current,chapterId);
+   toast(decision==='accepted'?'已记为需要修订，正文仍需改稿或说明处理理由':'审稿处理决定已保存');
+  }catch(error){
+   wrap.querySelector('.form-error').textContent=error.message;
+   if(decisionSaved){
+    wrap.dataset.reviewRefreshRequired='1';
+    wrap.querySelectorAll('[data-review-choice],[data-review-target],[data-review-source],[data-review-repair],[data-semantic-review],[data-base-review]')
+     .forEach(control=>control.disabled=true);
+    wrap.querySelectorAll('[data-review-reason]').forEach(input=>input.readOnly=true);
+   }else select.value=prior;
+  }
+  finally{if(!decisionSaved)select.disabled=stale?!!item.author_resolution_current:!!item.decision&&item.decision!=='accepted'}
  });
 }
 
+function authorFinishSource(c){
+ return JSON.stringify(['title','body','chapter_goal','scene_plan','pov','next_brief','recap','hook','foreshadowing_op'].map(key=>c?.[key]||''));
+}
+function authorNextUnfinishedChapter(id){
+ return state.chapters.slice(state.chapters.findIndex(item=>item.id===id)+1).find(item=>item.status!=='完成');
+}
 actions.finishChapter=async()=>{
+ if(authorFinishing)return toast('正在保存本章归档，请稍候');
  if(state.project.book_status==='complete')return toast('全书已完稿，请先在终稿检查中恢复写作');
  const c=chapter();if(!c||Array.from(c.body.replace(/\s/g,'')).length<60)return toast('先写出一小段完整正文，再归档');
+ const owner=requestedProject,branch=state.branch_id||'main',key=JSON.stringify([owner,branch,c.id]);
+ authorFinishing={owner,branch,chapterId:c.id};
+ document.querySelector('[data-action="finishChapter"]')?.setAttribute('disabled','');
  try{
   if(!await syncBackend())throw new Error('当前稿件需要先保存或合并');
+  const sameBook=()=>owner===requestedProject&&branch===(state.branch_id||'main');
+  if(!sameBook()||activeChapter!==c.id)throw new Error('作品或章节已经切换，请回到原章继续归档');
+  const currentChapter=chapter(c.id),alreadyComplete=currentChapter.status==='完成';
+  const source=authorFinishSource(currentChapter);
+  let finish=authorChapterFinishes.get(key);
+  if(!finish||finish.source!==source){finish={source,nextId:null,done:false};authorChapterFinishes.set(key,finish)}
+  const sourceCurrent=()=>sameBook()&&activeChapter===c.id&&authorFinishSource(chapter(c.id))===finish.source;
   const pending=state.memory.filter(m=>m.source_chapter_id===c.id&&!['accepted','已确认','rejected','已拒绝','retracted','已撤回'].includes(m.status));
   if(pending.length){actions.chapterAnalysis();return toast('本章还有待决定的记忆，请先确认或拒绝')}
-  if(!c.chapter_goal.trim()||!c.scene_plan.trim()||!c.pov.trim()){
+  if(!currentChapter.chapter_goal.trim()||!currentChapter.scene_plan.trim()||!currentChapter.pov.trim()){
    document.querySelector('.chapter-plan')?.setAttribute('open','');
-   document.querySelector(!c.chapter_goal.trim()?'#chapterGoal':!c.scene_plan.trim()?'#chapterScenePlan':'#chapterPov')?.focus();
+   document.querySelector(!currentChapter.chapter_goal.trim()?'#chapterGoal':!currentChapter.scene_plan.trim()?'#chapterScenePlan':'#chapterPov')?.focus();
    throw new Error('请先填好本章目标、场景计划和视角，再归档本章');
   }
-  await durableOperation(`/api/chapters/${encodeURIComponent(c.id)}/commit`,'POST',{stage:'prewrite'});
-  chapter(c.id).status='完成';save();if(!await syncBackend())throw new Error('本章状态尚未保存');
-  await durableOperation(`/api/chapters/${encodeURIComponent(c.id)}/commit`,'POST',{stage:'precommit'});
-  await durableOperation(`/api/chapters/${encodeURIComponent(c.id)}/commit`,'POST',{stage:'postcommit'});
-  const next={id:crypto.randomUUID(),title:`第 ${state.chapters.length+1} 章`,body:'',status:'草稿',updated:Date.now(),
-   chapter_goal:c.next_brief||'',next_brief:'',scene_plan:'',pov:c.pov||'',recap:'',hook:'',foreshadowing_op:''};
-  state.chapters.push(next);activeChapter=next.id;storage.set(cacheKey(':active'),next.id);save();
-  if(!await syncBackend())throw new Error('交接已保存，但下一章尚未保存，请保留页面继续重试');
+  for(const stage of ['prewrite','precommit','postcommit']){
+   if(!sourceCurrent())throw new Error('本章或交接内容已经变化，请回到本章重新核对');
+   if(stage==='precommit'&&chapter(c.id).status!=='完成'){
+    chapter(c.id).status='完成';save();if(!await syncBackend())throw new Error('本章状态尚未保存');
+   }
+   const result=await durableOperation(`/api/chapters/${encodeURIComponent(c.id)}/commit`,'POST',{stage},sourceCurrent);
+   if(!['passed','overridden'].includes(result.status))throw new Error('本章归档检查未通过，请处理后重试');
+  }
+  if(!sourceCurrent())throw new Error('本章或交接内容已经变化，请回到本章重新核对');
+  let next=(finish.nextId&&chapter(finish.nextId))||authorNextUnfinishedChapter(c.id)||
+   (alreadyComplete?state.chapters[state.chapters.findIndex(item=>item.id===c.id)+1]:null);
+  if(!next){
+   next={id:finish.nextId||crypto.randomUUID(),title:`第 ${state.chapters.length+1} 章`,body:'',status:'草稿',updated:Date.now(),
+    chapter_goal:'',next_brief:'',scene_plan:'',pov:chapter(c.id).pov||'',recap:'',hook:'',foreshadowing_op:''};
+   finish.nextId=next.id;state.chapters.push(next);save();
+   if(!await syncBackend())throw new Error('本章交接已保存，下一章尚未保存，请恢复连接后在本章继续重试');
+  }
+  if(!sourceCurrent())throw new Error('本章或交接内容已经变化，请回到本章重新核对');
+  finish.nextId=next.id;finish.done=true;
+  activeChapter=next.id;storage.set(cacheKey(':active'),next.id);
   view='editor';render();toast('本章已归档，下一章已接到交接任务');
  }catch(error){toast(`归档未完成：${error.message}`)}
+ finally{authorFinishing=null;document.querySelector('[data-action="finishChapter"]')?.removeAttribute('disabled')}
 };
 
 actions.revisionHistory=async()=>{
@@ -1126,7 +1313,7 @@ markdownExport=async()=>{
   if(!backendOnline)throw new Error('连接恢复后才能核验当前终稿；现在可以先导出稿件 JSON');
   const gate=await verifiedFinalGate();
   if(!gate.allowed){await showFinalizationCheck();return}
-  const override=gate.override;const headers=override?.reason?{'X-Moyu-Export-Override':override.reason}:{};
+  const override=gate.override;const headers=override?.reason?{'X-Moyu-Export-Override':encodeURIComponent(override.reason)}:{};
   const response=await fetch('/api/export/markdown',{headers});
   if(!response.ok){const error=await response.json();throw new Error(error.issues?.join('；')||error.error||'终稿导出未完成')}
   authorDownloadBlob(exportFilename('md'),await response.blob());toast('已导出经过当前稿核验的 Markdown');
@@ -1175,6 +1362,7 @@ function authorBind(){
   document.querySelector('#aiRevise')?.addEventListener('click',reviseAI);
   document.querySelector('#aiOriginal')?.addEventListener('click',showOriginalCandidate);
   authorUpdateUndoControls();
+  if(authorFinishing)document.querySelector('[data-action="finishChapter"]')?.setAttribute('disabled','');
  }
  if(view==='plot'){
   document.querySelectorAll('[data-plot-edit]').forEach(button=>button.onclick=()=>{
@@ -1222,6 +1410,7 @@ function authorCharacterStateForm(item){
 const authorOriginalRender=render;
 render=function(){
  authorOriginalRender();authorBind();
+ if(view==='editor')authorLoadEditorBlueprint();
  if(['library','blueprint','settings','backups','references'].includes(view))authorLoadPage();
 };
 document.querySelectorAll('.nav-item').forEach(button=>button.onclick=async()=>{

@@ -33,8 +33,13 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .primary-btn:hover{background:#11534e}
 .workspace{max-width:1540px}
 .sidebar{width:222px;padding:22px 14px;background:#f8f9fa;min-height:calc(100vh - 64px)}
-.project-card h1{font-size:19px;overflow-wrap:anywhere}
+.project-card h1{font-size:19px;line-height:1.4;overflow-wrap:anywhere;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 .nav-list{gap:3px;padding-top:18px}
+@media(min-width:621px){
+ .sidebar{position:sticky;top:64px;height:calc(100vh - 64px);height:calc(100dvh - 64px);min-height:0;min-width:0;align-self:flex-start;flex-shrink:0}
+ .project-card,.sidebar-foot{flex-shrink:0}
+ .nav-list{flex:1;min-height:0;overflow-y:auto;align-content:start}
+}
 .nav-item{padding:9px 10px;font-size:13px}
 .nav-item.active{background:#253337}
 .nav-item span{font-size:17px}
@@ -70,6 +75,8 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .editor-footer .ghost-btn{margin-left:auto}
 .chapter-plan{margin:18px 0 0;border:0;background:transparent;padding:0}
 .chapter-plan>summary{cursor:pointer;font-weight:600;font-size:13px;padding:10px 0;border-bottom:1px solid var(--line)}
+.chapter-plan>label{display:grid;gap:6px;padding:12px 0 0;font-size:11px;color:var(--muted)}
+.chapter-plan>label textarea{width:100%;min-width:0;min-height:70px;resize:vertical;border:1px solid var(--line);background:var(--card);border-radius:7px;padding:8px 9px;font:inherit;font-size:12px;line-height:1.6;color:var(--ink)}
 .plan-grid{padding:12px 0}
 .plan-grid textarea{min-height:70px}
 .ai-copilot{margin:18px 0 0;padding:18px 0 0;border:0;border-top:1px solid var(--line);background:transparent;border-radius:0}
@@ -85,6 +92,10 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .ai-actions button{font-size:12px;min-height:36px}
 .record-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .record-card{box-shadow:none;overflow-wrap:anywhere}
+.record-scope{display:block;color:var(--muted);font-size:11px;line-height:1.6;margin-top:10px}
+.record-scope-fields{border:0;border-top:1px solid var(--line);margin:18px 0 0;padding:10px 0 0;min-width:0}
+.record-scope-fields legend{font-size:13px;padding:0 8px 0 0}
+.record-scope-fields select[multiple]{min-height:90px}
 .plot-col{background:#e9eeef;min-width:0}
 .plot-item{background:#fff;padding:14px;overflow-wrap:anywhere}
 .plot-actions{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}

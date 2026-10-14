@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "scope": "真实电脑浏览器、临时作品、隔离SQLite与免费本机提供方；过期资料候选回看和章后确认边界",
+  "claim_limit": "产品操作与材料依赖保护；不证明文学质量或第一梯队竞争力",
+  "cases": [
+    {
+      "name": "1440电脑端生成完整候选，尚未采纳时原稿保持不变",
+      "passed": true
+    },
+    {
+      "name": "资料变化后真实任务回读只读原因，禁止采纳整理但可复制并刷新保留",
+      "passed": true
+    },
+    {
+      "name": "1280乘900电脑窗口回看相同旧候选，禁用动作和可复制原文均保留",
+      "passed": true
+    },
+    {
+      "name": "旧章后分析仍可读报告，资料变化后确认禁用且直接确认接口拒绝写入",
+      "passed": true
+    },
+    {
+      "name": "真实材料窗口排除设定后该设定变化不阻断新候选，仍可比较并单次采纳",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private isolated artifacts retained locally; screenshots listed in this report.",
+  "paid_provider_calls": 0,
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00"
+    },
+    {
+      "path": "server.py",
+      "sha256": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb"
+    },
+    {
+      "path": "moyu_analysis.py",
+      "sha256": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451"
+    },
+    {
+      "path": "moyu_context.py",
+      "sha256": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0"
+    },
+    {
+      "path": "moyu_workspace.py",
+      "sha256": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3"
+    },
+    {
+      "path": "moyu_materials.py",
+      "sha256": "01b1cff8817692032cd18f7629849af887d7fb1371f05f609708a4f9ef6785b9"
+    },
+    {
+      "path": "moyu_records.py",
+      "sha256": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "715a87da60608fd98d2ae9fd1f61d2b6816c91e8d5e7fdab0a923f0b1218e398"
+    },
+    {
+      "path": "tests/material_dependency_browser_regressions.cjs",
+      "sha256": "33c399187be991aef38d1c7631cbcb3f3c17ac4b63400af7981392d914a9d6c3"
+    }
+  ],
+  "screenshots": [
+    "material-stale-candidate-desktop.png",
+    "material-stale-candidate-1280x900.png",
+    "material-stale-analysis-desktop.png"
+  ],
+  "omitted_control": {
+    "provider_excludes_card": true,
+    "applied_once": true
+  },
+  "provider_calls": 3,
+  "free_provider_calls": 3,
+  "source_unchanged": true
+}

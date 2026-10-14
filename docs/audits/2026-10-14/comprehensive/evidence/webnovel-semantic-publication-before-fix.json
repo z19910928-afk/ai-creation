@@ -1,0 +1,79 @@
+{
+  "captured_at": "2026-10-14T15:02:55.259322+00:00",
+  "scope": "isolated temporary database; real HTTP; synthetic review finding; no provider calls",
+  "source_sha256_before": {
+    "server.py": "492c1dc8adc30c54fa637661665e642cd73de561fffda9f0a4f5d302635f821c",
+    "moyu_analysis.py": "8e826c3bdc42b70c8b2d4ad05a850a953e6ab95d8125577e32f77466dbb000dd",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "author-workspace.js": "e8a5ca5187c779613c7b28117c05dff8c98bc7446bd19cbe32f812bf2987d723",
+    "tests/publication_assistant_fixtures.py": "cc440251c4871338c4bab8876b8a1cac413ca03c3c816d1823aa756a41c6c6b9"
+  },
+  "author_decision": {
+    "http_status": 200,
+    "review_status": "needs_revision",
+    "finding_status": "needs_revision"
+  },
+  "basic_reviews": [
+    {
+      "http_status": 200,
+      "status": "passed",
+      "blocking": []
+    },
+    {
+      "http_status": 200,
+      "status": "passed",
+      "blocking": []
+    }
+  ],
+  "chapter_commits": [
+    {
+      "http_status": 201,
+      "stage": "prewrite",
+      "status": "passed"
+    },
+    {
+      "http_status": 201,
+      "stage": "precommit",
+      "status": "passed"
+    },
+    {
+      "http_status": 201,
+      "stage": "postcommit",
+      "status": "passed"
+    }
+  ],
+  "publication_gate": {
+    "http_status": 200,
+    "finalization": {
+      "allowed": true,
+      "issues": [],
+      "overridden": false
+    }
+  },
+  "exports_without_author_override": [
+    {
+      "format": "markdown",
+      "http_status": 200,
+      "bytes": 2577
+    },
+    {
+      "format": "epub",
+      "http_status": 200,
+      "bytes": 4307
+    }
+  ],
+  "review_after_exports": {
+    "http_status": 200,
+    "status": "needs_revision",
+    "stale": false
+  },
+  "provider_calls": 0,
+  "source_sha256_after": {
+    "server.py": "492c1dc8adc30c54fa637661665e642cd73de561fffda9f0a4f5d302635f821c",
+    "moyu_analysis.py": "8e826c3bdc42b70c8b2d4ad05a850a953e6ab95d8125577e32f77466dbb000dd",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "author-workspace.js": "e8a5ca5187c779613c7b28117c05dff8c98bc7446bd19cbe32f812bf2987d723",
+    "tests/publication_assistant_fixtures.py": "cc440251c4871338c4bab8876b8a1cac413ca03c3c816d1823aa756a41c6c6b9"
+  },
+  "source_unchanged": true
+}

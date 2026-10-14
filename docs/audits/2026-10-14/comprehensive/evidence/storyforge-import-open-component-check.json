@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-14T15:11:38.864Z",
+  "subject": "Current authorImportPreview event handler ignores false from authorSwitchProject after successful import",
+  "test_scope": "Real source function and real Chromium DOM event. Successful import and failed project open are controlled collaborators. No application server, database or model request.",
+  "source": {
+    "path": "author-workspace.js",
+    "before_sha256": "e8a5ca5187c779613c7b28117c05dff8c98bc7446bd19cbe32f812bf2987d723",
+    "after_sha256": "e8a5ca5187c779613c7b28117c05dff8c98bc7446bd19cbe32f812bf2987d723",
+    "unchanged_during_component_run": true
+  },
+  "controlled_import_result": "success",
+  "controlled_project_open_result": false,
+  "observed": {
+    "operations": 1,
+    "switchAttempts": 1,
+    "renders": 1,
+    "messages": [
+      "所见章节已经完整导入"
+    ],
+    "remainingPreviewDialogs": 0,
+    "listedProjects": [
+      "component_imported_book"
+    ],
+    "view": "editor"
+  },
+  "finding_reproduced": true,
+  "browser_network_requests": 0,
+  "external_model_calls": 0,
+  "limitations": [
+    "Does not establish loss of persisted data or repeat creation.",
+    "Does not run full product routing, actual network failure or server import endpoint.",
+    "Server same-preview in-memory idempotency was separately inspected in source."
+  ]
+}

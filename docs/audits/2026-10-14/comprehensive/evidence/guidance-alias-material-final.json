@@ -1,0 +1,68 @@
+{
+  "passed": true,
+  "started_at": "2026-10-14T17:14:26.885400+00:00",
+  "finished_at": "2026-10-14T17:14:37.240864+00:00",
+  "checks": 11,
+  "cases": [
+    {
+      "name": "test_ambiguous_alias_blocks_queued_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_archived_person_blocks_queued_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_changed_type_invalidates_guidance_dependency",
+      "passed": true
+    },
+    {
+      "name": "test_consumed_description_edit_preserves_alias_but_blocks_old_materials",
+      "passed": true
+    },
+    {
+      "name": "test_new_request_after_removed_alias_uses_current_filtered_guidance",
+      "passed": true
+    },
+    {
+      "name": "test_omitted_description_edit_keeps_alias_guidance_usable",
+      "passed": true
+    },
+    {
+      "name": "test_other_project_alias_does_not_invalidate_this_guidance",
+      "passed": true
+    },
+    {
+      "name": "test_removed_alias_blocks_completed_candidate_apply",
+      "passed": true
+    },
+    {
+      "name": "test_removed_alias_blocks_failed_job_and_run_retry",
+      "passed": true
+    },
+    {
+      "name": "test_removed_alias_blocks_queued_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_renamed_person_blocks_queued_dispatch",
+      "passed": true
+    }
+  ],
+  "free_provider_calls": 4,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17"
+  },
+  "source_files_sha256_after": {
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17"
+  },
+  "source_unchanged": true,
+  "scope": "isolated temporary database; real HTTP; synthetic POV scenes; free local provider"
+}

@@ -1,0 +1,591 @@
+{
+  "captured_at": "2026-10-14T15:36:35.769146+00:00",
+  "scope": "isolated temporary database; real HTTP; synthetic reviews; no provider calls",
+  "tests_run": 10,
+  "successful": false,
+  "failures": 0,
+  "errors": 1,
+  "provider_calls": 0,
+  "source_sha256_before": {
+    "server.py": "27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720",
+    "moyu_analysis.py": "5654e617550cb8ce5124e20097cf2641c84779963f16c944d99b1a84b1ee0a37",
+    "moyu_workspace.py": "973227adea1b08f4f4137ea05ffbecd927ecaa49ade2d31fd5ce663230d96202",
+    "tests/story_review_publication_http_fixtures.py": "98bcd4498303f3c5e6d2d4287242cebb0317b57e5d9dd31d9f4b74a8c16a04f8"
+  },
+  "source_sha256_after": {
+    "server.py": "27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720",
+    "moyu_analysis.py": "5654e617550cb8ce5124e20097cf2641c84779963f16c944d99b1a84b1ee0a37",
+    "moyu_workspace.py": "973227adea1b08f4f4137ea05ffbecd927ecaa49ade2d31fd5ce663230d96202",
+    "tests/story_review_publication_http_fixtures.py": "98bcd4498303f3c5e6d2d4287242cebb0317b57e5d9dd31d9f4b74a8c16a04f8"
+  },
+  "source_unchanged": true,
+  "checks": [
+    {
+      "test": "test_changed_body_requires_new_review_or_free_current_bound_author_resolution",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4307
+        }
+      ]
+    },
+    {
+      "test": "test_changed_body_requires_new_review_or_free_current_bound_author_resolution",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 409,
+          "status": "blocked"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 409,
+          "status": "blocked"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 409,
+          "status": "blocked"
+        }
+      ]
+    },
+    {
+      "test": "test_changed_body_requires_new_review_or_free_current_bound_author_resolution",
+      "allowed": false,
+      "issues": [
+        "第 2 章《同名章节》尚未通过本章审查。",
+        "《同名章节》：故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。"
+      ],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 409,
+          "bytes": null
+        },
+        {
+          "format": "epub",
+          "http_status": 409,
+          "bytes": null
+        }
+      ]
+    },
+    {
+      "test": "test_changed_body_requires_new_review_or_free_current_bound_author_resolution",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "test": "test_changed_body_requires_new_review_or_free_current_bound_author_resolution",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2648
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4345
+        }
+      ]
+    },
+    {
+      "test": "test_chinese_override_decodes_before_length_check_and_preserves_audit_reason",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4306
+        }
+      ]
+    },
+    {
+      "test": "test_current_reasoned_ignore_and_explanation_clear_the_gate",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4303
+        }
+      ]
+    },
+    {
+      "test": "test_current_reasoned_ignore_and_explanation_clear_the_gate",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "test": "test_current_reasoned_ignore_and_explanation_clear_the_gate",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4303
+        }
+      ]
+    },
+    {
+      "test": "test_current_reasoned_ignore_and_explanation_clear_the_gate",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "test": "test_current_reasoned_ignore_and_explanation_clear_the_gate",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4303
+        }
+      ]
+    },
+    {
+      "test": "test_guidance_changes_invalidate_review_and_reject_late_saved_result",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4304
+        }
+      ]
+    },
+    {
+      "test": "test_guidance_changes_invalidate_review_and_reject_late_saved_result",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4304
+        }
+      ]
+    },
+    {
+      "test": "test_guidance_changes_invalidate_review_and_reject_late_saved_result",
+      "allowed": false,
+      "issues": [
+        "第 2 章《同名章节》尚未通过本章审查。",
+        "《同名章节》：故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。"
+      ],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 409,
+          "bytes": null
+        },
+        {
+          "format": "epub",
+          "http_status": 409,
+          "bytes": null
+        }
+      ]
+    },
+    {
+      "test": "test_legacy_reports_without_guidance_marker_are_not_forced_into_a_migration",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4302
+        }
+      ]
+    },
+    {
+      "test": "test_legacy_reports_without_guidance_marker_are_not_forced_into_a_migration",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4302
+        }
+      ]
+    },
+    {
+      "test": "test_no_report_stays_free_and_does_not_require_semantic_review",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4302
+        }
+      ]
+    },
+    {
+      "test": "test_no_report_stays_free_and_does_not_require_semantic_review",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "test": "test_no_report_stays_free_and_does_not_require_semantic_review",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4302
+        }
+      ]
+    },
+    {
+      "test": "test_pending_and_author_accepted_issues_block_cached_review_all_stages_and_exports",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4303
+        }
+      ]
+    },
+    {
+      "test": "test_pending_and_author_accepted_issues_block_cached_review_all_stages_and_exports",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 409,
+          "status": "blocked"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 409,
+          "status": "blocked"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 409,
+          "status": "blocked"
+        }
+      ]
+    },
+    {
+      "test": "test_pending_and_author_accepted_issues_block_cached_review_all_stages_and_exports",
+      "allowed": false,
+      "issues": [
+        "第 2 章《同名章节》尚未通过本章审查。",
+        "《同名章节》：故事审稿仍有待作者处理的问题，请逐项决定并说明理由。"
+      ],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 409,
+          "bytes": null
+        },
+        {
+          "format": "epub",
+          "http_status": 409,
+          "bytes": null
+        }
+      ]
+    },
+    {
+      "test": "test_pending_and_author_accepted_issues_block_cached_review_all_stages_and_exports",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 409,
+          "status": "blocked"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 409,
+          "status": "blocked"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 409,
+          "status": "blocked"
+        }
+      ]
+    },
+    {
+      "test": "test_pending_and_author_accepted_issues_block_cached_review_all_stages_and_exports",
+      "allowed": false,
+      "issues": [
+        "第 2 章《同名章节》尚未通过本章审查。",
+        "《同名章节》：故事审稿仍有作者确认需要修订的问题，请改稿后重新审稿，或说明解释/忽略理由。"
+      ],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 409,
+          "bytes": null
+        },
+        {
+          "format": "epub",
+          "http_status": 409,
+          "bytes": null
+        }
+      ]
+    },
+    {
+      "test": "test_reasoned_override_is_preserved_in_commit_export_and_audit",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4301
+        }
+      ]
+    },
+    {
+      "test": "test_reasoned_override_is_preserved_in_commit_export_and_audit",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "overridden"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "overridden"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "overridden"
+        }
+      ]
+    },
+    {
+      "test": "test_same_source_empty_rereview_does_not_erase_an_author_accepted_issue",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4308
+        }
+      ]
+    },
+    {
+      "test": "test_same_source_empty_rereview_does_not_erase_an_author_accepted_issue",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4308
+        }
+      ]
+    },
+    {
+      "test": "test_successful_review_of_new_sources_replaces_stale_problem_without_permanent_lock",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2577
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4305
+        }
+      ]
+    },
+    {
+      "test": "test_successful_review_of_new_sources_replaces_stale_problem_without_permanent_lock",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed"
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed"
+        }
+      ]
+    },
+    {
+      "test": "test_successful_review_of_new_sources_replaces_stale_problem_without_permanent_lock",
+      "allowed": true,
+      "issues": [],
+      "exports": [
+        {
+          "format": "markdown",
+          "http_status": 200,
+          "bytes": 2641
+        },
+        {
+          "format": "epub",
+          "http_status": 200,
+          "bytes": 4345
+        }
+      ]
+    }
+  ],
+  "boundary": "Tests consume synthetic review decisions and exact source dependencies, not model correctness or literary quality."
+}

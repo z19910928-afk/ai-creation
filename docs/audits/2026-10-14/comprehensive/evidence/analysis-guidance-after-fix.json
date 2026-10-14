@@ -1,0 +1,362 @@
+{
+  "passed": true,
+  "checks": 12,
+  "cases": [
+    {
+      "name": "test_contract_only_blocks_candidates_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_contract_only_blocks_handoff_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_contract_only_blocks_summary_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_current_analysis_sequential_decisions_are_current_and_idempotent",
+      "passed": true
+    },
+    {
+      "name": "test_external_guidance_change_after_own_handoff_blocks_remaining_candidates",
+      "passed": true
+    },
+    {
+      "name": "test_late_analysis_save_rechecks_original_guidance_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_premise_only_blocks_candidates_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_premise_only_blocks_handoff_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_premise_only_blocks_summary_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_real_saved_ai_analysis_missing_guidance_is_read_only",
+      "passed": true
+    },
+    {
+      "name": "test_same_manuscript_with_new_guidance_has_distinct_analysis_identity",
+      "passed": true
+    },
+    {
+      "name": "test_unlinked_component_analysis_without_frozen_sources_remains_compatible",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T18:07:55.577598+00:00",
+  "finished_at": "2026-10-14T18:08:08.882960+00:00",
+  "observations": [
+    {
+      "test": "test_contract_only_blocks_candidates_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "contract",
+      "action": "candidates",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_contract_only_blocks_handoff_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "contract",
+      "action": "handoff",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_contract_only_blocks_summary_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "contract",
+      "action": "summary",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_current_analysis_sequential_decisions_are_current_and_idempotent",
+      "scenario": "current_sequential_decisions",
+      "outcomes": [
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "reviewed"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "reviewed"
+        }
+      ],
+      "analysis_status": "reviewed",
+      "analysis_stale": false,
+      "summary_saved": true,
+      "handoff_saved": true,
+      "new_entities": 2,
+      "new_memories": 2,
+      "new_assertions": 2,
+      "guidance_changed_by_own_decisions": true,
+      "decision_guidance_matches_current": true,
+      "original_guidance_matches_frozen": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_external_guidance_change_after_own_handoff_blocks_remaining_candidates",
+      "scenario": "guidance_change_after_own_handoff",
+      "analysis_status": "stale",
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "decision_guidance_source_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_late_analysis_save_rechecks_original_guidance_without_writes",
+      "scenario": "late_frozen_guidance_save",
+      "rejected": true,
+      "actual_saved_job_and_run": true,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_premise_only_blocks_candidates_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "premise",
+      "action": "candidates",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_premise_only_blocks_handoff_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "premise",
+      "action": "handoff",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_premise_only_blocks_summary_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "premise",
+      "action": "summary",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_real_saved_ai_analysis_missing_guidance_is_read_only",
+      "scenario": "legacy_guidance_missing",
+      "actual_saved_job_and_run": true,
+      "original_material_source_preserved": true,
+      "missing_guidance_source": true,
+      "analysis_status": "stale",
+      "confirm_http_statuses": [
+        409,
+        409,
+        409
+      ],
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "frozen_request_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_same_manuscript_with_new_guidance_has_distinct_analysis_identity",
+      "scenario": "analysis_guidance_identity",
+      "actual_saved_jobs_and_runs": 2,
+      "same_manuscript_revision": true,
+      "same_manuscript_hash": true,
+      "different_frozen_guidance": true,
+      "same_frozen_materials": true,
+      "distinct_analysis_id": true,
+      "distinct_analysis_key": true,
+      "second_analysis_bound_to_new_run": true,
+      "first_status": "stale",
+      "second_status": "pending",
+      "saved_analysis_count": 2,
+      "first_frozen_request_unchanged": true,
+      "chapter_unchanged": true,
+      "free_provider_calls": 2
+    },
+    {
+      "test": "test_unlinked_component_analysis_without_frozen_sources_remains_compatible",
+      "scenario": "component_compatibility",
+      "linked_ai_run_count": 0,
+      "confirm_http_statuses": [
+        200,
+        200,
+        200
+      ],
+      "analysis_status": "reviewed",
+      "no_guidance_marker": true,
+      "no_material_marker": true,
+      "free_provider_calls": 0
+    }
+  ],
+  "synthetic_only": true,
+  "free_provider_calls": 12,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/analysis_guidance_http_fixtures.py": "3aadb91914dbd7d05045bd5e2abfb2ae2f6c65482718e8fdc87bf731051e76a4"
+  },
+  "source_files_sha256_after": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/analysis_guidance_http_fixtures.py": "3aadb91914dbd7d05045bd5e2abfb2ae2f6c65482718e8fdc87bf731051e76a4"
+  },
+  "frozen_source_before": "<private-temporary-path>",
+  "frozen_source_after": "<private-temporary-path>",
+  "source_unchanged": true,
+  "scope": "real saved AI jobs and runs in temporary synthetic SQLite; loopback HTTP; free local provider",
+  "claim_limit": "chapter analysis author-guidance integrity only; no real manuscript, credential, literary-quality or first-tier claim"
+}

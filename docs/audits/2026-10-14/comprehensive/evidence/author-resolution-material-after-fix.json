@@ -1,0 +1,264 @@
+{
+  "passed": true,
+  "checks": 9,
+  "cases": [
+    {
+      "name": "test_author_resolution_purpose_marker_cannot_authorize_model_materials",
+      "passed": true
+    },
+    {
+      "name": "test_body_change_still_expires_explanation_after_status_transition",
+      "passed": true
+    },
+    {
+      "name": "test_current_explained_survives_status_change_and_all_archival_stages",
+      "passed": true
+    },
+    {
+      "name": "test_current_ignored_survives_status_change_and_all_archival_stages",
+      "passed": true
+    },
+    {
+      "name": "test_plan_change_still_expires_explanation_after_status_transition",
+      "passed": true
+    },
+    {
+      "name": "test_real_legacy_missing_markers_can_explain_current_draft_then_archive",
+      "passed": true
+    },
+    {
+      "name": "test_record_change_still_expires_explanation_after_status_transition",
+      "passed": true
+    },
+    {
+      "name": "test_rewritten_stale_review_can_explain_current_draft_then_archive",
+      "passed": true
+    },
+    {
+      "name": "test_status_change_keeps_old_queued_and_completed_model_tasks_strict",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:42:40.210949+00:00",
+  "finished_at": "2026-10-14T17:42:50.073265+00:00",
+  "observations": [
+    {
+      "test": "test_author_resolution_purpose_marker_cannot_authorize_model_materials",
+      "scenario": "author_marker_purpose",
+      "purpose": "author_resolution",
+      "real_saved_run_id": "airun_6374096cc4a84881b5b62d9a2da4544d"
+    },
+    {
+      "test": "test_author_resolution_purpose_marker_cannot_authorize_model_materials",
+      "scenario": "author_marker_strict_validation",
+      "rejected": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_body_change_still_expires_explanation_after_status_transition",
+      "scenario": "author_explanation_material_change",
+      "kind": "body",
+      "status_only_explanation_current": true,
+      "source_changed": true,
+      "changed_explanation_current": false,
+      "stale_resolution_http_status": 409,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_current_explained_survives_status_change_and_all_archival_stages",
+      "scenario": "author_explanation_archival",
+      "decision": "explained",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        }
+      ],
+      "source_unchanged": true,
+      "explanation_current": true,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_current_ignored_survives_status_change_and_all_archival_stages",
+      "scenario": "author_explanation_archival",
+      "decision": "ignored",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        }
+      ],
+      "source_unchanged": true,
+      "explanation_current": true,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_plan_change_still_expires_explanation_after_status_transition",
+      "scenario": "author_explanation_material_change",
+      "kind": "plan",
+      "status_only_explanation_current": true,
+      "source_changed": true,
+      "changed_explanation_current": false,
+      "stale_resolution_http_status": 409,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_real_legacy_missing_markers_can_explain_current_draft_then_archive",
+      "scenario": "author_explanation_archival",
+      "decision": "legacy_current_snapshot_explained",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        }
+      ],
+      "source_unchanged": true,
+      "explanation_current": true,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_record_change_still_expires_explanation_after_status_transition",
+      "scenario": "author_explanation_material_change",
+      "kind": "record",
+      "status_only_explanation_current": true,
+      "source_changed": true,
+      "changed_explanation_current": false,
+      "stale_resolution_http_status": 409,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_rewritten_stale_review_can_explain_current_draft_then_archive",
+      "scenario": "author_explanation_archival",
+      "decision": "stale_current_draft_explained",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        }
+      ],
+      "source_unchanged": true,
+      "explanation_current": true,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_status_change_keeps_old_queued_and_completed_model_tasks_strict",
+      "scenario": "strict_model_status_sources",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "apply_http_status": 400,
+      "revise_http_status": 400,
+      "retry_http_statuses": [
+        409,
+        409
+      ],
+      "queued_and_completed_contexts_preserved": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "free_provider_calls": 9,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "426f956640f9e68afb491a064f40926213d22a01eecf21d18508c06846c8e188",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "author-workspace.js": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00",
+    "app.js": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/author_resolution_material_http_fixtures.py": "759c969e482bd94b5cf3f6b1658715e0f1af09ced4b66eb2993de0812413e0b2"
+  },
+  "source_files_sha256_after": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "426f956640f9e68afb491a064f40926213d22a01eecf21d18508c06846c8e188",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "author-workspace.js": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00",
+    "app.js": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/author_resolution_material_http_fixtures.py": "759c969e482bd94b5cf3f6b1658715e0f1af09ced4b66eb2993de0812413e0b2"
+  },
+  "frozen_source_before": "<private-temporary-path>",
+  "frozen_source_after": "<private-temporary-path>",
+  "source_unchanged": true,
+  "scope": "real saved AI jobs and runs in temporary synthetic SQLite; loopback HTTP; free local provider",
+  "claim_limit": "author decision archival integrity only; no real manuscript, credential, literary-quality or first-tier claim"
+}

@@ -1,0 +1,23 @@
+{
+  "captured_date": "2026-10-14",
+  "scope": "original_ast_components_only_no_http_or_model",
+  "arboris_commit": "dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+  "mumu_commit": "99f0aec6ce3b1c65652d20007be930ebba6a6d20",
+  "arboris_guardrail_configured_returns_none": true,
+  "arboris_select_ingestion_signature_missing_user_id": true,
+  "signature_error": "missing a required argument: 'user_id'",
+  "mumu_latest_state_helper_includes_chapter_50_death": true,
+  "mumu_latest_state_helper_includes_chapter_50_secret": true,
+  "model_calls": 0,
+  "method": "Parse the fixed original Python source. Compile the exact original function AST with postponed annotations. For Arboris repair, replace only the prompt provider with a local configured-prompt stub. For ingestion, bind the real signature to the select route arguments without executing ingestion. For MuMu, execute the original status-label constant and latest-state helper with a synthetic chapter-50 character.",
+  "source_sha256": {
+    "arboris-novel/backend/app/api/routers/writer.py": "f4e8bb5c31f6d3ae730f3ea06be4ecad1c65af6f968c02c8b0913e08af12b335",
+    "arboris-novel/backend/app/services/chapter_ingest_service.py": "ff631618e7b99cb105bfb5337eeeb15696ce14d3eb4ad097d9335e835a02a93a",
+    "mumu/backend/app/services/chapter_context_service.py": "381d83e5d94d764339a6b6317602f184dd930aac0801dd6268f93d71e99048cb"
+  },
+  "limits": [
+    "These are component results, not deployed upstream HTTP or browser acceptance.",
+    "MuMu retrieval has a separate past-chapter limit; this result is limited to its latest-character-state helper.",
+    "No model quality, real vector retrieval quality, cancellation billing, or production reliability was measured."
+  ]
+}

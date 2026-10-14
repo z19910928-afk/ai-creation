@@ -1,0 +1,65 @@
+{
+  "run_at": "2026-10-14T16:31:36.208116+00:00",
+  "scenarios": [
+    {
+      "scenario": "description_replaced",
+      "fresh_preview_excludes_old_material": true,
+      "queued_dispatch_status": "success",
+      "old_material_still_sent": true,
+      "old_candidate_apply_http_status": 200,
+      "old_candidate_applied": true,
+      "body_changed_on_old_apply": true,
+      "free_provider_calls": 1
+    },
+    {
+      "scenario": "memory_withdrawn",
+      "fresh_preview_excludes_old_material": true,
+      "queued_dispatch_status": "success",
+      "old_material_still_sent": true,
+      "old_candidate_apply_http_status": 200,
+      "old_candidate_applied": true,
+      "body_changed_on_old_apply": true,
+      "free_provider_calls": 1
+    },
+    {
+      "scenario": "state_scope_restricted",
+      "fresh_preview_excludes_old_material": true,
+      "queued_dispatch_status": "success",
+      "old_material_still_sent": true,
+      "old_candidate_apply_http_status": 200,
+      "old_candidate_applied": true,
+      "body_changed_on_old_apply": true,
+      "free_provider_calls": 1
+    },
+    {
+      "scenario": "nested_branch_id",
+      "saved_scope": {
+        "branch_id": "outside_scope"
+      },
+      "fresh_preview_includes_forbidden_card": true,
+      "free_provider_calls": 0
+    },
+    {
+      "scenario": "nested_project_id",
+      "saved_scope": {
+        "project_id": "outside_scope"
+      },
+      "fresh_preview_includes_forbidden_card": true,
+      "free_provider_calls": 0
+    }
+  ],
+  "paid_provider_calls": 0,
+  "free_provider_calls": 3,
+  "source_unchanged": true,
+  "source_files_sha256": {
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_context.py": "12ec0e0cf80a37dff57eaf52a69dbb2291a427263fd70d09ee636cd2327262f2",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_analysis.py": "22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "server.py": "a0b250e2b5ab784a5132a32c8a9fce9459765e318cb9ad204fec44f1e46a8468",
+    "tests/guidance_alias_http_fixtures.py": "664c0581e87e86303fb69b510f3af3905c132cb6e0acae7c715b717a361e35bc",
+    "tests/guidance_scope_change_http_fixtures.py": "ad8487aad85c4477f179a872d4cad962284b7a9a6bac9efdce52a0fe7cc5a875"
+  },
+  "scope": "isolated synthetic DB; real local HTTP; adjacent read-only product investigation"
+}

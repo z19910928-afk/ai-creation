@@ -1,0 +1,46 @@
+{
+  "recorded_at": "2026-10-14T15:02:08.270572+00:00",
+  "scope": "original_component_functions_and_in_memory_synthetic_data",
+  "paid_model_requests": 0,
+  "real_database_accessed": false,
+  "credentials_accessed": false,
+  "sources_before": {
+    "ai_novel_task_resolver": "615099bf2d7a681c11cb539e12cc2913d7ec179d1bf6f3c64e5c36374876b9ac",
+    "mumu_chapter_context": "381d83e5d94d764339a6b6317602f184dd930aac0801dd6268f93d71e99048cb",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1"
+  },
+  "sources_after": {
+    "ai_novel_task_resolver": "615099bf2d7a681c11cb539e12cc2913d7ec179d1bf6f3c64e5c36374876b9ac",
+    "mumu_chapter_context": "381d83e5d94d764339a6b6317602f184dd930aac0801dd6268f93d71e99048cb",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1"
+  },
+  "sources_unchanged": true,
+  "ai_novel_original_resolver": {
+    "task_override": [
+      "chapter-override",
+      "task_override"
+    ],
+    "removed_override": [
+      "project-default",
+      "project_default"
+    ],
+    "ui_or_http_executed": false
+  },
+  "mumu_original_state_helper": {
+    "lines": [
+      "  当前状态: 死亡（第50章变更）",
+      "  当前心理/处境: 合成测试：已得知暗门秘密（第49章更新）"
+    ],
+    "target_chapter_parameter_available": false,
+    "whole_application_executed": false
+  },
+  "moyu_reference_component": {
+    "saved_and_searchable": true,
+    "search_hit_count": 1,
+    "hit_use": "reference_not_story_fact",
+    "reference_marker_in_assembled_material": false,
+    "note": "reference fields are not consumed by the current context assembler; no model request was made"
+  }
+}

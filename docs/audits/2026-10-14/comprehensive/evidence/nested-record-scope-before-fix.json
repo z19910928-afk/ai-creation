@@ -1,0 +1,212 @@
+{
+  "passed": false,
+  "checks": 12,
+  "cases": [
+    {
+      "name": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "passed": true,
+      "subtest": "test_copy_and_backup_remap_matching_nested_identifiers (__main__.NestedRecordScopeHTTP.test_copy_and_backup_remap_matching_nested_identifiers) (recovery='copy')"
+    },
+    {
+      "name": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "passed": true,
+      "subtest": "test_copy_and_backup_remap_matching_nested_identifiers (__main__.NestedRecordScopeHTTP.test_copy_and_backup_remap_matching_nested_identifiers) (recovery='backup')"
+    },
+    {
+      "name": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "passed": true
+    },
+    {
+      "name": "test_foreign_owned_card_cannot_be_pinned_by_matching_nested_declaration",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_sync_and_description_edit_preserve_conflicting_nested_limit",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 166, in test_legacy_sync_and_description_edit_preserve_conflicting_nested_limit\n    self.assert_filtered(\"legacy_nested_limit_preserved\")\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 62, in assert_filtered\n    self.assertNotIn(CANARY, preview[\"user\"])\nAssertionError: 'NESTED_RECORD_BOUNDARY_CANARY' unexpectedly found in '<manuscript>\\n{\"project\":{\"id\":\"default-project\",\"title\":\"未命名长篇\",\"genre\":\"\",\"summary\":\"\",\"goal\":50000},\"confirmed_memory\":[],\"story_cards\":[{\"id\":\"ent_f45d892d6388411d8165403e7b556eb2\",\"type\":\"人物\",\"name\":\"新人物\",\"description\":\"记录人物的欲望、秘密和变化。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_7d04e78073074593b1cec722cb7407bc\",\"type\":\"地点\",\"name\":\"新地点\",\"description\":\"记录这里的气味、规则与冲突。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_e79228bf476b4570b571bf586b525b16\",\"type\":\"人物\",\"name\":\"林岚\",\"description\":\"守在北窗的人。\",\"aliases\":[\"岚\"],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_10370ac116f84e498495c849d0f9ed71\",\"type\":\"设定\",\"name\":\"嵌套范围验证\",\"description\":\"NESTED_RECORD_BOUNDARY_CANARY：旧客户端只修改说明。\",\"aliases\":[],\"project_id\":\"default-project\",\"knowledge_scope\":{\"branch_id\":\"outside_branch\",\"project_id\":\"default-project\"},\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"}],\"previous_chapters\":[],\"retrieved_chapters\":[],\"current_chapter\":{\"id\":\"ch_8dd23bac4fa144e29b1af2050494160e\",\"title\":\"等候\",\"status\":\"草稿\",\"body\":\"她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。\",\"source_range\":{\"start\":0,\"end\":152},\"source_revision_id\":\"rev_8add4d354aab4606a8e656fe7fae503e\",\"source_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"chapter_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"full_content\":true,\"offset_unit\":\"unicode_codepoint\",\"plan\":{\"chapter_goal\":\"等待来客\",\"scene_plan\":\"窗边等候：POV_ALIAS_SCENE_CANARY\",\"pov\":\"岚\"}},\"story_structure\":{\"relationships\":[],\"timeline\":[],\"foreshadowing\":[],\"conflicts\":[],\"character_states\":[],\"plot_threads\":[]},\"plot\":{\"setup\":[],\"develop\":[],\"payoff\":[]},\"author_plans\":[],\"material_controls\":{},\"context_policy\":\"Use cited facts within POV knowledge. Plans have not occurred. Source offsets are Unicode codepoints in the stated revision. Unannotated knowledge is unverified.\",\"context_budget\":{\"profile\":{\"max_tokens\":24000,\"chapter_top_k\":20,\"recent_window\":3,\"memory_top_k\":60,\"record_top_k\":40},\"retrieval\":\"paragraph_bm25_cjk+recency+evidence\",\"material_controlled\":false,\"current_manuscript_fixed\":true,\"query_hash\":\"dd6b97bed7fa2742b1bbcf71ec9df1b98d2912b1932dde418adc3af3c651f667\",\"author_instruction_used\":true,\"alias_matches\":[\"ent_e79228bf476b4570b571bf586b525b16\"],\"ambiguous_aliases\":[],\"knowledge_scope\":{\"pov_entity_ids\":[\"ent_e79228bf476b4570b571bf586b525b16\"],\"narrator_mode\":\"limited\",\"filtered\":[{\"id\":\"ch_8dd23bac4fa144e29b1af2050494160e:rev_8add4d354aab4606a8e656fe7fae503e:0:152\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_8a8ae6354d1c42db9cdb44e7348c208d:rev_78096e20e2c7400cace6f1c79ea63c56:0:9\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_8a8ae6354d1c42db9cdb44e7348c208d:rev_78096e20e2c7400cace6f1c79ea63c56:10:33\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]}],\"filtered_count\":3,\"warnings\":[]},\"max_tokens\":24000,\"max_context_utf8_bytes\":22164,\"prompt_reserve_bytes\":1836,\"token_estimator\":\"utf8_bytes_conservative_estimate\",\"token_count_exact\":false,\"actual_input_tokens\":null,\"truncation\":{\"applied\":false,\"removed\":[],\"clipped\":[],\"pinned\":[]},\"estimated_chars\":4601,\"estimated_tokens\":6983,\"estimated_utf8_bytes\":5147,\"context_item_ids\":[\"ent_f45d892d6388411d8165403e7b556eb2\",\"ent_7d04e78073074593b1cec722cb7407bc\",\"ent_e79228bf476b4570b571bf586b525b16\",\"ent_10370ac116f84e498495c849d0f9ed71\"],\"retrieved_count\":0,\"previous_count\":0,\"retrieval_tiers\":{\"lexical\":0,\"recency\":0,\"evidence\":0,\"record\":4,\"author_plan\":0}},\"author_guidance\":{\"epistemic_mode\":\"author_plan\",\"use\":\"writing_guidance_not_occurred_not_character_knowledge\",\"project_id\":\"default-project\",\"branch_id\":\"main\",\"blueprint_version\":2,\"creation_agreement\":{\"premise\":\"雨夜窗前的等候\"},\"policy\":\"These are the author\\'s writing agreements and plans. Planned events have not occurred. Characters cannot know a plan unless cited permitted manuscript evidence establishes it. Do not reveal later scenes early or treat a planned state as established truth.\",\"current_volume\":{\"id\":\"alias-volume\",\"title\":\"窗前\",\"summary\":\"在北窗等待脚步声。\"},\"current_plan\":{\"id\":\"alias-plan\",\"title\":\"等候\",\"goal\":\"等待来客\",\"pov\":\"岚\",\"hook\":\"\"},\"scenes\":[{\"id\":\"alias-scene\",\"title\":\"窗边等候\",\"goal\":\"POV_ALIAS_SCENE_CANARY\",\"location\":\"北窗\",\"pov\":\"林岚\"}],\"scenes_outside_current_pov\":0}}\\n</manuscript>\\n作者补充要求：按本章已保存的场景续写。'\n"
+    },
+    {
+      "name": "test_matching_nested_branch_cannot_override_conflicting_top_branch",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_branch_ids_array",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_branches_array",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_chapter_timing",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_private_viewpoint",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_ownership_keeps_preview_send_and_apply_connected",
+      "passed": true
+    },
+    {
+      "name": "test_matching_top_branch_cannot_override_conflicting_nested_branch",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 82, in test_matching_top_branch_cannot_override_conflicting_nested_branch\n    self.assert_filtered(\"matching_top_conflicting_nested\")\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 62, in assert_filtered\n    self.assertNotIn(CANARY, preview[\"user\"])\nAssertionError: 'NESTED_RECORD_BOUNDARY_CANARY' unexpectedly found in '<manuscript>\\n{\"project\":{\"id\":\"default-project\",\"title\":\"未命名长篇\",\"genre\":\"\",\"summary\":\"\",\"goal\":50000},\"confirmed_memory\":[],\"story_cards\":[{\"id\":\"ent_13994e63dd944043bd7e272711b65468\",\"type\":\"人物\",\"name\":\"新人物\",\"description\":\"记录人物的欲望、秘密和变化。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_f8f3d53fd9e94113bba7f56584b64618\",\"type\":\"地点\",\"name\":\"新地点\",\"description\":\"记录这里的气味、规则与冲突。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_0335b0ff3a4948329b8637c95613dbf0\",\"type\":\"人物\",\"name\":\"林岚\",\"description\":\"守在北窗的人。\",\"aliases\":[\"岚\"],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_6b5398d387dd4751becc67759367a2ba\",\"type\":\"设定\",\"name\":\"嵌套范围验证\",\"description\":\"NESTED_RECORD_BOUNDARY_CANARY\",\"aliases\":[],\"project_id\":\"default-project\",\"knowledge_scope\":{\"branch_id\":\"outside_branch\"},\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"}],\"previous_chapters\":[],\"retrieved_chapters\":[],\"current_chapter\":{\"id\":\"ch_65314f5e70a448a59a6886a7f0262231\",\"title\":\"等候\",\"status\":\"草稿\",\"body\":\"她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。\",\"source_range\":{\"start\":0,\"end\":152},\"source_revision_id\":\"rev_b2560518780041268448bab7dcdde318\",\"source_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"chapter_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"full_content\":true,\"offset_unit\":\"unicode_codepoint\",\"plan\":{\"chapter_goal\":\"等待来客\",\"scene_plan\":\"窗边等候：POV_ALIAS_SCENE_CANARY\",\"pov\":\"岚\"}},\"story_structure\":{\"relationships\":[],\"timeline\":[],\"foreshadowing\":[],\"conflicts\":[],\"character_states\":[],\"plot_threads\":[]},\"plot\":{\"setup\":[],\"develop\":[],\"payoff\":[]},\"author_plans\":[],\"material_controls\":{},\"context_policy\":\"Use cited facts within POV knowledge. Plans have not occurred. Source offsets are Unicode codepoints in the stated revision. Unannotated knowledge is unverified.\",\"context_budget\":{\"profile\":{\"max_tokens\":24000,\"chapter_top_k\":20,\"recent_window\":3,\"memory_top_k\":60,\"record_top_k\":40},\"retrieval\":\"paragraph_bm25_cjk+recency+evidence\",\"material_controlled\":false,\"current_manuscript_fixed\":true,\"query_hash\":\"dd6b97bed7fa2742b1bbcf71ec9df1b98d2912b1932dde418adc3af3c651f667\",\"author_instruction_used\":true,\"alias_matches\":[\"ent_0335b0ff3a4948329b8637c95613dbf0\"],\"ambiguous_aliases\":[],\"knowledge_scope\":{\"pov_entity_ids\":[\"ent_0335b0ff3a4948329b8637c95613dbf0\"],\"narrator_mode\":\"limited\",\"filtered\":[{\"id\":\"ch_65314f5e70a448a59a6886a7f0262231:rev_b2560518780041268448bab7dcdde318:0:152\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_d8135bb569934522977d8bf9a7294a32:rev_4f668b1f948d4fecbbe207a253e63672:0:9\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_d8135bb569934522977d8bf9a7294a32:rev_4f668b1f948d4fecbbe207a253e63672:10:33\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]}],\"filtered_count\":3,\"warnings\":[]},\"max_tokens\":24000,\"max_context_utf8_bytes\":22164,\"prompt_reserve_bytes\":1836,\"token_estimator\":\"utf8_bytes_conservative_estimate\",\"token_count_exact\":false,\"actual_input_tokens\":null,\"truncation\":{\"applied\":false,\"removed\":[],\"clipped\":[],\"pinned\":[]},\"estimated_chars\":4559,\"estimated_tokens\":6919,\"estimated_utf8_bytes\":5083,\"context_item_ids\":[\"ent_13994e63dd944043bd7e272711b65468\",\"ent_f8f3d53fd9e94113bba7f56584b64618\",\"ent_0335b0ff3a4948329b8637c95613dbf0\",\"ent_6b5398d387dd4751becc67759367a2ba\"],\"retrieved_count\":0,\"previous_count\":0,\"retrieval_tiers\":{\"lexical\":0,\"recency\":0,\"evidence\":0,\"record\":4,\"author_plan\":0}},\"author_guidance\":{\"epistemic_mode\":\"author_plan\",\"use\":\"writing_guidance_not_occurred_not_character_knowledge\",\"project_id\":\"default-project\",\"branch_id\":\"main\",\"blueprint_version\":2,\"creation_agreement\":{\"premise\":\"雨夜窗前的等候\"},\"policy\":\"These are the author\\'s writing agreements and plans. Planned events have not occurred. Characters cannot know a plan unless cited permitted manuscript evidence establishes it. Do not reveal later scenes early or treat a planned state as established truth.\",\"current_volume\":{\"id\":\"alias-volume\",\"title\":\"窗前\",\"summary\":\"在北窗等待脚步声。\"},\"current_plan\":{\"id\":\"alias-plan\",\"title\":\"等候\",\"goal\":\"等待来客\",\"pov\":\"岚\",\"hook\":\"\"},\"scenes\":[{\"id\":\"alias-scene\",\"title\":\"窗边等候\",\"goal\":\"POV_ALIAS_SCENE_CANARY\",\"location\":\"北窗\",\"pov\":\"林岚\"}],\"scenes_outside_current_pov\":0}}\\n</manuscript>\\n作者补充要求：按本章已保存的场景续写。'\n"
+    },
+    {
+      "name": "test_nested_branch_declaration_blocks_local_branch_card",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 77, in test_nested_branch_declaration_blocks_local_branch_card\n    self.assert_filtered(\"nested_branch\")\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 62, in assert_filtered\n    self.assertNotIn(CANARY, preview[\"user\"])\nAssertionError: 'NESTED_RECORD_BOUNDARY_CANARY' unexpectedly found in '<manuscript>\\n{\"project\":{\"id\":\"default-project\",\"title\":\"未命名长篇\",\"genre\":\"\",\"summary\":\"\",\"goal\":50000},\"confirmed_memory\":[],\"story_cards\":[{\"id\":\"ent_96e541cffd9044888b1aeca08cccd87a\",\"type\":\"人物\",\"name\":\"新人物\",\"description\":\"记录人物的欲望、秘密和变化。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_4e60df05b90c4d618ddee73544eb85f4\",\"type\":\"地点\",\"name\":\"新地点\",\"description\":\"记录这里的气味、规则与冲突。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_2621eeb754cc4a3ea903ef9a7fa32529\",\"type\":\"人物\",\"name\":\"林岚\",\"description\":\"守在北窗的人。\",\"aliases\":[\"岚\"],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_fd70db75bea14831b13c880a301b0709\",\"type\":\"设定\",\"name\":\"嵌套范围验证\",\"description\":\"NESTED_RECORD_BOUNDARY_CANARY\",\"aliases\":[],\"project_id\":\"default-project\",\"knowledge_scope\":{\"branch_id\":\"outside_branch\"},\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"}],\"previous_chapters\":[],\"retrieved_chapters\":[],\"current_chapter\":{\"id\":\"ch_7a8b1aefd33542b7850927df72facf9f\",\"title\":\"等候\",\"status\":\"草稿\",\"body\":\"她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。\",\"source_range\":{\"start\":0,\"end\":152},\"source_revision_id\":\"rev_1434d60fa0ac4ff1ba29340abee94a93\",\"source_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"chapter_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"full_content\":true,\"offset_unit\":\"unicode_codepoint\",\"plan\":{\"chapter_goal\":\"等待来客\",\"scene_plan\":\"窗边等候：POV_ALIAS_SCENE_CANARY\",\"pov\":\"岚\"}},\"story_structure\":{\"relationships\":[],\"timeline\":[],\"foreshadowing\":[],\"conflicts\":[],\"character_states\":[],\"plot_threads\":[]},\"plot\":{\"setup\":[],\"develop\":[],\"payoff\":[]},\"author_plans\":[],\"material_controls\":{},\"context_policy\":\"Use cited facts within POV knowledge. Plans have not occurred. Source offsets are Unicode codepoints in the stated revision. Unannotated knowledge is unverified.\",\"context_budget\":{\"profile\":{\"max_tokens\":24000,\"chapter_top_k\":20,\"recent_window\":3,\"memory_top_k\":60,\"record_top_k\":40},\"retrieval\":\"paragraph_bm25_cjk+recency+evidence\",\"material_controlled\":false,\"current_manuscript_fixed\":true,\"query_hash\":\"dd6b97bed7fa2742b1bbcf71ec9df1b98d2912b1932dde418adc3af3c651f667\",\"author_instruction_used\":true,\"alias_matches\":[\"ent_2621eeb754cc4a3ea903ef9a7fa32529\"],\"ambiguous_aliases\":[],\"knowledge_scope\":{\"pov_entity_ids\":[\"ent_2621eeb754cc4a3ea903ef9a7fa32529\"],\"narrator_mode\":\"limited\",\"filtered\":[{\"id\":\"ch_7a8b1aefd33542b7850927df72facf9f:rev_1434d60fa0ac4ff1ba29340abee94a93:0:152\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_a293db9b2fa14c1eafc2f2a6eead3d4f:rev_5dbe0aa4954a4d718ee02a492077d94d:0:9\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_a293db9b2fa14c1eafc2f2a6eead3d4f:rev_5dbe0aa4954a4d718ee02a492077d94d:10:33\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]}],\"filtered_count\":3,\"warnings\":[]},\"max_tokens\":24000,\"max_context_utf8_bytes\":22164,\"prompt_reserve_bytes\":1836,\"token_estimator\":\"utf8_bytes_conservative_estimate\",\"token_count_exact\":false,\"actual_input_tokens\":null,\"truncation\":{\"applied\":false,\"removed\":[],\"clipped\":[],\"pinned\":[]},\"estimated_chars\":4559,\"estimated_tokens\":6919,\"estimated_utf8_bytes\":5083,\"context_item_ids\":[\"ent_96e541cffd9044888b1aeca08cccd87a\",\"ent_4e60df05b90c4d618ddee73544eb85f4\",\"ent_2621eeb754cc4a3ea903ef9a7fa32529\",\"ent_fd70db75bea14831b13c880a301b0709\"],\"retrieved_count\":0,\"previous_count\":0,\"retrieval_tiers\":{\"lexical\":0,\"recency\":0,\"evidence\":0,\"record\":4,\"author_plan\":0}},\"author_guidance\":{\"epistemic_mode\":\"author_plan\",\"use\":\"writing_guidance_not_occurred_not_character_knowledge\",\"project_id\":\"default-project\",\"branch_id\":\"main\",\"blueprint_version\":2,\"creation_agreement\":{\"premise\":\"雨夜窗前的等候\"},\"policy\":\"These are the author\\'s writing agreements and plans. Planned events have not occurred. Characters cannot know a plan unless cited permitted manuscript evidence establishes it. Do not reveal later scenes early or treat a planned state as established truth.\",\"current_volume\":{\"id\":\"alias-volume\",\"title\":\"窗前\",\"summary\":\"在北窗等待脚步声。\"},\"current_plan\":{\"id\":\"alias-plan\",\"title\":\"等候\",\"goal\":\"等待来客\",\"pov\":\"岚\",\"hook\":\"\"},\"scenes\":[{\"id\":\"alias-scene\",\"title\":\"窗边等候\",\"goal\":\"POV_ALIAS_SCENE_CANARY\",\"location\":\"北窗\",\"pov\":\"林岚\"}],\"scenes_outside_current_pov\":0}}\\n</manuscript>\\n作者补充要求：按本章已保存的场景续写。'\n"
+    },
+    {
+      "name": "test_nested_project_declaration_blocks_local_project_card",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 71, in test_nested_project_declaration_blocks_local_project_card\n    self.assert_filtered(\"nested_project\")\n  File \"./tests/nested_record_scope_http_fixtures.py\", line 62, in assert_filtered\n    self.assertNotIn(CANARY, preview[\"user\"])\nAssertionError: 'NESTED_RECORD_BOUNDARY_CANARY' unexpectedly found in '<manuscript>\\n{\"project\":{\"id\":\"default-project\",\"title\":\"未命名长篇\",\"genre\":\"\",\"summary\":\"\",\"goal\":50000},\"confirmed_memory\":[],\"story_cards\":[{\"id\":\"ent_7fca53342c7f47119f9853797888f27f\",\"type\":\"人物\",\"name\":\"新人物\",\"description\":\"记录人物的欲望、秘密和变化。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_1573499e1f574e3eb20ffae47dd585a7\",\"type\":\"地点\",\"name\":\"新地点\",\"description\":\"记录这里的气味、规则与冲突。\",\"aliases\":[],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_b22b7908e54147049eceff34e8bdd2b7\",\"type\":\"人物\",\"name\":\"林岚\",\"description\":\"守在北窗的人。\",\"aliases\":[\"岚\"],\"project_id\":\"default-project\",\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"},{\"id\":\"ent_368efbff0da44d9aac1b3294ca664a58\",\"type\":\"设定\",\"name\":\"嵌套范围验证\",\"description\":\"NESTED_RECORD_BOUNDARY_CANARY\",\"aliases\":[],\"project_id\":\"default-project\",\"knowledge_scope\":{\"project_id\":\"outside_project\"},\"branch_id\":\"main\",\"epistemic_mode\":\"world_truth\",\"retrieval_layer\":\"record\"}],\"previous_chapters\":[],\"retrieved_chapters\":[],\"current_chapter\":{\"id\":\"ch_298ecdb9354343efbd57b8572c57bde4\",\"title\":\"等候\",\"status\":\"草稿\",\"body\":\"她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。她把指尖抵在窗扣上，听见雨水落在石阶。\",\"source_range\":{\"start\":0,\"end\":152},\"source_revision_id\":\"rev_de17990b98f3425c91273b1c7de52189\",\"source_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"chapter_hash\":\"5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a\",\"full_content\":true,\"offset_unit\":\"unicode_codepoint\",\"plan\":{\"chapter_goal\":\"等待来客\",\"scene_plan\":\"窗边等候：POV_ALIAS_SCENE_CANARY\",\"pov\":\"岚\"}},\"story_structure\":{\"relationships\":[],\"timeline\":[],\"foreshadowing\":[],\"conflicts\":[],\"character_states\":[],\"plot_threads\":[]},\"plot\":{\"setup\":[],\"develop\":[],\"payoff\":[]},\"author_plans\":[],\"material_controls\":{},\"context_policy\":\"Use cited facts within POV knowledge. Plans have not occurred. Source offsets are Unicode codepoints in the stated revision. Unannotated knowledge is unverified.\",\"context_budget\":{\"profile\":{\"max_tokens\":24000,\"chapter_top_k\":20,\"recent_window\":3,\"memory_top_k\":60,\"record_top_k\":40},\"retrieval\":\"paragraph_bm25_cjk+recency+evidence\",\"material_controlled\":false,\"current_manuscript_fixed\":true,\"query_hash\":\"dd6b97bed7fa2742b1bbcf71ec9df1b98d2912b1932dde418adc3af3c651f667\",\"author_instruction_used\":true,\"alias_matches\":[\"ent_b22b7908e54147049eceff34e8bdd2b7\"],\"ambiguous_aliases\":[],\"knowledge_scope\":{\"pov_entity_ids\":[\"ent_b22b7908e54147049eceff34e8bdd2b7\"],\"narrator_mode\":\"limited\",\"filtered\":[{\"id\":\"ch_298ecdb9354343efbd57b8572c57bde4:rev_de17990b98f3425c91273b1c7de52189:0:152\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_05fa63505195463a8f6f7f2c2a31cde5:rev_5dd6b496bcc4455c906b58660a2d93d6:0:9\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]},{\"id\":\"ch_05fa63505195463a8f6f7f2c2a31cde5:rev_5dd6b496bcc4455c906b58660a2d93d6:10:33\",\"kind\":\"chapter\",\"reasons\":[\"future_source\"]}],\"filtered_count\":3,\"warnings\":[]},\"max_tokens\":24000,\"max_context_utf8_bytes\":22164,\"prompt_reserve_bytes\":1836,\"token_estimator\":\"utf8_bytes_conservative_estimate\",\"token_count_exact\":false,\"actual_input_tokens\":null,\"truncation\":{\"applied\":false,\"removed\":[],\"clipped\":[],\"pinned\":[]},\"estimated_chars\":4561,\"estimated_tokens\":6921,\"estimated_utf8_bytes\":5085,\"context_item_ids\":[\"ent_7fca53342c7f47119f9853797888f27f\",\"ent_1573499e1f574e3eb20ffae47dd585a7\",\"ent_b22b7908e54147049eceff34e8bdd2b7\",\"ent_368efbff0da44d9aac1b3294ca664a58\"],\"retrieved_count\":0,\"previous_count\":0,\"retrieval_tiers\":{\"lexical\":0,\"recency\":0,\"evidence\":0,\"record\":4,\"author_plan\":0}},\"author_guidance\":{\"epistemic_mode\":\"author_plan\",\"use\":\"writing_guidance_not_occurred_not_character_knowledge\",\"project_id\":\"default-project\",\"branch_id\":\"main\",\"blueprint_version\":2,\"creation_agreement\":{\"premise\":\"雨夜窗前的等候\"},\"policy\":\"These are the author\\'s writing agreements and plans. Planned events have not occurred. Characters cannot know a plan unless cited permitted manuscript evidence establishes it. Do not reveal later scenes early or treat a planned state as established truth.\",\"current_volume\":{\"id\":\"alias-volume\",\"title\":\"窗前\",\"summary\":\"在北窗等待脚步声。\"},\"current_plan\":{\"id\":\"alias-plan\",\"title\":\"等候\",\"goal\":\"等待来客\",\"pov\":\"岚\",\"hook\":\"\"},\"scenes\":[{\"id\":\"alias-scene\",\"title\":\"窗边等候\",\"goal\":\"POV_ALIAS_SCENE_CANARY\",\"location\":\"北窗\",\"pov\":\"林岚\"}],\"scenes_outside_current_pov\":0}}\\n</manuscript>\\n作者补充要求：按本章已保存的场景续写。'\n"
+    }
+  ],
+  "started_at": "2026-10-14T16:39:28.967122+00:00",
+  "finished_at": "2026-10-14T16:39:42.315917+00:00",
+  "observations": [
+    {
+      "test": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "scenario": "copy",
+      "ownership_remapped": true,
+      "branch_array_remapped": true,
+      "known_by_remapped": true,
+      "preview_status": 200,
+      "preview_contains_allowed_card": true
+    },
+    {
+      "test": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "scenario": "backup",
+      "ownership_remapped": true,
+      "branch_array_remapped": true,
+      "known_by_remapped": true,
+      "preview_status": 200,
+      "preview_contains_allowed_card": true
+    },
+    {
+      "test": "test_foreign_owned_card_cannot_be_pinned_by_matching_nested_declaration",
+      "scenario": "foreign_ownership",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400
+        }
+      ],
+      "ledger_unchanged": true,
+      "provider_calls": 0
+    },
+    {
+      "test": "test_legacy_sync_and_description_edit_preserve_conflicting_nested_limit",
+      "scenario": "legacy_nested_limit_preserved",
+      "fresh_preview_excludes_card": false,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": false,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_branch_cannot_override_conflicting_top_branch",
+      "scenario": "conflicting_top_matching_nested",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_branch_ids_array",
+      "scenario": "nested_match_branch_ids_conflict",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_branches_array",
+      "scenario": "nested_match_branches_conflict",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_chapter_timing",
+      "scenario": "nested_match_future_chapter",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_private_viewpoint",
+      "scenario": "nested_match_private_conflict",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_ownership_keeps_preview_send_and_apply_connected",
+      "scenario": "matching_nested",
+      "preview_contains_card": true,
+      "preview_equals_sent_user": true,
+      "current_dispatch_status": "success",
+      "apply_status": 200,
+      "applied": true,
+      "body_changed": true
+    },
+    {
+      "test": "test_matching_top_branch_cannot_override_conflicting_nested_branch",
+      "scenario": "matching_top_conflicting_nested",
+      "fresh_preview_excludes_card": false,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": false,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_nested_branch_declaration_blocks_local_branch_card",
+      "scenario": "nested_branch",
+      "fresh_preview_excludes_card": false,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": false,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_nested_project_declaration_blocks_local_project_card",
+      "scenario": "nested_project",
+      "fresh_preview_excludes_card": false,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": false,
+      "source_unchanged": true
+    }
+  ],
+  "free_provider_calls": 10,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_context.py": "12ec0e0cf80a37dff57eaf52a69dbb2291a427263fd70d09ee636cd2327262f2",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "server.py": "a0b250e2b5ab784a5132a32c8a9fce9459765e318cb9ad204fec44f1e46a8468",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "tests/guidance_alias_http_fixtures.py": "664c0581e87e86303fb69b510f3af3905c132cb6e0acae7c715b717a361e35bc",
+    "tests/guidance_scope_change_http_fixtures.py": "ad8487aad85c4477f179a872d4cad962284b7a9a6bac9efdce52a0fe7cc5a875",
+    "tests/nested_record_scope_http_fixtures.py": "8407478ab51f19d8902bf4ca2b94c9182d216932876055a6f885fdf6596b4f16"
+  },
+  "source_files_sha256_after": {
+    "moyu_context.py": "12ec0e0cf80a37dff57eaf52a69dbb2291a427263fd70d09ee636cd2327262f2",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "server.py": "a0b250e2b5ab784a5132a32c8a9fce9459765e318cb9ad204fec44f1e46a8468",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "tests/guidance_alias_http_fixtures.py": "664c0581e87e86303fb69b510f3af3905c132cb6e0acae7c715b717a361e35bc",
+    "tests/guidance_scope_change_http_fixtures.py": "ad8487aad85c4477f179a872d4cad962284b7a9a6bac9efdce52a0fe7cc5a875",
+    "tests/nested_record_scope_http_fixtures.py": "8407478ab51f19d8902bf4ca2b94c9182d216932876055a6f885fdf6596b4f16"
+  },
+  "source_unchanged": true,
+  "scope": "temporary synthetic DB; actual HTTP; matching ownership and independent nested declarations"
+}

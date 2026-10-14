@@ -1,0 +1,394 @@
+{
+  "passed": true,
+  "checks": 14,
+  "cases": [
+    {
+      "name": "test_canceled_original_retries_reject_new_scope_without_new_tasks",
+      "passed": true
+    },
+    {
+      "name": "test_copies_and_backups_remap_scope_and_protect_new_frozen_requests",
+      "passed": true,
+      "subtest": "test_copies_and_backups_remap_scope_and_protect_new_frozen_requests (__main__.GuidanceScopeChangeHTTP.test_copies_and_backups_remap_scope_and_protect_new_frozen_requests) (recovery='copy')"
+    },
+    {
+      "name": "test_copies_and_backups_remap_scope_and_protect_new_frozen_requests",
+      "passed": true,
+      "subtest": "test_copies_and_backups_remap_scope_and_protect_new_frozen_requests (__main__.GuidanceScopeChangeHTTP.test_copies_and_backups_remap_scope_and_protect_new_frozen_requests) (recovery='backup')"
+    },
+    {
+      "name": "test_copies_and_backups_remap_scope_and_protect_new_frozen_requests",
+      "passed": true
+    },
+    {
+      "name": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "passed": true,
+      "subtest": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch (__main__.GuidanceScopeChangeHTTP.test_corrupt_saved_boundaries_reject_already_frozen_dispatch) (saved_scope='[]')"
+    },
+    {
+      "name": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "passed": true,
+      "subtest": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch (__main__.GuidanceScopeChangeHTTP.test_corrupt_saved_boundaries_reject_already_frozen_dispatch) (saved_scope='{\"known_by\":\"scope_other_person\"}')"
+    },
+    {
+      "name": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "passed": true,
+      "subtest": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch (__main__.GuidanceScopeChangeHTTP.test_corrupt_saved_boundaries_reject_already_frozen_dispatch) (saved_scope='{\"private\":\"yes\"}')"
+    },
+    {
+      "name": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "passed": true,
+      "subtest": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch (__main__.GuidanceScopeChangeHTTP.test_corrupt_saved_boundaries_reject_already_frozen_dispatch) (saved_scope='broken-json')"
+    },
+    {
+      "name": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_equivalent_saved_json_and_missing_empty_projection_are_stable",
+      "passed": true
+    },
+    {
+      "name": "test_failed_original_retries_reject_changed_known_by",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_description_sync_preserves_scope_and_blocks_old_materials",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_omitted_description_sync_keeps_saved_boundary_and_task_usable",
+      "passed": true
+    },
+    {
+      "name": "test_new_request_uses_current_scope_and_can_still_apply",
+      "passed": true
+    },
+    {
+      "name": "test_other_project_scope_changes_do_not_expire_this_request",
+      "passed": true
+    },
+    {
+      "name": "test_scope_change_expires_existing_current_bound_stale_resolution",
+      "passed": true
+    },
+    {
+      "name": "test_scope_change_expires_saved_author_decision_and_late_semantic_result",
+      "passed": true
+    },
+    {
+      "name": "test_scope_change_rejects_late_frozen_job_creation_atomically",
+      "passed": true
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true,
+      "subtest": "test_scope_restrictions_block_frozen_dispatch_before_provider (__main__.GuidanceScopeChangeHTTP.test_scope_restrictions_block_frozen_dispatch_before_provider) (scope='nested_future_chapter')"
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true,
+      "subtest": "test_scope_restrictions_block_frozen_dispatch_before_provider (__main__.GuidanceScopeChangeHTTP.test_scope_restrictions_block_frozen_dispatch_before_provider) (scope='top_future_chapter')"
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true,
+      "subtest": "test_scope_restrictions_block_frozen_dispatch_before_provider (__main__.GuidanceScopeChangeHTTP.test_scope_restrictions_block_frozen_dispatch_before_provider) (scope='private_other_viewpoint')"
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true,
+      "subtest": "test_scope_restrictions_block_frozen_dispatch_before_provider (__main__.GuidanceScopeChangeHTTP.test_scope_restrictions_block_frozen_dispatch_before_provider) (scope='private_without_owner')"
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true,
+      "subtest": "test_scope_restrictions_block_frozen_dispatch_before_provider (__main__.GuidanceScopeChangeHTTP.test_scope_restrictions_block_frozen_dispatch_before_provider) (scope='other_branch')"
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true,
+      "subtest": "test_scope_restrictions_block_frozen_dispatch_before_provider (__main__.GuidanceScopeChangeHTTP.test_scope_restrictions_block_frozen_dispatch_before_provider) (scope='future_valid_state')"
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true,
+      "subtest": "test_scope_restrictions_block_frozen_dispatch_before_provider (__main__.GuidanceScopeChangeHTTP.test_scope_restrictions_block_frozen_dispatch_before_provider) (scope='author_plan')"
+    },
+    {
+      "name": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "passed": true
+    },
+    {
+      "name": "test_successful_old_candidate_cannot_apply_after_scope_change",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:14:26.889042+00:00",
+  "finished_at": "2026-10-14T17:14:40.139641+00:00",
+  "observations": [
+    {
+      "test": "test_canceled_original_retries_reject_new_scope_without_new_tasks",
+      "scenario": "canceled_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409
+        },
+        {
+          "entry": "runs",
+          "status": 409
+        }
+      ],
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "provider_calls": 0
+    },
+    {
+      "test": "test_copies_and_backups_remap_scope_and_protect_new_frozen_requests",
+      "scenario": "copy",
+      "remapped_owner": true,
+      "remapped_branch": true,
+      "preview_excludes_card": true,
+      "dispatch_http_status": 200,
+      "dispatch_status": "failed",
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_copies_and_backups_remap_scope_and_protect_new_frozen_requests",
+      "scenario": "backup",
+      "remapped_owner": true,
+      "remapped_branch": true,
+      "preview_excludes_card": true,
+      "dispatch_http_status": 200,
+      "dispatch_status": "failed",
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "scenario": "corrupt_saved_boundary",
+      "invalid_json": "[]",
+      "dispatch_status": "failed",
+      "extra_provider_calls": 0,
+      "error": "已保存的设定可见范围损坏，请修复范围后再继续"
+    },
+    {
+      "test": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "scenario": "corrupt_saved_boundary",
+      "invalid_json": "{\"known_by\":\"scope_other_person\"}",
+      "dispatch_status": "failed",
+      "extra_provider_calls": 0,
+      "error": "已保存的设定可见范围损坏，请修复范围后再继续"
+    },
+    {
+      "test": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "scenario": "corrupt_saved_boundary",
+      "invalid_json": "{\"private\":\"yes\"}",
+      "dispatch_status": "failed",
+      "extra_provider_calls": 0,
+      "error": "已保存的设定可见范围损坏，请修复范围后再继续"
+    },
+    {
+      "test": "test_corrupt_saved_boundaries_reject_already_frozen_dispatch",
+      "scenario": "corrupt_saved_boundary",
+      "invalid_json": "broken-json",
+      "dispatch_status": "failed",
+      "extra_provider_calls": 0,
+      "error": "已保存的设定可见范围损坏，请修复范围后再继续"
+    },
+    {
+      "test": "test_equivalent_saved_json_and_missing_empty_projection_are_stable",
+      "scenario": "equivalent_json",
+      "source_unchanged": true,
+      "dispatch_status": "success"
+    },
+    {
+      "test": "test_equivalent_saved_json_and_missing_empty_projection_are_stable",
+      "scenario": "missing_and_empty",
+      "source_unchanged": true,
+      "dispatch_status": "success"
+    },
+    {
+      "test": "test_failed_original_retries_reject_changed_known_by",
+      "scenario": "failed_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409
+        },
+        {
+          "entry": "runs",
+          "status": 409
+        }
+      ],
+      "ledger_unchanged": true,
+      "provider_calls": 0
+    },
+    {
+      "test": "test_legacy_description_sync_preserves_scope_and_blocks_old_materials",
+      "scenario": "legacy_preserves_scope",
+      "source_unchanged": true,
+      "saved_scope_preserved": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_legacy_omitted_description_sync_keeps_saved_boundary_and_task_usable",
+      "scenario": "legacy_omitted_scope_control",
+      "source_unchanged": true,
+      "saved_scope_preserved": true,
+      "dispatch_status": "success",
+      "provider_calls": 1,
+      "provider_excludes_card": true
+    },
+    {
+      "test": "test_new_request_uses_current_scope_and_can_still_apply",
+      "scenario": "new_current_request",
+      "dispatch_status": "success",
+      "provider_excludes_card": true,
+      "apply_http_status": 200,
+      "applied": true,
+      "body_changed": true
+    },
+    {
+      "test": "test_other_project_scope_changes_do_not_expire_this_request",
+      "scenario": "other_project",
+      "source_unchanged": true,
+      "dispatch_status": "success",
+      "provider_calls": 1
+    },
+    {
+      "test": "test_scope_change_expires_existing_current_bound_stale_resolution",
+      "scenario": "stale_resolution_changed",
+      "old_resolution_current": false,
+      "old_resolution_reuse_status": 409,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "decision_log_preserved": true
+    },
+    {
+      "test": "test_scope_change_expires_saved_author_decision_and_late_semantic_result",
+      "scenario": "semantic_source_changed",
+      "report_stale": true,
+      "old_decision": "explained",
+      "repair_targets": [],
+      "late_result_saved": false,
+      "gate_codes": [
+        "semantic_review_stale"
+      ]
+    },
+    {
+      "test": "test_scope_change_rejects_late_frozen_job_creation_atomically",
+      "scenario": "late_creation",
+      "http_status": 400,
+      "ledger_unchanged": true,
+      "provider_calls": 0
+    },
+    {
+      "test": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "scenario": "nested_future_chapter",
+      "fresh_preview_excludes_card": true,
+      "source_changed": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "scenario": "top_future_chapter",
+      "fresh_preview_excludes_card": true,
+      "source_changed": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "scenario": "private_other_viewpoint",
+      "fresh_preview_excludes_card": true,
+      "source_changed": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "scenario": "private_without_owner",
+      "fresh_preview_excludes_card": true,
+      "source_changed": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "scenario": "other_branch",
+      "fresh_preview_excludes_card": true,
+      "source_changed": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "scenario": "future_valid_state",
+      "fresh_preview_excludes_card": true,
+      "source_changed": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_scope_restrictions_block_frozen_dispatch_before_provider",
+      "scenario": "author_plan",
+      "fresh_preview_excludes_card": true,
+      "source_changed": true,
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_successful_old_candidate_cannot_apply_after_scope_change",
+      "scenario": "old_candidate_apply",
+      "http_status": 400,
+      "applied": null,
+      "body_unchanged": true,
+      "ledger_unchanged": true,
+      "provider_calls": 1
+    }
+  ],
+  "free_provider_calls": 7,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c"
+  },
+  "source_files_sha256_after": {
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c"
+  },
+  "source_unchanged": true,
+  "scope": "temporary synthetic databases; real local HTTP; free local provider; no real manuscript or credential"
+}

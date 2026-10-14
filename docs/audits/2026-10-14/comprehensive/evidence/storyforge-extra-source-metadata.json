@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-14T15:14:17.513Z",
+  "repository": "yuanbw2025/storyforge",
+  "commit": "5147924e835a11ca514d7c7bb22fcc365339316f",
+  "tree": "e430d12cee759cc2fceb2501571a99335da101e1",
+  "source_method": "Additional official tree and blob SHA-1 plus byte-length verification.",
+  "files": [
+    {
+      "path": "src/components/tools/GlobalReplacePanel.tsx",
+      "git_blob_sha": "14bc616fe7001468502b74219d35848c72a25f2d",
+      "bytes": 30464,
+      "sha256": "f5c6827a7bae624651a26b3389f1f32329b51423f4159fa9572c53579b694e15",
+      "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/tools/GlobalReplacePanel.tsx"
+    },
+    {
+      "path": "src/components/data/DataManagementPanel.tsx",
+      "git_blob_sha": "818fddac5719cf864c173a11e945b2b54d89cc7f",
+      "bytes": 39852,
+      "sha256": "1badb9a9210a79ac913b0c472d21d358cc461752872208e159f066a058ba5650",
+      "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/data/DataManagementPanel.tsx"
+    },
+    {
+      "path": "src/lib/editor/entity-rename.ts",
+      "git_blob_sha": "aec94a73a100e222ddf8f51e1a4738273128ebc7",
+      "bytes": 20672,
+      "sha256": "95887f7f395ecda0384d93ec0d59651b10d3d2567c04179dd53ad8950b08f2cf",
+      "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/editor/entity-rename.ts"
+    },
+    {
+      "path": "src/stores/chapter.ts",
+      "git_blob_sha": "6500043e310a5846481e0d785d77c937f5f46ef0",
+      "bytes": 6316,
+      "sha256": "b34065ae3d27b365fa9a5d65b9f2ea486d02f4b90efcab618f78783a79717400",
+      "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/stores/chapter.ts"
+    },
+    {
+      "path": "src/lib/ai/task-routing.ts",
+      "git_blob_sha": "fc6a5e7e55be9539db12468fcb397e3c56e4e9c0",
+      "bytes": 5905,
+      "sha256": "71400bed8d443fb209adb8546550a4d876d49f2abc1689d37b4311f84df11ac9",
+      "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/ai/task-routing.ts"
+    },
+    {
+      "path": "src/lib/agent/run/selection-edit-durable.ts",
+      "git_blob_sha": "c6ad60cf9ec8df908c4149e093ff31fd9d2d7b46",
+      "bytes": 41321,
+      "sha256": "6a2f2bc32056bc5342a678af1f77f0a8c23ac23ac26fad9826a4c69f1bd003d6",
+      "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/agent/run/selection-edit-durable.ts"
+    }
+  ],
+  "external_model_calls": 0,
+  "upstream_runtime_tested": false
+}

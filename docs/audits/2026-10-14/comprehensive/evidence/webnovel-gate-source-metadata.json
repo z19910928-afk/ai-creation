@@ -1,0 +1,31 @@
+{
+  "repository": "lingfengQAQ/webnovel-writer",
+  "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+  "checked_at": "2026-10-14T15:11:43.228718+00:00",
+  "source_records": [
+    {
+      "path": "packages/bundle/src/novel-tools.ts",
+      "blob_sha1": "001998c7a3386e4285414f53223cf80dc68b9ab0",
+      "sha256": "3c8388d8d82a2d3e1f6a49b5d4ef1365037ec9e651cefadd5e20b450269f2c56",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/bundle/src/novel-tools.ts"
+    },
+    {
+      "path": "packages/bundle/src/gates.ts",
+      "blob_sha1": "efec4f8982fea763ebc4330bec7ae5c6619a0a42",
+      "sha256": "3b9a24237db92ca4aa62cea7540ff1e9d44a78f25749a8d457ae79dd0f2982f0",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/bundle/src/gates.ts"
+    },
+    {
+      "path": "packages/core/src/prepare/pack.ts",
+      "blob_sha1": "a0e8c4ac1ffd34c7cb6a771a8a459ae7240ddc0b",
+      "sha256": "97167582b884c8510d0c67dfbd40fb41fd5b661151715a72f9b3e1e4ae809201",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/prepare/pack.ts"
+    },
+    {
+      "path": "packages/core/src/prepare/index.ts",
+      "blob_sha1": "9d1cba2b7c2ca46e25810501ddfc5058d60a8ec2",
+      "sha256": "46cf247aa62f28cfcf4124a48c6691a555cccd52017a774b5e4408c41ef9cf43",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/prepare/index.ts"
+    }
+  ]
+}

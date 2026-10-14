@@ -105,11 +105,44 @@
       ]
     },
     {
+      "path": "evidence/fixed-evaluation-python311-node24-backup-title-final.json",
+      "original_sha256": "12171e8731d37a6b1df620aa93b8994bdb7660328f116aabaf812e529765656e",
+      "published_sha256": "d2f34236641aa1466392881a9721024fc3a9b03aea87a89dc2ac73d9f5140ae2",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/fixed-evaluation-python311-node24-backup-title-reopen-final.json",
+      "original_sha256": "12171e8731d37a6b1df620aa93b8994bdb7660328f116aabaf812e529765656e",
+      "published_sha256": "d2f34236641aa1466392881a9721024fc3a9b03aea87a89dc2ac73d9f5140ae2",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/fixed-evaluation-python311-node24-interrupted-fragment-contract-final.json",
+      "original_sha256": "12171e8731d37a6b1df620aa93b8994bdb7660328f116aabaf812e529765656e",
+      "published_sha256": "d2f34236641aa1466392881a9721024fc3a9b03aea87a89dc2ac73d9f5140ae2",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/fixed-evaluation-python311-node24-interrupted-fragment-contract-release.json",
+      "original_sha256": "12171e8731d37a6b1df620aa93b8994bdb7660328f116aabaf812e529765656e",
+      "published_sha256": "d2f34236641aa1466392881a9721024fc3a9b03aea87a89dc2ac73d9f5140ae2",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
       "path": "evidence/README.md",
       "original_sha256": "f47e2c242b1b5681039fc91fec5b32f1014da22258745b5b11662cb82bcc6b6c",
-      "published_sha256": "5aa981246145520fd7191da6eb6ed15c31f982f6102f1564095a0a7fe2f75ea8",
+      "published_sha256": "79961a1c3b0a7d9ad5f7ffcbb711545ecaa3cc98eb042ad5a4cda9883dfba6a4",
       "categories": [
-        "local_absolute_path"
+        "local_absolute_path",
+        "local_temporary_runtime_path"
       ],
       "editorial_updates_after_redaction": true
     },

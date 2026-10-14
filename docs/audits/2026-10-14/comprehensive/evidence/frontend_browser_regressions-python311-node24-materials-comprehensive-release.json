@@ -1,0 +1,328 @@
+{
+  "passed": false,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "截断任务在无缓存窗口完整恢复只读片段，已知用量可手动重试",
+      "passed": true
+    },
+    {
+      "name": "缺少流式结束标记的未知结果可回看片段，不显示重发且拒绝过期来源",
+      "passed": true
+    },
+    {
+      "name": "只有本机分片账本时只读恢复未知结果，读取中断可续读且不会再次调用模型",
+      "passed": true
+    },
+    {
+      "name": "未完成的结构分析和JSON正文保留原始片段，只读复制且无法整理或采纳",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段",
+      "passed": true
+    },
+    {
+      "name": "两窗口合并后撤销本页改稿并重做，两次都保留另一页新增段落",
+      "passed": true
+    },
+    {
+      "name": "同起点插入与删除双方向显示双方稿件，选择后保存及撤销重做不丢字",
+      "passed": true
+    },
+    {
+      "name": "重做插入遇到另一页同起点删字时保留正文和重做记录，恢复后可继续重做",
+      "passed": true
+    },
+    {
+      "name": "粗体撤销后接收另一页新改稿，快捷键重做和撤销仅变化粗体",
+      "passed": true
+    },
+    {
+      "name": "另一页覆盖本页撤销位置时拒绝操作，保留正文和可重试的撤销记录",
+      "passed": true
+    },
+    {
+      "name": "真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存",
+      "passed": true
+    },
+    {
+      "name": "自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    },
+    {
+      "name": "多问题审稿明确选择原句，精确修订第二重复句并重新审稿",
+      "passed": true
+    },
+    {
+      "name": "超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿",
+      "passed": true
+    },
+    {
+      "name": "整理超限候选保留父原文，双击仅一次调用且合限子候选等待明确采纳",
+      "passed": true
+    },
+    {
+      "name": "手工编辑过的父候选禁止模型整理，正文和原候选均继续保留",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_e5dd2da73b6c4c1c9e7165a6531ba817",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_25948d9e2f8f4a358b53ae2af1001617",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_0398be1c2c06428abd6b81923fae2e7a",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_33e3a27c91594362876fa8c1ce0cf19e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_a212303a24e945ec8bf840cad7229788",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_50ef94421ea3475986af4000f1b53882",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_9d7ad8335de04fa498b195dacc7c61f1",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_89a6fed4aad54ede8cda5aace07bc848",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_58cce25ec1ee4b1790edb900670e0a42",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_3476309bb3bd4d9d8a895b7115d53e29",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_27b4fac35ca54b598d4ec0d890ee4a54",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_d03584aa3ca34efeb30a4bc863e01c8c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_77a2794eef4b499792d898d8766f6e8e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_c10113a179f54b8aa812552821a7a382",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_ac60bff7707d4991819752287b8504a0",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_78093fbbe06848a9a955c051ad4b86a7",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_951438cd646b44b3966850539d21ee15",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_dfa31841b8ee4a65ab7a1da6807f354c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_45f1703bb2f149a3b5e01c6afc8697e8",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_9aca772c667242a5b682b6c5467a4ddd",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "unknown_fragment": {
+    "run_id": "airun_d7fa4bdbdac8483a846a38aab0cfbc78",
+    "job_id": "aijob_332871937b2c4ff0b8e245da96ddaa19",
+    "text": "结束状态未知的完整可见片段。保留钥匙，不写入原稿。"
+  },
+  "native_composition_events": [
+    {
+      "type": "compositionstart",
+      "data": "",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "lin",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "lin",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "linlan",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "linlan",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "林岚",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionend",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": false
+    }
+  ],
+  "review_decision_recovery": {
+    "accepted_repair_available": true,
+    "failed_read_retained_window": true,
+    "decision_posts": 1,
+    "failed_review_reads": 1,
+    "extra_model_calls": 0,
+    "reopen_restores_saved_decisions": true,
+    "manuscript_unchanged": true
+  },
+  "candidate_revision": {
+    "parent_run_id": "airun_b06ccddf50e64080be3e3391bc7e3bba",
+    "child_run_id": "airun_933aa915419a4467a7157fb6cb4d00ff",
+    "provider_calls": 1,
+    "parent_preserved": true,
+    "child_explicitly_adopted_once": true,
+    "recovered_outside_queue_list": true,
+    "mechanical_and_workflow_only": true,
+    "facts_and_literature_accepted": false
+  },
+  "failure": {
+    "message": "page.waitForFunction: Timeout 30000ms exceeded.",
+    "stack": "page.waitForFunction: Timeout 30000ms exceeded.\n    at ./tests/frontend_browser_regressions.cjs:981:22\n    at async test (./tests/frontend_browser_regressions.cjs:47:2)\n    at async main (./tests/frontend_browser_regressions.cjs:972:2)",
+    "server_log": "758dae6f363d16/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:42+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:42+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:42+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-14T17:26:42+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:42+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:42+00:00] \"GET /api/ai/runs/airun_b06ccddf50e64080be3e3391bc7e3bba/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:42+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/ai/queue?limit=200 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/ai/runs/airun_b06ccddf50e64080be3e3391bc7e3bba HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"POST /api/ai/runs/airun_b06ccddf50e64080be3e3391bc7e3bba/revise HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/ai/runs/airun_933aa915419a4467a7157fb6cb4d00ff/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:43+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET / HTTP/1.1\" 304 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/runs/airun_b06ccddf50e64080be3e3391bc7e3bba HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/queue?limit=200 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/runs/airun_b06ccddf50e64080be3e3391bc7e3bba HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/queue?limit=200 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/runs/airun_b06ccddf50e64080be3e3391bc7e3bba HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"POST /api/ai/runs/airun_933aa915419a4467a7157fb6cb4d00ff/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:44+00:00] \"GET /api/ai/runs/airun_088e5168be4d48998fc0782195ed3d36/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"POST /api/ai/decision HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"GET /api/ai/runs/airun_db337c08fbc84754b8c77ba84ceeac88/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:45+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:46+00:00] \"PUT /api/state HTTP/1.1\" 409 -\n127.0.0.1 - - [2026-10-14T17:26:46+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:46+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:46+00:00] \"GET /api/ai/queue?limit=200 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:46+00:00] \"GET /api/ai/runs/airun_db337c08fbc84754b8c77ba84ceeac88 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:49+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:53+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:26:58+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:27:02+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:27:06+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:27:10+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T17:27:14+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n"
+  }
+}

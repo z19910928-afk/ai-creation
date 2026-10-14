@@ -130,6 +130,81 @@ def main():
             assert request("GET", "/api/state", project=cloned["project"]["id"])[1]["chapters"][0]["body"] == body
             assert request("PATCH", f"/api/projects/{other}", {"archived": True}, pid)[1]["archived"] == 1
             assert request("PATCH", f"/api/projects/{other}", {"archived": False}, pid)[1]["archived"] == 0
+            title_cases = ["书" * size for size in (193, 194, 200)]
+            title_cases += ["书" * 192 + "😀", "书" * 192 + "😀" + "卷" * 7]
+            title_boundary_restores = 0
+            for index, original_title in enumerate(title_cases):
+                status, created = request("POST", "/api/projects", {"title": original_title}, pid)
+                assert status == 201, created
+                boundary_project = created["project"]["id"]
+                boundary_state = request("GET", "/api/state", project=boundary_project)[1]
+                boundary_body = f"标题边界{index}的原稿😀，备份恢复不能改字。"
+                boundary_state["chapters"][0]["body"] = boundary_body
+                assert request("PUT", "/api/state", boundary_state, boundary_project)[0] == 200
+                status, boundary_backup = request("POST", "/api/backups", {}, boundary_project)
+                assert status == 201 and boundary_backup["verified"], boundary_backup
+                boundary_path = Path(tmp) / "backups" / (boundary_backup["id"] + ".zip")
+                archive_bytes = boundary_path.read_bytes()
+                archived_payload = moyu_backups.read(boundary_path, boundary_project)["payload"]
+                assert archived_payload["tables"]["project"][0]["name"] == original_title
+                status, boundary_restore = request(
+                    "POST", f"/api/backups/{boundary_backup['id']}/restore",
+                    {"confirm": True}, boundary_project)
+                assert status == 201, boundary_restore
+                restored_project = boundary_restore["project"]["id"]
+                restored_state = request("GET", "/api/state", project=restored_project)[1]
+                expected_title = original_title[:193] + " · 恢复副本"
+                assert restored_state["project"]["title"] == expected_title
+                assert len(restored_state["project"]["title"]) == 200
+                assert restored_state["chapters"][0]["body"] == boundary_body
+                restored_state["chapters"][0]["body"] += "\n第一次恢复后继续写。"
+                assert request("PUT", "/api/state", restored_state, restored_project)[0] == 200
+                assert request("GET", "/api/state", project=restored_project)[1]["chapters"][0]["body"] == restored_state["chapters"][0]["body"]
+                original_after = request("GET", "/api/state", project=boundary_project)[1]
+                assert original_after["project"]["title"] == original_title
+                assert original_after["chapters"][0]["body"] == boundary_body
+                assert boundary_path.read_bytes() == archive_bytes
+                with server.connect() as conn:
+                    assert moyu_backups.capture(conn, boundary_project) == archived_payload
+                title_boundary_restores += 1
+                if len(original_title) == 200:
+                    status, second_backup = request("POST", "/api/backups", {}, restored_project)
+                    assert status == 201 and second_backup["verified"], second_backup
+                    status, second_restore = request(
+                        "POST", f"/api/backups/{second_backup['id']}/restore",
+                        {"confirm": True}, restored_project)
+                    assert status == 201, second_restore
+                    second_project = second_restore["project"]["id"]
+                    second_state = request("GET", "/api/state", project=second_project)[1]
+                    assert second_state["project"]["title"] == expected_title
+                    assert second_state["chapters"][0]["body"] == restored_state["chapters"][0]["body"]
+                    second_state["chapters"][0]["body"] += "\n第二次恢复后仍能写作😀。"
+                    assert request("PUT", "/api/state", second_state, second_project)[0] == 200
+                    assert request("GET", "/api/state", project=second_project)[1]["chapters"][0]["body"] == second_state["chapters"][0]["body"]
+                    assert request("GET", "/api/state", project=restored_project)[1]["chapters"][0]["body"] == restored_state["chapters"][0]["body"]
+                    title_boundary_restores += 1
+            explicit_titles = ["  命名副本  ", " \t" + "名" * 200 + "\n ", "名" * 199 + "😀", ""]
+            for explicit_title in explicit_titles:
+                status, duplicate = request(
+                    "POST", f"/api/projects/{pid}/duplicate", {"title": explicit_title}, pid)
+                assert status == 201, duplicate
+                expected_title = explicit_title.strip() if explicit_title else first["project"]["title"] + " · 恢复副本"
+                assert duplicate["project"]["title"] == expected_title
+                duplicate_state = request("GET", "/api/state", project=duplicate["project"]["id"])[1]
+                assert duplicate_state["project"]["title"] == expected_title
+                assert duplicate_state["chapters"][0]["body"] == body
+            invalid_titles = [True, False, 123, [], {}, " \t\n ", "名" * 201, "名" * 200 + "😀"]
+            with server.connect() as conn:
+                before_invalid = tuple(conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+                                       for table in ("project", "event_log"))
+            for invalid_title in invalid_titles:
+                status, rejected = request(
+                    "POST", f"/api/projects/{pid}/duplicate", {"title": invalid_title}, pid)
+                assert status == 400, (invalid_title, rejected)
+                with server.connect() as conn:
+                    after_invalid = tuple(conn.execute(f"SELECT COUNT(*) FROM {table}").fetchone()[0]
+                                          for table in ("project", "event_log"))
+                assert after_invalid == before_invalid, (invalid_title, after_invalid, before_invalid)
             before = request("GET", "/api/state", project=pid)[1]
             with zipfile.ZipFile(package, "a") as archive:
                 archive.writestr("unexpected.json", "{}")
@@ -142,7 +217,8 @@ def main():
             http.shutdown()
             http.server_close()
             thread.join(timeout=3)
-    print("workspace HTTP workflows: ok")
+    print(f"workspace HTTP workflows: ok; {title_boundary_restores} title boundary restores, "
+          f"{len(explicit_titles)} explicit names, {len(invalid_titles)} rejected names")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,287 @@
+{
+  "passed": true,
+  "scope": "桌面真实浏览器、隔离 SQLite、免费本机提供方；规划归档、已保存作品重开、Unicode 导入及旧审稿作者决定",
+  "cases": [
+    {
+      "name": "五章规划归档首章仍五章，已有正文目标场景视角卷身份完整保留",
+      "passed": true
+    },
+    {
+      "name": "归档跳过已完成后续章，刷新重复归档不会追加空章",
+      "passed": true
+    },
+    {
+      "name": "无后续章仅新建一次，保存失败恢复复用身份且新章目标不覆盖交接",
+      "passed": true
+    },
+    {
+      "name": "归档新章保存等待切章，迟到成功回应不强行切回",
+      "passed": true
+    },
+    {
+      "name": "new保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "new保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "new保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "参考导入保存后回读失败，重试只打开参考库",
+      "passed": true
+    },
+    {
+      "name": "导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝",
+      "passed": true
+    },
+    {
+      "name": "新建作品200完整字符名称可保存，超限不会发出创建请求",
+      "passed": true
+    },
+    {
+      "name": "已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private isolated SQLite, mock credentials and logs retained locally; only the three reviewed viewport captures listed below are published.",
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "dc02f9f7e59932fa9b3cef3918a415f35810bf3dfa67ca61a90cf18bf3286be9"
+    },
+    {
+      "path": "server.py",
+      "sha256": "a0b250e2b5ab784a5132a32c8a9fce9459765e318cb9ad204fec44f1e46a8468"
+    },
+    {
+      "path": "moyu_analysis.py",
+      "sha256": "22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0"
+    },
+    {
+      "path": "moyu_workspace.py",
+      "sha256": "7dc1d33adfae0099391a26b5eed8ff729117f89b562f7a746f2bf373c07fbae2"
+    },
+    {
+      "path": "moyu_context.py",
+      "sha256": "12ec0e0cf80a37dff57eaf52a69dbb2291a427263fd70d09ee636cd2327262f2"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "715a87da60608fd98d2ae9fd1f61d2b6816c91e8d5e7fdab0a923f0b1218e398"
+    },
+    {
+      "path": "tests/author_workspace_lifecycle_browser_regressions.cjs",
+      "sha256": "b4da23063bbb46a4e2db7b22c723361bdbe11aef31f9fc8286556d669a78796e"
+    }
+  ],
+  "desktop_layout": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "initial_handoff": {
+        "width": 968,
+        "height": 70,
+        "label_width": 968,
+        "x": 442,
+        "y": 859.1875,
+        "right": 1410,
+        "bottom": 929.1875,
+        "scroll_y": 0,
+        "within": true,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      },
+      "centered_for_capture": false,
+      "handoff": {
+        "width": 968,
+        "height": 70,
+        "label_width": 968,
+        "x": 442,
+        "y": 859.1875,
+        "right": 1410,
+        "bottom": 929.1875,
+        "scroll_y": 0,
+        "within": true,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "initial_handoff": {
+        "width": 808,
+        "height": 70,
+        "label_width": 808,
+        "x": 442,
+        "y": 831.1875,
+        "right": 1250,
+        "bottom": 901.1875,
+        "scroll_y": 28,
+        "within": false,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      },
+      "centered_for_capture": true,
+      "handoff": {
+        "width": 808,
+        "height": 70,
+        "label_width": 808,
+        "x": 442,
+        "y": 415.1875,
+        "right": 1250,
+        "bottom": 485.1875,
+        "scroll_y": 444,
+        "within": true,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      }
+    }
+  ],
+  "recovery": [
+    {
+      "operation": "new",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "new",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "new",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    }
+  ],
+  "provider_calls": 1,
+  "source_unchanged": true,
+  "desktop_visual_review": [
+    {
+      "file": "storyforge-lifecycle-layout-final-planned-next-chapter.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "56d615563b0fc8f7566f83226e20f4edc6115721197f4e7b938a3416ea52da32",
+      "visually_reviewed": true,
+      "scope": "Viewport capture: handoff field is full width, readable, and unobstructed. Chapter body and goal remain byte-for-byte unchanged in DOM assertions."
+    },
+    {
+      "file": "storyforge-lifecycle-layout-final-planned-next-chapter-1280x900.png",
+      "width": 1280,
+      "height": 900,
+      "sha256": "54b4841b924ecd72d2abaae0c36e8425fd7ccf09ad8b7d4a637d96f372440323",
+      "visually_reviewed": true,
+      "scope": "Viewport capture: handoff field is full width, readable, and unobstructed. Chapter body and goal remain byte-for-byte unchanged in DOM assertions."
+    },
+    {
+      "file": "storyforge-lifecycle-layout-final-stale-review-author-explanation.png",
+      "width": 1440,
+      "height": 1000,
+      "sha256": "0c933f5bea6f8f2d0e462f567ab3fbbbc0d360340958ae8a922bc9053255656f",
+      "visually_reviewed": true,
+      "scope": "Viewport capture: stale report explanation is readable, stale repair buttons stay disabled, and current explanation is saved."
+    }
+  ],
+  "recorded_at": "2026-10-14T16:06:49.508Z",
+  "evidence_note": "Final 17-case lifecycle and desktop-layout verification after the frozen review decision callback and handoff styles. Initial failed capture is retained separately. The 1280 nearest-scroll bound overrun is recorded before a normal centered scroll; this does not require the long editor to fit in one viewport.",
+  "external_provider_calls": 0,
+  "fees": 0
+}

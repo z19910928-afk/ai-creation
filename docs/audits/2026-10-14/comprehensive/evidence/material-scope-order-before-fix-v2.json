@@ -1,0 +1,178 @@
+{
+  "passed": false,
+  "checks": 9,
+  "cases": [
+    {
+      "name": "test_current_foreshadow_title_can_generate_new_plan",
+      "passed": true
+    },
+    {
+      "name": "test_current_scope_after_early_deletion_can_generate_and_apply",
+      "passed": true
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_completed_candidate_apply",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 213, in test_deleted_early_chapter_blocks_completed_candidate_apply\n    self.assertEqual(status, 400, result)\nAssertionError: 200 != 400 : {'applied': True, 'idempotent': False, 'chapter': {'id': 'ch_83148648f5b347b480533c8700bc8607', 'title': '章序校验当前章', 'body': '林岚看向北窗，继续等待。\\n\\n雨水顺着窗框淌下，她松开抵着铜扣的手。', 'status': '草稿', 'updated': '2026-10-14T17:05:42+00:00', 'revision_id': 'rev_3848273e538b499292dc214b722ea070', 'body_hash': '0ece6435dd10cec58a2b79152e03d3489de060319915ec06727fe486d9948512', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '林岚', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}, 'state': {'full_state': True, 'version': 14, 'branch_id': 'main', 'head_revision': 'rev_3848273e538b499292dc214b722ea070', 'branch_status': 'active', 'project': {'id': 'default-project', 'title': '未命名长篇', 'genre': '', 'summary': '', 'goal': 50000, 'book_status': 'writing'}, 'chapters': [{'id': 'ch_62318530bbf34392bfe87c98900f35d6', 'title': '第一章 还没有开始的故事', 'body': '把故事写在这里。\\n\\n提示：先写一个你最想看到的场景，不必一次写好。', 'status': '草稿', 'updated': '2026-10-14T17:05:42+00:00', 'revision_id': 'rev_aa2551c0791049abbbbeacf68eba9f2e', 'body_hash': '427bbf6bab7c5606f46db6d2ac048c8b1ae630e35975f77e848cdfa55929b084', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}, {'id': 'ch_83148648f5b347b480533c8700bc8607', 'title': '章序校验当前章', 'body': '林岚看向北窗，继续等待。\\n\\n雨水顺着窗框淌下，她松开抵着铜扣的手。', 'status': '草稿', 'updated': '2026-10-14T17:05:42+00:00', 'revision_id': 'rev_3848273e538b499292dc214b722ea070', 'body_hash': '0ece6435dd10cec58a2b79152e03d3489de060319915ec06727fe486d9948512', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '林岚', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}], 'records': [{'id': 'ent_a5c357b4c84f49b08efbe8d3fe1bac60', 'type': '人物', 'name': '新人物', 'description': '记录人物的欲望、秘密和变化。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_dc25b2658ed74a30bafdf02f542bfe98', 'type': '地点', 'name': '新地点', 'description': '记录这里的气味、规则与冲突。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_f59a8d5e0f824bf893d44400c1630bb7', 'type': '人物', 'name': '林岚', 'description': '守在北窗的人。', 'aliases': ['岚'], 'project_id': 'default-project'}, {'id': 'ent_7aad85a7f320464e94af8b7fd7e13ad2', 'type': '设定', 'name': '当前章序可见设定', 'description': 'ACTIVE_CHAPTER_INDEX_SCOPE_CANARY', 'aliases': [], 'project_id': 'default-project', 'available_from': 3}], 'plot': {'setup': [], 'develop': [], 'payoff': []}, 'memory': []}}\n"
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_frozen_dispatch",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 198, in test_deleted_early_chapter_blocks_frozen_dispatch\n    self.assert_dispatch_blocked(job, \"deleted_early_chapter\",\n  File \"./tests/material_scope_order_http_fixtures.py\", line 168, in assert_dispatch_blocked\n    self.assertEqual(result[\"status\"], \"failed\", result)\nAssertionError: 'success' != 'failed'\n- success\n+ failed\n : {'id': 'aijob_29035f86e7354b60bf147126c2df9716', 'project_id': 'default-project', 'branch_id': 'main', 'ai_run_id': 'airun_e10fbcee8c5c45d2bfc5a02fbe6aeaf0', 'task': 'continue', 'chapter_id': 'ch_93469c5dcd284f2fb485432cef4e3c9f', 'response_format': 'text', 'max_tokens': 800, 'status': 'success', 'attempt': 1, 'retry_of': None, 'cancel_requested': False, 'error': None, 'created_at': '2026-10-14T17:05:43+00:00', 'started_at': '2026-10-14T17:05:43+00:00', 'finished_at': '2026-10-14T17:05:43+00:00', 'updated_at': '2026-10-14T17:05:43+00:00', 'result': {'mode': 'provider', 'model': 'guidance-alias-fixture', 'text': '雨水顺着窗框淌下，她松开抵着铜扣的手。', 'structured': None, 'response_format': 'text', 'truncated': False, 'finish_reason': 'stop', 'completion_state': 'complete', 'safe_to_apply': True, 'usage': {'prompt_tokens': 80, 'completion_tokens': 30, 'total_tokens': 110}, 'usage_state': 'reported', 'usage_accounting': {'state': 'reported', 'total_tokens': 110, 'reported_tokens_lower_bound': 110, 'source': 'provider_reported'}, 'returned_model': 'guidance-alias-fixture', 'provider_response_id': '', 'stream_transport': 'provider_json_fallback', 'provider_sse_complete': None, 'reasoning_observation': {'field_events': 0, 'nonempty_events': 0, 'invalid_events': 0, 'characters': 0, 'requested_disabled': False, 'unexpected_reasoning': False}, 'protocol_observation': {'events_observed': 1, 'events_recorded': 1, 'events_truncated': False, 'events': [{'type': 'object', 'fields': 3, 'keys': ['model', 'choices', 'usage'], 'choices': [{'type': 'object', 'fields': 2, 'finish_reason': 'stop', 'message': {'type': 'object', 'fields': {'content': {'type': 'string', 'chars': 19}}}}], 'usage': {'type': 'object', 'fields': 3}, 'event_sequence': 1}]}, 'request_audit': {'request_id': 'airun_e10fbcee8c5c45d2bfc5a02fbe6aeaf0', 'endpoint': 'http://127.0.0.1:63143/v1/chat/completions', 'method': 'POST', 'requested_model': 'guidance-alias-fixture', 'request_sha256': '1727973d054d0aabb519286580c6f6e47513dd0b644ce427d4a39de60b22a55e', 'messages_sha256': 'f6461e6a236de1142c67ba3e754b74b505e43444f7de032875e1893ae6400114', 'request_bytes': 5100, 'effective_parameters': {'temperature': 0, 'max_tokens': 800, 'stream': True, 'response_format': 'text'}, 'created_at': '2026-10-14T17:05:43.901142+00:00', 'dispatched': True, 'provider_request_id': '', 'response_bytes': 224}, 'requested_model': 'guidance-alias-fixture', 'billing_state': 'usage_reported', 'latency_ms': 2, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_93469c5dcd284f2fb485432cef4e3c9f', 'source_revision_id': 'rev_a489a103f29a4f49980b5ed74c95bee2', 'source_body_hash': '3e1ffaf0859bfcf0d47f81678975df5b712002b7eec62637710df8d7329cdb94', 'mode': 'append', 'range': {'start': 12, 'end': 12, 'quote': ''}}, 'output_validation': {'protocol_complete': True, 'characters': 19, 'contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'output_contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'issues': [], 'eligible': True, 'eligible_for_blind_review': True, 'hard_fact_status': 'requires_independent_review', 'scope': '字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。'}, 'author_decision': 'pending', 'restored_read_only': False, 'materials_read_only': False}, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_93469c5dcd284f2fb485432cef4e3c9f', 'source_revision_id': 'rev_a489a103f29a4f49980b5ed74c95bee2', 'source_body_hash': '3e1ffaf0859bfcf0d47f81678975df5b712002b7eec62637710df8d7329cdb94', 'mode': 'append', 'range': {'start': 12, 'end': 12, 'quote': ''}}, 'restored_read_only': False, 'materials_read_only': False, 'author_decision': 'pending'}\n"
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_original_retries",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 223, in test_deleted_early_chapter_blocks_original_retries\n    self.assert_original_retries_blocked(job, \"deleted_early_chapter_original_retry\")\n  File \"./tests/material_scope_order_http_fixtures.py\", line 185, in assert_original_retries_blocked\n    self.assertEqual([item[\"status\"] for item in outcomes], [409, 409], result)\nAssertionError: Lists differ: [202, 200] != [409, 409]\n\nFirst differing element 0:\n202\n409\n\n- [202, 200]\n+ [409, 409] : {'mode': 'provider', 'model': 'guidance-alias-fixture', 'text': '雨水顺着窗框淌下，她松开抵着铜扣的手。', 'structured': None, 'response_format': 'text', 'truncated': False, 'finish_reason': 'stop', 'completion_state': 'complete', 'safe_to_apply': True, 'usage': {'prompt_tokens': 80, 'completion_tokens': 30, 'total_tokens': 110}, 'usage_state': 'reported', 'usage_accounting': {'state': 'reported', 'total_tokens': 110, 'reported_tokens_lower_bound': 110, 'source': 'provider_reported'}, 'returned_model': 'guidance-alias-fixture', 'provider_response_id': '', 'stream_transport': 'provider_json_fallback', 'provider_sse_complete': None, 'reasoning_observation': {'field_events': 0, 'nonempty_events': 0, 'invalid_events': 0, 'characters': 0, 'requested_disabled': False, 'unexpected_reasoning': False}, 'protocol_observation': {'events_observed': 1, 'events_recorded': 1, 'events_truncated': False, 'events': [{'type': 'object', 'fields': 3, 'keys': ['model', 'choices', 'usage'], 'choices': [{'type': 'object', 'fields': 2, 'finish_reason': 'stop', 'message': {'type': 'object', 'fields': {'content': {'type': 'string', 'chars': 19}}}}], 'usage': {'type': 'object', 'fields': 3}, 'event_sequence': 1}]}, 'request_audit': {'request_id': 'airun_ef909104b0934dc9ac4c6211f4303014', 'endpoint': 'http://127.0.0.1:63172/v1/chat/completions', 'method': 'POST', 'requested_model': 'guidance-alias-fixture', 'request_sha256': '18cd5a272ef8e85a0c9169a500b0c5b205e32cb35004d39466374758290e9a04', 'messages_sha256': 'e7b9d154f7d4977d4001e14d205a3a39bb8ee1e6c1345ff0aeba29336ec87d95', 'request_bytes': 5100, 'effective_parameters': {'temperature': 0, 'max_tokens': 800, 'stream': True, 'response_format': 'text'}, 'created_at': '2026-10-14T17:05:45.045161+00:00', 'dispatched': True, 'provider_request_id': '', 'response_bytes': 224}, 'requested_model': 'guidance-alias-fixture', 'billing_state': 'usage_reported', 'latency_ms': 2, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_9258889a90924a97a608978fd2e49b0c', 'source_revision_id': 'rev_ac926bb1436b477b9bd86a1f97e83347', 'source_body_hash': '3e1ffaf0859bfcf0d47f81678975df5b712002b7eec62637710df8d7329cdb94', 'mode': 'append', 'range': {'start': 12, 'end': 12, 'quote': ''}}, 'output_validation': {'protocol_complete': True, 'characters': 19, 'contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'output_contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'issues': [], 'eligible': True, 'eligible_for_blind_review': True, 'hard_fact_status': 'requires_independent_review', 'scope': '字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。'}, 'author_decision': 'pending', 'restored_read_only': False, 'materials_read_only': False, 'task': 'continue', 'ai_run_id': 'airun_ef909104b0934dc9ac4c6211f4303014', 'retry_of': 'airun_80b799ad88534dc590c242abdd8eb9de', 'stream': {'chunk_count': 1, 'last_seq': 1, 'replayable': True}}\n"
+    },
+    {
+      "name": "test_foreshadow_plan_title_change_blocks_frozen_dispatch",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 235, in test_foreshadow_plan_title_change_blocks_frozen_dispatch\n    self.assert_dispatch_blocked(job, \"consumed_foreshadow_plan_title\",\n  File \"./tests/material_scope_order_http_fixtures.py\", line 168, in assert_dispatch_blocked\n    self.assertEqual(result[\"status\"], \"failed\", result)\nAssertionError: 'success' != 'failed'\n- success\n+ failed\n : {'id': 'aijob_ad0092593144474aa4c50dadf3acb5f4', 'project_id': 'default-project', 'branch_id': 'main', 'ai_run_id': 'airun_7e20c57406a2487abaeb7088e9824627', 'task': 'outline', 'chapter_id': 'ch_1d379dd0775640759a7a6587f254a1b5', 'response_format': 'json', 'max_tokens': 800, 'status': 'success', 'attempt': 1, 'retry_of': None, 'cancel_requested': False, 'error': None, 'created_at': '2026-10-14T17:05:46+00:00', 'started_at': '2026-10-14T17:05:46+00:00', 'finished_at': '2026-10-14T17:05:46+00:00', 'updated_at': '2026-10-14T17:05:46+00:00', 'result': {'mode': 'provider', 'model': 'guidance-alias-fixture', 'text': '{\"goal\": \"核对当前规划来源\", \"conflict\": \"合成规划中的等待\", \"turn\": \"重新确认章节位置\", \"scenes\": [\"北窗等候\"], \"foreshadowing\": []}', 'structured': {'goal': '核对当前规划来源', 'conflict': '合成规划中的等待', 'turn': '重新确认章节位置', 'scenes': ['北窗等候'], 'foreshadowing': []}, 'response_format': 'json', 'truncated': False, 'finish_reason': 'stop', 'completion_state': 'complete', 'safe_to_apply': True, 'usage': {'prompt_tokens': 80, 'completion_tokens': 30, 'total_tokens': 110}, 'usage_state': 'reported', 'usage_accounting': {'state': 'reported', 'total_tokens': 110, 'reported_tokens_lower_bound': 110, 'source': 'provider_reported'}, 'returned_model': 'guidance-alias-fixture', 'provider_response_id': '', 'stream_transport': 'provider_json_fallback', 'provider_sse_complete': None, 'reasoning_observation': {'field_events': 0, 'nonempty_events': 0, 'invalid_events': 0, 'characters': 0, 'requested_disabled': False, 'unexpected_reasoning': False}, 'protocol_observation': {'events_observed': 1, 'events_recorded': 1, 'events_truncated': False, 'events': [{'type': 'object', 'fields': 3, 'keys': ['model', 'choices', 'usage'], 'choices': [{'type': 'object', 'fields': 2, 'finish_reason': 'stop', 'message': {'type': 'object', 'fields': {'content': {'type': 'string', 'chars': 105}}}}], 'usage': {'type': 'object', 'fields': 3}, 'event_sequence': 1}]}, 'request_audit': {'request_id': 'airun_7e20c57406a2487abaeb7088e9824627', 'endpoint': 'http://127.0.0.1:63199/v1/chat/completions', 'method': 'POST', 'requested_model': 'guidance-alias-fixture', 'request_sha256': 'eaa8a47a10fb640aafe5b6e6e3671c961b8e11e109ec2634d2b4787fdee324c3', 'messages_sha256': '80614f3ae6dfdc3f6956373c6f5594c51bf69d83dc6f58e5ccdb795519ad2b10', 'request_bytes': 6978, 'effective_parameters': {'temperature': 0, 'max_tokens': 800, 'stream': True, 'response_format': 'json'}, 'created_at': '2026-10-14T17:05:46.182764+00:00', 'dispatched': True, 'provider_request_id': '', 'response_bytes': 346}, 'requested_model': 'guidance-alias-fixture', 'billing_state': 'usage_reported', 'latency_ms': 2, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_1d379dd0775640759a7a6587f254a1b5', 'source_revision_id': 'rev_239e491ab7634791a66463aded0aa050', 'source_body_hash': '7ffdcead2c0127cb6a2f02b61787d396716dac29d9e7d15cdae7b44a02a79744', 'mode': 'structure', 'range': {'start': 0, 'end': 12, 'quote': '林岚握着铜扣，继续等候。'}}, 'author_decision': 'pending', 'restored_read_only': False, 'materials_read_only': False}, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_1d379dd0775640759a7a6587f254a1b5', 'source_revision_id': 'rev_239e491ab7634791a66463aded0aa050', 'source_body_hash': '7ffdcead2c0127cb6a2f02b61787d396716dac29d9e7d15cdae7b44a02a79744', 'mode': 'structure', 'range': {'start': 0, 'end': 12, 'quote': '林岚握着铜扣，继续等候。'}}, 'restored_read_only': False, 'materials_read_only': False, 'author_decision': 'pending'}\n"
+    },
+    {
+      "name": "test_foreshadow_plan_title_change_blocks_original_retries",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 243, in test_foreshadow_plan_title_change_blocks_original_retries\n    self.assert_original_retries_blocked(job, \"foreshadow_plan_title_original_retry\")\n  File \"./tests/material_scope_order_http_fixtures.py\", line 185, in assert_original_retries_blocked\n    self.assertEqual([item[\"status\"] for item in outcomes], [409, 409], result)\nAssertionError: Lists differ: [202, 200] != [409, 409]\n\nFirst differing element 0:\n202\n409\n\n- [202, 200]\n+ [409, 409] : {'mode': 'provider', 'model': 'guidance-alias-fixture', 'text': '{\"goal\": \"核对当前规划来源\", \"conflict\": \"合成规划中的等待\", \"turn\": \"重新确认章节位置\", \"scenes\": [\"北窗等候\"], \"foreshadowing\": []}', 'structured': {'goal': '核对当前规划来源', 'conflict': '合成规划中的等待', 'turn': '重新确认章节位置', 'scenes': ['北窗等候'], 'foreshadowing': []}, 'response_format': 'json', 'truncated': False, 'finish_reason': 'stop', 'completion_state': 'complete', 'safe_to_apply': True, 'usage': {'prompt_tokens': 80, 'completion_tokens': 30, 'total_tokens': 110}, 'usage_state': 'reported', 'usage_accounting': {'state': 'reported', 'total_tokens': 110, 'reported_tokens_lower_bound': 110, 'source': 'provider_reported'}, 'returned_model': 'guidance-alias-fixture', 'provider_response_id': '', 'stream_transport': 'provider_json_fallback', 'provider_sse_complete': None, 'reasoning_observation': {'field_events': 0, 'nonempty_events': 0, 'invalid_events': 0, 'characters': 0, 'requested_disabled': False, 'unexpected_reasoning': False}, 'protocol_observation': {'events_observed': 1, 'events_recorded': 1, 'events_truncated': False, 'events': [{'type': 'object', 'fields': 3, 'keys': ['model', 'choices', 'usage'], 'choices': [{'type': 'object', 'fields': 2, 'finish_reason': 'stop', 'message': {'type': 'object', 'fields': {'content': {'type': 'string', 'chars': 105}}}}], 'usage': {'type': 'object', 'fields': 3}, 'event_sequence': 1}]}, 'request_audit': {'request_id': 'airun_d45b15f125844778800d37339e7498e3', 'endpoint': 'http://127.0.0.1:63223/v1/chat/completions', 'method': 'POST', 'requested_model': 'guidance-alias-fixture', 'request_sha256': '4588c73512730e37cb64037f47bd0a1a558a45a5fa96307786926fdcf0ae6d3b', 'messages_sha256': '8fce61d78175e22cc191073e9be83522a9d4e7748a1cad34488580769807469c', 'request_bytes': 6978, 'effective_parameters': {'temperature': 0, 'max_tokens': 800, 'stream': True, 'response_format': 'json'}, 'created_at': '2026-10-14T17:05:47.336349+00:00', 'dispatched': True, 'provider_request_id': '', 'response_bytes': 346}, 'requested_model': 'guidance-alias-fixture', 'billing_state': 'usage_reported', 'latency_ms': 2, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_87b2ae7f277045b8b8465f0c74d357d5', 'source_revision_id': 'rev_465b4a8a84674185a6385c2c1df68f77', 'source_body_hash': '7ffdcead2c0127cb6a2f02b61787d396716dac29d9e7d15cdae7b44a02a79744', 'mode': 'structure', 'range': {'start': 0, 'end': 12, 'quote': '林岚握着铜扣，继续等候。'}}, 'author_decision': 'pending', 'restored_read_only': False, 'materials_read_only': False, 'task': 'outline', 'ai_run_id': 'airun_d45b15f125844778800d37339e7498e3', 'retry_of': 'airun_4ece95fbcb2c4132af722a21cc4dac7d', 'stream': {'chunk_count': 1, 'last_seq': 1, 'replayable': True}}\n"
+    },
+    {
+      "name": "test_omitted_foreshadow_title_does_not_expire_planning_task",
+      "passed": true
+    },
+    {
+      "name": "test_unconsumed_early_chapter_title_does_not_expire_task",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:05:40.889837+00:00",
+  "finished_at": "2026-10-14T17:05:49.554864+00:00",
+  "observations": [
+    {
+      "test": "test_current_foreshadow_title_can_generate_new_plan",
+      "scenario": "current_foreshadow_title_control",
+      "dispatch_status": "success",
+      "current_title_sent": true,
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_current_scope_after_early_deletion_can_generate_and_apply",
+      "scenario": "current_chapter_order_control",
+      "dispatch_status": "success",
+      "apply_http_status": 200,
+      "body_changed": true,
+      "future_card_absent": true
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_completed_candidate_apply",
+      "scenario": "deleted_early_chapter_old_apply",
+      "http_status": 200,
+      "applied": true,
+      "ledger_unchanged": false,
+      "body_unchanged": false,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_frozen_dispatch",
+      "scenario": "deleted_early_chapter",
+      "dispatch_status": "success",
+      "billing_state": "usage_reported",
+      "extra_provider_calls": 1,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "request_hash_preserved": true,
+      "material_read_only": false,
+      "original_chapter_number": 3,
+      "current_chapter_number": 2
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_original_retries",
+      "scenario": "deleted_early_chapter_original_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 202
+        },
+        {
+          "entry": "runs",
+          "status": 200
+        }
+      ],
+      "ledger_unchanged": false,
+      "body_unchanged": true,
+      "extra_provider_calls": 1
+    },
+    {
+      "test": "test_foreshadow_plan_title_change_blocks_frozen_dispatch",
+      "scenario": "consumed_foreshadow_plan_title",
+      "dispatch_status": "success",
+      "billing_state": "usage_reported",
+      "extra_provider_calls": 1,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "request_hash_preserved": true,
+      "material_read_only": false,
+      "original_title": "第一章 还没有开始的故事",
+      "current_title": "伏笔来源章节的当前新标题"
+    },
+    {
+      "test": "test_foreshadow_plan_title_change_blocks_original_retries",
+      "scenario": "foreshadow_plan_title_original_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 202
+        },
+        {
+          "entry": "runs",
+          "status": 200
+        }
+      ],
+      "ledger_unchanged": false,
+      "body_unchanged": true,
+      "extra_provider_calls": 1
+    },
+    {
+      "test": "test_omitted_foreshadow_title_does_not_expire_planning_task",
+      "scenario": "omitted_foreshadow_title",
+      "dispatch_status": "success",
+      "free_provider_calls": 1,
+      "omitted_plan_absent": true
+    },
+    {
+      "test": "test_unconsumed_early_chapter_title_does_not_expire_task",
+      "scenario": "unconsumed_early_chapter_title",
+      "dispatch_status": "success",
+      "free_provider_calls": 1,
+      "source_title_absent": true
+    }
+  ],
+  "free_provider_calls": 9,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_materials.py": "c07fa47abc25b81e984f5701043362ed9833ca910c8ea251fd63d5828a75fb1c",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "6a4ce2b6fc872f6464c7ff9fb37a6c807504f7aa76d903e0f0a0fc989d8ae608",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "54949eef8ef3617fec3470cfff895159b690452e837d2a48092e42ea03fea79a",
+    "tests/material_scope_order_http_fixtures.py": "1e0ffdca4cb1acaad93c5420b6a35177abe7c8a3e638f590fc1e3d26a150b55a"
+  },
+  "source_files_sha256_after": {
+    "moyu_materials.py": "c07fa47abc25b81e984f5701043362ed9833ca910c8ea251fd63d5828a75fb1c",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "6a4ce2b6fc872f6464c7ff9fb37a6c807504f7aa76d903e0f0a0fc989d8ae608",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "54949eef8ef3617fec3470cfff895159b690452e837d2a48092e42ea03fea79a",
+    "tests/material_scope_order_http_fixtures.py": "1e0ffdca4cb1acaad93c5420b6a35177abe7c8a3e638f590fc1e3d26a150b55a"
+  },
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; real loopback HTTP; free local provider; no real manuscript or credential",
+  "claim_limit": "chapter-scope and source-title integrity only; no literary-quality or competitiveness claim"
+}

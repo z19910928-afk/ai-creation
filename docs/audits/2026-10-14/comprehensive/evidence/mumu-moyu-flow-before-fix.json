@@ -1,0 +1,99 @@
+{
+  "checked_at_utc": "2026-10-14T14:45:50.218Z",
+  "source": "author-workspace.js actions.finishChapter original function, isolated VM with storage/network stand-ins",
+  "scope": "component-only; no HTTP, browser, real database, AI, or billed request",
+  "network_requests": 0,
+  "real_ai_requests": 0,
+  "results": [
+    {
+      "scenario": "four_planned_chapters_first_finished",
+      "original_chapter_count": 4,
+      "resulting_chapter_count": 5,
+      "active_after": "unexpected_new_chapter",
+      "expected_existing_next": "planned_2",
+      "created_chapter": {
+        "id": "unexpected_new_chapter",
+        "title": "第 5 章",
+        "body": "",
+        "status": "草稿",
+        "updated": 1791989150217,
+        "chapter_goal": "前往钟楼，追问失踪者下落",
+        "next_brief": "",
+        "scene_plan": "",
+        "pov": "林岚",
+        "recap": "",
+        "hook": "",
+        "foreshadowing_op": ""
+      },
+      "previous_planned_next_preserved": true,
+      "commits": [
+        "prewrite",
+        "precommit",
+        "postcommit"
+      ],
+      "toasts": [
+        "本章已归档，下一章已接到交接任务"
+      ]
+    },
+    {
+      "scenario": "four_planned_chapters_second_finished",
+      "original_chapter_count": 4,
+      "resulting_chapter_count": 5,
+      "active_after": "unexpected_new_chapter",
+      "expected_existing_next": "planned_3",
+      "created_chapter": {
+        "id": "unexpected_new_chapter",
+        "title": "第 5 章",
+        "body": "",
+        "status": "草稿",
+        "updated": 1791989150217,
+        "chapter_goal": "前往钟楼，追问失踪者下落",
+        "next_brief": "",
+        "scene_plan": "",
+        "pov": "林岚",
+        "recap": "",
+        "hook": "",
+        "foreshadowing_op": ""
+      },
+      "previous_planned_next_preserved": true,
+      "commits": [
+        "prewrite",
+        "precommit",
+        "postcommit"
+      ],
+      "toasts": [
+        "本章已归档，下一章已接到交接任务"
+      ]
+    },
+    {
+      "scenario": "last_planned_chapter_finished",
+      "original_chapter_count": 4,
+      "resulting_chapter_count": 5,
+      "active_after": "unexpected_new_chapter",
+      "expected_existing_next": null,
+      "created_chapter": {
+        "id": "unexpected_new_chapter",
+        "title": "第 5 章",
+        "body": "",
+        "status": "草稿",
+        "updated": 1791989150218,
+        "chapter_goal": "前往钟楼，追问失踪者下落",
+        "next_brief": "",
+        "scene_plan": "",
+        "pov": "林岚",
+        "recap": "",
+        "hook": "",
+        "foreshadowing_op": ""
+      },
+      "previous_planned_next_preserved": null,
+      "commits": [
+        "prewrite",
+        "precommit",
+        "postcommit"
+      ],
+      "toasts": [
+        "本章已归档，下一章已接到交接任务"
+      ]
+    }
+  ]
+}

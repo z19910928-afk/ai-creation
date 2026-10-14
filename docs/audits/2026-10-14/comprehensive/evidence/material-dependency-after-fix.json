@@ -1,0 +1,439 @@
+{
+  "passed": true,
+  "checks": 29,
+  "cases": [
+    {
+      "name": "test_analysis_own_confirmations_remain_current_and_idempotent",
+      "passed": true
+    },
+    {
+      "name": "test_canceled_job_and_run_original_retries_rejected",
+      "passed": true
+    },
+    {
+      "name": "test_character_state_scope_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_character_state_value_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_completed_candidate_apply_rejected_after_material_change",
+      "passed": true
+    },
+    {
+      "name": "test_completed_candidate_revision_rejected_without_child_task",
+      "passed": true
+    },
+    {
+      "name": "test_current_materials_can_generate_and_apply",
+      "passed": true
+    },
+    {
+      "name": "test_delayed_chapter_analysis_save_rejected_atomically",
+      "passed": true
+    },
+    {
+      "name": "test_delayed_context_creation_rejected_without_ledger_changes",
+      "passed": true
+    },
+    {
+      "name": "test_delayed_semantic_review_save_rejected_atomically",
+      "passed": true
+    },
+    {
+      "name": "test_equivalent_json_order_is_not_a_material_change",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_marker_missing_blocks_completed_apply_but_allows_read",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_marker_missing_blocks_dispatch_but_allows_read",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_marker_missing_blocks_job_and_run_original_retries",
+      "passed": true
+    },
+    {
+      "name": "test_material_change_blocks_saved_analysis_confirmation_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_material_change_expires_explained_review_gate",
+      "passed": true
+    },
+    {
+      "name": "test_memory_retraction_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_memory_same_id_note_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_missing_and_empty_scope_are_equivalent",
+      "passed": true
+    },
+    {
+      "name": "test_omitted_card_change_does_not_expire_consumed_materials",
+      "passed": true
+    },
+    {
+      "name": "test_other_book_material_change_does_not_expire_this_task",
+      "passed": true
+    },
+    {
+      "name": "test_plot_thread_payload_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_previous_chapter_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_private_material_marker_does_not_enter_prompt_or_provider_request",
+      "passed": true
+    },
+    {
+      "name": "test_record_description_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_relationship_evidence_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_relationship_note_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_timeline_evidence_change_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_timeline_summary_change_blocks_old_dispatch",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:14:26.889524+00:00",
+  "finished_at": "2026-10-14T17:14:55.651349+00:00",
+  "observations": [
+    {
+      "test": "test_analysis_own_confirmations_remain_current_and_idempotent",
+      "scenario": "analysis_confirmation_control",
+      "outcomes": [
+        200,
+        200,
+        200,
+        200
+      ],
+      "analysis_status": "reviewed",
+      "summary_saved": true,
+      "handoff_saved": true
+    },
+    {
+      "test": "test_canceled_job_and_run_original_retries_rejected",
+      "scenario": "stale_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "http_status": 409
+        },
+        {
+          "entry": "runs",
+          "http_status": 409
+        }
+      ],
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_character_state_scope_change_blocks_old_dispatch",
+      "scenario": "character_state_scope",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_character_state_value_change_blocks_old_dispatch",
+      "scenario": "character_state_value",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_completed_candidate_apply_rejected_after_material_change",
+      "scenario": "stale_apply",
+      "http_status": 400,
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_completed_candidate_revision_rejected_without_child_task",
+      "scenario": "stale_revise",
+      "http_status": 400,
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_current_materials_can_generate_and_apply",
+      "scenario": "current_generation_control",
+      "dispatch_status": "success",
+      "apply_http_status": 200,
+      "body_changed": true,
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_delayed_chapter_analysis_save_rejected_atomically",
+      "scenario": "late_analysis_save",
+      "rejected": true,
+      "analysis_count_unchanged": true,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_delayed_context_creation_rejected_without_ledger_changes",
+      "scenario": "late_creation",
+      "http_status": 400,
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_delayed_semantic_review_save_rejected_atomically",
+      "scenario": "late_semantic_save",
+      "rejected": true,
+      "review_count_unchanged": true,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_equivalent_json_order_is_not_a_material_change",
+      "scenario": "equivalent_json",
+      "dispatch_status": "success",
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_legacy_marker_missing_blocks_completed_apply_but_allows_read",
+      "scenario": "legacy_apply_read",
+      "http_status": 400,
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "result_readable": true
+    },
+    {
+      "test": "test_legacy_marker_missing_blocks_dispatch_but_allows_read",
+      "scenario": "legacy_dispatch_read",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": false
+    },
+    {
+      "test": "test_legacy_marker_missing_blocks_job_and_run_original_retries",
+      "scenario": "legacy_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "http_status": 409
+        },
+        {
+          "entry": "runs",
+          "http_status": 409
+        }
+      ],
+      "ledger_unchanged": true,
+      "body_unchanged": true,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_material_change_blocks_saved_analysis_confirmation_without_writes",
+      "scenario": "stale_analysis_confirm",
+      "http_status": 409,
+      "analysis_status": "stale",
+      "state_unchanged": true,
+      "ledger_unchanged": true,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_material_change_expires_explained_review_gate",
+      "scenario": "explained_semantic_stale",
+      "stale": true,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "explanation_preserved": true
+    },
+    {
+      "test": "test_memory_retraction_blocks_old_dispatch",
+      "scenario": "memory_retracted",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_memory_same_id_note_change_blocks_old_dispatch",
+      "scenario": "memory_note",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_missing_and_empty_scope_are_equivalent",
+      "scenario": "empty_scope_control",
+      "dispatch_status": "success",
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_omitted_card_change_does_not_expire_consumed_materials",
+      "scenario": "omitted_control",
+      "dispatch_status": "success",
+      "free_provider_calls": 1,
+      "provider_excludes_card": true
+    },
+    {
+      "test": "test_other_book_material_change_does_not_expire_this_task",
+      "scenario": "other_book_control",
+      "dispatch_status": "success",
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_plot_thread_payload_change_blocks_old_dispatch",
+      "scenario": "plot_thread",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_previous_chapter_change_blocks_old_dispatch",
+      "scenario": "previous_chapter",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_private_material_marker_does_not_enter_prompt_or_provider_request",
+      "scenario": "private_marker",
+      "marker_present": true,
+      "dispatch_status": "success",
+      "internal_marker_absent": true,
+      "private_hashes_absent": true
+    },
+    {
+      "test": "test_record_description_change_blocks_old_dispatch",
+      "scenario": "record_description",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_relationship_evidence_change_blocks_old_dispatch",
+      "scenario": "relationship_evidence",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_relationship_note_change_blocks_old_dispatch",
+      "scenario": "relationship_note",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_timeline_evidence_change_blocks_old_dispatch",
+      "scenario": "timeline_evidence",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_timeline_summary_change_blocks_old_dispatch",
+      "scenario": "timeline_summary",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    }
+  ],
+  "free_provider_calls": 9,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_materials.py": "01b1cff8817692032cd18f7629849af887d7fb1371f05f609708a4f9ef6785b9",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1"
+  },
+  "source_files_sha256_after": {
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_materials.py": "01b1cff8817692032cd18f7629849af887d7fb1371f05f609708a4f9ef6785b9",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1"
+  },
+  "source_unchanged": true,
+  "material_source_integrated_at_start": true,
+  "material_module_runtime_role": "integrated",
+  "scope": "temporary synthetic SQLite; real loopback HTTP; free local provider; no real manuscript or credential",
+  "claim_limit": "material dependency integrity only; no literary-quality or first-tier competitiveness claim"
+}

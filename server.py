@@ -45,6 +45,8 @@ import moyu_backups as complete_backups
 import moyu_output
 import moyu_planning as planning
 import moyu_revision
+import moyu_records as records_store
+import moyu_materials
 
 
 ROOT = Path(__file__).resolve().parent
@@ -931,19 +933,46 @@ def _legacy_ai_context(conn: sqlite3.Connection, chapter_id: str | None, materia
 
 def ai_context(conn, chapter_id, material_controls=None, retrieval_profile=None, *,
                instruction="", task="continue", selection=None):
+    if not conn.in_transaction:
+        conn.execute("BEGIN IMMEDIATE")
     state = state_from_db(conn)
     if chapter_id is None and state["chapters"]:
         chapter_id = state["chapters"][-1]["id"]
+    blueprint = workspace.blueprint_row(conn, project_id(), branch_id())
+    guidance = context_pipeline.author_guidance(state, chapter_id, blueprint,
+        project_id=project_id(), branch_id=branch_id())
+    structure = story_map(conn)
     context, chapter = context_pipeline.assemble_context(
-        state, chapter_id, structure=story_map(conn), instruction=instruction,
+        state, chapter_id, structure=structure, instruction=instruction,
         profile=retrieval_profile, controls=material_controls, project_id=project_id(),
         branch_id=branch_id(), task=task, selection=selection,
+        guidance=guidance,
     )
     if task in {"outline", "scene", "brainstorm"}:
-        context["blueprint"] = workspace.blueprint_row(conn, project_id(), branch_id())["blueprint"]
+        context["blueprint"] = blueprint["blueprint"]
+        context["blueprint_use"] = "author_plan_not_occurred_not_character_knowledge"
         context = context_pipeline.fit_budget(context, context_pipeline.normalize_profile(retrieval_profile)["max_tokens"],
-                                               reserve_bytes=1800 + len(instruction.encode("utf-8")))
+                                             reserve_bytes=1800 + len(instruction.encode("utf-8")))
+    # This dependency stays in the frozen job, outside the sent manuscript.
+    context["_guidance_source"] = workspace.guidance_source(conn, project_id(), branch_id(), chapter_id)
+    context["_material_source"] = moyu_materials.capture(
+        conn, project_id(), branch_id(), context, state=state, structure=structure)
     return context, chapter
+
+
+def validate_material_source(conn, context):
+    if context.get("planning_workflow") and "_material_source" not in context:
+        return
+    moyu_materials.validate(conn, project_id(), branch_id(), context.get("_material_source"))
+
+
+def validate_guidance_source(conn, context):
+    source = context.get("_guidance_source")
+    if source is None:
+        return
+    if not isinstance(source, dict) or source != workspace.guidance_source(
+            conn, project_id(), branch_id(), source.get("chapter_id")):
+        raise ValueError("创作蓝图或本章计划已变化，请按当前指南生成新候选；原候选仍保留供阅读")
 
 
 def offline_ai(task: str, context: dict[str, Any], instruction: str) -> str:
@@ -1230,6 +1259,14 @@ def ai_job_public(row: sqlite3.Row | dict[str, Any], include_result: bool = True
             consent = _json_object(saved["consent_json"], {})
             latest_decision = consent.get("latest_decision")
             item["restored_read_only"] |= bool(consent.get("restored_read_only"))
+    item["materials_read_only"] = False
+    if conn is not None and not item["restored_read_only"]:
+        try:
+            validate_material_source(conn, context)
+            validate_guidance_source(conn, context)
+        except ValueError as exc:
+            item["materials_read_only"] = True
+            item["material_issue"] = str(exc)
     public_decision = "edited" if decision == "partial" else decision
     item["author_decision"] = public_decision
     if latest_decision:
@@ -1242,6 +1279,9 @@ def ai_job_public(row: sqlite3.Row | dict[str, Any], include_result: bool = True
             }
         item["result"]["author_decision"] = public_decision
         item["result"]["restored_read_only"] = item["restored_read_only"]
+        item["result"]["materials_read_only"] = item["materials_read_only"]
+        if item.get("material_issue"):
+            item["result"]["material_issue"] = item["material_issue"]
         if item.get("candidate_revision"):
             item["result"]["candidate_revision"] = item["candidate_revision"]
         if latest_decision:
@@ -1272,6 +1312,8 @@ def create_ai_job(
     validate_review_candidate_source(conn, task, context)
     validate_planning_job_source(conn, context, creating=True)
     validate_candidate_revision_source(conn, task, context)
+    validate_guidance_source(conn, context)
+    validate_material_source(conn, context)
     context = dict(context)
     if "_output_contract" not in context:
         context["_output_contract"] = prose_output_contract(task, context, instruction)
@@ -1466,6 +1508,8 @@ def retry_ai_job(conn: sqlite3.Connection, job_id: str,
     try:
         validate_review_candidate_source(conn, row["task"], context)
         validate_candidate_revision_source(conn, row["task"], context)
+        validate_guidance_source(conn, context)
+        validate_material_source(conn, context)
     except ValueError as exc:
         raise RuntimeError(str(exc)) from None
     audit = consent.get("request_audit") or {}
@@ -1542,6 +1586,8 @@ def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, 
         error_text = "候选未完整生成，保留已有片段供查看，不能直接采纳。"
     else:
         status, run_status, error_text = "success", "success", None
+        validate_material_source(conn, context)
+        validate_guidance_source(conn, context)
         if job["task"] in {"chapter_analysis", "semantic_review"} and result.get("mode") == "provider":
             persist_structured_result(conn, job, result)
     if error_text:
@@ -1630,6 +1676,8 @@ def _process_ai_job_claimed(job_id: str) -> dict[str, Any]:
             validate_review_candidate_source(conn, row["task"], json.loads(row["context_json"] or "{}"))
             validate_planning_job_source(conn, json.loads(row["context_json"] or "{}"))
             validate_candidate_revision_source(conn, row["task"], json.loads(row["context_json"] or "{}"))
+            validate_guidance_source(conn, json.loads(row["context_json"] or "{}"))
+            validate_material_source(conn, json.loads(row["context_json"] or "{}"))
             if consent.get("retry_of"):
                 config = retry_provider_config(conn, snapshot)
             else:
@@ -1766,6 +1814,7 @@ def record_ai_decision(conn: sqlite3.Connection, run_id: str, decision: str, rea
 
 
 def review_fingerprint(conn: sqlite3.Connection, chapter_id: str) -> str:
+    import moyu_analysis
     chapter = conn.execute(
         "SELECT ordinal FROM document_node WHERE id=? AND project_id=? AND branch_id=?",
         (chapter_id, project_id(), branch_id()),
@@ -1785,8 +1834,9 @@ def review_fingerprint(conn: sqlite3.Connection, chapter_id: str) -> str:
         (project_id(), branch_id(), chapter["ordinal"]),
     )]
     records = [dict(row) for row in conn.execute(
-        "SELECT e.id,e.kind,e.canonical_name,e.aliases_json,m.description FROM entity e "
-        "LEFT JOIN app_entity_meta m ON m.entity_id=e.id WHERE e.project_id=? AND e.status='active' ORDER BY e.id",
+        "SELECT e.id,e.kind,e.canonical_name,e.aliases_json,m.description,s.scope_json FROM entity e "
+        "LEFT JOIN app_entity_meta m ON m.entity_id=e.id LEFT JOIN app_entity_scope s ON s.entity_id=e.id "
+        "WHERE e.project_id=? AND e.status='active' ORDER BY e.id",
         (project_id(),),
     )]
     facts = [dict(row) for row in conn.execute(
@@ -1796,8 +1846,13 @@ def review_fingerprint(conn: sqlite3.Connection, chapter_id: str) -> str:
         (project_id(), branch_id()),
     )]
     project = dict(conn.execute("SELECT summary,genre,goal FROM app_project_meta WHERE project_id=?", (project_id(),)).fetchone())
+    semantic = moyu_analysis.review_publication_gate(
+        conn, {"project_id": project_id(), "branch_id": branch_id()}, chapter_id,
+    )
     return hash_text(json.dumps({"project": project, "chapters": chapters, "records": records,
-                                "facts": facts, "structure": story_map(conn)},
+                                "facts": facts, "structure": story_map(conn),
+                                "blueprint": workspace.blueprint_dependency(conn, project_id(), branch_id()),
+                                "semantic_reviews": semantic["dependencies"]},
                                ensure_ascii=False, sort_keys=True, separators=(",", ":")))
 
 
@@ -1834,14 +1889,15 @@ def invalidate_chapter_dependencies(conn: sqlite3.Connection, chapter_id: str,
                 transition_memory_assertions(conn, memory["id"], "stale", "source changed; author review required")
         assertions = conn.execute(
             "SELECT id,state,evidence_json FROM assertion WHERE project_id=? AND branch_id=? "
-            "AND EXISTS(SELECT 1 FROM json_each(evidence_json) e WHERE json_extract(e.value,'$.source_span_id')=?)",
+            "AND EXISTS(SELECT 1 FROM json_each(evidence_json) e "
+            "WHERE CASE WHEN e.type='object' THEN json_extract(e.value,'$.source_span_id') END=?)",
             (project_id(), branch_id(), span["id"]),
         ).fetchall()
         for assertion in assertions:
             evidence = _json_object(assertion["evidence_json"], [])
             if new_span:
                 for item in evidence:
-                    if item.get("source_span_id") == span["id"]:
+                    if isinstance(item, dict) and item.get("source_span_id") == span["id"]:
                         item["source_span_id"] = new_span
                 conn.execute("UPDATE assertion SET evidence_json=? WHERE id=?",
                              (json_text(evidence), assertion["id"]))
@@ -1865,6 +1921,7 @@ def invalidate_chapter_dependencies(conn: sqlite3.Connection, chapter_id: str,
 
 
 def review_chapter(conn: sqlite3.Connection, chapter_id: str, persist: bool = True) -> dict[str, Any]:
+    import moyu_analysis
     chapter_id = checked_id(chapter_id, "chapter id")
     chapter = next((item for item in chapter_rows(conn) if item["id"] == chapter_id), None)
     if chapter is None:
@@ -1905,8 +1962,15 @@ def review_chapter(conn: sqlite3.Connection, chapter_id: str, persist: bool = Tr
     duplicates = len(paragraphs) - len(set(paragraphs))
     if duplicates:
         warnings.append({"code": "duplicate_paragraph", "message": f"检测到 {duplicates} 个重复段落。", "evidence": {"duplicates": duplicates}})
+    semantic = moyu_analysis.review_publication_gate(
+        conn, {"project_id": project_id(), "branch_id": branch_id()}, chapter_id,
+    )
+    blocking.extend({
+        "code": issue["code"], "message": issue["message"],
+        "evidence": {key: issue[key] for key in ("review_id", "chapter_id", "issue_ids")},
+    } for issue in semantic["issues"])
     score = max(0, min(100, 100 - len(blocking) * 35 - len(warnings) * 8))
-    result = {"chapter_id": chapter_id, "status": "passed" if not blocking else "needs_revision", "score": score, "blocking": blocking, "warnings": warnings, "checked_at": now(), "source_hash": hash_text(body), "fingerprint": review_fingerprint(conn, chapter_id), "review_kind": "basic_rules", "checks": {"characters": chars, "paragraphs": len(paragraphs), "pending_memory": pending, "stale_memory": stale}}
+    result = {"chapter_id": chapter_id, "status": "passed" if not blocking else "needs_revision", "score": score, "blocking": blocking, "warnings": warnings, "checked_at": now(), "source_hash": hash_text(body), "fingerprint": review_fingerprint(conn, chapter_id), "review_kind": "basic_rules", "checks": {"characters": chars, "paragraphs": len(paragraphs), "pending_memory": pending, "stale_memory": stale, "semantic_review_issues": len(semantic["issues"])}}
     if persist:
         conn.execute("UPDATE app_chapter_meta SET review_status=?,review_json=?,reviewed_at=?,updated_at=? WHERE chapter_id=?", (result["status"], json_text(result), result["checked_at"], now(), chapter_id))
         append_event(conn, chapter_id, "chapter.reviewed", result)
@@ -2132,6 +2196,7 @@ def init_db() -> None:
         for column, definition in chapter_meta_defaults.items():
             if column not in chapter_meta_columns:
                 conn.execute(f"ALTER TABLE app_chapter_meta ADD COLUMN {column} {definition}")
+        records_store.install_schema(conn)
         workspace.install_schema(conn)
         import moyu_analysis
         moyu_analysis.ensure_tables(conn)
@@ -2259,7 +2324,8 @@ def story_map(conn: sqlite3.Connection) -> dict[str, Any]:
     for row in conn.execute("""SELECT c.id,c.subject_entity_id,c.predicate,c.object_json,c.reviewed_at,
         cm.id memory_id,cm.status memory_status,cm.payload_json memory_payload
         FROM assertion c JOIN json_each(c.evidence_json) e
-        LEFT JOIN candidate_memory cm ON json_extract(e.value,'$.candidate_memory_id')=cm.id
+        LEFT JOIN candidate_memory cm ON CASE WHEN e.type='object'
+            THEN json_extract(e.value,'$.candidate_memory_id') END=cm.id
         WHERE c.project_id=? AND c.branch_id=? AND c.state='canon' AND cm.status IN ('accepted','stale')""", (project_id(), branch_id())):
         try:
             payload, mp = json.loads(row["object_json"] or "{}"), json.loads(row["memory_payload"] or "{}")
@@ -2918,8 +2984,11 @@ def commit_snapshot(conn: sqlite3.Connection, chapter_id: str, review: dict[str,
 
 
 def create_chapter_commit(conn: sqlite3.Connection, chapter_id: str, stage: str, override_reason: str = "") -> dict[str, Any]:
+    import moyu_analysis
     if stage not in {"prewrite", "precommit", "postcommit"}:
         raise ValueError("invalid chapter commit stage")
+    if override_reason and len(override_reason.strip()) < 8:
+        raise ValueError("override reason must contain at least 8 characters")
     chapter = conn.execute(
         "SELECT n.id,n.title,r.id revision_id,r.canonical_text,COALESCE(m.chapter_goal,'') chapter_goal,"
         "COALESCE(m.scene_plan,'') scene_plan,COALESCE(m.pov,'') pov,COALESCE(m.next_brief,'') next_brief "
@@ -2955,8 +3024,18 @@ def create_chapter_commit(conn: sqlite3.Connection, chapter_id: str, stage: str,
         elif not body.strip():
             status = "blocked"
             review = {"stage": stage, "message": "没有可提交的正文。"}
-        elif override_reason and len(override_reason.strip()) < 8:
-            raise ValueError("override reason must contain at least 8 characters")
+    semantic = moyu_analysis.review_publication_gate(
+        conn, {"project_id": project_id(), "branch_id": branch_id()}, chapter_id,
+    )
+    if semantic["issues"]:
+        status = "blocked"
+        blockers = review.setdefault("blocking", [])
+        existing_reviews = {item.get("evidence", {}).get("review_id") for item in blockers}
+        blockers.extend({
+            "code": issue["code"], "message": issue["message"],
+            "evidence": {key: issue[key] for key in ("review_id", "chapter_id", "issue_ids")},
+        } for issue in semantic["issues"] if issue["review_id"] not in existing_reviews)
+        review["semantic_review_gate"] = semantic["issues"]
     revision_id = chapter["revision_id"]
     snapshot = commit_snapshot(conn, chapter_id, review, revision_id)
     commit_id = uid("commit_")
@@ -2969,8 +3048,20 @@ def create_chapter_commit(conn: sqlite3.Connection, chapter_id: str, stage: str,
     return result
 
 
+def export_override_reason(raw: str) -> str:
+    """Decode browser-safe UTF-8 reasons while retaining existing ASCII clients."""
+    from urllib.parse import unquote
+    raw = bounded_text(raw, 24_000, "export override header")
+    try:
+        decoded = unquote(raw, encoding="utf-8", errors="strict").strip()
+    except UnicodeDecodeError as exc:
+        raise ValueError("export override reason must contain valid UTF-8") from exc
+    return bounded_text(decoded, 2_000, "export override reason")
+
+
 def export_finalization_issues(conn: sqlite3.Connection) -> list[str]:
     """Enforce the same publication gate for direct API exports as the UI."""
+    import moyu_analysis
     state = state_from_db(conn)
     project = state.get("project") or {}
     issues: list[str] = []
@@ -2994,6 +3085,14 @@ def export_finalization_issues(conn: sqlite3.Connection) -> list[str]:
             issues.append(f"第 {index + 1} 章《{chapter.get('title') or '未命名'}》正文少于 60 字。")
         if chapter.get("review_status") != "passed":
             issues.append(f"第 {index + 1} 章《{chapter.get('title') or '未命名'}》尚未通过本章审查。")
+    semantic = moyu_analysis.review_publication_gate(
+        conn, {"project_id": project_id(), "branch_id": branch_id()},
+    )
+    publication_chapters = {chapter["id"]: chapter for chapter in export_chapters}
+    for issue in semantic["issues"]:
+        chapter = publication_chapters.get(issue["chapter_id"])
+        if chapter:
+            issues.append(f"《{chapter.get('title') or '未命名'}》：{issue['message']}")
     pending = [
         memory for memory in state.get("memory") or []
         if memory.get("status") not in {"已拒绝", "rejected", "superseded"}
@@ -3218,7 +3317,8 @@ def ensure_memory_assertion(conn: sqlite3.Connection, memory_id: str, memory: di
         """SELECT id,state FROM assertion
              WHERE project_id=? AND branch_id=? AND subject_entity_id=?
                AND EXISTS (SELECT 1 FROM json_each(assertion.evidence_json) e
-                           WHERE json_extract(e.value,'$.candidate_memory_id')=?)
+                           WHERE CASE WHEN e.type='object'
+                           THEN json_extract(e.value,'$.candidate_memory_id') END=?)
              ORDER BY CASE state WHEN 'canon' THEN 0 WHEN 'candidate' THEN 1 ELSE 2 END, reviewed_at DESC
              LIMIT 1""",
         (project_id(), branch_id(), entity_id, memory_id),
@@ -3255,7 +3355,8 @@ def transition_memory_assertions(conn: sqlite3.Connection, memory_id: str, memor
         """SELECT a.id,a.state FROM assertion a
              WHERE a.project_id=? AND a.branch_id=? AND a.state='canon'
                AND EXISTS (SELECT 1 FROM json_each(a.evidence_json) e
-                           WHERE json_extract(e.value,'$.candidate_memory_id')=?)""",
+                           WHERE CASE WHEN e.type='object'
+                           THEN json_extract(e.value,'$.candidate_memory_id') END=?)""",
         (project_id(), branch_id(), memory_id),
     ).fetchall()
     for dependent in dependent_assertions:
@@ -3396,7 +3497,9 @@ def assertion_rows(conn: sqlite3.Connection, state: str | None = None, entity_id
     if entity_id:
         clauses.append("a.subject_entity_id=?"); params.append(entity_id)
     if memory_id:
-        clauses.append("EXISTS (SELECT 1 FROM json_each(a.evidence_json) e WHERE json_extract(e.value,'$.candidate_memory_id')=?)"); params.append(memory_id)
+        clauses.append("EXISTS (SELECT 1 FROM json_each(a.evidence_json) e "
+                       "WHERE CASE WHEN e.type='object' THEN json_extract(e.value,'$.candidate_memory_id') END=?)")
+        params.append(memory_id)
     rows = conn.execute(
         "SELECT a.id FROM assertion a WHERE " + " AND ".join(clauses) + " ORDER BY COALESCE(a.reviewed_at,a.id) DESC",
         params,
@@ -3605,7 +3708,9 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
     meta = conn.execute("SELECT summary,genre,goal,book_status FROM app_project_meta WHERE project_id=?", (project_id(),)).fetchone()
     records = []
     for row in conn.execute(
-        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description,e.aliases_json FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid",
+        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description,e.aliases_json,s.scope_json "
+        "FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id "
+        "LEFT JOIN app_entity_scope s ON s.entity_id=e.id WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid",
         (project_id(),),
     ):
         desc = row["description"]
@@ -3617,7 +3722,8 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
             except Exception:
                 pass
         records.append({"id": row["id"], "type": row["kind"], "name": row["canonical_name"], "description": desc,
-                        "aliases": _json_object(row["aliases_json"], []), "project_id": project_id()})
+                        "aliases": _json_object(row["aliases_json"], []), "project_id": project_id(),
+                        **records_store.decode_scope(row["scope_json"])})
     memory = []
     for row in conn.execute(
         "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.confidence,cm.created_at,cm.reviewed_at,cm.reviewed_by,cm.created_by,cm.source_span_id,"
@@ -4006,10 +4112,12 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
         name = bounded_text(record.get("name") or "未命名", 500, "record name")
         description = bounded_text(record.get("description") or "", 20_000, "record description")
         aliases = aliases_input(record.get("aliases", []))
+        previous_scope = records_store.read_scope(conn, rid)
+        declaration = records_store.normalize_scope(record, previous_scope)
         old = conn.execute("SELECT kind,canonical_name,aliases_json FROM entity WHERE id=? AND project_id=?", (rid, project_id())).fetchone()
         if old is None:
             conn.execute("INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status) VALUES(?,?,?,?,?,?)", (rid, project_id(), kind, name, json_text(aliases), "active"))
-            append_event(conn, rid, "entity.created", {"type": kind, "name": name, "aliases": aliases, "description": description})
+            append_event(conn, rid, "entity.created", {"type": kind, "name": name, "aliases": aliases, "description": description, **declaration})
         else:
             previous_aliases = _json_object(old["aliases_json"], [])
             if isinstance(previous_aliases, dict):
@@ -4019,9 +4127,10 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
             except ValueError:
                 previous_aliases = []
             conn.execute("UPDATE entity SET kind=?,canonical_name=?,aliases_json=?,status='active' WHERE id=? AND project_id=?", (kind, name, json_text(aliases), rid, project_id()))
-            if old["kind"] != kind or old["canonical_name"] != name or previous_aliases != aliases:
-                append_event(conn, rid, "entity.updated", {"type": kind, "name": name, "aliases": aliases, "description": description})
+            if old["kind"] != kind or old["canonical_name"] != name or previous_aliases != aliases or previous_scope != declaration:
+                append_event(conn, rid, "entity.updated", {"type": kind, "name": name, "aliases": aliases, "description": description, **declaration})
         conn.execute("INSERT OR REPLACE INTO app_entity_meta(entity_id,description,updated_at) VALUES(?,?,?)", (rid, description, now()))
+        records_store.write_scope(conn, rid, declaration, now())
     incoming_memory = state.get("memory") or []
     incoming_memory_ids = {str(m.get("id")) for m in incoming_memory if m.get("id")}
     for old in conn.execute("SELECT id FROM candidate_memory WHERE project_id=? AND branch_id=? AND status IN ('candidate','accepted')", (project_id(), branch_id())).fetchall():
@@ -4296,6 +4405,8 @@ def persist_structured_result(conn, job, result):
         return result
     import moyu_analysis
     context = json.loads(job["context_json"])
+    validate_material_source(conn, context)
+    validate_guidance_source(conn, context)
     source = context.get("_source") or {}
     chapter = next((item for item in chapter_rows(conn) if item["id"] == job["chapter_id"]), None)
     if (not chapter or chapter["revision_id"] != source.get("source_revision_id") or
@@ -4310,20 +4421,192 @@ def persist_structured_result(conn, job, result):
     return result
 
 
+def reuse_analysis_candidate(conn, scope, candidate):
+    import moyu_analysis
+
+    existing = conn.execute(
+        "SELECT * FROM candidate_memory WHERE id=?",
+        (candidate["id"],),
+    ).fetchone()
+    if existing is None:
+        return None
+
+    def conflict():
+        raise moyu_analysis.AnalysisConflict(
+            "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。")
+
+    if (existing["project_id"] != scope["project_id"] or existing["branch_id"] != scope["branch_id"]
+            or existing["status"] != "accepted"):
+        conflict()
+    saved = _json_object(existing["payload_json"], {})
+    if not isinstance(saved, dict):
+        conflict()
+    fields = {
+        "kind", "type", "name", "note", "epistemic_mode", "known_by", "known_by_unresolved",
+        "knowledge_scope", "private", "subject_name", "target_name", "predicate", "attribute",
+        "value", "valid_start", "valid_end", "story_time", "foreshadowing_stage",
+        "project_id", "branch_id", "source_chapter_id", "source_revision_id", "source_quote",
+        "source_start", "source_end", "source_hash", "chapter_hash",
+    }
+
+    def content(value):
+        return json.dumps({key: value[key] for key in fields if key in value},
+                          ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)
+
+    if content(saved) != content(candidate):
+        conflict()
+    previous = None
+    for row in conn.execute(
+            "SELECT payload_json FROM app_chapter_analysis WHERE project_id=? AND branch_id=? "
+            "AND chapter_id=? ORDER BY updated_at DESC",
+            (scope["project_id"], scope["branch_id"], candidate["source_chapter_id"])):
+        payload = _json_object(row["payload_json"], {})
+        for item in payload.get("candidates", []) if isinstance(payload, dict) else []:
+            if (isinstance(item, dict) and item.get("id") == candidate["id"]
+                    and item.get("status") == "accepted" and content(item) == content(candidate)
+                    and isinstance(item.get("artifacts"), dict)):
+                previous = item
+                break
+        if previous is not None:
+            break
+    if previous is None:
+        conflict()
+    artifacts = dict(previous["artifacts"])
+    if (artifacts.get("memory_id") != existing["id"]
+            or artifacts.get("source_span_id") != existing["source_span_id"]):
+        conflict()
+    span = conn.execute(
+        "SELECT s.*,r.canonical_text FROM source_span s "
+        "JOIN document_revision r ON r.id=s.revision_id "
+        "JOIN document_node n ON n.id=s.document_node_id "
+        "WHERE s.id=? AND s.project_id=? AND n.project_id=? AND n.branch_id=?",
+        (existing["source_span_id"], scope["project_id"], scope["project_id"], scope["branch_id"]),
+    ).fetchone()
+    if span is None:
+        conflict()
+    body = bytes(span["canonical_text"]).decode("utf-8", errors="replace")
+    if (span["status"] != "valid" or span["revision_id"] != candidate["source_revision_id"]
+            or span["document_node_id"] != candidate["source_chapter_id"]
+            or span["quote"] != candidate["source_quote"] or span["quote_hash"] != candidate["source_hash"]
+            or span["start_codepoint"] != candidate["source_start"]
+            or span["end_codepoint"] != candidate["source_end"]
+            or span["start_utf8"] != len(body[:candidate["source_start"]].encode("utf-8"))
+            or span["end_utf8"] != len(body[:candidate["source_end"]].encode("utf-8"))
+            or hash_text(body) != candidate["chapter_hash"]):
+        conflict()
+    assertion = assertion_detail(conn, str(artifacts.get("assertion_id") or ""), include_conflicts=False)
+    if (assertion is None or assertion["state"] != "canon" or assertion["stale"]
+            or assertion["subject"]["id"] != existing["entity_id"]
+            or assertion["predicate"] != "has_story_fact"
+            or assertion["valid_start"] != candidate.get("valid_start")
+            or assertion["valid_end"] != candidate.get("valid_end")
+            or assertion["object"] != {"name": candidate["name"], "type": candidate["type"],
+                                       "note": candidate["note"]}
+            or assertion["epistemic_mode"] != candidate["epistemic_mode"]
+            or not any(evidence.get("candidate_memory_id") == candidate["id"]
+                       and evidence.get("source_span_id") == existing["source_span_id"]
+                       for evidence in assertion["evidence"])):
+        conflict()
+    subject = conn.execute("SELECT id,kind,canonical_name,aliases_json,status FROM entity WHERE id=? AND project_id=?",
+                           (existing["entity_id"], scope["project_id"])).fetchone()
+
+    def named(row, name):
+        aliases = _json_object(row["aliases_json"], []) if row is not None else []
+        if isinstance(aliases, dict):
+            aliases = aliases.get("aliases", [])
+        return bool(row is not None and row["status"] == "active"
+                    and (row["canonical_name"] == name or isinstance(aliases, list) and name in aliases))
+
+    def uniquely_named(row, name):
+        matches = [item for item in conn.execute(
+            "SELECT id,kind,canonical_name,aliases_json,status FROM entity WHERE project_id=? AND status='active'",
+            (scope["project_id"],)) if named(item, name)]
+        return len(matches) == 1 and row is not None and matches[0]["id"] == row["id"]
+
+    if not uniquely_named(subject, candidate.get("subject_name") or candidate["name"]):
+        conflict()
+    evidence = {key: candidate.get(key) for key in (
+        "source_chapter_id", "source_revision_id", "source_quote", "source_start", "source_end",
+        "source_hash", "chapter_hash", "known_by", "epistemic_mode")}
+    evidence["source_span_id"] = existing["source_span_id"]
+
+    def artifact_row(table, key):
+        row = conn.execute(
+            f"SELECT * FROM {table} WHERE id=? AND project_id=? AND branch_id=?",
+            (artifacts.get(key), scope["project_id"], scope["branch_id"]),
+        ).fetchone()
+        if row is None:
+            conflict()
+        return row
+
+    kind = candidate["kind"]
+    if kind in {"character_state", "relationship"} and subject["kind"] != "人物":
+        raise moyu_analysis.AnalysisConflict("人物状态和人物关系必须对应人物；请到设定中核对角色类型。")
+    if kind == "event":
+        event = artifact_row("app_timeline_event", "timeline_id")
+        if (event["status"] != "occurred" or event["chapter_id"] != candidate["source_chapter_id"]
+                or event["title"] != candidate["name"] or event["summary"] != candidate["note"]
+                or event["event_time"] != candidate.get("story_time", "")
+                or _json_object(event["entity_ids_json"], None) != previous.get("entity_ids", [])
+                or _json_object(event["evidence_json"], None) != evidence):
+            conflict()
+    elif kind == "character_state":
+        state = artifact_row("character_state", "character_state_id")
+        knowledge = {**candidate.get("knowledge_scope", {}), **evidence}
+        if (state["entity_id"] != existing["entity_id"] or state["attribute"] != candidate["attribute"]
+                or _json_object(state["value_json"], None) != candidate.get("value")
+                or state["valid_start"] != candidate.get("valid_start")
+                or state["valid_end"] != candidate.get("valid_end")
+                or state["event_id"] is not None
+                or state["source_assertion_id"] != artifacts["assertion_id"]
+                or _json_object(state["knowledge_scope_json"], None) != knowledge):
+            conflict()
+    elif kind == "relationship":
+        relation = artifact_row("app_story_relation", "relationship_id")
+        target = conn.execute("SELECT id,kind,canonical_name,aliases_json,status FROM entity "
+                              "WHERE id=? AND project_id=?",
+                              (relation["to_entity_id"], scope["project_id"])).fetchone()
+        if target is not None and target["kind"] != "人物":
+            raise moyu_analysis.AnalysisConflict("人物关系的两端必须对应人物；请到设定中核对角色类型。")
+        if (relation["status"] != "active" or relation["from_entity_id"] != existing["entity_id"]
+                or relation["to_entity_id"] == existing["entity_id"]
+                or relation["relation_type"] != candidate["predicate"] or relation["note"] != candidate["note"]
+                or _json_object(relation["evidence_json"], None) != evidence
+                or not uniquely_named(target, candidate["target_name"])):
+            conflict()
+    elif kind == "foreshadowing":
+        link = artifact_row("app_foreshadow_link", "foreshadow_link_id")
+        plot = artifact_row("app_plot_item", "plot_id")
+        if (link["plot_id"] != plot["id"] or link["chapter_id"] != candidate["source_chapter_id"]
+                or link["kind"] != candidate["foreshadowing_stage"] or link["note"] != candidate["note"]
+                or _json_object(link["evidence_json"], None) != evidence
+                or plot["archived"] or plot["text"] != candidate["name"]
+                or plot["stage"] != {"plant": "setup", "develop": "develop", "payoff": "payoff"}[
+                    candidate["foreshadowing_stage"]]):
+            conflict()
+    return artifacts
+
+
 def apply_analysis_candidate(conn, scope, candidate):
+    if candidate.get("entity_resolution") == "ambiguous":
+        raise ValueError("候选的同名人物未明确，请先区分人物")
+    reused = reuse_analysis_candidate(conn, scope, candidate)
+    if reused is not None:
+        return reused
+
     def resolve(name, kind="人物"):
         matches = [row for row in state_from_db(conn)["records"] if row["name"] == name or name in row.get("aliases", [])]
         if len(matches) > 1:
             raise ValueError("同名人物尚未区分，请先修改设定")
         if matches:
+            if kind == "人物" and matches[0]["type"] != "人物":
+                raise ValueError("人物状态和人物关系必须对应人物；请到设定中核对角色类型。")
             return matches[0]["id"]
         eid = uid("ent_")
         conn.execute("INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status) VALUES(?,?,?,?,?,?)",
                      (eid, project_id(), kind, name, "[]", "active"))
         conn.execute("INSERT INTO app_entity_meta VALUES(?,?,?)", (eid, "", now()))
         return eid
-    if candidate.get("entity_resolution") == "ambiguous":
-        raise ValueError("候选的同名人物未明确，请先区分人物")
     span_id = source_span_for_memory(conn, candidate)
     if not span_id:
         raise ValueError("候选原句证据已变化，请重新分析")
@@ -4529,6 +4812,8 @@ def apply_candidate(conn, run_id, data):
     if context.get("planning_workflow"):
         raise ValueError("请在创作规划页面确认阶段和采用完整规划")
     validate_review_candidate_source(conn, job["task"], context)
+    validate_guidance_source(conn, context)
+    validate_material_source(conn, context)
     chapter = next((item for item in chapter_rows(conn) if item["id"] == source["chapter_id"]), None)
     if chapter is None:
         raise ValueError("候选来源章节已删除")
@@ -4957,7 +5242,9 @@ class Handler(SimpleHTTPRequestHandler):
                     if conn.execute("SELECT 1 FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (memory_id, project_id(), branch_id())).fetchone() is None:
                         return self.send_json(404, {"error": "memory not found"})
                     assertion_ids = [row["id"] for row in conn.execute(
-                        "SELECT DISTINCT a.id FROM assertion a JOIN json_each(a.evidence_json) e ON json_extract(e.value,'$.candidate_memory_id')=? WHERE a.project_id=? AND a.branch_id=? ORDER BY a.reviewed_at DESC",
+                        "SELECT DISTINCT a.id FROM assertion a JOIN json_each(a.evidence_json) e "
+                        "ON CASE WHEN e.type='object' THEN json_extract(e.value,'$.candidate_memory_id') END=? "
+                        "WHERE a.project_id=? AND a.branch_id=? ORDER BY a.reviewed_at DESC",
                         (memory_id, project_id(), branch_id()),
                     )]
                     if not assertion_ids:
@@ -5025,8 +5312,12 @@ class Handler(SimpleHTTPRequestHandler):
                     explain_requested = (query_params.get("explain") or ["0"])[0].strip().lower() in {"1", "true", "yes"}
                     effective_mode = SEARCH_INDEX_MODE if SEARCH_INDEX_MODE in {"bigram", "fts", "none"} else "bigram"
                     return self.send_json(200, {"query": query, "limit": limit, "filters": filters, "explain": explain_requested, "index_mode": effective_mode, "results": search_rows(conn, query, limit, filters, explain_requested)})
+                if parsed.path in {"/api/export/epub", "/api/export/markdown", "/api/export/manifest"}:
+                    try:
+                        export_override = export_override_reason(self.headers.get("X-Moyu-Export-Override", ""))
+                    except ValueError as exc:
+                        return self.send_json(400, {"error": str(exc)})
                 if parsed.path in {"/api/export/epub", "/api/export/markdown"}:
-                    export_override = self.headers.get("X-Moyu-Export-Override", "").strip()
                     export_issues = export_finalization_issues(conn)
                     if export_issues and len(export_override) < 8:
                         return self.send_json(409, {"error": "export blocked by finalization gate", "issues": export_issues, "override_required": True})
@@ -5046,7 +5337,7 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_bytes(200, raw, "text/markdown; charset=utf-8", f"{title}.md")
                     return self.send_bytes(200, raw, "application/epub+zip", f"{title}.epub")
                 if parsed.path == "/api/export/manifest":
-                    _, manifest = epub_bytes(conn, self.headers.get("X-Moyu-Export-Override", "").strip())
+                    _, manifest = epub_bytes(conn, export_override)
                     return self.send_json(200, manifest)
                 if parsed.path in {"/api/story-map", "/api/story-structure"}:
                     return self.send_json(200, story_map(conn))
@@ -5417,10 +5708,12 @@ class Handler(SimpleHTTPRequestHandler):
                     kind, name = bounded_text(data.get("type") or "其他", 100, "record type"), bounded_text(data.get("name") or "未命名", 500, "record name")
                     description = bounded_text(data.get("description") or "", 20_000, "record description")
                     aliases = aliases_input(data.get("aliases", []))
+                    declaration = records_store.normalize_scope(data)
                     conn.execute("INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status) VALUES(?,?,?,?,?,?)", (rid, project_id(), kind, name, json_text(aliases), "active"))
                     conn.execute("INSERT INTO app_entity_meta(entity_id,description,updated_at) VALUES(?,?,?)", (rid, description, now()))
-                    append_event(conn, rid, "entity.created", {"type": kind, "name": name, "aliases": aliases, "description": description})
-                    return self.send_json(201, {"id": rid, "type": kind, "name": name, "aliases": aliases, "description": description})
+                    records_store.write_scope(conn, rid, declaration, now())
+                    append_event(conn, rid, "entity.created", {"type": kind, "name": name, "aliases": aliases, "description": description, **declaration})
+                    return self.send_json(201, {"id": rid, "type": kind, "name": name, "aliases": aliases, "description": description, **declaration})
                 if parsed.path == "/api/memory":
                     mid = checked_id(data.get("id") or uid("mem_"), "memory id")
                     status = "accepted" if data.get("status") in {"accepted", "已确认"} else "candidate"
@@ -6130,11 +6423,14 @@ class Handler(SimpleHTTPRequestHandler):
                     if isinstance(raw_aliases, dict):
                         raw_aliases = raw_aliases.get("aliases", [])
                     aliases = aliases_input(data["aliases"]) if "aliases" in data else aliases_input(raw_aliases)
-                    old = {"type": row["kind"], "name": row["canonical_name"], "aliases": aliases_input(raw_aliases)}
+                    previous_scope = records_store.read_scope(conn, item_id)
+                    declaration = records_store.normalize_scope(data, previous_scope)
+                    old = {"type": row["kind"], "name": row["canonical_name"], "aliases": aliases_input(raw_aliases), **previous_scope}
                     conn.execute("UPDATE entity SET kind=?,canonical_name=?,aliases_json=? WHERE id=? AND project_id=?", (kind, name, json_text(aliases), item_id, project_id()))
                     conn.execute("INSERT OR REPLACE INTO app_entity_meta(entity_id,description,updated_at) VALUES(?,?,?)", (item_id, desc, now()))
-                    append_event(conn, item_id, "entity.updated", {"before": old, "type": kind, "name": name, "aliases": aliases, "description": desc})
-                    return self.send_json(200, {"id": item_id, "type": kind, "name": name, "aliases": aliases, "description": desc})
+                    records_store.write_scope(conn, item_id, declaration, now())
+                    append_event(conn, item_id, "entity.updated", {"before": old, "type": kind, "name": name, "aliases": aliases, "description": desc, **declaration})
+                    return self.send_json(200, {"id": item_id, "type": kind, "name": name, "aliases": aliases, "description": desc, **declaration})
                 if parsed.path.startswith("/api/memory/"):
                     row = conn.execute("SELECT kind,payload_json,status,confidence,source_span_id,entity_id FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (item_id, project_id(), branch_id())).fetchone()
                     if row is None:

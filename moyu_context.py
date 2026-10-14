@@ -136,8 +136,9 @@ def scope_decision(
     reasons: list[str] = []
     warnings: list[str] = []
     for field, wanted in (("project_id", policy.project_id), ("branch_id", policy.branch_id)):
-        declared = item.get(field, scope.get(field))
-        if declared is not None and str(declared) != wanted:
+        # Actual ownership and the author's nested limit constrain separately.
+        declarations = (item.get(field), scope.get(field))
+        if any(value is not None and str(value) != wanted for value in declarations):
             reasons.append("project_scope" if field == "project_id" else "branch_scope")
     branches = _strings(scope.get("branches") or scope.get("branch_ids"))
     if branches and policy.branch_id not in branches:
@@ -525,6 +526,68 @@ def fit_budget(context: dict[str, Any], max_tokens: int, *, reserve_bytes: int =
     return context
 
 
+def author_guidance(state, chapter_id, blueprint_row, *, project_id, branch_id):
+    """Keep writing agreements and local plans apart from witnessed facts."""
+    blueprint = blueprint_row.get("blueprint") or {}
+    chapters = list(state.get("chapters") or [])
+    chapter = next((item for item in chapters if item["id"] == chapter_id), None)
+    result = {
+        "epistemic_mode": "author_plan",
+        "use": "writing_guidance_not_occurred_not_character_knowledge",
+        "project_id": project_id, "branch_id": branch_id,
+        "blueprint_version": blueprint_row.get("version", 0),
+        "creation_agreement": {key: blueprint[key] for key in
+                               ("premise", "genre", "audience", "tone", "contract") if blueprint.get(key)},
+        "policy": "These are the author's writing agreements and plans. Planned events have not occurred. "
+                  "Characters cannot know a plan unless cited permitted manuscript evidence establishes it. "
+                  "Do not reveal later scenes early or treat a planned state as established truth.",
+    }
+    if not chapter:
+        return result if result["creation_agreement"] else None
+    pov = str(chapter.get("pov") or "").strip()
+    records = state.get("records") or []
+    aliases = resolve_aliases(records, pov)
+    omniscient = pov.lower() in {"omniscient", "全知", "全知视角"}
+
+    def same_pov(scene):
+        scene_pov = str(scene.get("pov") or "").strip()
+        if not scene_pov or omniscient:
+            return True
+        resolved = resolve_aliases(records, scene_pov)
+        if resolved["ambiguous"] or aliases["ambiguous"]:
+            return False
+        if scene_pov == pov:
+            return True
+        return bool(resolved["entity_ids"] and
+                    set(resolved["entity_ids"]).issubset(aliases["entity_ids"]))
+
+    volume = next((item for item in blueprint.get("volumes", [])
+                   if item["id"] == chapter.get("volume_id")), None)
+    planned = next((item for item in (volume or {}).get("chapters", [])
+                    if item["id"] == chapter.get("plan_id") and
+                    item.get("chapter_id") in (None, chapter_id)), None)
+    if volume:
+        result["current_volume"] = {key: volume.get(key, "") for key in ("id", "title", "summary")}
+    if planned:
+        result["current_plan"] = {key: planned.get(key, "") for key in ("id", "title", "goal", "pov", "hook")}
+    # Stable chapter scenes are the last materialized author plan. Saving a
+    # new blueprint alone does not silently replace an existing chapter's plan.
+    scenes = list(chapter.get("scenes") or [])
+    allowed_scenes = [dict(item) for item in scenes if same_pov(item)]
+    if scenes:
+        result["scenes"] = allowed_scenes
+        result["scenes_outside_current_pov"] = len(scenes) - len(allowed_scenes)
+    index = chapters.index(chapter)
+    if index and chapters[index - 1].get("next_brief"):
+        previous = chapters[index - 1]
+        result["previous_handoff"] = {"chapter_id": previous["id"], "text": previous["next_brief"],
+                                      "epistemic_mode": "author_plan"}
+    if not any(result.get(key) for key in
+               ("creation_agreement", "current_volume", "current_plan", "previous_handoff")) and not scenes:
+        return None
+    return result
+
+
 def assemble_context(
     state: Mapping[str, Any],
     chapter_id: str | None,
@@ -538,6 +601,7 @@ def assemble_context(
     revisions: Mapping[str, str] | None = None,
     task: str = "continue",
     selection: Mapping[str, Any] | None = None,
+    guidance: Mapping[str, Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any] | None]:
     """Assemble the exact material later serialized into a provider request."""
     profile_values = normalize_profile(profile)
@@ -715,6 +779,13 @@ def assemble_context(
             "full_content": start == 0 and end == len(current_body), "offset_unit": "unicode_codepoint",
             "plan": {key: str(chapter[key]) for key in ("chapter_goal", "scene_plan", "pov", "foreshadowing_op", "hook", "recap", "next_brief") if chapter.get(key)},
         }
+        scenes = list(chapter.get("scenes") or [])
+        generated_plan = "\n".join(str(item.get("title") or "") + "：" + str(item.get("goal") or "") for item in scenes)
+        if guidance is not None and scenes and chapter.get("scene_plan") == generated_plan:
+            current["plan"]["scene_plan"] = "\n".join(
+                str(item.get("title") or "") + "：" + str(item.get("goal") or "")
+                for item in guidance.get("scenes", [])
+            )
     for control_key, limit_key in (("records", "record_top_k"), ("memory", "memory_top_k")):
         choices = material_controls.get(control_key)
         if isinstance(choices, Mapping) and profile_values[limit_key] == 0 and any(isinstance(value, Mapping) and value.get("pin") and not value.get("omit") for value in choices.values()):
@@ -741,6 +812,8 @@ def assemble_context(
             },
         },
     }
+    if guidance is not None:
+        context["author_guidance"] = copy.deepcopy(dict(guidance))
     return fit_budget(context, profile_values["max_tokens"], reserve_bytes=1800 + len(instruction.encode("utf-8"))), chapter
 
 

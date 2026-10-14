@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-14T15:08:02.780Z",
+  "scope": "Real Chrome desktop with in-memory snapshots of current frontend files and a fresh browser profile; all API routes deliberately return 503 and external origins are blocked. No real database, credential or model access.",
+  "source_files": [
+    {
+      "path": "index.html",
+      "sha256": "5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "2e24180ed7755a0ed861e89cb0f689e49c820ce4f24776fe4b67047ced3a5f2b"
+    },
+    {
+      "path": "editor-sync.js",
+      "sha256": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7"
+    },
+    {
+      "path": "app.js",
+      "sha256": "66c73c9d4e0c7baac712445d89ab842b5f91c712dff1d40064a63cfad08bd61d"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "e8a5ca5187c779613c7b28117c05dff8c98bc7446bd19cbe32f812bf2987d723"
+    }
+  ],
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "before": {
+    "task": "polish",
+    "instruction": "只改对白节奏，保留罗盘去向，不增加剧情。"
+  },
+  "action": "Switch from editor to world settings, then back to editor.",
+  "after": {
+    "task": "continue",
+    "instruction": ""
+  },
+  "draft_preserved": false,
+  "page_errors": [],
+  "api_requests": [
+    {
+      "method": "GET",
+      "path": "/api/state"
+    },
+    {
+      "method": "GET",
+      "path": "/api/ai/status"
+    }
+  ],
+  "external_model_calls": 0
+}

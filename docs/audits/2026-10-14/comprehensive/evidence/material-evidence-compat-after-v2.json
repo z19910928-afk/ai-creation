@@ -1,0 +1,328 @@
+{
+  "passed": true,
+  "checks": 9,
+  "cases": [
+    {
+      "name": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "passed": true,
+      "subtest": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable (__main__.MaterialEvidenceCompatibilityHTTP.test_canon_mixed_evidence_keeps_memory_details_and_lists_readable) (route='/api/memory/mem_2349203a9a9d49cda6d1703d7150e763')"
+    },
+    {
+      "name": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "passed": true,
+      "subtest": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable (__main__.MaterialEvidenceCompatibilityHTTP.test_canon_mixed_evidence_keeps_memory_details_and_lists_readable) (route='/api/memory/mem_2349203a9a9d49cda6d1703d7150e763/evidence')"
+    },
+    {
+      "name": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "passed": true,
+      "subtest": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable (__main__.MaterialEvidenceCompatibilityHTTP.test_canon_mixed_evidence_keeps_memory_details_and_lists_readable) (route='/api/assertions?memory_id=mem_2349203a9a9d49cda6d1703d7150e763')"
+    },
+    {
+      "name": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "passed": true,
+      "subtest": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable (__main__.MaterialEvidenceCompatibilityHTTP.test_canon_mixed_evidence_keeps_memory_details_and_lists_readable) (route='/api/assertions/asrt_b6e3a468e2a54852849533b3aec4363d')"
+    },
+    {
+      "name": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "passed": true,
+      "subtest": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable (__main__.MaterialEvidenceCompatibilityHTTP.test_canon_mixed_evidence_keeps_memory_details_and_lists_readable) (route='/api/memory')"
+    },
+    {
+      "name": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "passed": true
+    },
+    {
+      "name": "test_canon_mixed_evidence_keeps_story_map_preview_and_history_usable",
+      "passed": true
+    },
+    {
+      "name": "test_canon_mixed_evidence_removed_quote_invalidates_fact_and_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_canon_mixed_evidence_unique_quote_reanchors_and_preserves_notes",
+      "passed": true
+    },
+    {
+      "name": "test_canon_mixed_evidence_withdrawal_retracts_fact_and_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_mixed_evidence_for_omitted_other_memory_does_not_expire_this_task",
+      "passed": true
+    },
+    {
+      "name": "test_mixed_evidence_preserves_the_actual_memory_dependency",
+      "passed": true
+    },
+    {
+      "name": "test_real_linked_assertion_state_change_still_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_unrelated_legacy_string_evidence_keeps_history_and_dispatch_usable",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:32:14.279472+00:00",
+  "finished_at": "2026-10-14T17:32:22.590031+00:00",
+  "observations": [
+    {
+      "test": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "scenario": "schema_valid_mixed_canon",
+      "assertion_id": "asrt_b6e3a468e2a54852849533b3aec4363d",
+      "evidence_entries": 7,
+      "canon_guards_present": [
+        "check_assertion_canon_insert",
+        "check_assertion_canon_update"
+      ],
+      "reviewed_identity_and_time_preserved": true,
+      "foreign_keys_valid": true
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "scenario": "mixed_canon_read",
+      "route": "/api/memory/mem_2349203a9a9d49cda6d1703d7150e763",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "scenario": "mixed_canon_read",
+      "route": "/api/memory/mem_2349203a9a9d49cda6d1703d7150e763/evidence",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "scenario": "mixed_canon_read",
+      "route": "/api/assertions?memory_id=mem_2349203a9a9d49cda6d1703d7150e763",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "scenario": "mixed_canon_read",
+      "route": "/api/assertions/asrt_b6e3a468e2a54852849533b3aec4363d",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_memory_details_and_lists_readable",
+      "scenario": "mixed_canon_read",
+      "route": "/api/memory",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_story_map_preview_and_history_usable",
+      "scenario": "schema_valid_mixed_canon",
+      "assertion_id": "asrt_06f8d2dca2ec4b3395cbc98b48ad8529",
+      "evidence_entries": 7,
+      "canon_guards_present": [
+        "check_assertion_canon_insert",
+        "check_assertion_canon_update"
+      ],
+      "reviewed_identity_and_time_preserved": true,
+      "foreign_keys_valid": true
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_story_map_preview_and_history_usable",
+      "scenario": "mixed_canon_story_map",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_keeps_story_map_preview_and_history_usable",
+      "scenario": "mixed_canon_history",
+      "http_status": 200,
+      "history_read_only": false,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_canon_mixed_evidence_removed_quote_invalidates_fact_and_old_dispatch",
+      "scenario": "schema_valid_mixed_canon",
+      "assertion_id": "asrt_ffc31fc12157477391db3c4e49d1bec5",
+      "evidence_entries": 7,
+      "canon_guards_present": [
+        "check_assertion_canon_insert",
+        "check_assertion_canon_update"
+      ],
+      "reviewed_identity_and_time_preserved": true,
+      "foreign_keys_valid": true
+    },
+    {
+      "test": "test_canon_mixed_evidence_removed_quote_invalidates_fact_and_old_dispatch",
+      "scenario": "mixed_canon_source_removed",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_removed_quote_invalidates_fact_and_old_dispatch",
+      "scenario": "mixed_canon_removed_source_dependency",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_canon_mixed_evidence_unique_quote_reanchors_and_preserves_notes",
+      "scenario": "schema_valid_mixed_canon",
+      "assertion_id": "asrt_71912f77037f438fba3ec70ed8e09608",
+      "evidence_entries": 7,
+      "canon_guards_present": [
+        "check_assertion_canon_insert",
+        "check_assertion_canon_update"
+      ],
+      "reviewed_identity_and_time_preserved": true,
+      "foreign_keys_valid": true
+    },
+    {
+      "test": "test_canon_mixed_evidence_unique_quote_reanchors_and_preserves_notes",
+      "scenario": "mixed_canon_reanchor",
+      "http_status": 200,
+      "error": null
+    },
+    {
+      "test": "test_canon_mixed_evidence_unique_quote_reanchors_and_preserves_notes",
+      "scenario": "mixed_canon_reanchored_source_dependency",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_canon_mixed_evidence_unique_quote_reanchors_and_preserves_notes",
+      "scenario": "mixed_canon_fresh_reanchored_dispatch",
+      "dispatch_status": "success",
+      "old_span_status": "stale",
+      "legacy_entries_preserved": true,
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_canon_mixed_evidence_withdrawal_retracts_fact_and_blocks_old_dispatch",
+      "scenario": "schema_valid_mixed_canon",
+      "assertion_id": "asrt_046479ac963c4b4e8dfa38bc254b3fc8",
+      "evidence_entries": 7,
+      "canon_guards_present": [
+        "check_assertion_canon_insert",
+        "check_assertion_canon_update"
+      ],
+      "reviewed_identity_and_time_preserved": true,
+      "foreign_keys_valid": true
+    },
+    {
+      "test": "test_canon_mixed_evidence_withdrawal_retracts_fact_and_blocks_old_dispatch",
+      "scenario": "mixed_canon_withdrawal",
+      "http_status": 200,
+      "error": null,
+      "memory_status": "rejected"
+    },
+    {
+      "test": "test_canon_mixed_evidence_withdrawal_retracts_fact_and_blocks_old_dispatch",
+      "scenario": "mixed_canon_withdrawn_dependency",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_mixed_evidence_for_omitted_other_memory_does_not_expire_this_task",
+      "scenario": "other_memory_capture",
+      "preview_http_status": 200,
+      "preview_error": null
+    },
+    {
+      "test": "test_mixed_evidence_for_omitted_other_memory_does_not_expire_this_task",
+      "scenario": "other_memory_control",
+      "dispatch_status": "success",
+      "free_provider_calls": 1,
+      "other_memory_absent": true
+    },
+    {
+      "test": "test_mixed_evidence_preserves_the_actual_memory_dependency",
+      "scenario": "mixed_evidence_capture",
+      "preview_http_status": 200,
+      "preview_error": null,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_mixed_evidence_preserves_the_actual_memory_dependency",
+      "scenario": "mixed_evidence_actual_memory_state",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_real_linked_assertion_state_change_still_blocks_old_dispatch",
+      "scenario": "real_linked_assertion_state",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_unrelated_legacy_string_evidence_keeps_history_and_dispatch_usable",
+      "scenario": "legacy_string_history",
+      "history_http_status": 200,
+      "history_error": null,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_unrelated_legacy_string_evidence_keeps_history_and_dispatch_usable",
+      "scenario": "legacy_string_dispatch",
+      "dispatch_status": "success",
+      "frozen_context_unchanged": true,
+      "free_provider_calls": 1
+    }
+  ],
+  "free_provider_calls": 3,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_materials.py": "264a06b8076d291df9f5e93c77e981e34ce40c56726bae260eae3978646829cd",
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_evidence_compat_http_fixtures.py": "9d014df2073a7859104910edde119886a93528782eaa10ca581430ed1559d1f2",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0"
+  },
+  "source_files_sha256_after": {
+    "moyu_materials.py": "264a06b8076d291df9f5e93c77e981e34ce40c56726bae260eae3978646829cd",
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_evidence_compat_http_fixtures.py": "9d014df2073a7859104910edde119886a93528782eaa10ca581430ed1559d1f2",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0"
+  },
+  "frozen_source_before": "<private-temporary-path>",
+  "frozen_source_after": "<private-temporary-path>",
+  "source_unchanged": true,
+  "scope": "schema-valid synthetic candidate and reviewed canon legacy evidence; temporary SQLite; real loopback HTTP; free local provider",
+  "claim_limit": "material evidence compatibility and dependency integrity only; no real manuscript, credential, or literary-quality claim"
+}

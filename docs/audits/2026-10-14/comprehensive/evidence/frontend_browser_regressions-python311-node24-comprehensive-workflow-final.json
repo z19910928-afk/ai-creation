@@ -1,0 +1,293 @@
+{
+  "passed": false,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "截断任务在无缓存窗口完整恢复只读片段，已知用量可手动重试",
+      "passed": true
+    },
+    {
+      "name": "缺少流式结束标记的未知结果可回看片段，不显示重发且拒绝过期来源",
+      "passed": true
+    },
+    {
+      "name": "只有本机分片账本时只读恢复未知结果，读取中断可续读且不会再次调用模型",
+      "passed": true
+    },
+    {
+      "name": "未完成的结构分析和JSON正文保留原始片段，只读复制且无法整理或采纳",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段",
+      "passed": true
+    },
+    {
+      "name": "两窗口合并后撤销本页改稿并重做，两次都保留另一页新增段落",
+      "passed": true
+    },
+    {
+      "name": "同起点插入与删除双方向显示双方稿件，选择后保存及撤销重做不丢字",
+      "passed": true
+    },
+    {
+      "name": "重做插入遇到另一页同起点删字时保留正文和重做记录，恢复后可继续重做",
+      "passed": true
+    },
+    {
+      "name": "粗体撤销后接收另一页新改稿，快捷键重做和撤销仅变化粗体",
+      "passed": true
+    },
+    {
+      "name": "另一页覆盖本页撤销位置时拒绝操作，保留正文和可重试的撤销记录",
+      "passed": true
+    },
+    {
+      "name": "真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存",
+      "passed": true
+    },
+    {
+      "name": "自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_6119b996e466450aa0c4ab6305d5af18",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_b71742f62a7a46f9ab7559450129072b",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_9bc334f36c1b4da49506dbc4c612b764",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_6ef471d450284e1a884f32408681c284",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_fc5dffbb87f7442a871454ac7d7323b1",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_f75e6df456ed4b89b0076df8a12042c9",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_772210a73acd4c19981417c1c06efd0e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_8c0b2a6265704316bcb117f69bd0b394",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_60705989b3204436b00f037a94f8e253",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_74488b95958243bd9413c746f93900af",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_a714c7572cad444a8dbb21cb505c6c4c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_fcb5f2b2200d4775a0f9f90fd7f8c03f",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_151b6b1ce9734a44b24f5ddae1f9c8f5",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_32e7681299ef4744afb213e711f42d49",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_f7c2247445534e5f867aadaa842d695c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_7e82751cf598426790bfddab25dfb811",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_ee08dac8fd0f4e60ba366d46276c8890",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_e83096a81f504330b9771f6ad39ec332",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_dd9e08ab76b64548a46e71c6a46a41b9",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_7adba4a5e81d42b3b597729fc00ce102",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "unknown_fragment": {
+    "run_id": "airun_b68dfc392fd14a72b1335d350f723a72",
+    "job_id": "aijob_2745cd5521d04172b0fd90ed7699174e",
+    "text": "结束状态未知的完整可见片段。保留钥匙，不写入原稿。"
+  },
+  "native_composition_events": [
+    {
+      "type": "compositionstart",
+      "data": "",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "lin",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "lin",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "linlan",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "linlan",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "林岚",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionend",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": false
+    }
+  ],
+  "failure": {
+    "message": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-review-repair=\"1\"]')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled class=\"primary-btn\" data-review-repair=\"1\">生成局部修订候选</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n",
+    "stack": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-review-repair=\"1\"]')\u001b[22m\n\u001b[2m    - locator resolved to <button disabled class=\"primary-btn\" data-review-repair=\"1\">生成局部修订候选</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not enabled\u001b[22m\n\u001b[2m    - retrying click action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    58 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not enabled\u001b[22m\n\u001b[2m     - retrying click action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at ./tests/frontend_browser_regressions.cjs:744:58\n    at async test (./tests/frontend_browser_regressions.cjs:47:2)\n    at async main (./tests/frontend_browser_regressions.cjs:722:2)",
+    "server_log": "it=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:02+00:00] \"GET /api/ai/runs/airun_a0c459b76bdc47ab899b5e63c3792687/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"GET /api/chapter-analysis?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"POST /api/chapter-analysis/chapter_analysis_269a9dfec7a24649bafdc8c8306e/confirm HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"GET /api/chapter-analysis?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:03+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/ai/runs/airun_f7a37cc3e5df40429270824a58bcd943/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"POST /api/story-reviews/story_review_32365fbc22e73ba11127d860d44b/issues/review_1e31d9a08d61c3ce7217d97dc900d7c9/decision HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:04+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"PUT /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/ai/runs/airun_733e3fb6bb3a47899b8517df9522fe1b/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:05+00:00] \"GET /api/story-reviews?chapter_id=ch_d299829f85bc498bad1075af4603b002 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:06+00:00] \"POST /api/story-reviews/story_review_8899ae19f9c3d39d062e8ecc030c/issues/review_70d8821e56ec6ead46f72994affbc084/decision HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:06+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:06+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:09+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:13+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:17+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:21+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:25+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:29+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-14T15:53:33+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n"
+  }
+}

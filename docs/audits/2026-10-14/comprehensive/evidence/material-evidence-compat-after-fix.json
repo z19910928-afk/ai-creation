@@ -1,0 +1,105 @@
+{
+  "passed": false,
+  "checks": 4,
+  "cases": [
+    {
+      "name": "test_mixed_evidence_for_omitted_other_memory_does_not_expire_this_task",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_evidence_compat_http_fixtures.py\", line 163, in test_mixed_evidence_for_omitted_other_memory_does_not_expire_this_task\n    self.change(\"/api/memory/\" + other[\"id\"], note=OTHER_CANARY + \"_CHANGED\")\n  File \"./tests/material_dependency_http_fixtures.py\", line 83, in change\n    self.assertEqual(status, 200, item)\nAssertionError: 500 != 200 : {'error': 'malformed JSON'}\n"
+    },
+    {
+      "name": "test_mixed_evidence_preserves_the_actual_memory_dependency",
+      "passed": true
+    },
+    {
+      "name": "test_real_linked_assertion_state_change_still_blocks_old_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_unrelated_legacy_string_evidence_keeps_history_and_dispatch_usable",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:21:59.938920+00:00",
+  "finished_at": "2026-10-14T17:22:03.691431+00:00",
+  "observations": [
+    {
+      "test": "test_mixed_evidence_for_omitted_other_memory_does_not_expire_this_task",
+      "scenario": "other_memory_capture",
+      "preview_http_status": 200,
+      "preview_error": null
+    },
+    {
+      "test": "test_mixed_evidence_preserves_the_actual_memory_dependency",
+      "scenario": "mixed_evidence_capture",
+      "preview_http_status": 200,
+      "preview_error": null,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_mixed_evidence_preserves_the_actual_memory_dependency",
+      "scenario": "mixed_evidence_actual_memory_state",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_real_linked_assertion_state_change_still_blocks_old_dispatch",
+      "scenario": "real_linked_assertion_state",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "messages_hash_preserved": true,
+      "material_marker_present": true
+    },
+    {
+      "test": "test_unrelated_legacy_string_evidence_keeps_history_and_dispatch_usable",
+      "scenario": "legacy_string_history",
+      "history_http_status": 200,
+      "history_error": null,
+      "free_provider_calls": 0
+    },
+    {
+      "test": "test_unrelated_legacy_string_evidence_keeps_history_and_dispatch_usable",
+      "scenario": "legacy_string_dispatch",
+      "dispatch_status": "success",
+      "frozen_context_unchanged": true,
+      "free_provider_calls": 1
+    }
+  ],
+  "free_provider_calls": 1,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_materials.py": "264a06b8076d291df9f5e93c77e981e34ce40c56726bae260eae3978646829cd",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_evidence_compat_http_fixtures.py": "dd56211641dc2ea1fded263d1e33a7afea5a55633a7e7fa6ce460d03ca9895bf"
+  },
+  "source_files_sha256_after": {
+    "moyu_materials.py": "264a06b8076d291df9f5e93c77e981e34ce40c56726bae260eae3978646829cd",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_evidence_compat_http_fixtures.py": "dd56211641dc2ea1fded263d1e33a7afea5a55633a7e7fa6ce460d03ca9895bf"
+  },
+  "source_unchanged": true,
+  "scope": "schema-valid synthetic legacy candidate evidence; temporary SQLite; real loopback HTTP; free local provider",
+  "claim_limit": "material evidence compatibility and dependency integrity only; no real manuscript, credential, or literary-quality claim"
+}

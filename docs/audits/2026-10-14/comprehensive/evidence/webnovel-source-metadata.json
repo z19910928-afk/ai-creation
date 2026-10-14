@@ -1,0 +1,261 @@
+{
+  "checked_at": "2026-10-14T15:08:45.848711+00:00",
+  "repository": "lingfengQAQ/webnovel-writer",
+  "default_branch": "master",
+  "license": "GPL-3.0",
+  "pushed_at": "2026-10-14T14:30:32Z",
+  "archived": false,
+  "branches": [
+    {
+      "name": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "tree": "ae1728dd214d07900032adfc8ac46e36e938cb8f",
+      "committed_at": "2026-10-14T13:35:52Z"
+    },
+    {
+      "name": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "tree": "0d02822731dfea2be4229fb9146250798465e073",
+      "committed_at": "2026-10-12T07:22:01Z"
+    }
+  ],
+  "source_policy": "official fixed commit blobs; research only; no upstream implementation copied into product",
+  "source_records": [
+    {
+      "line": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "path": "README.md",
+      "blob_sha1": "7dc76c06fe24e990aeb09c0cb7d8bb3f8bde8853",
+      "sha256": "a433825b184ad0f1345bd701d6012196b74ef8bfcdd13346df5a57f5e8e811ed",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/86e617ee7f4f04be9d3f8575f90c38f879ed80ed/README.md"
+    },
+    {
+      "line": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "path": "LICENSE",
+      "blob_sha1": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/86e617ee7f4f04be9d3f8575f90c38f879ed80ed/LICENSE"
+    },
+    {
+      "line": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "path": "webnovel-writer/scripts/data_modules/chapter_commit_service.py",
+      "blob_sha1": "7cd4e409c7d11219182d94c87d4eba70db129332",
+      "sha256": "856753a20943dafd4ba10efc5b8ade1e8ab56538d88c493dcbdc7a075ac28c1f",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/86e617ee7f4f04be9d3f8575f90c38f879ed80ed/webnovel-writer/scripts/data_modules/chapter_commit_service.py"
+    },
+    {
+      "line": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "path": "webnovel-writer/scripts/data_modules/memory/writer.py",
+      "blob_sha1": "1acafdb4e110e9debcd29757f9a9088ebd3540aa",
+      "sha256": "290e1277ddb20847982e7c3ff0b856eafe5d6c67a28d36273c06a795e12d1255",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/86e617ee7f4f04be9d3f8575f90c38f879ed80ed/webnovel-writer/scripts/data_modules/memory/writer.py"
+    },
+    {
+      "line": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "path": "webnovel-writer/scripts/data_modules/memory/orchestrator.py",
+      "blob_sha1": "5533dde99a28cccf73ccaa49ea115807350a0ef5",
+      "sha256": "844eac25052ee2438fbc5ff14913acc74e67cd9e0e0e4a7dce70b5b3ade33c26",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/86e617ee7f4f04be9d3f8575f90c38f879ed80ed/webnovel-writer/scripts/data_modules/memory/orchestrator.py"
+    },
+    {
+      "line": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "path": "webnovel-writer/scripts/data_modules/memory_projection_writer.py",
+      "blob_sha1": "23971e45b590ed0c11b45044349facbec6128115",
+      "sha256": "73d7525d10a2245fd678190f7c132bb5449c2723002431eee5c41fe7e63fd113",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/86e617ee7f4f04be9d3f8575f90c38f879ed80ed/webnovel-writer/scripts/data_modules/memory_projection_writer.py"
+    },
+    {
+      "line": "master",
+      "commit": "86e617ee7f4f04be9d3f8575f90c38f879ed80ed",
+      "path": "webnovel-writer/dashboard/app.py",
+      "blob_sha1": "69396b1dc5e0d6bfb16e90387eedbeeeb4fc02a4",
+      "sha256": "ce1e3b53e226107e8b3937b17a17751fa01c424cee997ac7d49508adb3aa111a",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/86e617ee7f4f04be9d3f8575f90c38f879ed80ed/webnovel-writer/dashboard/app.py"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "README.md",
+      "blob_sha1": "415887fc062a5b239b3c49d929e0c4cbaefe20b1",
+      "sha256": "7db8c7527a7340a512fa0ea9487890f47f67a76b0d3b8b040123044872864963",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/README.md"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "LICENSE",
+      "blob_sha1": "f288702d2fa16d3cdf0035b15a9fcbc552cd88e7",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/LICENSE"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "package.json",
+      "blob_sha1": "dd2883d97075aed45731cf17737e31c0a80b0294",
+      "sha256": "f3c0d64206cb02f8221808f1b8fbc8ede76230e994dcff2a28e020725c3fa08e",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/package.json"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/review/src/run.ts",
+      "blob_sha1": "b77349fc66a0d6d1d8df0d00d08f04dfcb0f0a56",
+      "sha256": "1eaa28b2f15109dab5afadc65d584bbe589791b754cf6c005430cf2c20546fad",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/review/src/run.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/review/src/checks.ts",
+      "blob_sha1": "059baba3fe25680d51fbf72ff4437ed118844895",
+      "sha256": "3e5c1e677dc4ea0a427d69041fcf7281d608cb1dc29216a2451044ed3303bbe8",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/review/src/checks.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/commit/archive.ts",
+      "blob_sha1": "25d10020381e89c875c40854521000f22c02c50c",
+      "sha256": "698dae4bac990e185f04decdc5e2cd49720b9ca748bce0e8e15aee58922c1d2a",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/commit/archive.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/recovery/index.ts",
+      "blob_sha1": "1d2108b916c21fcc9cc055ef37b759a8eb1323f3",
+      "sha256": "dec92595393a952d2de4353bfb492531a97e31c0de85c846d22f39ba79162b34",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/recovery/index.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/retrieval/search.ts",
+      "blob_sha1": "4aaad71b0209df0bc0d75e846d36ee11354a3ca5",
+      "sha256": "43d7abffee50a414edfc48c8d9b2ad310a5eae5a4e04a8ff56f93fc588d2d8d5",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/retrieval/search.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/assembly/budget.ts",
+      "blob_sha1": "23e557688acd5f876460f77c3da6084e51a0a026",
+      "sha256": "9f1c1c3e1feb5ec324c9ce28f65e654c09971b70723c39d16ad7e1aaa5a824ad",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/assembly/budget.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/export/index.ts",
+      "blob_sha1": "fc9764c83565f5bcfd3b03d4ec32a1aabac4cbb9",
+      "sha256": "48c16263e38cd21b81658105086858c56328bb5f24be14af6b805526152c137c",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/export/index.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/repo/atomic.ts",
+      "blob_sha1": "894c5718affedb50e9699b3132df0dbb5202ebdd",
+      "sha256": "a335073c819f5aa602b3505d27d9d3bb14513b964fed0a58fd58226f060efdbe",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/repo/atomic.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/repo/transaction.ts",
+      "blob_sha1": "566fadb85ee9d5e56eb7b225ff3e9d259c39917d",
+      "sha256": "5ee8fe9cb069f928ce81a2d4fa0163c2151af8f8e65c3f824a7d4aab48bd545a",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/repo/transaction.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/core/src/reference/epub.ts",
+      "blob_sha1": "08bf4ed9a422e505bfb6888c866adf28b8f3da96",
+      "sha256": "e1af6bd2f5228b145fd8cac47bc6c7d1e04175d906c07e7986200904b15bd177",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/core/src/reference/epub.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/bundle/src/study/editor-requests.ts",
+      "blob_sha1": "e98fc34bd876ecab57711ed67ec11f0a01a4bc73",
+      "sha256": "efe85df78abe857b921092a88a56cff544f5390d197ad14f85fe9c85d133dbf5",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/bundle/src/study/editor-requests.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/bundle/src/study/web.ts",
+      "blob_sha1": "b051adccec0ccafb9151d979f4651a8ecf33c564",
+      "sha256": "233839ae884496a7d33e10a57c6e7e984b35830fab47d32e83a06f8e6ecf9d85",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/bundle/src/study/web.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/bundle/src/indexing/manager.ts",
+      "blob_sha1": "25d2db6bef2d5929d7d9c176cded2d9757704bcb",
+      "sha256": "07dd4275fb7ace56fae5f19de0cfe2ef24955233817481f0c66678c5344c1653",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/bundle/src/indexing/manager.ts"
+    },
+    {
+      "line": "v8",
+      "commit": "a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b",
+      "path": "packages/bundle/skills/novel-review/SKILL.md",
+      "blob_sha1": "f325653f1242202c9805da3523327d35aaaa8e4a",
+      "sha256": "edc7d779f456702abba8ab306b245eab6bd37322a859e09585a06250812adce1",
+      "official_url": "https://github.com/lingfengQAQ/webnovel-writer/blob/a0bdd2d4e2f39bc3de32fc5cbfe605067b5b486b/packages/bundle/skills/novel-review/SKILL.md"
+    }
+  ],
+  "cross_review": {
+    "repository": "t59688/arboris-novel",
+    "branch": {
+      "name": "main",
+      "commit": "dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+      "tree": "08647938cbd5a602a27f5e7aa228742a4b1d8c4b",
+      "committed_at": "2026-02-25T01:17:49Z"
+    },
+    "api_license": null,
+    "source_records": [
+      {
+        "path": "frontend/src/api/novel.ts",
+        "blob_sha1": "d1066c1016eb84c5456c9e413924b18c84deabc2",
+        "sha256": "517a9357ae4a5fbe02a0f24d4a83d98775ee080fe2f7622b32774b9603df874b",
+        "official_url": "https://github.com/t59688/arboris-novel/blob/dd80c69bc30a80d68b375bd504c6bc308164ff9e/frontend/src/api/novel.ts"
+      },
+      {
+        "path": "backend/app/api/routers/writer.py",
+        "blob_sha1": "e128ddf7dad8d4786a30b4126879d0d4927f1c60",
+        "sha256": "f4e8bb5c31f6d3ae730f3ea06be4ecad1c65af6f968c02c8b0913e08af12b335",
+        "official_url": "https://github.com/t59688/arboris-novel/blob/dd80c69bc30a80d68b375bd504c6bc308164ff9e/backend/app/api/routers/writer.py"
+      },
+      {
+        "path": "backend/app/services/chapter_ingest_service.py",
+        "blob_sha1": "80dcd847ac6139078b8f7adebea4fd1f416b4cbe",
+        "sha256": "ff631618e7b99cb105bfb5337eeeb15696ce14d3eb4ad097d9335e835a02a93a",
+        "official_url": "https://github.com/t59688/arboris-novel/blob/dd80c69bc30a80d68b375bd504c6bc308164ff9e/backend/app/services/chapter_ingest_service.py"
+      },
+      {
+        "path": "backend/app/services/chapter_context_service.py",
+        "blob_sha1": "7cff775c88be2c37fce86fc5a383fa190003a9b2",
+        "sha256": "f383d6649a2b0eade6b79a519f436b0f1f043683acc86c106907abea1d817d70",
+        "official_url": "https://github.com/t59688/arboris-novel/blob/dd80c69bc30a80d68b375bd504c6bc308164ff9e/backend/app/services/chapter_context_service.py"
+      }
+    ]
+  },
+  "master_archive": {
+    "complete": true,
+    "sha256": "2a529c7bce9ddc9d14a9c20a3f64fdfe503a09da5b7f26de3b2a9b47cc2e466c"
+  },
+  "v8_archive": {
+    "complete": false,
+    "reason": "Stopped large archive media transfer; all cited code fetched and verified as individual Git blobs."
+  }
+}

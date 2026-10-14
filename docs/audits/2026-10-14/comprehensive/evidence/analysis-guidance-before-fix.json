@@ -1,0 +1,373 @@
+{
+  "passed": false,
+  "checks": 12,
+  "cases": [
+    {
+      "name": "test_contract_only_blocks_candidates_without_writes",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 241, in test_contract_only_blocks_candidates_without_writes\n    self.assert_blueprint_blocks(\"contract\", \"candidates\")\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 215, in assert_blueprint_blocks\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': '83de03063ec0648ccd206ef60fbd29b4f85681f19d8f4733aa6b500124499b5e', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_09af6b391e852778f95208c949ed5e0e', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_09af6b391e852778f95208c949ed5e0e', 'kind': 'event', 'known_by': ['ent_125e2a2d4e4c4e48898b7b365cacd1e7'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_7863416a44884b9298f4f4a5362f9027', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_bd259f22ff1f4cffa4d87f1f8d8b1f2c', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_425e33c3744774c345f168f5f3d6a3c8', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_425e33c3744774c345f168f5f3d6a3c8', 'kind': 'character_state', 'known_by': ['ent_125e2a2d4e4c4e48898b7b365cacd1e7'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_7863416a44884b9298f4f4a5362f9027', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_bd259f22ff1f4cffa4d87f1f8d8b1f2c', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_7863416a44884b9298f4f4a5362f9027', 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_7863416a44884b9298f4f4a5362f9027', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_bd259f22ff1f4cffa4d87f1f8d8b1f2c', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_83de03063ec0648ccd206ef60fbd', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_7863416a44884b9298f4f4a5362f9027', 'kind': 'chapter', 'sha256': 'ed5a113c54441eb70b568f969bb0fe339aef8cd5b627e3825b7e5c3e245e2ff1'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_125e2a2d4e4c4e48898b7b365cacd1e7', 'kind': 'record', 'sha256': '2f225147881634c26f4ece34214590b0dd62a10bd43c558a769dd992a43cf8b8'}, {'id': 'ent_9c62029f85d840f7930c0e4dfee6a473', 'kind': 'record', 'sha256': 'b8244572400a7c45965979bc091785867ae7f81400525c2ce68f4ebcecd330ff'}, {'id': 'ent_cad5b53e04c64785a2a0d9a7f2f59e4a', 'kind': 'record', 'sha256': '0536d589fb8dcd60d3dc89e8ad2c37b1082b25207f91cc0419a0173623df1923'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_14f62b370f704045bba764be22c79fa9', 'schema_version': 1, 'source_revision_id': 'rev_bd259f22ff1f4cffa4d87f1f8d8b1f2c', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_7863416a44884b9298f4f4a5362f9027', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_bd259f22ff1f4cffa4d87f1f8d8b1f2c', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '她在北窗听雨。'}, 'created_at': '2026-10-14T17:59:30.453401+00:00', 'updated_at': '2026-10-14T17:59:30.453401+00:00'}\n"
+    },
+    {
+      "name": "test_contract_only_blocks_handoff_without_writes",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 238, in test_contract_only_blocks_handoff_without_writes\n    self.assert_blueprint_blocks(\"contract\", \"handoff\")\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 215, in assert_blueprint_blocks\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': '0fd17c3ad14b752d08dbb2ff32a4ebe0b75865a6b695de7a894b370a5fc45cb1', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_029b482ade154f93094b1cbb23a102d2', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_029b482ade154f93094b1cbb23a102d2', 'kind': 'event', 'known_by': ['ent_df41d316f47b49fe9ec77fbea7395683'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_e5619ff55dab4ffa9bc496c0f14ca576', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_1fdfe008766b41199a8c88f7c616fb7c', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_8d272d1989a4d37866fbdf87800087f7', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_8d272d1989a4d37866fbdf87800087f7', 'kind': 'character_state', 'known_by': ['ent_df41d316f47b49fe9ec77fbea7395683'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_e5619ff55dab4ffa9bc496c0f14ca576', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_1fdfe008766b41199a8c88f7c616fb7c', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_e5619ff55dab4ffa9bc496c0f14ca576', 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_e5619ff55dab4ffa9bc496c0f14ca576', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_1fdfe008766b41199a8c88f7c616fb7c', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_0fd17c3ad14b752d08dbb2ff32a4', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_e5619ff55dab4ffa9bc496c0f14ca576', 'kind': 'chapter', 'sha256': '90cccf1e1695cec3873c9cf2f79ceeb1d065514c1ecfaa2f9f4105add03ef9a7'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_2ef6135f5cbd45e9a45027f908da9d45', 'kind': 'record', 'sha256': '2d510833b3f5518a0346c2ea4222148e92cb77200241b13be5068a9ca87c6811'}, {'id': 'ent_cba225f0030d497b836f35ec017ab0ef', 'kind': 'record', 'sha256': '6fb8db0b218c56b4aa77f91925d44be3f942d2770837922fa1d9be717595f7d7'}, {'id': 'ent_df41d316f47b49fe9ec77fbea7395683', 'kind': 'record', 'sha256': '8cb958ddc80c109de6706e7be0fb500205c17d1e30606939577b2f7e627755ba'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_2889f2cc0b9646988b9417374c6ff00f', 'schema_version': 1, 'source_revision_id': 'rev_1fdfe008766b41199a8c88f7c616fb7c', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_e5619ff55dab4ffa9bc496c0f14ca576', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_1fdfe008766b41199a8c88f7c616fb7c', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '她在北窗听雨。'}, 'created_at': '2026-10-14T17:59:31.553795+00:00', 'updated_at': '2026-10-14T17:59:31.553795+00:00'}\n"
+    },
+    {
+      "name": "test_contract_only_blocks_summary_without_writes",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 235, in test_contract_only_blocks_summary_without_writes\n    self.assert_blueprint_blocks(\"contract\", \"summary\")\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 215, in assert_blueprint_blocks\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': '9c1173be6300819099992f514e25329e2d801fb843773aee29314095bf273e48', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_bae207b92fddca91705d8b5c71c5f5c9', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_bae207b92fddca91705d8b5c71c5f5c9', 'kind': 'event', 'known_by': ['ent_e086fc09958e4f24bd52a7d63ffec712'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_4eea5d87c09b478aa0a93a008aac0c98', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_87533325d9fe4d7e8dc23751781a0871', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_c884ce057d97885b803ef3700bf8b2ec', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_c884ce057d97885b803ef3700bf8b2ec', 'kind': 'character_state', 'known_by': ['ent_e086fc09958e4f24bd52a7d63ffec712'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_4eea5d87c09b478aa0a93a008aac0c98', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_87533325d9fe4d7e8dc23751781a0871', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_4eea5d87c09b478aa0a93a008aac0c98', 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_4eea5d87c09b478aa0a93a008aac0c98', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_87533325d9fe4d7e8dc23751781a0871', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_9c1173be6300819099992f514e25', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_4eea5d87c09b478aa0a93a008aac0c98', 'kind': 'chapter', 'sha256': '7805fe4dd2b59387b855b60795f2a886af25647c817cad274d2bef20dced3108'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_26dacfbe39e5443c8d5869d2432dcc2d', 'kind': 'record', 'sha256': '32956ad7c02778f83c36e40c76a8bfd5584ef7cfe983b7d16a137ebcb5efd19f'}, {'id': 'ent_aea3a15152e140208c147fd2bf613d17', 'kind': 'record', 'sha256': '0e78bf65225e136cb2bad0e7847332a647d158168116fdb1ca65df418e01b30d'}, {'id': 'ent_e086fc09958e4f24bd52a7d63ffec712', 'kind': 'record', 'sha256': 'cbf131072b23e6a6abc155487b22cb97b7f6b44107c1428468d32f9086bb0b8e'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_5dda2a402e4d4c8a8e4740c1c9875e7d', 'schema_version': 1, 'source_revision_id': 'rev_87533325d9fe4d7e8dc23751781a0871', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_4eea5d87c09b478aa0a93a008aac0c98', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_87533325d9fe4d7e8dc23751781a0871', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '她在北窗听雨。'}, 'created_at': '2026-10-14T17:59:32.663867+00:00', 'updated_at': '2026-10-14T17:59:32.663867+00:00'}\n"
+    },
+    {
+      "name": "test_current_analysis_sequential_decisions_are_current_and_idempotent",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 283, in test_current_analysis_sequential_decisions_are_current_and_idempotent\n    self.assertEqual(stored.get(\"guidance_source\"), frozen[0][\"_guidance_source\"])\nAssertionError: None != {'version': 2, 'blueprint_hash': '33ed244[196 chars]3b7'}\n"
+    },
+    {
+      "name": "test_external_guidance_change_after_own_handoff_blocks_remaining_candidates",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 308, in test_external_guidance_change_after_own_handoff_blocks_remaining_candidates\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': '67ac626ed6957970665e7298a57e2d6e2720e431704a1729c6576d1f215e5cc0', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_bc0c56d818d412c71b4ee53fca44dfb0', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_bc0c56d818d412c71b4ee53fca44dfb0', 'kind': 'event', 'known_by': ['ent_34a535b5c28a4b74b1dba46fc6dee0e6'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_421d443760644c9d9f86d9cff9bd5065', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_7784b72f3b614fdfbeb47fde5df34c2f', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_db60fca355ebcd1e6d1ed44c8d66462e', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_db60fca355ebcd1e6d1ed44c8d66462e', 'kind': 'character_state', 'known_by': ['ent_34a535b5c28a4b74b1dba46fc6dee0e6'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_421d443760644c9d9f86d9cff9bd5065', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_7784b72f3b614fdfbeb47fde5df34c2f', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_421d443760644c9d9f86d9cff9bd5065', 'created_at': '2026-10-14T17:59:34.893472+00:00', 'decision_material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_421d443760644c9d9f86d9cff9bd5065', 'kind': 'chapter', 'sha256': 'f6bf7ee7b58b5add5cb22a05bd80b7f30192a04f52fb1ad5509e0b1c3f4a151c'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_015474f5f4e84d93b238f9aeb987d0a9', 'kind': 'record', 'sha256': '43cf2922db768babfad19a15e66c3c38c8a1bbd67513e75b54fdecbe9c34c111'}, {'id': 'ent_34a535b5c28a4b74b1dba46fc6dee0e6', 'kind': 'record', 'sha256': '1f6cf90fedba705f5591e176e96b9b1795d8b546ebf02dd160204f994549b4b4'}, {'id': 'ent_6eefaf9faac348d0b9112c0542c90f0a', 'kind': 'record', 'sha256': '5febda6d3e130a57e6cd27def7373b1329f20a607ae6f7363964d0bc9d9c827a'}], 'project_id': 'default-project', 'version': 1}, 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_421d443760644c9d9f86d9cff9bd5065', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_7784b72f3b614fdfbeb47fde5df34c2f', 'source_start': 0, 'source_start_utf8': 0}], 'reviewed_at': '2026-10-14T17:59:34.904028+00:00', 'reviewed_by': 'local-user', 'status': 'accepted', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_67ac626ed6957970665e7298a57e', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_421d443760644c9d9f86d9cff9bd5065', 'kind': 'chapter', 'sha256': '48eedd7d94597004ed468c4c17b35e8e91336c78f795e1f514c3e87ed331c2ea'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_015474f5f4e84d93b238f9aeb987d0a9', 'kind': 'record', 'sha256': '43cf2922db768babfad19a15e66c3c38c8a1bbd67513e75b54fdecbe9c34c111'}, {'id': 'ent_34a535b5c28a4b74b1dba46fc6dee0e6', 'kind': 'record', 'sha256': '1f6cf90fedba705f5591e176e96b9b1795d8b546ebf02dd160204f994549b4b4'}, {'id': 'ent_6eefaf9faac348d0b9112c0542c90f0a', 'kind': 'record', 'sha256': '5febda6d3e130a57e6cd27def7373b1329f20a607ae6f7363964d0bc9d9c827a'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_19cb6d711bfe44f59f6c1dff54efbccb', 'schema_version': 1, 'source_revision_id': 'rev_7784b72f3b614fdfbeb47fde5df34c2f', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_421d443760644c9d9f86d9cff9bd5065', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_7784b72f3b614fdfbeb47fde5df34c2f', 'source_start': 0, 'source_start_utf8': 0}], 'reviewed_at': '2026-10-14T17:59:34.900122+00:00', 'reviewed_by': 'local-user', 'status': 'accepted', 'text': '她在北窗听雨。'}, 'updated_at': '2026-10-14T17:59:34.904134+00:00'}\n"
+    },
+    {
+      "name": "test_late_analysis_save_rechecks_original_guidance_without_writes",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 431, in test_late_analysis_save_rechecks_original_guidance_without_writes\n    self.assertTrue(rejected)\nAssertionError: False is not true\n"
+    },
+    {
+      "name": "test_premise_only_blocks_candidates_without_writes",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 232, in test_premise_only_blocks_candidates_without_writes\n    self.assert_blueprint_blocks(\"premise\", \"candidates\")\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 215, in assert_blueprint_blocks\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': 'f623c1bc5b6fc1d3d2333052d17b559f3062a702ed66e91b2d43ad41218cda7f', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_977c3c63076704b64fd3773d7958c4d4', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_977c3c63076704b64fd3773d7958c4d4', 'kind': 'event', 'known_by': ['ent_ee6d5c25b2204a2a8ac0f6b997ff9b03'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_9bfb19e1223943e3abc3704386502821', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_a56d9836c9434e7daf06c987760638e1', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_8ffc555300bd0ed437938c1a9a2127a3', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_8ffc555300bd0ed437938c1a9a2127a3', 'kind': 'character_state', 'known_by': ['ent_ee6d5c25b2204a2a8ac0f6b997ff9b03'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_9bfb19e1223943e3abc3704386502821', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_a56d9836c9434e7daf06c987760638e1', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_9bfb19e1223943e3abc3704386502821', 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_9bfb19e1223943e3abc3704386502821', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_a56d9836c9434e7daf06c987760638e1', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_f623c1bc5b6fc1d3d2333052d17b', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_9bfb19e1223943e3abc3704386502821', 'kind': 'chapter', 'sha256': '334560a317332ea6ecf3d064480123a8543a7ba1dbc7e5d31537a0d9fab9b73a'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_9ba3806e1936406f89017d9a2fe81224', 'kind': 'record', 'sha256': '87d9d5456ab18961335e89fb66f7739d86242668acb36407baa0e3e0c8fac50f'}, {'id': 'ent_b07f1be533504feeb0635fe417512642', 'kind': 'record', 'sha256': 'e7d6466797c5aeccede3ae6604b2a2fe0582f88a3d77803e2fa27fc8c41a102b'}, {'id': 'ent_ee6d5c25b2204a2a8ac0f6b997ff9b03', 'kind': 'record', 'sha256': 'b96d9015fbfdaeedb5c5dd1a9f99e32a9d9e88414aa51c7c59d521e6f292c3c3'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_3f18e86153f444fe8ef94660b1af02d3', 'schema_version': 1, 'source_revision_id': 'rev_a56d9836c9434e7daf06c987760638e1', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_9bfb19e1223943e3abc3704386502821', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_a56d9836c9434e7daf06c987760638e1', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '她在北窗听雨。'}, 'created_at': '2026-10-14T17:59:37.114958+00:00', 'updated_at': '2026-10-14T17:59:37.114958+00:00'}\n"
+    },
+    {
+      "name": "test_premise_only_blocks_handoff_without_writes",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 229, in test_premise_only_blocks_handoff_without_writes\n    self.assert_blueprint_blocks(\"premise\", \"handoff\")\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 215, in assert_blueprint_blocks\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': '31ca7b7a0ad119a94fef13b1c3870e5aab54fabc7e0ca08f414c8b181261095d', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_f0f374842168c72b5e997ac8c72b5611', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_f0f374842168c72b5e997ac8c72b5611', 'kind': 'event', 'known_by': ['ent_74b3ee5032bc46b6ab807fa8f3511ed2'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_3c2583035508470caca5c54d4570b871', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_aee8aa9ada754290b24352749e8bc9ef', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_a6045a2efd6dce717f99bc40dbdc7d34', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_a6045a2efd6dce717f99bc40dbdc7d34', 'kind': 'character_state', 'known_by': ['ent_74b3ee5032bc46b6ab807fa8f3511ed2'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_3c2583035508470caca5c54d4570b871', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_aee8aa9ada754290b24352749e8bc9ef', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_3c2583035508470caca5c54d4570b871', 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_3c2583035508470caca5c54d4570b871', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_aee8aa9ada754290b24352749e8bc9ef', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_31ca7b7a0ad119a94fef13b1c387', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_3c2583035508470caca5c54d4570b871', 'kind': 'chapter', 'sha256': 'aa8130778613078dedd7bdc50bba5f058326f20ab4cd545e5095d147245bee5d'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_3ebb075c09cb4b09a02a2738e9ff3564', 'kind': 'record', 'sha256': '3ae4a77ded54997b35590519e118442647b38d6173b643c8962b815750a3d1f1'}, {'id': 'ent_74b3ee5032bc46b6ab807fa8f3511ed2', 'kind': 'record', 'sha256': 'db8125ce2325fd65248f4b7291db169fa62ee07e970be5c4fd4380c887966b4b'}, {'id': 'ent_ff4b05dd8ec443bf8158b53913b03f2d', 'kind': 'record', 'sha256': 'd295ec061c0d41aca3774d981798f6f5c2ceb771438a56fa9bbb4a2a88d81d30'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_dbb871a8a24d4996b79088f02e974c0a', 'schema_version': 1, 'source_revision_id': 'rev_aee8aa9ada754290b24352749e8bc9ef', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_3c2583035508470caca5c54d4570b871', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_aee8aa9ada754290b24352749e8bc9ef', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '她在北窗听雨。'}, 'created_at': '2026-10-14T17:59:38.200417+00:00', 'updated_at': '2026-10-14T17:59:38.200417+00:00'}\n"
+    },
+    {
+      "name": "test_premise_only_blocks_summary_without_writes",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 226, in test_premise_only_blocks_summary_without_writes\n    self.assert_blueprint_blocks(\"premise\", \"summary\")\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 215, in assert_blueprint_blocks\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': '742420b89ad61561df86d5a57d5897a6351475553c556293ff9f5d8fd2c105fb', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_a2d1ac23f0c8616ab173160d5e24dc70', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_a2d1ac23f0c8616ab173160d5e24dc70', 'kind': 'event', 'known_by': ['ent_08a98f45de5b4fc3ba5556266b21e949'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_2cd91f9e6145458e912802281d909b8e', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_31a58d8ba1cb47b9947d854730d68863', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_ad9787ce864a36707b8b1e4ce46898de', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_ad9787ce864a36707b8b1e4ce46898de', 'kind': 'character_state', 'known_by': ['ent_08a98f45de5b4fc3ba5556266b21e949'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_2cd91f9e6145458e912802281d909b8e', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_31a58d8ba1cb47b9947d854730d68863', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_2cd91f9e6145458e912802281d909b8e', 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_2cd91f9e6145458e912802281d909b8e', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_31a58d8ba1cb47b9947d854730d68863', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_742420b89ad61561df86d5a57d58', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_2cd91f9e6145458e912802281d909b8e', 'kind': 'chapter', 'sha256': '508acf8e2a0cd4c995cbc96e432f672dac074564d0f1d18f3be125f09b50a88f'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_08a98f45de5b4fc3ba5556266b21e949', 'kind': 'record', 'sha256': 'c1f7fa9ef25882b8e7c428451e329da357f53f85bb052256f28e9fc8e15b6826'}, {'id': 'ent_146c8a77b331433c801db3d2cf194e01', 'kind': 'record', 'sha256': '26d25a7b385f25f1c6063c819248281de0df6a6b5d71ebc91e99e133322cc29f'}, {'id': 'ent_159e29f695ba4da0a99d515c123dc59b', 'kind': 'record', 'sha256': '465550b39e77f73a7029d1de43d4ed18cc7f1da8b00b8f170c2074b44c815262'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_fbb1b3f6a47f46cb8834f08745a2fab9', 'schema_version': 1, 'source_revision_id': 'rev_31a58d8ba1cb47b9947d854730d68863', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_2cd91f9e6145458e912802281d909b8e', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_31a58d8ba1cb47b9947d854730d68863', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '她在北窗听雨。'}, 'created_at': '2026-10-14T17:59:39.314632+00:00', 'updated_at': '2026-10-14T17:59:39.314632+00:00'}\n"
+    },
+    {
+      "name": "test_real_saved_ai_analysis_missing_guidance_is_read_only",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 374, in test_real_saved_ai_analysis_missing_guidance_is_read_only\n    self.assertEqual(current[\"status\"], \"stale\", current)\nAssertionError: 'pending' != 'stale'\n- pending\n+ stale\n : {'analysis_key': '6bfa3e00c3575a386f056482a729e8326abf22018de6615df7f88027523e913b', 'branch_id': 'main', 'candidates': [{'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_a639ac6e46bdff52fefa228d4e2107bd', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_a639ac6e46bdff52fefa228d4e2107bd', 'kind': 'event', 'known_by': ['ent_10d4aceb27064df1bf27d021734497b6'], 'name': '窗前听雨', 'note': '林岚在窗前听雨。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_3f7162f999e04aa1bd5853997df52093', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_d4d60e7c8fd843009de3c8ae1ec97ed3', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成来客', 'type': 'event'}, {'attribute': '动作', 'branch_id': 'main', 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'dedupe_key': 'analysis_7eecf438321f51fbf0197e77cab22b8f', 'entity_ids': [], 'entity_resolution': 'unresolved', 'epistemic_mode': 'world_truth', 'id': 'analysis_7eecf438321f51fbf0197e77cab22b8f', 'kind': 'character_state', 'known_by': ['ent_10d4aceb27064df1bf27d021734497b6'], 'name': '窗扣', 'note': '指尖抵着窗扣。', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'review_required': True, 'source_chapter_id': 'ch_3f7162f999e04aa1bd5853997df52093', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_d4d60e7c8fd843009de3c8ae1ec97ed3', 'source_start': 0, 'source_start_utf8': 0, 'status': 'candidate', 'subject_name': '合成信使', 'type': 'character_state', 'value': '抵着窗扣'}], 'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'chapter_id': 'ch_3f7162f999e04aa1bd5853997df52093', 'decisions': [], 'handoff': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_3f7162f999e04aa1bd5853997df52093', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_d4d60e7c8fd843009de3c8ae1ec97ed3', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '继续等待窗外的来客。'}, 'id': 'chapter_analysis_6bfa3e00c3575a386f056482a729', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_3f7162f999e04aa1bd5853997df52093', 'kind': 'chapter', 'sha256': '73fe87ad5a29bd1cff61b46acc7c01f4478d9d1bfbaaf2d98bf3a9937303dad6'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_05f4575048454a04913b99806f81f8e8', 'kind': 'record', 'sha256': '66d30d6b0fcce02fd95dc77f30eb40a7f7189a6a7e2c9802a69e09b5a9a7e69c'}, {'id': 'ent_0e336d3e20074a54877cbf390849a83e', 'kind': 'record', 'sha256': 'f1217da3d3edb6166656ff9b33310d20f40b2af574c1e2133b27ef55064f59a9'}, {'id': 'ent_10d4aceb27064df1bf27d021734497b6', 'kind': 'record', 'sha256': '45012b00b14d1d3ba5fb63a5ef1e17331f8bf3a9481b19d6ec57ae14dcd84a1e'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_9dd10766f21d42728030fce93c659906', 'schema_version': 1, 'source_revision_id': 'rev_d4d60e7c8fd843009de3c8ae1ec97ed3', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': '5a51e5d1cf04dd00cc34fc777e76435ec434869391772fe5130e2a1eda4f677a', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_3f7162f999e04aa1bd5853997df52093', 'source_end': 19, 'source_end_utf8': 57, 'source_hash': 'd394df0828ee6387134b136b08a1e1277d1fc8c63a60c21cf18fd5c899cc5281', 'source_quote': '她把指尖抵在窗扣上，听见雨水落在石阶。', 'source_revision_id': 'rev_d4d60e7c8fd843009de3c8ae1ec97ed3', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '她在北窗听雨。'}, 'created_at': '2026-10-14T17:59:40.426759+00:00', 'updated_at': '2026-10-14T17:59:40.426759+00:00'}\n"
+    },
+    {
+      "name": "test_same_manuscript_with_new_guidance_has_distinct_analysis_identity",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_guidance_http_fixtures.py\", line 339, in test_same_manuscript_with_new_guidance_has_distinct_analysis_identity\n    self.assertNotEqual(first[\"id\"], second[\"id\"])\nAssertionError: 'chapter_analysis_feeaa24c0c17d4076985b890f9a2' == 'chapter_analysis_feeaa24c0c17d4076985b890f9a2'\n"
+    },
+    {
+      "name": "test_unlinked_component_analysis_without_frozen_sources_remains_compatible",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:59:30.366277+00:00",
+  "finished_at": "2026-10-14T17:59:43.662830+00:00",
+  "observations": [
+    {
+      "test": "test_contract_only_blocks_candidates_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "contract",
+      "action": "candidates",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "pending",
+      "analysis_stale": false,
+      "confirm_http_status": 200,
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_contract_only_blocks_handoff_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "contract",
+      "action": "handoff",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "pending",
+      "analysis_stale": false,
+      "confirm_http_status": 200,
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_contract_only_blocks_summary_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "contract",
+      "action": "summary",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "pending",
+      "analysis_stale": false,
+      "confirm_http_status": 200,
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_current_analysis_sequential_decisions_are_current_and_idempotent",
+      "scenario": "current_sequential_decisions",
+      "outcomes": [
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "pending"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "reviewed"
+        },
+        {
+          "http_status": 200,
+          "analysis_status": null,
+          "listed_status": "reviewed"
+        }
+      ],
+      "analysis_status": "reviewed",
+      "analysis_stale": false,
+      "summary_saved": true,
+      "handoff_saved": true,
+      "new_entities": 2,
+      "new_memories": 2,
+      "new_assertions": 2,
+      "guidance_changed_by_own_decisions": true,
+      "decision_guidance_matches_current": false,
+      "original_guidance_matches_frozen": false,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_external_guidance_change_after_own_handoff_blocks_remaining_candidates",
+      "scenario": "guidance_change_after_own_handoff",
+      "analysis_status": "pending",
+      "confirm_http_status": 200,
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "decision_guidance_source_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_late_analysis_save_rechecks_original_guidance_without_writes",
+      "scenario": "late_frozen_guidance_save",
+      "rejected": false,
+      "actual_saved_job_and_run": true,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_premise_only_blocks_candidates_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "premise",
+      "action": "candidates",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "pending",
+      "analysis_stale": false,
+      "confirm_http_status": 200,
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_premise_only_blocks_handoff_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "premise",
+      "action": "handoff",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "pending",
+      "analysis_stale": false,
+      "confirm_http_status": 200,
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_premise_only_blocks_summary_without_writes",
+      "scenario": "blueprint_only_blocks_analysis",
+      "field": "premise",
+      "action": "summary",
+      "actual_saved_job_and_run": true,
+      "guidance_changed": true,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "extra_materialize_calls": 0,
+      "history_materials_read_only": true,
+      "analysis_status": "pending",
+      "analysis_stale": false,
+      "confirm_http_status": 200,
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "request_audit_unchanged": true,
+      "original_material_source_unchanged": true,
+      "original_guidance_source_unchanged": true
+    },
+    {
+      "test": "test_real_saved_ai_analysis_missing_guidance_is_read_only",
+      "scenario": "legacy_guidance_missing",
+      "actual_saved_job_and_run": true,
+      "original_material_source_preserved": true,
+      "missing_guidance_source": true,
+      "analysis_status": "pending",
+      "confirm_http_statuses": [
+        200,
+        200,
+        200
+      ],
+      "state_unchanged": false,
+      "database_unchanged": false,
+      "ledger_unchanged": false,
+      "frozen_request_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_same_manuscript_with_new_guidance_has_distinct_analysis_identity",
+      "scenario": "analysis_guidance_identity",
+      "actual_saved_jobs_and_runs": 2,
+      "same_manuscript_revision": true,
+      "same_manuscript_hash": true,
+      "different_frozen_guidance": true,
+      "same_frozen_materials": true,
+      "distinct_analysis_id": false,
+      "distinct_analysis_key": false,
+      "second_analysis_bound_to_new_run": false,
+      "first_status": "pending",
+      "second_status": "pending",
+      "saved_analysis_count": 1,
+      "first_frozen_request_unchanged": true,
+      "chapter_unchanged": true,
+      "free_provider_calls": 2
+    },
+    {
+      "test": "test_unlinked_component_analysis_without_frozen_sources_remains_compatible",
+      "scenario": "component_compatibility",
+      "linked_ai_run_count": 0,
+      "confirm_http_statuses": [
+        200,
+        200,
+        200
+      ],
+      "analysis_status": "reviewed",
+      "no_guidance_marker": true,
+      "no_material_marker": true,
+      "free_provider_calls": 0
+    }
+  ],
+  "synthetic_only": true,
+  "free_provider_calls": 12,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "426f956640f9e68afb491a064f40926213d22a01eecf21d18508c06846c8e188",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/analysis_guidance_http_fixtures.py": "3aadb91914dbd7d05045bd5e2abfb2ae2f6c65482718e8fdc87bf731051e76a4"
+  },
+  "source_files_sha256_after": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "426f956640f9e68afb491a064f40926213d22a01eecf21d18508c06846c8e188",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/analysis_guidance_http_fixtures.py": "3aadb91914dbd7d05045bd5e2abfb2ae2f6c65482718e8fdc87bf731051e76a4"
+  },
+  "frozen_source_before": "<private-temporary-path>",
+  "frozen_source_after": "<private-temporary-path>",
+  "source_unchanged": true,
+  "scope": "real saved AI jobs and runs in temporary synthetic SQLite; loopback HTTP; free local provider",
+  "claim_limit": "chapter analysis author-guidance integrity only; no real manuscript, credential, literary-quality or first-tier claim"
+}

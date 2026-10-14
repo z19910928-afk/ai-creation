@@ -1,0 +1,22 @@
+{
+  "checked_date": "2026-10-14",
+  "repository": "t59688/arboris-novel",
+  "default_branch": "main",
+  "archived": false,
+  "head_commit": "dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+  "head_tree": "08647938cbd5a602a27f5e7aa228742a4b1d8c4b",
+  "commit_committer_date_utc": "2026-02-25T01:17:49Z",
+  "repository_pushed_at_utc": "2026-02-25T01:17:49Z",
+  "license_spdx_from_repository_api": null,
+  "readme_license_claim": "MIT",
+  "license_file_found_in_fixed_archive": false,
+  "archive_sha256": "c555e625dc2bef65cf1e8e550b412758a4947d5775439346058c4b00943d8726",
+  "metadata_sources": [
+    "https://api.github.com/repos/t59688/arboris-novel",
+    "https://api.github.com/repos/t59688/arboris-novel/commits/main"
+  ],
+  "fixed_source_archive": "https://api.github.com/repos/t59688/arboris-novel/tarball/dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+  "source_acquisition": "official_github_api_and_fixed_commit_archive",
+  "scope": "source_reading_and_isolated_original_components_only",
+  "source_reuse": "product_design_comparison_only_no_upstream_implementation_or_prompts_copied"
+}

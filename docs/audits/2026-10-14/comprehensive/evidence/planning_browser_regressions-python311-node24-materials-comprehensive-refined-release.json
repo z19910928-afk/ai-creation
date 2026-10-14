@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "scope": "规划输入保存、采用竞态、规划草稿恢复、第二轮物化；真实浏览器、隔离 SQLite、本机模拟提供方",
+  "cases": [
+    {
+      "name": "同一规划输入框连续两次自动保存不会丢第二次修改",
+      "passed": true
+    },
+    {
+      "name": "采用规划等待期间切页返回仍锁定输入，结束后新输入正常保存",
+      "passed": true
+    },
+    {
+      "name": "规划保存失败后刷新仍能恢复本地规划草稿并阻止静默离开",
+      "passed": true
+    },
+    {
+      "name": "两标签同字段规划冲突保留双方并按作者选择保存",
+      "passed": true
+    },
+    {
+      "name": "第二套规划物化只新增章节并保留第一轮章节全部内容",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report."
+}

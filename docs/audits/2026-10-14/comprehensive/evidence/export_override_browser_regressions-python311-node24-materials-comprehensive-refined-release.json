@@ -1,0 +1,75 @@
+{
+  "passed": true,
+  "scope": "真实桌面Chrome、隔离SQLite、实际下载中文例外文稿",
+  "cases": [
+    {
+      "name": "没有作者理由时真实页面和下载接口都阻断未审稿文稿",
+      "passed": true
+    },
+    {
+      "name": "七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算",
+      "passed": true
+    },
+    {
+      "name": "从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留",
+      "passed": true
+    },
+    {
+      "name": "同一中文理由可实际下载EPUB，包内原稿及审计与Markdown一致",
+      "passed": true
+    },
+    {
+      "name": "导出后改稿会使旧中文理由失效，两种格式重新要求作者确认",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "external_model_calls": 0,
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00"
+    },
+    {
+      "path": "server.py",
+      "sha256": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c"
+    },
+    {
+      "path": "tests/export_override_browser_regressions.cjs",
+      "sha256": "40b3296307aab830a02ad3b01eaafaf6c72910a556c296c91951bbc28382c619"
+    }
+  ],
+  "short_reason_lengths": [
+    {
+      "codepoints": 7,
+      "utf16_units": 7,
+      "blocked": true
+    },
+    {
+      "codepoints": 7,
+      "utf16_units": 14,
+      "blocked": true
+    }
+  ],
+  "markdown": {
+    "bytes": 2606,
+    "source_sha256": "63360ba955b134116f2b51f2dc21dc09f830c001ee8696280f482e15d7306dee",
+    "audit_reason": "作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀"
+  },
+  "epub": {
+    "bytes": 3348,
+    "source_sha256": "63360ba955b134116f2b51f2dc21dc09f830c001ee8696280f482e15d7306dee",
+    "manifest_reason": "作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀",
+    "audit_reason": "作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀"
+  },
+  "screenshot": "export-override-desktop.png",
+  "downloads": [
+    "中文例外导出合成作品.md",
+    "中文例外导出合成作品.epub"
+  ],
+  "source_unchanged": true
+}

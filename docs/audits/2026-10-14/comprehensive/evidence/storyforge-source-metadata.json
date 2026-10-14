@@ -1,0 +1,839 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-14T15:11:15.297Z",
+  "source_method": "Independent official repository, pinned commit, recursive tree and blob verification. Existing peer cache bytes rechecked independently against current official tree.",
+  "source_scope": "Selected source files only. No upstream full application execution.",
+  "storyforge_since_previous_audit": {
+    "base": "83ad0231c7ab85f1b9725940861899b07a7d69b1",
+    "head": "5147924e835a11ca514d7c7bb22fcc365339316f",
+    "status": "ahead",
+    "ahead_by": 46,
+    "behind_by": 0,
+    "total_commits": 46,
+    "listed_changed_files": 111,
+    "changed_paths": [
+      {
+        "path": ".github/release-notes/v4.0.0.md",
+        "status": "added"
+      },
+      {
+        "path": ".github/workflows/release.yml",
+        "status": "modified"
+      },
+      {
+        "path": ".gitignore",
+        "status": "modified"
+      },
+      {
+        "path": "CHANGELOG.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.de.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.en.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.es.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.fr.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.it.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.ja.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.ko.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.md",
+        "status": "modified"
+      },
+      {
+        "path": "README.pt.md",
+        "status": "modified"
+      },
+      {
+        "path": "adventure-web.html",
+        "status": "added"
+      },
+      {
+        "path": "data/traffic/clones.csv",
+        "status": "modified"
+      },
+      {
+        "path": "data/traffic/release-assets.csv",
+        "status": "modified"
+      },
+      {
+        "path": "data/traffic/views.csv",
+        "status": "modified"
+      },
+      {
+        "path": "docs/AI-FUNCTIONS-MANUAL.generated.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/ARCHITECTURE.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/04-STORY-TO-QUEST-AND-SCENE.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/05-PRODUCTION-DAG-AND-ARTIFACTS.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/06-RUNTIME-MEDIA-PLAYER-AND-DISTRIBUTION.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/08-IMPLEMENTATION-AND-DELIVERY-PLAN.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/09-MEDIA-AUTHORING-AND-REVISION.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/12-PRODUCT-PACKAGE-IMPORT-AND-COMMUNITY-CANDIDATE.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/13-FIRST-FLAGSHIP-PRODUCTION-AND-SHOWCASE.md",
+        "status": "modified"
+      },
+      {
+        "path": "docs/products/text-adventure-production/README.md",
+        "status": "modified"
+      },
+      {
+        "path": "eslint.config.mjs",
+        "status": "modified"
+      },
+      {
+        "path": "package-lock.json",
+        "status": "modified"
+      },
+      {
+        "path": "package.json",
+        "status": "modified"
+      },
+      {
+        "path": "scripts/build-adventure-player.mjs",
+        "status": "added"
+      },
+      {
+        "path": "scripts/check-source-reachability.mjs",
+        "status": "modified"
+      },
+      {
+        "path": "scripts/distribution/build-portable.py",
+        "status": "added"
+      },
+      {
+        "path": "scripts/distribution/notices.mjs",
+        "status": "added"
+      },
+      {
+        "path": "scripts/distribution/proxies.mjs",
+        "status": "added"
+      },
+      {
+        "path": "scripts/distribution/server.mjs",
+        "status": "added"
+      },
+      {
+        "path": "scripts/distribution/server.test.mjs",
+        "status": "added"
+      },
+      {
+        "path": "scripts/distribution/smoke-package.py",
+        "status": "added"
+      },
+      {
+        "path": "scripts/serve-e2e-snapshot.mjs",
+        "status": "modified"
+      },
+      {
+        "path": "src/adventure-web-entry.ts",
+        "status": "added"
+      },
+      {
+        "path": "src/adventure-web-player.tsx",
+        "status": "added"
+      },
+      {
+        "path": "src/components/product/ProductProductionStudio.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "src/components/product/TextAdventureContentRevisionPanel.tsx",
+        "status": "added"
+      },
+      {
+        "path": "src/components/product/TextAdventurePackagePanel.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "src/components/settings/AIConfigPanel.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "src/components/settings/EmbeddingConfigCard.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "src/components/text-game/AdventureGamePlayer.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/adventure/player-experience.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/adventure/production-artifacts-v2.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/adventure/production-compiler.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/adventure/quest-settlement.ts",
+        "status": "added"
+      },
+      {
+        "path": "src/lib/adventure/web-package.ts",
+        "status": "added"
+      },
+      {
+        "path": "src/lib/adventure/web-player-install.ts",
+        "status": "added"
+      },
+      {
+        "path": "src/lib/adventure/web-player-policy.ts",
+        "status": "added"
+      },
+      {
+        "path": "src/lib/agent/run/ledger-portability.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/agent/skill-registry.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/ai/adapters/embedding-adapter.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/ai/proxy-endpoints.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/db/schema.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/artifact-store.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/commands.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/context.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/contracts.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/plan.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/product-adapters.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/production-executor.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/scheduler.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/service.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/text-adventure-quality.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/product-production/text-content-revision-authority.ts",
+        "status": "added"
+      },
+      {
+        "path": "src/lib/product-production/text-content-revision.ts",
+        "status": "added"
+      },
+      {
+        "path": "src/lib/showcase/bootstrap.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/showcase/policy.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/storage/folder-handle-store.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/lib/types/product-production.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/stores/adventure-game-player.ts",
+        "status": "modified"
+      },
+      {
+        "path": "src/stores/ai-config.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/e2e/text-adventure-media-revision.spec.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/e2e/text-adventure-web-export.spec.ts",
+        "status": "added"
+      },
+      {
+        "path": "tests/regression/R-FEEDBACK101-production-proxy.test.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-HARNESS1-project-lifecycle.test.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-PRODUCTPROD1B-commands.test.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-PRODUCTPROD1D-scheduler.test.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-PRODUCTPROD1F-production-executor.test.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-SHOWCASE-boundary.test.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-TEXTADV-player-transcript.test.ts",
+        "status": "added"
+      },
+      {
+        "path": "tests/regression/R-TEXTADV-quest-settlement.test.ts",
+        "status": "added"
+      },
+      {
+        "path": "tests/regression/R-TEXTADV2-player-ui.test.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-TEXTADV2-production.test.tsx",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-TEXTADV3-production-artifacts.test.ts",
+        "status": "modified"
+      },
+      {
+        "path": "tests/regression/R-TEXTADV7-web-package.test.ts",
+        "status": "added"
+      },
+      {
+        "path": "vite.adventure-player.config.ts",
+        "status": "added"
+      },
+      {
+        "path": "vite.config.ts",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/.vitepress/config.mts",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/.vitepress/theme/custom.css",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/features/interactive/text-adventure.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/getting-started/install.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/getting-started/model-config.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/guides/backup-restore.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/guides/privacy.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/updates/changelog.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/updates/compatibility.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/en/updates/development-status.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/features/interactive/text-adventure.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/getting-started/install.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/getting-started/model-config.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/guides/backup-restore.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/guides/privacy.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/updates/changelog.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/updates/compatibility.md",
+        "status": "modified"
+      },
+      {
+        "path": "website-docs/updates/development-status.md",
+        "status": "modified"
+      }
+    ],
+    "url": "https://api.github.com/repos/yuanbw2025/storyforge/compare/83ad0231c7ab85f1b9725940861899b07a7d69b1...5147924e835a11ca514d7c7bb22fcc365339316f"
+  },
+  "sources": [
+    {
+      "repository": "yuanbw2025/storyforge",
+      "inspected_branch": "main",
+      "default_branch": "main",
+      "commit": "5147924e835a11ca514d7c7bb22fcc365339316f",
+      "tree": "e430d12cee759cc2fceb2501571a99335da101e1",
+      "committed_at_utc": "2026-10-14T11:30:06Z",
+      "branch_before": "5147924e835a11ca514d7c7bb22fcc365339316f",
+      "branch_after": "5147924e835a11ca514d7c7bb22fcc365339316f",
+      "branch_unchanged_during_capture": true,
+      "pinned_is_current_at_capture": true,
+      "license_api": "MIT",
+      "files": [
+        {
+          "path": "LICENSE",
+          "git_blob_sha": "c944bc0c30e7c97d0c8f396f0fb4ff6fbc2e05f8",
+          "bytes": 1067,
+          "sha256": "41d09918b94a1f0156b22a36a49a214c1773a6a85194274ec67cebe2f385f9c6",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/LICENSE"
+        },
+        {
+          "path": "README.md",
+          "git_blob_sha": "df632ce8ccb297aef7a016bf93aa2100889110d5",
+          "bytes": 54122,
+          "sha256": "edb1c3dbce6e03145fc49ebcb6ac70b446725b02a09a5879eaa6dc320891880b",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/README.md"
+        },
+        {
+          "path": "package.json",
+          "git_blob_sha": "9657d529b53524a870e7d5511ea42b3c67c7d1e7",
+          "bytes": 11568,
+          "sha256": "91c17604c86c3695e3326da61509e019e89f2c3c59ae095e86eec9163eddb756",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/package.json"
+        },
+        {
+          "path": "CHANGELOG.md",
+          "git_blob_sha": "3c43653aa7ac8920fb2a2abde137929a22fbccb2",
+          "bytes": 118468,
+          "sha256": "f234d522565be7e16e5648b025fddbd4a5df69c7c8bbec2c3074cc60c92b6cf0",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/CHANGELOG.md"
+        },
+        {
+          "path": "src/pages/WorkspacePage.tsx",
+          "git_blob_sha": "320a45e7dfbf628d538967af1ee5ddc11d5743f5",
+          "bytes": 40216,
+          "sha256": "1e69d305a26c4cfb94034e3ee778109982b17b68651338acf51bd5372e981871",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/pages/WorkspacePage.tsx"
+        },
+        {
+          "path": "src/components/editor/ChapterEditor.tsx",
+          "git_blob_sha": "2f39ad29855db1c0bee3edaa93c03108fabfcea7",
+          "bytes": 160345,
+          "sha256": "c7ec7f50f81f426df0432bddd3ec2936647fe1593ebba69f32b5458fdb8a3bc3",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/ChapterEditor.tsx"
+        },
+        {
+          "path": "src/components/editor/ChapterEditorToolbar.tsx",
+          "git_blob_sha": "c3545303efe2c27acd0b333df1c02b7720bf5a08",
+          "bytes": 41563,
+          "sha256": "bd609ab7167334cb539d0a8ad7f75c7deb57369f061c025aa6d1264036d2fcd5",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/ChapterEditorToolbar.tsx"
+        },
+        {
+          "path": "src/components/editor/ChapterEditorHeader.tsx",
+          "git_blob_sha": "9c6e517563ba071adf03043677d84ed90b700c88",
+          "bytes": 3886,
+          "sha256": "2ac522706555ca1df55f24c64428e04b90065356cc07a5e17507932e3d481410",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/ChapterEditorHeader.tsx"
+        },
+        {
+          "path": "src/components/editor/FindReplacePanel.tsx",
+          "git_blob_sha": "24614f7ce1c4b53095558b7d75e59c56364b701c",
+          "bytes": 18163,
+          "sha256": "f301d07978f0e99f42bcf37faf5877aa30496a06e19f0455a31eb08156f71139",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/FindReplacePanel.tsx"
+        },
+        {
+          "path": "src/components/editor/EntityRenamePanel.tsx",
+          "git_blob_sha": "2a6644b424336031a3a91a064f9999e0fc62e148",
+          "bytes": 13313,
+          "sha256": "9c46c999dbf7e45339b27f2b8581452d3c2cc72710ce076fd8d553f58ee883de",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/EntityRenamePanel.tsx"
+        },
+        {
+          "path": "src/components/editor/FloatingToolbar.tsx",
+          "git_blob_sha": "5e73e044101a59107802015f64500b37834c71c0",
+          "bytes": 11641,
+          "sha256": "27246a3790885a8bd7240cb4be95af0e5339c8adceee2d449e9522b87824d161",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/FloatingToolbar.tsx"
+        },
+        {
+          "path": "src/components/editor/ChaptersListPanel.tsx",
+          "git_blob_sha": "8b83ce417c2ba9d4c08547caf05c00127c5855e7",
+          "bytes": 10190,
+          "sha256": "b20bc2d83054a05c24e62f803fc16eb28c9a10455dda636a7eec9e0d1dde0b4b",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/ChaptersListPanel.tsx"
+        },
+        {
+          "path": "src/components/editor/ChapterOrganizationModal.tsx",
+          "git_blob_sha": "553d658506480b7571fad441af3e6407f8dd49bf",
+          "bytes": 12697,
+          "sha256": "14f5d46343a844a81bddfd13219019d746427eeca03c9479780f5d051270d9e8",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/ChapterOrganizationModal.tsx"
+        },
+        {
+          "path": "src/components/system/VersionHistoryPanel.tsx",
+          "git_blob_sha": "3e7dd27876422a1bcff3e0a4745e66819df53939",
+          "bytes": 7587,
+          "sha256": "391d8c3baab1e1b7202e413f4af988c3083f4a868830c1523d67597efb44c3bb",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/system/VersionHistoryPanel.tsx"
+        },
+        {
+          "path": "src/components/settings/AIConfigPanel.tsx",
+          "git_blob_sha": "8a1113a0573222d50d413c4fcdb21b8429bf4cc8",
+          "bytes": 26477,
+          "sha256": "55838e4b75b59f8c5da43b67810a6a4df024f9ba3d0290fb0981ce8f47947202",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/settings/AIConfigPanel.tsx"
+        },
+        {
+          "path": "src/components/settings/AITaskRoutingSection.tsx",
+          "git_blob_sha": "1e57f00cc3ece7babb37b9442b825185597150be",
+          "bytes": 9500,
+          "sha256": "be38dcbb7ae18216727194070c9efcb985851273fcf20bb3c338f106c47ddf22",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/settings/AITaskRoutingSection.tsx"
+        },
+        {
+          "path": "src/components/settings/ProjectStorageWorkspacePanel.tsx",
+          "git_blob_sha": "f3745fa52018a9ddcf038922db6510dcc31aed38",
+          "bytes": 7880,
+          "sha256": "e6f023bd5a5378a9d21c1615a66b25f573fb4f21bf715d72bd42ee990fc51c02",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/settings/ProjectStorageWorkspacePanel.tsx"
+        },
+        {
+          "path": "src/stores/ai-config.ts",
+          "git_blob_sha": "50615898e95aaef21761edf3291e018dd8349c1c",
+          "bytes": 24525,
+          "sha256": "1ee3288523d862c3528ebf5f5a88d96346e82343974407f2a01965a694fde204",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/stores/ai-config.ts"
+        },
+        {
+          "path": "src/stores/backup.ts",
+          "git_blob_sha": "5533d5f899589038e02500a98be9bc92111f95aa",
+          "bytes": 2880,
+          "sha256": "666ac8decddf8b259d99b900f278def96821fe090458d987dd29e3ae5d851c23",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/stores/backup.ts"
+        },
+        {
+          "path": "src/stores/outline.ts",
+          "git_blob_sha": "c9493eb18810376635bf5cd7b2dd879174391449",
+          "bytes": 9047,
+          "sha256": "1b8c7ecd08d101e8fdbb71667508bdac6658fe9b5716480cf7f153007ecc02fb",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/stores/outline.ts"
+        },
+        {
+          "path": "src/stores/detailed-outline.ts",
+          "git_blob_sha": "fd6c6647bc5027497e727121a1615eded831c57a",
+          "bytes": 4213,
+          "sha256": "95290b0218e1b88252e965f860079409edd209a295b0442868b279d9e48a949d",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/stores/detailed-outline.ts"
+        },
+        {
+          "path": "src/stores/prompt.ts",
+          "git_blob_sha": "086431a580f7fb540291ca33a44ca794d9c32f4b",
+          "bytes": 6424,
+          "sha256": "10d8c4ed3581102bc9d23b8f6cf8631a3f8d9ff395b9ad3bccba3550f41b9284",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/stores/prompt.ts"
+        },
+        {
+          "path": "src/lib/editor/find-replace.ts",
+          "git_blob_sha": "7f540e9621cb1ae598ef5bfb8c0ca77d6e9421b7",
+          "bytes": 7386,
+          "sha256": "e554f4d14cf9addb7142fa8213436fb7f9c369923a7425dfb326b28154981964",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/editor/find-replace.ts"
+        },
+        {
+          "path": "src/lib/editor/find-replace-operation.ts",
+          "git_blob_sha": "7aa68be3dca4655e6d0b776041374c19b886b10b",
+          "bytes": 3441,
+          "sha256": "46ecf91bb1841b6fc36039016fc9389dfe59744822bc757ee77eb1b5205e7d04",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/editor/find-replace-operation.ts"
+        },
+        {
+          "path": "src/lib/ai/prompt-engine.ts",
+          "git_blob_sha": "f9b632ca44852d3c0bd803b40aba1a102b543a0e",
+          "bytes": 4849,
+          "sha256": "f7fdd4e63993bef9637de1740c5fca1ac3817ae28394f9d2e7c39b7ae5f7b274",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/ai/prompt-engine.ts"
+        },
+        {
+          "path": "src/lib/ai/client.ts",
+          "git_blob_sha": "db5a4fca2e951c54fd2f40863441f446b1b096c5",
+          "bytes": 22611,
+          "sha256": "4d045755316fa2095bd675ebcbd2bc05ba0e0538280156bb35f4528d8f55935f",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/ai/client.ts"
+        },
+        {
+          "path": "src/lib/ai/chapter-memory/run-chapter-memory.ts",
+          "git_blob_sha": "33be1d6aeff5f428f0a04e51cd94f2ff279a77ae",
+          "bytes": 2954,
+          "sha256": "7532bd6a527281ef148b7eabd97f860ffa1e722e1979c160e3937acc4c38637d",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/ai/chapter-memory/run-chapter-memory.ts"
+        },
+        {
+          "path": "src/lib/longform/completion.ts",
+          "git_blob_sha": "1ddd2d2dbc0e18f3e691374d6800ad5b6e29e084",
+          "bytes": 3788,
+          "sha256": "553da4a7698fa21009bc1eedc0ee17e6d8bf732484cd55d97be769485f46a44b",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/longform/completion.ts"
+        },
+        {
+          "path": "src/lib/export/text-export.ts",
+          "git_blob_sha": "d4bef82d32b131deed4ee7188fd7774a96822656",
+          "bytes": 6339,
+          "sha256": "63dd706f5cad2b45daf75bc3abd6aed5bdcbf965966c4512a864718491d8569a",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/export/text-export.ts"
+        },
+        {
+          "path": "src/lib/export/registry-export.ts",
+          "git_blob_sha": "506f7eeaa266383f8e81f37e120124a6d2867697",
+          "bytes": 31308,
+          "sha256": "c9a93b847122774840bca1d29cc9440a353dc07440f922b3204c7efed0201ed9",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/export/registry-export.ts"
+        },
+        {
+          "path": "src/lib/export/registry-import.ts",
+          "git_blob_sha": "651c649dffd41a1b44b0e7d8c4771a012263a61a",
+          "bytes": 124348,
+          "sha256": "e4105249810cf9ef9becdab537b9b4e4f2c0a4816b396a07a2efa0731c620d30",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/export/registry-import.ts"
+        },
+        {
+          "path": "src/lib/export/backup-trust.ts",
+          "git_blob_sha": "c78aba6cb613d570af2f297c9b198b194976641d",
+          "bytes": 8474,
+          "sha256": "d79aea73613598d673a7797f41caf0977b1619dad3bcaeeb408e0f8bbed5f748",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/export/backup-trust.ts"
+        },
+        {
+          "path": "src/lib/storage/folder-backup.ts",
+          "git_blob_sha": "59714856302e23bb6f04d070d021be8623284cb1",
+          "bytes": 5641,
+          "sha256": "8cde61af4ebe5cfc049398a6ed4e4e862dd2bd5d3cb5cdb9f79e0463ea27a318",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/storage/folder-backup.ts"
+        },
+        {
+          "path": "src/lib/workspace/lifecycle.ts",
+          "git_blob_sha": "3d630d7f29cd305111e9b64182aa7c12774ed058",
+          "bytes": 7554,
+          "sha256": "3d0944d53e8e0a2bd92abe98d9b476979f82b9cfde9dc7143807a172e728ad3d",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/workspace/lifecycle.ts"
+        }
+      ]
+    },
+    {
+      "repository": "ponysb/91Writing",
+      "inspected_branch": "main",
+      "default_branch": "main",
+      "commit": "df3de0362e8e4028b76dffa78c5bba7b8bbd20a1",
+      "tree": "1ef0ad52fea393cc509250eacbb129f939453708",
+      "committed_at_utc": "2025-08-12T06:09:47Z",
+      "branch_before": "df3de0362e8e4028b76dffa78c5bba7b8bbd20a1",
+      "branch_after": "df3de0362e8e4028b76dffa78c5bba7b8bbd20a1",
+      "branch_unchanged_during_capture": true,
+      "pinned_is_current_at_capture": true,
+      "license_api": "MIT",
+      "files": [
+        {
+          "path": "src/router/index.js",
+          "git_blob_sha": "2dd015c09a197d5af6a557f39393c2e9b93975d6",
+          "bytes": 2372,
+          "sha256": "1727bb761118b1d9216d82c4cfa1fc6b48a741eb696885c808fd9a2347534e7a",
+          "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/router/index.js"
+        },
+        {
+          "path": "src/views/Settings.vue",
+          "git_blob_sha": "6fe7a6fa935d1ea2ca6f7822d3482aca918cd4e6",
+          "bytes": 26956,
+          "sha256": "04de5e273343c940cb65f17a7c7026bd47b2fad37c014e5763722c3214b12add",
+          "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/Settings.vue"
+        },
+        {
+          "path": "src/views/PromptsLibrary.vue",
+          "git_blob_sha": "5398781d2d83cac0d1c4bb61f7ea4d02e4a2fd9a",
+          "bytes": 47296,
+          "sha256": "a0cf579218a5aa6609237e3f7d17463d52a136d7cbcdef0ae81d710a58d988ef",
+          "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/PromptsLibrary.vue"
+        },
+        {
+          "path": "src/views/Writer.vue",
+          "git_blob_sha": "e6526f90ec967ebb1fb1599b8670ae8a1638a478",
+          "bytes": 357086,
+          "sha256": "37feae23bdb9596c06a6182cacba36596964ff9e92defe52749c2d75e09fa778",
+          "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/views/Writer.vue"
+        },
+        {
+          "path": "src/services/api.js",
+          "git_blob_sha": "848573511860f9548024f4063db1713ddd5d8da7",
+          "bytes": 32393,
+          "sha256": "115d9e7c4fddfbd0b00d0eb46af035daaf9dd9514cd23e09b1a6ef3fab18b1d6",
+          "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/services/api.js"
+        },
+        {
+          "path": "src/components/BackupManager.vue",
+          "git_blob_sha": "91b890675769db4dbd3e396dd43bda095236196c",
+          "bytes": 23906,
+          "sha256": "5d6736b7c175f554950445cf581394b5045171774b6a28247e2dc4bda524943b",
+          "url": "https://github.com/ponysb/91Writing/blob/df3de0362e8e4028b76dffa78c5bba7b8bbd20a1/src/components/BackupManager.vue"
+        }
+      ]
+    },
+    {
+      "repository": "RhythmicWave/NovelForge",
+      "inspected_branch": "main",
+      "default_branch": "main",
+      "commit": "a485814411546b3980df0a1696a0fb6a043d56ce",
+      "tree": "a6d3fd09a2de9973a5d45982ddd060dc4db1ab51",
+      "committed_at_utc": "2026-09-23T04:53:48Z",
+      "branch_before": "a485814411546b3980df0a1696a0fb6a043d56ce",
+      "branch_after": "a485814411546b3980df0a1696a0fb6a043d56ce",
+      "branch_unchanged_during_capture": true,
+      "pinned_is_current_at_capture": true,
+      "license_api": "AGPL-3.0",
+      "files": [
+        {
+          "path": "frontend/src/renderer/src/services/versionService.ts",
+          "git_blob_sha": "a5922f978005d27b30bef8fb00748f7ef1749db4",
+          "bytes": 1788,
+          "sha256": "f71ee710df6a0e2a8b18c9b2163662a8d18ad67c23491efa7ce139d780490a8d",
+          "url": "https://github.com/RhythmicWave/NovelForge/blob/a485814411546b3980df0a1696a0fb6a043d56ce/frontend/src/renderer/src/services/versionService.ts"
+        },
+        {
+          "path": "frontend/src/renderer/src/components/cards/GenericCardEditor.vue",
+          "git_blob_sha": "c04830ef3ce6cc5775fb8cc9fed2df24d7cac434",
+          "bytes": 58481,
+          "sha256": "a4ae767700b4d77999cbb06a10f557cc03128ab4cf80b02617c14503f3df0b2a",
+          "url": "https://github.com/RhythmicWave/NovelForge/blob/a485814411546b3980df0a1696a0fb6a043d56ce/frontend/src/renderer/src/components/cards/GenericCardEditor.vue"
+        },
+        {
+          "path": "frontend/src/renderer/src/components/editors/CodeMirrorEditor.vue",
+          "git_blob_sha": "49cce96d478caec2c72924d05d089b0245f9fcf8",
+          "bytes": 168165,
+          "sha256": "d8c8318e357f4594ce68f464589faf57b69355e65d5f912fe07b232966323593",
+          "url": "https://github.com/RhythmicWave/NovelForge/blob/a485814411546b3980df0a1696a0fb6a043d56ce/frontend/src/renderer/src/components/editors/CodeMirrorEditor.vue"
+        },
+        {
+          "path": "backend/app/services/memory_service.py",
+          "git_blob_sha": "469aecdbbe0d0b4ffd1db0152430c92a5a715385",
+          "bytes": 33604,
+          "sha256": "a364801f1573659bc5955ffda24966b6bdf20a9a1ff53bbd9800348c96ccac40",
+          "url": "https://github.com/RhythmicWave/NovelForge/blob/a485814411546b3980df0a1696a0fb6a043d56ce/backend/app/services/memory_service.py"
+        },
+        {
+          "path": "backend/app/bootstrap/card_types.py",
+          "git_blob_sha": "462f303a05c26e1a3b053d669e5d163fcf8a47d5",
+          "bytes": 25589,
+          "sha256": "6a51f3b2b6bc49091a96f9c47a66aa4ae5958306bd157de5d91c77ef583340f2",
+          "url": "https://github.com/RhythmicWave/NovelForge/blob/a485814411546b3980df0a1696a0fb6a043d56ce/backend/app/bootstrap/card_types.py"
+        },
+        {
+          "path": "backend/app/services/workflow/engine/run_manager.py",
+          "git_blob_sha": "1bc9f7454ed46352dcecc539b119f34c2cbd5cdc",
+          "bytes": 12658,
+          "sha256": "cda90fec0076deb469082bad35c228f283f5bc141d5c704981a24ab11ee80870",
+          "url": "https://github.com/RhythmicWave/NovelForge/blob/a485814411546b3980df0a1696a0fb6a043d56ce/backend/app/services/workflow/engine/run_manager.py"
+        },
+        {
+          "path": "backend/app/services/workflow/engine/state_manager.py",
+          "git_blob_sha": "af50e7529ae55f90fb1e298da4b5ed4dcf9fbd1e",
+          "bytes": 13323,
+          "sha256": "47a58aaafd5adfd21b8baa6631b2f762e3644b82a830625d29b79219efab77f4",
+          "url": "https://github.com/RhythmicWave/NovelForge/blob/a485814411546b3980df0a1696a0fb6a043d56ce/backend/app/services/workflow/engine/state_manager.py"
+        }
+      ]
+    }
+  ],
+  "external_model_calls": 0
+}

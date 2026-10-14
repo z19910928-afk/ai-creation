@@ -1,0 +1,358 @@
+{
+  "passed": false,
+  "checks": 9,
+  "cases": [
+    {
+      "name": "test_author_resolution_purpose_marker_cannot_authorize_model_materials",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 232, in test_author_resolution_purpose_marker_cannot_authorize_model_materials\n    self.assertEqual(marker.get(\"purpose\"), \"author_resolution\", marker)\nAssertionError: None != 'author_resolution' : {'version': 1, 'project_id': 'default-project', 'branch_id': 'main', 'dependencies': [{'kind': 'chapter', 'id': 'ch_a6b5f850d28547909c724849ec24b711', 'sha256': '97e7577a5aaaa97dd3b5b101d36e738dd5540fe3dc79568474a6bcaff6e0825e'}, {'kind': 'project', 'id': 'default-project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'kind': 'record', 'id': 'ent_11f0ba5a20754a3fb44e8bd335b24090', 'sha256': 'fbc4f77f0ffb0b7d7de1ad090effe488b20b9f0e5065d067538bd52cf1f0af28'}, {'kind': 'record', 'id': 'ent_81be68772e144c439a90e2484a7abbe0', 'sha256': '587cec2a9867cc30b4999db5bcd66dcee36d10802f3ab27942aa1c02e1528c1f'}, {'kind': 'record', 'id': 'ent_b2fa678c46a841dc80f33ebcc9216e3a', 'sha256': '2521ce1860d6973468a42d007e9156a8a753ad000db99061b57dd311af5d7a65'}]}\n"
+    },
+    {
+      "name": "test_body_change_still_expires_explanation_after_status_transition",
+      "passed": true
+    },
+    {
+      "name": "test_current_explained_survives_status_change_and_all_archival_stages",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 145, in test_current_explained_survives_status_change_and_all_archival_stages\n    after = self.archive(review, \"explained\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 132, in archive\n    self.assertEqual([item[\"http_status\"] for item in outcomes], [201, 201, 201], outcomes)\nAssertionError: Lists differ: [201, 409, 409] != [201, 201, 201]\n\nFirst differing element 1:\n409\n201\n\n- [201, 409, 409]\n+ [201, 201, 201] : [{'stage': 'prewrite', 'http_status': 201, 'status': 'passed', 'blocking': []}, {'stage': 'precommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_af4f9b45a4a02007fd429ee8a151', 'chapter_id': 'ch_0ee6b6a8968c4f3f91928f7464adc82f', 'issue_ids': ['review_0c0aa278bc0f398bcca2a1503ddf9047']}}]}, {'stage': 'postcommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_af4f9b45a4a02007fd429ee8a151', 'chapter_id': 'ch_0ee6b6a8968c4f3f91928f7464adc82f', 'issue_ids': ['review_0c0aa278bc0f398bcca2a1503ddf9047']}}]}]\n"
+    },
+    {
+      "name": "test_current_ignored_survives_status_change_and_all_archival_stages",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 153, in test_current_ignored_survives_status_change_and_all_archival_stages\n    after = self.archive(review, \"ignored\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 132, in archive\n    self.assertEqual([item[\"http_status\"] for item in outcomes], [201, 201, 201], outcomes)\nAssertionError: Lists differ: [201, 409, 409] != [201, 201, 201]\n\nFirst differing element 1:\n409\n201\n\n- [201, 409, 409]\n+ [201, 201, 201] : [{'stage': 'prewrite', 'http_status': 201, 'status': 'passed', 'blocking': []}, {'stage': 'precommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_8f94d30a6e1efb4d3f92a8006eb0', 'chapter_id': 'ch_3de2883990f047019190b3d8d4adb4da', 'issue_ids': ['review_e2246333778c0db2e18f5e5e0fc6c7ed']}}]}, {'stage': 'postcommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_8f94d30a6e1efb4d3f92a8006eb0', 'chapter_id': 'ch_3de2883990f047019190b3d8d4adb4da', 'issue_ids': ['review_e2246333778c0db2e18f5e5e0fc6c7ed']}}]}]\n"
+    },
+    {
+      "name": "test_plan_change_still_expires_explanation_after_status_transition",
+      "passed": true
+    },
+    {
+      "name": "test_real_legacy_missing_markers_can_explain_current_draft_then_archive",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 177, in test_real_legacy_missing_markers_can_explain_current_draft_then_archive\n    after = self.archive(review, \"legacy_current_snapshot_explained\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 132, in archive\n    self.assertEqual([item[\"http_status\"] for item in outcomes], [201, 201, 201], outcomes)\nAssertionError: Lists differ: [201, 409, 409] != [201, 201, 201]\n\nFirst differing element 1:\n409\n201\n\n- [201, 409, 409]\n+ [201, 201, 201] : [{'stage': 'prewrite', 'http_status': 201, 'status': 'passed', 'blocking': []}, {'stage': 'precommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_beb088cd609c2c3ef0683b1d8d13', 'chapter_id': 'ch_a2b4bcddef364c0db9b944efdb8e7555', 'issue_ids': ['review_2289fa7ffc1460a92debc14f65b28f90']}}]}, {'stage': 'postcommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_beb088cd609c2c3ef0683b1d8d13', 'chapter_id': 'ch_a2b4bcddef364c0db9b944efdb8e7555', 'issue_ids': ['review_2289fa7ffc1460a92debc14f65b28f90']}}]}]\n"
+    },
+    {
+      "name": "test_record_change_still_expires_explanation_after_status_transition",
+      "passed": true
+    },
+    {
+      "name": "test_rewritten_stale_review_can_explain_current_draft_then_archive",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 165, in test_rewritten_stale_review_can_explain_current_draft_then_archive\n    after = self.archive(review, \"stale_current_draft_explained\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/author_resolution_material_http_fixtures.py\", line 132, in archive\n    self.assertEqual([item[\"http_status\"] for item in outcomes], [201, 201, 201], outcomes)\nAssertionError: Lists differ: [201, 409, 409] != [201, 201, 201]\n\nFirst differing element 1:\n409\n201\n\n- [201, 409, 409]\n+ [201, 201, 201] : [{'stage': 'prewrite', 'http_status': 201, 'status': 'passed', 'blocking': []}, {'stage': 'precommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_787189ad18fc1a51c5fe0fc3433e', 'chapter_id': 'ch_d598fe686ae84299931224d5929990db', 'issue_ids': ['review_2f9086b3bc7682af465a03ab0b3861da']}}]}, {'stage': 'postcommit', 'http_status': 409, 'status': 'blocked', 'blocking': [{'code': 'semantic_review_stale', 'message': '故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。', 'evidence': {'review_id': 'story_review_787189ad18fc1a51c5fe0fc3433e', 'chapter_id': 'ch_d598fe686ae84299931224d5929990db', 'issue_ids': ['review_2f9086b3bc7682af465a03ab0b3861da']}}]}]\n"
+    },
+    {
+      "name": "test_status_change_keeps_old_queued_and_completed_model_tasks_strict",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:39:10.312130+00:00",
+  "finished_at": "2026-10-14T17:39:20.291126+00:00",
+  "observations": [
+    {
+      "test": "test_author_resolution_purpose_marker_cannot_authorize_model_materials",
+      "scenario": "author_marker_purpose",
+      "purpose": null,
+      "real_saved_run_id": "airun_6daf6b5d2efe4d9aacbb3908504452b6"
+    },
+    {
+      "test": "test_body_change_still_expires_explanation_after_status_transition",
+      "scenario": "author_explanation_material_change",
+      "kind": "body",
+      "status_only_explanation_current": false,
+      "source_changed": true,
+      "changed_explanation_current": false,
+      "stale_resolution_http_status": 409,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_current_explained_survives_status_change_and_all_archival_stages",
+      "scenario": "author_explanation_archival",
+      "decision": "explained",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_af4f9b45a4a02007fd429ee8a151",
+                "chapter_id": "ch_0ee6b6a8968c4f3f91928f7464adc82f",
+                "issue_ids": [
+                  "review_0c0aa278bc0f398bcca2a1503ddf9047"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_af4f9b45a4a02007fd429ee8a151",
+                "chapter_id": "ch_0ee6b6a8968c4f3f91928f7464adc82f",
+                "issue_ids": [
+                  "review_0c0aa278bc0f398bcca2a1503ddf9047"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "source_unchanged": false,
+      "explanation_current": false,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_current_ignored_survives_status_change_and_all_archival_stages",
+      "scenario": "author_explanation_archival",
+      "decision": "ignored",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_8f94d30a6e1efb4d3f92a8006eb0",
+                "chapter_id": "ch_3de2883990f047019190b3d8d4adb4da",
+                "issue_ids": [
+                  "review_e2246333778c0db2e18f5e5e0fc6c7ed"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_8f94d30a6e1efb4d3f92a8006eb0",
+                "chapter_id": "ch_3de2883990f047019190b3d8d4adb4da",
+                "issue_ids": [
+                  "review_e2246333778c0db2e18f5e5e0fc6c7ed"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "source_unchanged": false,
+      "explanation_current": false,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_plan_change_still_expires_explanation_after_status_transition",
+      "scenario": "author_explanation_material_change",
+      "kind": "plan",
+      "status_only_explanation_current": false,
+      "source_changed": true,
+      "changed_explanation_current": false,
+      "stale_resolution_http_status": 409,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_real_legacy_missing_markers_can_explain_current_draft_then_archive",
+      "scenario": "author_explanation_archival",
+      "decision": "legacy_current_snapshot_explained",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_beb088cd609c2c3ef0683b1d8d13",
+                "chapter_id": "ch_a2b4bcddef364c0db9b944efdb8e7555",
+                "issue_ids": [
+                  "review_2289fa7ffc1460a92debc14f65b28f90"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_beb088cd609c2c3ef0683b1d8d13",
+                "chapter_id": "ch_a2b4bcddef364c0db9b944efdb8e7555",
+                "issue_ids": [
+                  "review_2289fa7ffc1460a92debc14f65b28f90"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "source_unchanged": false,
+      "explanation_current": false,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_record_change_still_expires_explanation_after_status_transition",
+      "scenario": "author_explanation_material_change",
+      "kind": "record",
+      "status_only_explanation_current": false,
+      "source_changed": true,
+      "changed_explanation_current": false,
+      "stale_resolution_http_status": 409,
+      "gate_codes": [
+        "semantic_review_stale"
+      ],
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_rewritten_stale_review_can_explain_current_draft_then_archive",
+      "scenario": "author_explanation_archival",
+      "decision": "stale_current_draft_explained",
+      "commits": [
+        {
+          "stage": "prewrite",
+          "http_status": 201,
+          "status": "passed",
+          "blocking": []
+        },
+        {
+          "stage": "precommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_787189ad18fc1a51c5fe0fc3433e",
+                "chapter_id": "ch_d598fe686ae84299931224d5929990db",
+                "issue_ids": [
+                  "review_2f9086b3bc7682af465a03ab0b3861da"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "stage": "postcommit",
+          "http_status": 409,
+          "status": "blocked",
+          "blocking": [
+            {
+              "code": "semantic_review_stale",
+              "message": "故事审稿依据已改变，请重新审稿，或结合当前稿件逐项说明忽略/解释理由。",
+              "evidence": {
+                "review_id": "story_review_787189ad18fc1a51c5fe0fc3433e",
+                "chapter_id": "ch_d598fe686ae84299931224d5929990db",
+                "issue_ids": [
+                  "review_2f9086b3bc7682af465a03ab0b3861da"
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "source_unchanged": false,
+      "explanation_current": false,
+      "original_model_review_stale": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_status_change_keeps_old_queued_and_completed_model_tasks_strict",
+      "scenario": "strict_model_status_sources",
+      "dispatch_status": "failed",
+      "billing_state": "not_dispatched",
+      "apply_http_status": 400,
+      "revise_http_status": 400,
+      "retry_http_statuses": [
+        409,
+        409
+      ],
+      "queued_and_completed_contexts_preserved": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "free_provider_calls": 9,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_materials.py": "264a06b8076d291df9f5e93c77e981e34ce40c56726bae260eae3978646829cd",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "author-workspace.js": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00",
+    "app.js": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/author_resolution_material_http_fixtures.py": "8231341d62e8cc5423d3f526adc1e7002b88a457777fb31aad933c05bd6a66a3"
+  },
+  "source_files_sha256_after": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "63667a1e4dd73f6b55ea59c657e2b541a940e7f0d92f992e8d2cd612a3afd451",
+    "moyu_materials.py": "264a06b8076d291df9f5e93c77e981e34ce40c56726bae260eae3978646829cd",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "author-workspace.js": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00",
+    "app.js": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61",
+    "tests/author_resolution_material_http_fixtures.py": "8231341d62e8cc5423d3f526adc1e7002b88a457777fb31aad933c05bd6a66a3"
+  },
+  "frozen_source_before": "<private-temporary-path>",
+  "frozen_source_after": "<private-temporary-path>",
+  "source_unchanged": true,
+  "scope": "real saved AI jobs and runs in temporary synthetic SQLite; loopback HTTP; free local provider",
+  "claim_limit": "author decision archival integrity only; no real manuscript, credential, literary-quality or first-tier claim"
+}

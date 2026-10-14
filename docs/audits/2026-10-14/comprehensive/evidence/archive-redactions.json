@@ -1,0 +1,194 @@
+{
+  "scope": "Public audit archive only; literary samples, frozen requests, ledgers, and their hashes are unchanged.",
+  "private_originals": "artifacts/private-audit-originals/2026-10-14/comprehensive/ (Git ignored)",
+  "originals_are_required_for_byte_or_signature_verification": true,
+  "files": [
+    {
+      "path": "evidence/analysis-guidance-after-fix.json",
+      "original_sha256": "068fe5ee26a0e8d58a5fafa15b4731f0db40b04f26adaf65baf5b4d731136d37",
+      "published_sha256": "4cde84711a2f5984f57ed2e7b7fce244e92e9c17f82e211e27889f1c49e00eda",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/analysis-guidance-before-fix.json",
+      "original_sha256": "5400ccdf99e9b078193b2752049ba1656288ab56a7588ebe70d29109c05ab7c7",
+      "published_sha256": "759b06958eca529f966aecaede8bf8d571016a6ba20299a5b4bcf97417c1d19c",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/analysis-partial-source-before-fix.json",
+      "original_sha256": "01f8cea2051bbb35b76299ffbd52bc994c4e279d1268cf340dab35f254b5a62c",
+      "published_sha256": "0b9fc5befb66bcd4179830184a76fbfc4098492c65a32a6671190e6df5b9dfcd",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/author-resolution-material-after-fix.json",
+      "original_sha256": "8e3199506adf2529e7d150896a3253c44b307a9fb749bb11b998fcfc54ca53ca",
+      "published_sha256": "32f6494d1c6868d8950bbf97b2828c2cd184ffd767a7cedd07820f200ddbb37f",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/author-resolution-material-before-fix-v2.json",
+      "original_sha256": "6fd04e987431cc06b2aa40474e6fc1dbb9dce41e94bd57359b50cb97ac3d10ec",
+      "published_sha256": "2fcebbb27cd0e7cf590e3b98c423a3b7563a573bf61a9944cab7567bb1784475",
+      "categories": [
+        "local_absolute_path",
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/author-resolution-material-before-fix-v3.json",
+      "original_sha256": "544bcdd3781669d65ddcb395f38eadb928fa56c6ffc0b8fed69060a3143356f6",
+      "published_sha256": "87d668dbdb33aeba6439244e0d625f0f7c97b94880ffc89bb4650b3ba6396268",
+      "categories": [
+        "local_absolute_path",
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/author-resolution-material-before-fix.json",
+      "original_sha256": "2d669beda30801dcf6444d0027664f3b397b6b3782c01108ee1a08a7b1ea1850",
+      "published_sha256": "f453fcdff008d2333476022918142313411916a16119d7b15a3bc46847d8e7e1",
+      "categories": [
+        "local_absolute_path",
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/compatibility-python311-node24-comprehensive-workflow-final.json",
+      "original_sha256": "776e697888c1042e4d013e78c17c4eca94c27c97e0091ac965abc77b0e961c10",
+      "published_sha256": "3591ee4394bc90cea7462d2fe8bb40d9aed039543bde418a4ff87cdd9083b218",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/fixed-evaluation-python311-node24-comprehensive-workflow-final.json",
+      "original_sha256": "12171e8731d37a6b1df620aa93b8994bdb7660328f116aabaf812e529765656e",
+      "published_sha256": "d2f34236641aa1466392881a9721024fc3a9b03aea87a89dc2ac73d9f5140ae2",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/guidance-alias-before-fix-corrected.json",
+      "original_sha256": "074812cffbcba47bc4301e6ec681e007eceefa0560eca6b115501a5e243f68fb",
+      "published_sha256": "887846e52e3efea519808a24a07f86a991be3360b18ba65d93b87b849913a17e",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/guidance-alias-before-fix.json",
+      "original_sha256": "f60bde112fff7d525582b6df2bb2d9c35d7351f7ca14ab435713c330b692d356",
+      "published_sha256": "ac21ebabbb01d5a6d699644989f630bd6bfd09812d988f11d1deae4e31fbe5f9",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/guidance-scope-change-before-fix.json",
+      "original_sha256": "51b9cd43f16ae79751630ea18c0f935cb7a2f4739319919fffbc74a9737fad9b",
+      "published_sha256": "528b17aed08164078dd0c7a9a9c4eb3880a7a3234799d7ff1edfc630e933ea35",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/legacy-guidance-outdated-assertions-before-update.json",
+      "original_sha256": "93dd1a52e0664b504dd98bfedb5a59b8ce004e8448f068e34a7efbd0844e5f19",
+      "published_sha256": "5e58c4d483f9fb8b1577429beea64e1d78474548d6df8afdcf2808a772da38fc",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/material-dependency-before-fix-corrected.json",
+      "original_sha256": "f8c99090a8b3f8d8c23d1461985d5bc32e02b4f055bb01eeb7d4d9247e72d1c7",
+      "published_sha256": "b1974d1ad9605f20ab145d20a3f43e7d766833b1af07f38925df7338493f84fc",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/material-dependency-before-fix.json",
+      "original_sha256": "13248a629783225f21bea2ec6f4c8c0c4b1418886e343540bbf2f21dc7c6e94c",
+      "published_sha256": "fe29877a5928ee9ad970236a70146e858c3f5f4367718407536ba227c3cdba9f",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/material-evidence-compat-after-fix.json",
+      "original_sha256": "6a7fabc85d051509f28c265a5aea8e25752b4a7b66e3184007678d963d113117",
+      "published_sha256": "48abc13937689ebe438ed83094b704b6e7122d41654dc59fbf73ecc270eeaf68",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/material-evidence-compat-after-v2.json",
+      "original_sha256": "517ea6918e06d220129a0905313d623bf8bd4af2484f9d53161d1eb3651f071d",
+      "published_sha256": "9ced32db13b98c5fdb201db429f1d8d7c98324fefc8fd2078799cdee5897c9ce",
+      "categories": [
+        "local_temporary_runtime_path"
+      ]
+    },
+    {
+      "path": "evidence/material-evidence-compat-before-fix.json",
+      "original_sha256": "743da8462c415c94526a8f91d6824d5e7c37b8060c123cb056f74276dd5c8e6b",
+      "published_sha256": "f171bfa4fd1adee9478e33be3b4c6b931b3b8235b90e75a43d382bdf1771770b",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/material-legacy-before-fix.json",
+      "original_sha256": "f5b7ff6ccbbcb2ce4ca857332edf40c7f0b0564f4ce9b14e859ca03d5fc7149d",
+      "published_sha256": "ebb8cb78e0df2dfd0521e0237071af4589f72a5f00da0b0a23da47e3b05c988b",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/material-scope-order-before-fix-v2.json",
+      "original_sha256": "9466a4b08c3c4c6c0699a52bd47adb5ed85ef8b379417e6239c510fbad8493f3",
+      "published_sha256": "81799ace2b735f6de67c759697f6122cd5c4ba4333b7e65bb1e850dc4c958ac0",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/material-scope-order-before-fix.json",
+      "original_sha256": "9d4b5959075818a6c03c86897173d0c3095162195e57660a4fd5906f9dde1396",
+      "published_sha256": "c88e93ac45fb6cbdc3f352e178271f55d049d414bc647f2912555148d3f223d4",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/nested-record-scope-before-fix.json",
+      "original_sha256": "4a290bace75526fbac8848a2508ba79376bb4c446fa7af0cf34524fe5c392433",
+      "published_sha256": "a2fbddb438f771c2c95293e36c95d320a625029b7dd5e774e4d9b18374ede938",
+      "categories": [
+        "local_absolute_path"
+      ]
+    },
+    {
+      "path": "evidence/review-guidance-before-fix.json",
+      "original_sha256": "194a0affdeb976365999c30b5a06a143e8af0c820d39538e87f67f79fb7aab77",
+      "published_sha256": "d11115165f6d0c5aeb67861096fc64dae1eae44c295d44d4ab890ff5a9d4ecb2",
+      "categories": [
+        "local_absolute_path"
+      ]
+    }
+  ]
+}

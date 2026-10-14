@@ -1,0 +1,64 @@
+{
+  "review_date": "2026-10-14",
+  "review_agent": "comprehensive_ai_novel",
+  "moyu_head": "64fe155387e0a3c2d902b60a2d82822f2457af0d",
+  "moyu_working_tree": "dirty; concurrent authorized fixes were in progress",
+  "upstream": {
+    "repository": "inliver233/Ai-Novel",
+    "metadata_source": "https://api.github.com/repos/inliver233/Ai-Novel",
+    "commit_source": "https://api.github.com/repos/inliver233/Ai-Novel/commits/dev",
+    "archive_source": "https://codeload.github.com/inliver233/Ai-Novel/tar.gz/8b85b2b6f29af4c69241be7c42417dbe4795db30",
+    "default_branch": "dev",
+    "commit": "8b85b2b6f29af4c69241be7c42417dbe4795db30",
+    "tree": "396b02c000b9d1eaa42767789d9c794e276df1c8",
+    "committed_at": "2026-07-28T19:21:50Z",
+    "pushed_at": "2026-07-28T19:21:53Z",
+    "archived": false,
+    "api_license": null,
+    "license_file_found": false,
+    "branch_documentation_mismatch": "README names Lite and recommends lite; reviewed source is the API default dev",
+    "archive_sha256": "23a18d72bdc071d53d3998710819fc93be1ee4bd97f1109b8695a8ac8f2cd796",
+    "file_sha256": {
+      "backend/app/services/llm_task_preset_resolver.py": "615099bf2d7a681c11cb539e12cc2913d7ec179d1bf6f3c64e5c36374876b9ac",
+      "backend/app/services/memory_retrieval_service.py": "1fff5125ec24bfa410af2edcbcd8a28d8ecc8b7f06b65986efba6f07346f7fb1",
+      "backend/app/services/vector_chunk_builder.py": "fdac720fc09cf76271247802da47a162e1f36da68df39aec0ce6d790f39813f2",
+      "backend/app/services/prompt_studio_service.py": "56967020ac1be7519c32ac706e055b8a3edfe7cd63fc085c69c96a2e03ff99a1"
+    }
+  },
+  "cross_review": [
+    {
+      "repository": "xiamuceer-j/MuMuAINovel",
+      "commit_source": "https://api.github.com/repos/xiamuceer-j/MuMuAINovel/commits/main",
+      "branch": "main",
+      "commit": "99f0aec6ce3b1c65652d20007be930ebba6a6d20",
+      "tree": "992469d7bafe16c76e1488741f68df19e86e035c",
+      "committed_at": "2026-10-10T05:45:16Z",
+      "file_sha256": {
+        "backend/app/services/chapter_context_service.py": "381d83e5d94d764339a6b6317602f184dd930aac0801dd6268f93d71e99048cb"
+      },
+      "scope": "official raw source read; original helper executed with synthetic character; full application not executed"
+    },
+    {
+      "repository": "t59688/arboris-novel",
+      "commit_source": "https://api.github.com/repos/t59688/arboris-novel/commits/main",
+      "branch": "main",
+      "commit": "dd80c69bc30a80d68b375bd504c6bc308164ff9e",
+      "tree": "08647938cbd5a602a27f5e7aa228742a4b1d8c4b",
+      "committed_at": "2026-02-25T01:17:49Z",
+      "file_sha256": {
+        "frontend/src/api/novel.ts": "517a9357ae4a5fbe02a0f24d4a83d98775ee080fe2f7622b32774b9603df874b",
+        "frontend/src/components/writing-desk/workspace/ChapterContent.vue": "d358df73d3dd77467cb89dc8f9eaf23d9240fd77e813b6e4005bc9de862d31f4"
+      },
+      "scope": "official raw source entry and consumption chain read; full application not executed"
+    }
+  ],
+  "boundaries": {
+    "paid_model_requests": 0,
+    "real_database_accessed": false,
+    "credentials_accessed": false,
+    "product_source_modified": false,
+    "upstream_complete_application_run": false,
+    "first_tier_proven": false,
+    "implementation_reuse": "clean implementation only; do not copy unlicensed code or prompt resources"
+  }
+}

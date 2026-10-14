@@ -216,6 +216,53 @@ def blueprint_row(conn, project, branch):
             "version": row["version"] if row else 0, "updated_at": row["updated_at"] if row else None}
 
 
+def blueprint_dependency(conn, project, branch):
+    current = blueprint_row(conn, project, branch)
+    raw = json.dumps(current["blueprint"], ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return {"version": current["version"], "blueprint_hash": hashlib.sha256(raw.encode("utf-8")).hexdigest()}
+
+
+def guidance_source(conn, project, branch, chapter_id):
+    from moyu_records import decode_scope
+
+    rows = conn.execute(
+        "SELECT n.id,m.chapter_goal,m.scene_plan,m.pov,m.foreshadowing_op,m.hook,m.next_brief,"
+        "s.volume_id,s.plan_id,s.scenes_json FROM document_node n "
+        "LEFT JOIN app_chapter_meta m ON m.chapter_id=n.id "
+        "LEFT JOIN app_chapter_structure s ON s.chapter_id=n.id "
+        "WHERE n.project_id=? AND n.branch_id=? AND n.kind='chapter' "
+        "AND NOT EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=n.id) ORDER BY n.ordinal,n.rowid",
+        (project, branch),
+    ).fetchall()
+    projection = {}
+    for index, row in enumerate(rows):
+        if row["id"] == chapter_id:
+            projection = dict(row)
+            projection["previous_handoff"] = (
+                {"chapter_id": rows[index - 1]["id"], "text": rows[index - 1]["next_brief"]}
+                if index else None
+            )
+            break
+    # Frozen materials depend on live POV identities and knowledge boundaries.
+    projection["alias_dependencies"] = []
+    for row in conn.execute(
+        "SELECT e.id,e.kind,e.canonical_name,e.aliases_json,s.scope_json FROM entity e "
+        "LEFT JOIN app_entity_scope s ON s.entity_id=e.id "
+        "WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.id", (project,),
+    ):
+        try:
+            aliases = json.loads(row["aliases_json"] or "[]")
+        except (TypeError, ValueError):
+            aliases = []
+        projection["alias_dependencies"].append({
+            "id": row["id"], "type": row["kind"], "name": row["canonical_name"],
+            "aliases": aliases, "scope": decode_scope(row["scope_json"]),
+        })
+    raw = json.dumps(projection, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return {**blueprint_dependency(conn, project, branch), "chapter_id": chapter_id,
+            "chapter_plan_hash": hashlib.sha256(raw.encode("utf-8")).hexdigest()}
+
+
 def put_blueprint(conn, project, branch, data):
     current = blueprint_row(conn, project, branch)
     expected = data.get("expected_version")
@@ -259,6 +306,19 @@ def remap_portable_state(state, new_project, new_branch, title=None):
     if title:
         result["project"]["title"] = title
     result["branch_id"] = new_branch
+    from moyu_records import FIELDS
+    scope_mapping = {**mapping, state.get("project", {}).get("id"): new_project,
+                     state.get("branch_id", "main"): new_branch}
+    def remap_scope(value):
+        if isinstance(value, dict):
+            return {key: remap_scope(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [remap_scope(item) for item in value]
+        return scope_mapping.get(value, value) if isinstance(value, str) else value
+    for record in result.get("records", []):
+        for field in FIELDS:
+            if field in record:
+                record[field] = remap_scope(record[field])
     result["head_revision"] = None
     result.pop("version", None)
     result.pop("expected_head", None)

@@ -740,6 +740,47 @@ async function main(){
   await desktop.page.locator('[data-review-choice="1"]').selectOption('accepted');
   await desktop.page.waitForFunction(()=>document.querySelector('[data-review-decision-note="1"]')?.hidden===false);
   assert.equal(await currentBody(firstId),body);
+  assert.equal(await desktop.page.locator('[data-review-repair="1"]').isEnabled(),true);
+  assert.equal(await desktop.page.locator('[data-review-target="1"]').inputValue(),'0');
+  const callsBeforeDecisionRecovery=providerRequests.length;
+  let decisionPosts=0,decisionCommitted=false,failedReviewReads=0;
+  const holdDecisionResult=async route=>{
+   decisionPosts++;const response=await route.fetch();assert.equal(response.status(),200);
+   decisionCommitted=true;await route.fulfill({response});
+  };
+  const failCommittedReviewRead=async route=>{
+   if(!decisionCommitted)return route.continue();
+   failedReviewReads++;await route.fulfill({status:503,contentType:'application/json',body:JSON.stringify({error:'合成审稿读取中断'})});
+  };
+  await desktop.page.route('**/api/story-reviews/*/issues/*/decision',holdDecisionResult);
+  await desktop.page.route('**/api/story-reviews?*',failCommittedReviewRead);
+  await desktop.page.locator('[data-review-reason="0"]').fill('作者保留这处衔接，后续在渡船动作中说明。');
+  await desktop.page.locator('[data-review-choice="0"]').selectOption('ignored');
+  await desktop.page.waitForFunction(()=>document.querySelector('.analysis-modal .form-error')?.textContent.includes('理由已保存'));
+  assert.equal(decisionPosts,1);assert.equal(failedReviewReads,1);
+  assert.equal(await desktop.page.locator('[data-review-choice="0"]').isEnabled(),false);
+  assert.equal(await desktop.page.locator('[data-review-reason="0"]').evaluate(el=>el.readOnly),true);
+  assert.equal(await desktop.page.locator('[data-review-repair="1"]').isEnabled(),false);
+  assert.equal(await desktop.page.locator('[data-semantic-review]').isEnabled(),false);
+  await desktop.page.locator('[data-review-choice="0"]').evaluate(el=>el.dispatchEvent(new Event('change',{bubbles:true})));
+  await desktop.page.evaluate(()=>operationChain);
+  assert.equal(decisionPosts,1);assert.equal(providerRequests.length,callsBeforeDecisionRecovery);
+  assert.equal(await currentBody(firstId),body);
+  const savedDecision=(await api(`/api/story-reviews?chapter_id=${firstId}`)).reviews.find(report=>report.findings?.length===2);
+  assert.equal(savedDecision.findings[0].decision,'ignored');
+  assert.equal(savedDecision.findings[1].decision,'accepted');
+  await desktop.page.unroute('**/api/story-reviews/*/issues/*/decision',holdDecisionResult);
+  await desktop.page.unroute('**/api/story-reviews?*',failCommittedReviewRead);
+  await desktop.page.locator('.analysis-modal [data-close]').click();
+  await desktop.page.locator('[data-action="reviewChapter"]').click();
+  assert.equal(await desktop.page.locator('[data-review-choice="0"]').inputValue(),'ignored');
+  assert.equal(await desktop.page.locator('[data-review-choice="0"]').isEnabled(),false);
+  assert.equal(await desktop.page.locator('[data-review-choice="1"]').inputValue(),'accepted');
+  assert.equal(await desktop.page.locator('[data-review-repair="1"]').isEnabled(),true);
+  assert.equal(decisionPosts,1);assert.equal(providerRequests.length,callsBeforeDecisionRecovery);
+  results.review_decision_recovery={accepted_repair_available:true,failed_read_retained_window:true,
+   decision_posts:decisionPosts,failed_review_reads:failedReviewReads,extra_model_calls:0,
+   reopen_restores_saved_decisions:true,manuscript_unchanged:true};
   providerText='林岚用拇指抵住掌心。';
   await desktop.page.locator('[data-review-repair="1"]').click();
   await desktop.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.task==='polish'&&aiDraft?.text==='林岚用拇指抵住掌心。',null,{timeout:15000});
@@ -937,7 +978,7 @@ async function main(){
   await desktop.page.locator('#aiRevise').click();await desktop.page.locator('[data-revise-dialog]').waitFor();
   await desktop.page.evaluate(()=>authorEditBody(chapter().body+'\n作者在整理确认期间增加的新稿。'));await waitSaved(desktop.page);
   await desktop.page.locator('[data-revise-submit]').click();
-  await desktop.page.waitForFunction(()=>document.querySelector('[data-revise-dialog] .form-error')?.textContent.includes('原稿'));
+  await desktop.page.waitForFunction(()=>/原稿|资料已变化/.test(document.querySelector('[data-revise-dialog] .form-error')?.textContent||''));
   assert.equal(providerRequests.length,calls);
   assert.equal(await desktop.page.evaluate(()=>aiDraft.originalText),original);
   assert.match(await currentBody(firstId),/整理确认期间增加的新稿/);
@@ -1417,6 +1458,250 @@ async function main(){
   assert.deepEqual((await api('/api/state','GET',undefined,sourceId)).chapters.map(item=>item.body),before.chapters.map(item=>item.body));
   results.restored_project=restoredId;
  });
+ await test('200字作品名恢复可读写，读取失败后只重开已建立副本且不提前报成功',async()=>{
+  const page=workspace.page,previousProject=await page.evaluate(()=>requestedProject);
+  const title='长'.repeat(200),body='长作品名的原稿😀。恢复读取失败也不能改写这段文字。';
+  await page.locator('[data-view="library"]').click();await page.locator('[data-action="createProject"]').click();
+  await page.locator('#newBookTitle').fill(title);await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(previous=>requestedProject!==previous,previousProject);await waitSaved(page);
+  const sourceId=await page.evaluate(()=>requestedProject);
+  await page.locator('[data-view="editor"]').click();await page.locator('#chapterBody').fill(body);await waitSaved(page);
+  await page.locator('[data-view="backups"]').click();await page.locator('[data-action="createBackup"]').click();
+  await page.locator('[data-backup-restore]').waitFor();
+  const projectsBefore=(await api('/api/projects')).projects.length,providerBefore=providerRequests.length;
+  let restores=0;
+  const observe=request=>{if(request.method()==='POST'&&/\/api\/backups\/[^/]+\/restore$/.test(request.url()))restores++};
+  page.on('request',observe);
+  await page.route('**/api/state',async route=>{
+   if(route.request().method()==='GET'&&route.request().headers()['x-moyu-project']!==sourceId)return route.abort('failed');
+   return route.continue();
+  });
+  await page.locator('[data-backup-restore]').first().click();await page.locator('#restoreConfirm').check();
+  await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(()=>document.querySelector('.author-form .form-error')?.textContent.includes('副本已建立'));
+  const restoredId=await page.evaluate(()=>requestedProject);
+  assert.notEqual(restoredId,sourceId);assert.equal(await page.evaluate(()=>backendOnline),false);
+  assert.match(await page.locator('.author-form .form-error').innerText(),/暂时无法打开/);
+  assert.equal(await page.locator('.author-form [type="submit"]').innerText(),'重新打开副本');
+  assert.doesNotMatch(await page.locator('#toast').innerText(),/恢复副本已打开/);
+  assert.equal(restores,1);assert.equal((await api('/api/projects')).projects.length,projectsBefore+1);
+  const restoredTitle='长'.repeat(193)+' · 恢复副本';
+  assert.equal((await api('/api/state','GET',undefined,restoredId)).project.title,restoredTitle);
+  await page.screenshot({path:path.join(temporary,'desktop-backup-open-failure.png'),fullPage:true});
+  await page.unroute('**/api/state');
+  await page.locator('.author-form [type="submit"]').click();
+  await page.locator('.author-form').waitFor({state:'hidden'});await waitSaved(page);
+  assert.equal(await page.evaluate(()=>requestedProject),restoredId);
+  assert.equal(await page.locator('#projectTitle').innerText(),restoredTitle);
+  assert.match(await page.locator('#toast').innerText(),/恢复副本已打开/);
+  assert.equal(await page.locator('#chapterBody').inputValue(),body);
+  await page.locator('#chapterBody').fill(body+'\n重新打开副本后继续写。');await waitSaved(page);
+  await page.reload();await waitSaved(page);await page.locator('[data-view="editor"]').click();
+  assert.equal(await page.locator('#chapterBody').inputValue(),body+'\n重新打开副本后继续写。');
+  assert.equal((await api('/api/state','GET',undefined,sourceId)).chapters[0].body,body);
+  assert.equal((await api('/api/state','GET',undefined,sourceId)).project.title,title);
+  assert.equal(restores,1);page.off('request',observe);
+  await page.locator('[data-view="library"]').click();
+  await page.locator(`[data-project-copy="${restoredId}"]`).click();
+  const copyTitle=await page.locator('#copyTitle').inputValue();
+  assert.equal(Array.from(copyTitle).length,200);assert.ok(copyTitle.endsWith(' · 副本'));
+  await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(previous=>requestedProject!==previous,restoredId);await waitSaved(page);
+  const copiedId=await page.evaluate(()=>requestedProject);
+  assert.equal((await api('/api/state','GET',undefined,copiedId)).project.title,copyTitle);
+  assert.equal(providerRequests.length,providerBefore);
+  results.backup_reopen={source_project:sourceId,restored_project:restoredId,copied_project:copiedId,restore_requests:restores,
+   project_created_once:true,source_preserved:true,reloaded_and_saved:true,model_requests:0};
+ });
+ await test('恢复成功回复后原作和副本读取同时失败，重开仍只有一次恢复写入',async()=>{
+  const page=workspace.page,sourceId=await page.evaluate(()=>requestedProject),providerBefore=providerRequests.length;
+  const source=await api('/api/state','GET',undefined,sourceId);
+  await page.locator('[data-view="backups"]').click();await page.locator('[data-action="createBackup"]').click();
+  await page.locator('[data-backup-restore]').waitFor();
+  const projectsBefore=(await api('/api/projects')).projects.length;
+  let restores=0,failedReads=0;
+  const observe=request=>{if(request.method()==='POST'&&/\/api\/backups\/[^/]+\/restore$/.test(request.url()))restores++};
+  page.on('request',observe);
+  await page.route('**/api/state',async route=>{
+   if(route.request().method()==='GET'){failedReads++;return route.abort('failed')}
+   return route.continue();
+  });
+  await page.locator('[data-backup-restore]').first().click();await page.locator('#restoreConfirm').check();
+  await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(()=>document.querySelector('.author-form .form-error')?.textContent.includes('副本已建立'));
+  const restoredId=await page.evaluate(()=>requestedProject);
+  assert.notEqual(restoredId,sourceId);assert.ok(failedReads>=2);
+  assert.equal(restores,1);assert.equal((await api('/api/projects')).projects.length,projectsBefore+1);
+  assert.doesNotMatch(await page.locator('#toast').innerText(),/恢复副本已打开/);
+  await page.unroute('**/api/state');await page.locator('.author-form [type="submit"]').click();
+  await page.locator('.author-form').waitFor({state:'hidden'});await waitSaved(page);
+  assert.equal(await page.evaluate(()=>requestedProject),restoredId);
+  assert.equal(restores,1);assert.equal((await api('/api/projects')).projects.length,projectsBefore+1);
+  assert.deepEqual((await api('/api/state','GET',undefined,sourceId)).chapters,source.chapters);
+  assert.deepEqual((await api('/api/state','GET',undefined,restoredId)).chapters.map(c=>c.body),source.chapters.map(c=>c.body));
+  assert.equal(providerRequests.length,providerBefore);page.off('request',observe);
+  results.backup_post_commit_reopen={source_project:sourceId,restored_project:restoredId,failed_state_reads:failedReads,
+   restore_requests:restores,project_created_once:true,source_preserved:true,model_requests:0};
+ });
+ await test('含emoji的名称按完整字符恢复，刷新与默认复制都能打开且保留原稿',async()=>{
+  const page=workspace.page,previousProject=await page.evaluate(()=>requestedProject);
+  const prefix='书'.repeat(192)+'😀',title=prefix+'卷'.repeat(7),body='含emoji作品名的原稿。副本和原作分别保存。';
+  const providerBefore=providerRequests.length;
+  await page.locator('[data-view="library"]').click();await page.locator('[data-action="createProject"]').click();
+  await page.locator('#newBookTitle').fill(prefix+'卷'.repeat(6));await page.locator('#newBookTitle').press('End');
+  await page.keyboard.insertText('卷');assert.equal(await page.locator('#newBookTitle').inputValue(),title);
+  await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(previous=>requestedProject!==previous,previousProject);await waitSaved(page);
+  const sourceId=await page.evaluate(()=>requestedProject);
+  await page.locator('[data-view="editor"]').click();await page.locator('#chapterBody').fill(body);await waitSaved(page);
+  await page.locator('[data-view="backups"]').click();await page.locator('[data-action="createBackup"]').click();
+  await page.locator('[data-backup-restore]').waitFor();await page.locator('[data-backup-restore]').first().click();
+  await page.locator('#restoreConfirm').check();await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(previous=>requestedProject!==previous,sourceId);
+  await page.locator('.author-form').waitFor({state:'hidden'});await waitSaved(page);
+  const restoredId=await page.evaluate(()=>requestedProject),restoredTitle=prefix+' · 恢复副本';
+  assert.equal(Array.from(restoredTitle).length,200);assert.equal(restoredTitle.length,201);
+  assert.equal(await page.locator('#projectTitle').innerText(),restoredTitle);
+  await page.reload();await waitSaved(page);await page.locator('[data-view="editor"]').click();
+  assert.equal(await page.locator('#chapterBody').inputValue(),body);
+  await page.locator('#chapterBody').fill(body+'\n恢复后新写的一句。');await waitSaved(page);
+  await page.locator('[data-view="library"]').click();await page.locator(`[data-project-copy="${restoredId}"]`).click();
+  const initialCopyTitle=await page.locator('#copyTitle').inputValue();
+  await page.locator('#copyTitle').focus();
+  await page.evaluate(()=>document.querySelector('#copyTitle').setSelectionRange(0,1));
+  await page.keyboard.insertText('新');const copyTitle=await page.locator('#copyTitle').inputValue();
+  assert.equal(copyTitle,'新'+initialCopyTitle.slice(1));
+  assert.equal(Array.from(copyTitle).length,200);assert.ok(copyTitle.includes('😀'));assert.ok(copyTitle.endsWith(' · 副本'));
+  const projectsBefore=(await api('/api/projects')).projects.length;
+  await page.locator('#copyTitle').fill(copyTitle+'额');await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(()=>document.querySelector('.author-form .form-error')?.textContent.includes('不能超过200字'));
+  assert.equal((await api('/api/projects')).projects.length,projectsBefore);
+  await page.locator('#copyTitle').fill(copyTitle);
+  await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(previous=>requestedProject!==previous,restoredId);await waitSaved(page);
+  const copiedId=await page.evaluate(()=>requestedProject);
+  await page.locator('[data-view="editor"]').click();
+  assert.equal(await page.locator('#chapterBody').inputValue(),body+'\n恢复后新写的一句。');
+  assert.equal(await page.locator('#projectTitle').innerText(),copyTitle);
+  assert.equal((await api('/api/state','GET',undefined,sourceId)).chapters[0].body,body);
+  assert.equal((await api('/api/state','GET',undefined,sourceId)).project.title,title);
+  assert.equal(providerRequests.length,providerBefore);
+  await page.screenshot({path:path.join(temporary,'desktop-backup-restored.png'),fullPage:true});
+  results.backup_unicode={source_project:sourceId,restored_project:restoredId,copied_project:copiedId,title_characters:200,
+   title_utf16_units:201,source_preserved:true,reloaded_and_saved:true,model_requests:0};
+ });
+ await test('200字作品名在大小电脑窗口中保留写作入口，导航独立滚动且不遮挡正文',async()=>{
+  const page=workspace.page,title=await page.locator('#projectTitle').textContent();
+  assert.equal(Array.from(title).length,200);
+  const measurements=[];
+  for(const viewport of [{width:1440,height:1000},{width:1280,height:900},{width:1280,height:800}]){
+   await page.setViewportSize(viewport);
+   await page.evaluate(async()=>{
+    window.scrollTo(0,0);document.querySelector('.nav-list').scrollTop=0;
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   });
+   const layout=await page.evaluate(()=>{
+    const rect=selector=>{const b=document.querySelector(selector).getBoundingClientRect();return {top:b.top,bottom:b.bottom,left:b.left,right:b.right,height:b.height}};
+    const hit=selector=>{
+     const element=document.querySelector(selector),b=element.getBoundingClientRect(),x=b.left+b.width/2,y=b.top+b.height/2;
+     return b.top>=0&&b.bottom<=innerHeight&&element.contains(document.elementFromPoint(x,y));
+    };
+    const title=document.querySelector('#projectTitle'),nav=document.querySelector('.nav-list');
+    return {title:title.textContent,full_title:title.title,title_height:title.getBoundingClientRect().height,
+     title_line_height:parseFloat(getComputedStyle(title).lineHeight),header:rect('.topbar'),sidebar:rect('.sidebar'),
+     main:rect('#main'),page_scroll:scrollY,nav_scroll:nav.scrollTop,nav_height:nav.clientHeight,nav_content_height:nav.scrollHeight,
+     library_visible:hit('[data-view="library"]'),editor_visible:hit('[data-view="editor"]'),edit_visible:hit('#editProjectBtn'),
+     horizontal_overflow:document.documentElement.scrollWidth>innerWidth};
+   });
+   assert.equal(layout.title,title);assert.equal(layout.full_title,title);
+   assert.ok(layout.title_height<=layout.title_line_height*2+.5);
+   assert.equal(layout.page_scroll,0);assert.equal(layout.nav_scroll,0);
+   assert.equal(layout.header.top,0);assert.equal(layout.header.bottom,64);assert.equal(layout.sidebar.top,64);
+   assert.ok(layout.sidebar.bottom<=viewport.height+.5);
+   assert.ok(layout.main.left>=layout.sidebar.right);
+   assert.equal(layout.library_visible,true);assert.equal(layout.editor_visible,true);assert.equal(layout.edit_visible,true);
+   assert.equal(layout.horizontal_overflow,false);assert.ok(layout.nav_height>200);
+   await page.evaluate(async()=>{
+    const nav=document.querySelector('.nav-list');nav.scrollTop=nav.scrollHeight;
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   });
+   const last=await page.evaluate(()=>{
+    const nav=document.querySelector('.nav-list'),element=nav.querySelector('[data-view="references"]'),b=element.getBoundingClientRect(),n=nav.getBoundingClientRect();
+    return {page_scroll:scrollY,nav_scroll:nav.scrollTop,visible:b.top>=n.top&&b.bottom<=n.bottom&&b.bottom<=innerHeight,
+     hit:element.contains(document.elementFromPoint(b.left+b.width/2,b.top+b.height/2))};
+   });
+   assert.equal(last.page_scroll,0);assert.equal(last.visible,true);assert.equal(last.hit,true);
+   if(layout.nav_content_height>layout.nav_height)assert.ok(last.nav_scroll>0);
+   await page.locator('[data-view="references"]').click();
+   await page.locator('#referenceList').waitFor();
+   await page.locator('[data-view="editor"]').click();await page.locator('#chapterBody').waitFor();
+   await page.evaluate(async()=>{
+    window.scrollTo(0,220);await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   });
+   const scrolled=await page.evaluate(()=>({page_scroll:scrollY,sidebar_top:document.querySelector('.sidebar').getBoundingClientRect().top,
+    header_top:document.querySelector('.topbar').getBoundingClientRect().top}));
+   assert.ok(scrolled.page_scroll>0);assert.equal(scrolled.sidebar_top,64);assert.equal(scrolled.header_top,0);
+   measurements.push({viewport,layout,last,scrolled});
+   await page.evaluate(async()=>{
+    window.scrollTo(0,0);document.querySelector('.nav-list').scrollTop=0;
+    await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+   });
+   await page.screenshot({path:path.join(temporary,viewport.height===1000?'desktop-long-title-navigation.png':
+    viewport.height===900?'compact-desktop-long-title-navigation.png':'short-desktop-long-title-navigation.png'),fullPage:false});
+  }
+  results.long_title_navigation={title_characters:200,measurements};
+  await page.setViewportSize({width:1440,height:1000});
+ });
+ await test('设定的揭晓章节和知情人物经页面保存刷新后仍限制实际写作材料',async()=>{
+  const page=workspace.page,project=await page.evaluate(()=>requestedProject),providerBefore=providerRequests.length;
+  await page.locator('[data-view="world"]').click();
+  const createPerson=async name=>{
+   await page.locator('[data-action="newRecord"]').click();
+   await page.locator('#recordName').fill(name);await page.locator('#recordDesc').fill('范围回归专用人物。');
+   await page.locator('.author-form [type="submit"]').click();await page.locator('.author-form').waitFor({state:'hidden'});await waitSaved(page);
+   return (await api('/api/state','GET',undefined,project)).records.find(item=>item.name===name).id;
+  };
+  const hero=await createPerson('范围作者'),villain=await createPerson('范围访客'),secret='范围密语：银窗只在第九夜打开。';
+  await page.locator('[data-action="newRecord"]').click();await page.locator('#recordType').fill('秘密');
+  await page.locator('#recordName').fill('银窗秘密');await page.locator('#recordDesc').fill(secret);
+  await page.locator('#recordAvailable').fill('9');await page.locator('#recordVisibility').selectOption('people');
+  await page.locator('#recordKnown').selectOption([villain]);
+  await page.locator('.author-form [type="submit"]').click();await page.locator('.author-form').waitFor({state:'hidden'});await waitSaved(page);
+  const record=(await api('/api/state','GET',undefined,project)).records.find(item=>item.name==='银窗秘密');
+  assert.deepEqual(record.known_by,[villain]);assert.equal(record.knowledge_scope.available_from,'9');
+  await page.reload();await waitSaved(page);await page.locator('[data-view="world"]').click();
+  const card=page.locator('.record-card').filter({has:page.locator(`[data-record="${record.id}"]`)});
+  assert.match(await card.locator('.record-scope').innerText(),/第 9 章起.*范围访客/);
+  await page.locator(`[data-record="${record.id}"]`).click();
+  assert.equal(await page.locator('#recordAvailable').inputValue(),'9');
+  assert.deepEqual(await page.locator('#recordKnown').evaluate(element=>[...element.selectedOptions].map(option=>option.value)),[villain]);
+  await page.locator('#recordUntil').fill('1');await page.locator('.author-form [type="submit"]').click();
+  await page.waitForFunction(()=>document.querySelector('.author-form .form-error')?.textContent.includes('不能早于'));
+  assert.equal((await api('/api/state','GET',undefined,project)).records.find(item=>item.id===record.id).knowledge_scope.valid_end,'');
+  await page.locator('#recordUntil').fill('');await page.locator('.author-form [data-close]').click();
+  await page.locator('[data-view="editor"]').click();await page.locator('details.chapter-plan > summary').click();
+  await page.locator('#chapterPov').fill('范围作者');await waitSaved(page);
+  const chapterId=await page.evaluate(()=>activeChapter);
+  const preview=await api('/api/ai/prompt-preview','POST',{task:'continue',chapter_id:chapterId,instruction:'银窗秘密'},project);
+  assert.ok(!JSON.stringify(preview).includes(secret));
+  await page.locator('[data-view="world"]').click();await page.locator(`[data-record="${record.id}"]`).click();
+  await page.locator('#recordAvailable').fill('1');await page.locator('#recordKnown').selectOption([hero]);
+  await page.locator('.author-form [type="submit"]').click();await page.locator('.author-form').waitFor({state:'hidden'});await waitSaved(page);
+  const visible=await api('/api/ai/prompt-preview','POST',{task:'continue',chapter_id:chapterId,instruction:'银窗秘密'},project);
+  assert.ok(JSON.stringify(visible).includes(secret));
+  const downloadEvent=page.waitForEvent('download');await page.locator('#exportBtn').click();const download=await downloadEvent;
+  const exportedPath=path.join(temporary,'record-scope-manuscript.json');await download.saveAs(exportedPath);
+  const exported=JSON.parse(fs.readFileSync(exportedPath,'utf8')).records.find(item=>item.id===record.id);
+  assert.equal(exported.knowledge_scope.available_from,'1');assert.deepEqual(exported.known_by,[hero]);
+  await page.locator(`[data-record="${record.id}"]`).click();
+  await page.screenshot({path:path.join(temporary,'desktop-record-knowledge-scope.png'),fullPage:false});
+  await page.locator('.author-form [data-close]').click();
+  assert.equal(providerRequests.length,providerBefore);
+  results.record_scope={record_id:record.id,refresh_preserved:true,hidden_before_reveal:true,visible_after_author_change:true,
+   json_scope_preserved:true,invalid_range_rejected:true,model_requests:0};
+ });
+ await workspace.page.locator('[data-view="library"]').click();
+ await workspace.page.locator(`[data-project-open="${results.restored_project}"]`).click();await waitSaved(workspace.page);
  await workspace.page.locator('[data-view="editor"]').click();
  await workspace.page.screenshot({path:path.join(temporary,'desktop-editor.png'),fullPage:true});
  assert.deepEqual(workspace.errors,[]);await workspace.context.close();

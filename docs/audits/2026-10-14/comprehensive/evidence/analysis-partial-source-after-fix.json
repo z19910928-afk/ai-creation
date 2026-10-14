@@ -1,0 +1,332 @@
+{
+  "passed": true,
+  "checks": 8,
+  "cases": [
+    {
+      "name": "test_components_without_any_private_source_keep_normal_controls",
+      "passed": true
+    },
+    {
+      "name": "test_explicit_null_decision_guidance_is_not_compatible",
+      "passed": true,
+      "subtest": "test_explicit_null_decision_guidance_is_not_compatible (__main__.AnalysisPartialSourceHTTP.test_explicit_null_decision_guidance_is_not_compatible) (task='chapter_analysis')"
+    },
+    {
+      "name": "test_explicit_null_decision_guidance_is_not_compatible",
+      "passed": true,
+      "subtest": "test_explicit_null_decision_guidance_is_not_compatible (__main__.AnalysisPartialSourceHTTP.test_explicit_null_decision_guidance_is_not_compatible) (task='semantic_review')"
+    },
+    {
+      "name": "test_explicit_null_decision_guidance_is_not_compatible",
+      "passed": true
+    },
+    {
+      "name": "test_explicit_null_decision_material_is_not_compatible",
+      "passed": true,
+      "subtest": "test_explicit_null_decision_material_is_not_compatible (__main__.AnalysisPartialSourceHTTP.test_explicit_null_decision_material_is_not_compatible) (task='chapter_analysis')"
+    },
+    {
+      "name": "test_explicit_null_decision_material_is_not_compatible",
+      "passed": true,
+      "subtest": "test_explicit_null_decision_material_is_not_compatible (__main__.AnalysisPartialSourceHTTP.test_explicit_null_decision_material_is_not_compatible) (task='semantic_review')"
+    },
+    {
+      "name": "test_explicit_null_decision_material_is_not_compatible",
+      "passed": true
+    },
+    {
+      "name": "test_guidance_only_analysis_is_read_only_and_cannot_confirm",
+      "passed": true
+    },
+    {
+      "name": "test_guidance_only_free_explanation_binds_current_materials_and_expires",
+      "passed": true
+    },
+    {
+      "name": "test_guidance_only_review_cannot_accept_or_repair",
+      "passed": true
+    },
+    {
+      "name": "test_orphan_decision_guidance_cannot_replace_original_sources",
+      "passed": true,
+      "subtest": "test_orphan_decision_guidance_cannot_replace_original_sources (__main__.AnalysisPartialSourceHTTP.test_orphan_decision_guidance_cannot_replace_original_sources) (task='chapter_analysis')"
+    },
+    {
+      "name": "test_orphan_decision_guidance_cannot_replace_original_sources",
+      "passed": true,
+      "subtest": "test_orphan_decision_guidance_cannot_replace_original_sources (__main__.AnalysisPartialSourceHTTP.test_orphan_decision_guidance_cannot_replace_original_sources) (task='semantic_review')"
+    },
+    {
+      "name": "test_orphan_decision_guidance_cannot_replace_original_sources",
+      "passed": true
+    },
+    {
+      "name": "test_orphan_decision_material_cannot_replace_original_sources",
+      "passed": true,
+      "subtest": "test_orphan_decision_material_cannot_replace_original_sources (__main__.AnalysisPartialSourceHTTP.test_orphan_decision_material_cannot_replace_original_sources) (task='chapter_analysis')"
+    },
+    {
+      "name": "test_orphan_decision_material_cannot_replace_original_sources",
+      "passed": true,
+      "subtest": "test_orphan_decision_material_cannot_replace_original_sources (__main__.AnalysisPartialSourceHTTP.test_orphan_decision_material_cannot_replace_original_sources) (task='semantic_review')"
+    },
+    {
+      "name": "test_orphan_decision_material_cannot_replace_original_sources",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T18:38:26.428744+00:00",
+  "finished_at": "2026-10-14T18:38:34.815144+00:00",
+  "observations": [
+    {
+      "test": "test_components_without_any_private_source_keep_normal_controls",
+      "scenario": "pure_component_controls",
+      "actual_ai_run_absent": true,
+      "private_context_absent": true,
+      "analysis_confirm_http_status": 200,
+      "review_accept_http_status": 200,
+      "review_repair_queue_http_status": 202,
+      "direct_bound_source_matches": true,
+      "provider_calls": 0
+    },
+    {
+      "test": "test_explicit_null_decision_guidance_is_not_compatible",
+      "scenario": "partial_analysis_protection",
+      "variant": "decision_guidance_null",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_status": "stale",
+      "report_stale": true,
+      "get_database_unchanged": true,
+      "confirm_http_status": 409,
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_explicit_null_decision_guidance_is_not_compatible",
+      "scenario": "partial_review_protection",
+      "variant": "decision_guidance_null",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_stale": true,
+      "repair_target_count": 0,
+      "get_database_unchanged": true,
+      "direct_repair_rejected": true,
+      "direct_database_unchanged": true,
+      "accept_http_status": 409,
+      "accept_database_unchanged": true,
+      "queue_http_status": 409,
+      "queue_code": "review_source_stale",
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_explicit_null_decision_material_is_not_compatible",
+      "scenario": "partial_analysis_protection",
+      "variant": "decision_material_null",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_status": "stale",
+      "report_stale": true,
+      "get_database_unchanged": true,
+      "confirm_http_status": 409,
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_explicit_null_decision_material_is_not_compatible",
+      "scenario": "partial_review_protection",
+      "variant": "decision_material_null",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_stale": true,
+      "repair_target_count": 0,
+      "get_database_unchanged": true,
+      "direct_repair_rejected": true,
+      "direct_database_unchanged": true,
+      "accept_http_status": 409,
+      "accept_database_unchanged": true,
+      "queue_http_status": 409,
+      "queue_code": "review_source_stale",
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_guidance_only_analysis_is_read_only_and_cannot_confirm",
+      "scenario": "partial_analysis_protection",
+      "variant": "guidance_only",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_status": "stale",
+      "report_stale": true,
+      "get_database_unchanged": true,
+      "confirm_http_status": 409,
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_guidance_only_free_explanation_binds_current_materials_and_expires",
+      "scenario": "partial_author_resolution_materials",
+      "actual_ai_run_absent": true,
+      "original_guidance_kept": true,
+      "original_material_absent": true,
+      "current_material_snapshot_bound": true,
+      "guidance_unchanged_by_description_change": true,
+      "first_explanation_http_status": 200,
+      "resolution_source_changed": true,
+      "previous_explanation_current": false,
+      "publication_blocked_after_material_change": true,
+      "old_resolution_http_status": 409,
+      "old_resolution_rejection_atomic": true,
+      "new_resolution_http_status": 200,
+      "publication_unblocked_after_current_explanation": true,
+      "current_explanation_current": true,
+      "frozen_context_unchanged": true,
+      "original_guidance_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_guidance_only_review_cannot_accept_or_repair",
+      "scenario": "partial_review_protection",
+      "variant": "guidance_only",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_stale": true,
+      "repair_target_count": 0,
+      "get_database_unchanged": true,
+      "direct_repair_rejected": true,
+      "direct_database_unchanged": true,
+      "accept_http_status": 409,
+      "accept_database_unchanged": true,
+      "queue_http_status": 409,
+      "queue_code": "review_source_stale",
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_orphan_decision_guidance_cannot_replace_original_sources",
+      "scenario": "partial_analysis_protection",
+      "variant": "decision_guidance_only",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_status": "stale",
+      "report_stale": true,
+      "get_database_unchanged": true,
+      "confirm_http_status": 409,
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_orphan_decision_guidance_cannot_replace_original_sources",
+      "scenario": "partial_review_protection",
+      "variant": "decision_guidance_only",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_stale": true,
+      "repair_target_count": 0,
+      "get_database_unchanged": true,
+      "direct_repair_rejected": true,
+      "direct_database_unchanged": true,
+      "accept_http_status": 409,
+      "accept_database_unchanged": true,
+      "queue_http_status": 409,
+      "queue_code": "review_source_stale",
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_orphan_decision_material_cannot_replace_original_sources",
+      "scenario": "partial_analysis_protection",
+      "variant": "decision_material_only",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_status": "stale",
+      "report_stale": true,
+      "get_database_unchanged": true,
+      "confirm_http_status": 409,
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_orphan_decision_material_cannot_replace_original_sources",
+      "scenario": "partial_review_protection",
+      "variant": "decision_material_only",
+      "actual_ai_run_absent": true,
+      "persisted_private_source_present": true,
+      "report_stale": true,
+      "repair_target_count": 0,
+      "get_database_unchanged": true,
+      "direct_repair_rejected": true,
+      "direct_database_unchanged": true,
+      "accept_http_status": 409,
+      "accept_database_unchanged": true,
+      "queue_http_status": 409,
+      "queue_code": "review_source_stale",
+      "database_unchanged": true,
+      "chapters_unchanged": true,
+      "frozen_context_unchanged": true,
+      "stored_sources_unchanged": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "free_provider_calls": 0,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "ae5752501b72777ae30c57d43040a73505cce6cb4a8d53f19c26a004039ae39d",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/review_guidance_http_fixtures.py": "70e162fb310c8488eeeed5eb4e084647179aa0b8f04cf20fcce7fde5edaf6bb9",
+    "tests/analysis_partial_source_http_fixtures.py": "ee96de46002045e181c0279994d22b6b0c04677ba69670ace820921138a151d7"
+  },
+  "source_files_sha256_after": {
+    "server.py": "ae5752501b72777ae30c57d43040a73505cce6cb4a8d53f19c26a004039ae39d",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/review_guidance_http_fixtures.py": "70e162fb310c8488eeeed5eb4e084647179aa0b8f04cf20fcce7fde5edaf6bb9",
+    "tests/analysis_partial_source_http_fixtures.py": "ee96de46002045e181c0279994d22b6b0c04677ba69670ace820921138a151d7"
+  },
+  "frozen_sources_before_captured": true,
+  "frozen_sources_after_captured": true,
+  "source_unchanged": true,
+  "scope": "synthetic reports with server-private contexts but no AI run; temporary SQLite; real loopback HTTP; no provider calls",
+  "claim_limit": "partial persisted source and component compatibility integrity only; no real manuscript, credential, literary-quality or first-tier claim"
+}

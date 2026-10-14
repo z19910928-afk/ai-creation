@@ -1,0 +1,180 @@
+{
+  "passed": true,
+  "checks": 10,
+  "cases": [
+    {
+      "name": "test_current_analysis_self_confirmations_and_candidates_remain_usable",
+      "passed": true
+    },
+    {
+      "name": "test_late_material_change_retains_text_usage_and_blocks_both_retry_routes",
+      "passed": true
+    },
+    {
+      "name": "test_late_material_change_with_unknown_billing_cannot_resend",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_analysis_with_actual_run_is_read_only_without_other_changes",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_analysis_with_actual_run_rejects_confirmation_after_material_change",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_resolution_snapshot_ignores_other_book_material_changes",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_resolution_snapshot_tracks_added_and_deleted_same_book_records",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_review_allows_free_current_explanation_but_not_old_evidence_acceptance",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_review_explanation_rechecks_current_material_absent_from_old_request",
+      "passed": true
+    },
+    {
+      "name": "test_stale_current_review_can_explain_deleted_material_without_provider",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:42:21.240397+00:00",
+  "finished_at": "2026-10-14T17:42:32.333544+00:00",
+  "observations": [
+    {
+      "test": "test_current_analysis_self_confirmations_and_candidates_remain_usable",
+      "scenario": "new_analysis_own_decisions",
+      "reviewed": true,
+      "original_marker_preserved": true,
+      "separate_confirmations": 5,
+      "accepted_candidates": 2,
+      "free_provider_calls": 1
+    },
+    {
+      "test": "test_late_material_change_retains_text_usage_and_blocks_both_retry_routes",
+      "scenario": "late_material_change_known_usage",
+      "status": "failed",
+      "completion_state": "invalid_evidence",
+      "complete_text_preserved": true,
+      "raw_usage_preserved": true,
+      "quota": "consumed",
+      "retry_http_statuses": [
+        409,
+        409
+      ],
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_late_material_change_with_unknown_billing_cannot_resend",
+      "scenario": "late_material_change_unknown_billing",
+      "status": "failed",
+      "completion_state": "invalid_evidence",
+      "complete_text_preserved": true,
+      "raw_usage_preserved": true,
+      "quota": "unknown",
+      "retry_http_statuses": [
+        409,
+        409
+      ],
+      "extra_provider_calls": 0,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_legacy_analysis_with_actual_run_is_read_only_without_other_changes",
+      "scenario": "legacy_analysis_unchanged",
+      "actual_ai_run": true,
+      "actual_saved_job": true,
+      "analysis_status": "stale",
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_legacy_analysis_with_actual_run_rejects_confirmation_after_material_change",
+      "scenario": "legacy_analysis_changed",
+      "actual_ai_run": true,
+      "actual_saved_job": true,
+      "analysis_status": "stale",
+      "confirm_http_status": 409,
+      "state_unchanged": true,
+      "ledger_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_legacy_resolution_snapshot_ignores_other_book_material_changes",
+      "scenario": "legacy_snapshot_other_book_control",
+      "guidance_absent": true,
+      "other_book_added_changed_deleted": true,
+      "source_unchanged": true,
+      "explanation_current": true,
+      "publication_unblocked": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_legacy_resolution_snapshot_tracks_added_and_deleted_same_book_records",
+      "scenario": "legacy_snapshot_membership",
+      "guidance_absent": true,
+      "added_material_invalidated": true,
+      "deleted_material_invalidated": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_legacy_review_allows_free_current_explanation_but_not_old_evidence_acceptance",
+      "scenario": "legacy_review_unchanged",
+      "actual_ai_run": true,
+      "actual_saved_job": true,
+      "stale": true,
+      "repair_targets": []
+    },
+    {
+      "test": "test_legacy_review_explanation_rechecks_current_material_absent_from_old_request",
+      "scenario": "legacy_resolution_current_material",
+      "new_record_was_not_in_frozen_request": true,
+      "resolution_changed": true,
+      "explanation_current": false,
+      "publication_blocked": true
+    },
+    {
+      "test": "test_stale_current_review_can_explain_deleted_material_without_provider",
+      "scenario": "new_review_deleted_material",
+      "author_explanation_available": true,
+      "gate_resolved": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "free_provider_calls": 10,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "426f956640f9e68afb491a064f40926213d22a01eecf21d18508c06846c8e188",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61"
+  },
+  "source_files_sha256_after": {
+    "server.py": "69093c95504b8dfa39b0fe3b19c37d2821eaa5acc0de65bc15f4f94d44ef3c2c",
+    "moyu_analysis.py": "426f956640f9e68afb491a064f40926213d22a01eecf21d18508c06846c8e188",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "6988195975a6171f52bbe82163cbfb6d5479dccf88e7ceedb26d3a334c241b61"
+  },
+  "source_unchanged": true,
+  "legacy_simulation": "normal local HTTP AI completion creates real job/run/report; remove only material seals from synthetic historical records; preserve request audit",
+  "scope": "temporary synthetic SQLite; real loopback HTTP; free local provider; no real manuscript or credential",
+  "claim_limit": "history/material integrity only; no literary-quality or first-tier competitiveness claim"
+}

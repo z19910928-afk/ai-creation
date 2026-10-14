@@ -6,8 +6,16 @@ const os = require('node:os');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const audit = path.join(root, 'docs/audits/2026-10-13');
-const privateRoot = path.join(root, 'artifacts/private-audit-originals/2026-10-13');
+const auditOption = process.argv.indexOf('--audit-dir');
+const auditRelative = auditOption < 0 ? 'docs/audits/2026-10-13' : process.argv[auditOption + 1];
+if (!auditRelative) throw new Error('--audit-dir needs a directory');
+const audit = path.resolve(root, auditRelative);
+const auditScope = path.relative(path.join(root, 'docs/audits'), audit);
+if (!auditScope || auditScope.startsWith('..') || path.isAbsolute(auditScope)) {
+  throw new Error('Only public docs/audits subdirectories can be published');
+}
+const privateRelative = path.posix.join('artifacts/private-audit-originals', auditScope.split(path.sep).join('/'));
+const privateRoot = path.join(root, privateRelative);
 const manifestPath = path.join(audit, 'evidence/archive-redactions.json');
 const apply = process.argv.includes('--apply');
 const sha = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
@@ -22,7 +30,7 @@ const replacements = [
   ['/tmp/codex-neural-network-ai-creation-20261013', './.audit-cache/moyu-baseline'],
 ];
 const email = /\b[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?\.[A-Za-z]{2,}\b/g;
-const macTemporaryPrefix = /(?:\/private)?\/var\/folders\/[^"'\s]+?\/T\//g;
+const macTemporaryPrefix = /(?:\/private)?\/var\/folders\/[^"'\\\s]+?\/T\//g;
 const macTemporaryAny = /(?:\/private)?\/var\/folders\/[A-Za-z0-9._-]+(?:\/[A-Za-z0-9._-]+)*/g;
 
 function collect(directory) {
@@ -57,6 +65,11 @@ function redactText(value, categories) {
   if (result.includes(home + '/')) {
     result = result.replaceAll(home + '/', '<private-home>/');
     categories.add('local_home_path');
+  }
+  const withoutTemporaryRuntime = result.replace(/\/(?:private\/)?tmp\/[^"'\\\s]+/g, '<private-temporary-path>');
+  if (withoutTemporaryRuntime !== result) {
+    result = withoutTemporaryRuntime;
+    categories.add('local_temporary_runtime_path');
   }
   return result;
 }
@@ -115,20 +128,20 @@ for (const location of collect(audit)) {
     throw new Error(`Private original is missing: ${relative}; recover it before publishing.`);
   }
   const categories = new Set();
-  let published = redactText(current.toString('utf8'), categories);
-  if (relative.startsWith('evidence/source-metadata/') && location.endsWith('.json')) {
-    const data = redactMetadata(JSON.parse(published), categories);
-    if (categories.size) {
+  let published;
+  if (location.endsWith('.json')) {
+    const data = redactMetadata(JSON.parse(current.toString('utf8')), categories);
+    if (relative.startsWith('evidence/source-metadata/') && categories.size) {
       data.archive_redaction = {
         original_artifact_sha256: sha(original),
         categories: [...new Set([...(previous?.categories || []), ...categories])].sort(),
         commit_ids_unchanged: true,
         public_bytes_are_original: false,
       };
-      published = JSON.stringify(data, null, 2) + '\n';
     }
-  } else if (location.endsWith('.json')) {
-    JSON.parse(published);
+    published = categories.size ? JSON.stringify(data, null, 2) + '\n' : current.toString('utf8');
+  } else {
+    published = redactText(current.toString('utf8'), categories);
   }
   const output = Buffer.from(published);
   if (output.equals(current)) {
@@ -160,7 +173,7 @@ for (const location of collect(audit)) {
 
 const manifest = {
   scope: 'Public audit archive only; literary samples, frozen requests, ledgers, and their hashes are unchanged.',
-  private_originals: 'artifacts/private-audit-originals/2026-10-13/ (Git ignored)',
+  private_originals: privateRelative + '/ (Git ignored)',
   originals_are_required_for_byte_or_signature_verification: true,
   files: [...records.values()].sort((left, right) => left.path.localeCompare(right.path)),
 };

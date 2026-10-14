@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-10-14T15:09:14.444Z",
+  "source_method": "Independent reading of pinned official source; all selected files checked against official recursive Git tree blob SHA-1 and byte size.",
+  "source_scope": "Selected source files only; no upstream full-app execution.",
+  "sources": [
+    {
+      "repository": "inliver233/Ai-Novel",
+      "inspected_branch": "dev",
+      "default_branch": "dev",
+      "commit": "8b85b2b6f29af4c69241be7c42417dbe4795db30",
+      "tree": "396b02c000b9d1eaa42767789d9c794e276df1c8",
+      "committed_at_utc": "2026-07-28T19:21:50Z",
+      "license_api": null,
+      "files": [
+        {
+          "path": "frontend/src/pages/promptStudio/usePromptStudio.ts",
+          "git_blob_sha": "0362f908c16d1078530d88e4e35b8ca773049eed",
+          "bytes": 15892,
+          "sha256": "7a9d4822f5558d3ab8c4a7bdfee8a0e2326a2e68ac38143150d77ab6c6932eca",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/frontend/src/pages/promptStudio/usePromptStudio.ts"
+        },
+        {
+          "path": "frontend/src/pages/promptStudio/PresetEditorPanel.tsx",
+          "git_blob_sha": "de586572d41d384b255ae93e43f3b9f903628491",
+          "bytes": 11066,
+          "sha256": "8c17b7fcc71c45f2e7a5712b5c9e6fb40cade0132f29717760c040595a645fb3",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/frontend/src/pages/promptStudio/PresetEditorPanel.tsx"
+        },
+        {
+          "path": "backend/app/api/routes/prompt_studio.py",
+          "git_blob_sha": "c5d563614eac9d47a8123da979bc1505239e28ae",
+          "bytes": 3929,
+          "sha256": "287d604957dc9b7c1e909c36eaf2a54d654da7741d41dffc913d1ec206808406",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/backend/app/api/routes/prompt_studio.py"
+        },
+        {
+          "path": "backend/app/services/prompt_studio_service.py",
+          "git_blob_sha": "6f15952cdbe743480e8c2ced43b3f1c11f7691f8",
+          "bytes": 24066,
+          "sha256": "56967020ac1be7519c32ac706e055b8a3edfe7cd63fc085c69c96a2e03ff99a1",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/backend/app/services/prompt_studio_service.py"
+        },
+        {
+          "path": "backend/app/services/prompt_management/preview.py",
+          "git_blob_sha": "13811d2c48c86171efb7e31a40d628ee5d40c673",
+          "bytes": 1429,
+          "sha256": "82bdcfe9d91ac78cb585d6e13a5a7a58df47d64d7bccead7db6a228d4e5bb627",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/backend/app/services/prompt_management/preview.py"
+        },
+        {
+          "path": "backend/app/services/prompt_management/crud.py",
+          "git_blob_sha": "d93b91805ce3dfc96c8cf726a3b2dd5a3113b01f",
+          "bytes": 10853,
+          "sha256": "b4587da079826f638f3c80db4f81171d35adec639127fe40a92d198abac5f63b",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/backend/app/services/prompt_management/crud.py"
+        },
+        {
+          "path": "backend/app/services/chapter_generation/prompt_service.py",
+          "git_blob_sha": "d1caafcbdad0afd24ec727cdd8c8be8d1064c911",
+          "bytes": 6070,
+          "sha256": "6c2b358ba1ebc0717fc2ce1fdf79182f5478beb0738e2f0cbadd8afe8cf83952",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/backend/app/services/chapter_generation/prompt_service.py"
+        },
+        {
+          "path": "backend/app/services/chapter_generation/prepare_service.py",
+          "git_blob_sha": "a7504e60b0696f782694d0436547df297cd841d1",
+          "bytes": 11640,
+          "sha256": "6c4374915b62f61f9afb241a245928da1947dfa3f72443b768a96d8ba39192d0",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/backend/app/services/chapter_generation/prepare_service.py"
+        },
+        {
+          "path": "backend/app/services/prompt_preset_render.py",
+          "git_blob_sha": "bc4ff7a31faf8d3ab98c200757b9ecadbd104381",
+          "bytes": 23419,
+          "sha256": "7510d8b42b471c0796e383cc96e8be45e5e4685dbdae503470920672ffa7fae2",
+          "url": "https://github.com/inliver233/Ai-Novel/blob/8b85b2b6f29af4c69241be7c42417dbe4795db30/backend/app/services/prompt_preset_render.py"
+        }
+      ]
+    },
+    {
+      "repository": "yuanbw2025/storyforge",
+      "inspected_branch": "main",
+      "default_branch": "main",
+      "commit": "5147924e835a11ca514d7c7bb22fcc365339316f",
+      "tree": "e430d12cee759cc2fceb2501571a99335da101e1",
+      "committed_at_utc": "2026-10-14T11:30:06Z",
+      "license_api": "MIT",
+      "files": [
+        {
+          "path": "src/components/editor/ChapterEditor.tsx",
+          "git_blob_sha": "2f39ad29855db1c0bee3edaa93c03108fabfcea7",
+          "bytes": 160345,
+          "sha256": "c7ec7f50f81f426df0432bddd3ec2936647fe1593ebba69f32b5458fdb8a3bc3",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/ChapterEditor.tsx"
+        },
+        {
+          "path": "src/components/editor/ChapterEditorToolbar.tsx",
+          "git_blob_sha": "c3545303efe2c27acd0b333df1c02b7720bf5a08",
+          "bytes": 41563,
+          "sha256": "bd609ab7167334cb539d0a8ad7f75c7deb57369f061c025aa6d1264036d2fcd5",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/ChapterEditorToolbar.tsx"
+        },
+        {
+          "path": "src/components/editor/FindReplacePanel.tsx",
+          "git_blob_sha": "24614f7ce1c4b53095558b7d75e59c56364b701c",
+          "bytes": 18163,
+          "sha256": "f301d07978f0e99f42bcf37faf5877aa30496a06e19f0455a31eb08156f71139",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/editor/FindReplacePanel.tsx"
+        },
+        {
+          "path": "src/components/settings/prompt/PromptManagerPanel.tsx",
+          "git_blob_sha": "15b150a8adef30c14b0414882e69ea2ae4d30967",
+          "bytes": 13920,
+          "sha256": "cca1408a5acef56a4580f7db0fcdad76ffa92bcb4d19fcadeb54cbbad4b0165c",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/settings/prompt/PromptManagerPanel.tsx"
+        },
+        {
+          "path": "src/components/settings/prompt/PromptTemplateEditor.tsx",
+          "git_blob_sha": "b807c83a204fd3cb5b8532fe7bc4b3029d60eed3",
+          "bytes": 20041,
+          "sha256": "d79806166fb32e089f2301634da519bfedefdb980f7931ce4ed1f2fc22fe634e",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/components/settings/prompt/PromptTemplateEditor.tsx"
+        },
+        {
+          "path": "src/stores/prompt.ts",
+          "git_blob_sha": "086431a580f7fb540291ca33a44ca794d9c32f4b",
+          "bytes": 6424,
+          "sha256": "10d8c4ed3581102bc9d23b8f6cf8631a3f8d9ff395b9ad3bccba3550f41b9284",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/stores/prompt.ts"
+        },
+        {
+          "path": "src/lib/ai/prompt-engine.ts",
+          "git_blob_sha": "f9b632ca44852d3c0bd803b40aba1a102b543a0e",
+          "bytes": 4849,
+          "sha256": "f7fdd4e63993bef9637de1740c5fca1ac3817ae28394f9d2e7c39b7ae5f7b274",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/ai/prompt-engine.ts"
+        },
+        {
+          "path": "src/lib/editor/find-replace-operation.ts",
+          "git_blob_sha": "7aa68be3dca4655e6d0b776041374c19b886b10b",
+          "bytes": 3441,
+          "sha256": "46ecf91bb1841b6fc36039016fc9389dfe59744822bc757ee77eb1b5205e7d04",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/editor/find-replace-operation.ts"
+        },
+        {
+          "path": "src/lib/editor/find-replace.ts",
+          "git_blob_sha": "7f540e9621cb1ae598ef5bfb8c0ca77d6e9421b7",
+          "bytes": 7386,
+          "sha256": "e554f4d14cf9addb7142fa8213436fb7f9c369923a7425dfb326b28154981964",
+          "url": "https://github.com/yuanbw2025/storyforge/blob/5147924e835a11ca514d7c7bb22fcc365339316f/src/lib/editor/find-replace.ts"
+        }
+      ]
+    }
+  ],
+  "external_model_calls": 0
+}

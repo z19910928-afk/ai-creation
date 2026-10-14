@@ -1,0 +1,715 @@
+{
+  "passed": true,
+  "checks": 13,
+  "cases": [
+    {
+      "name": "test_author_changed_character_state_event_cannot_be_reused",
+      "passed": true
+    },
+    {
+      "name": "test_character_state_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_event_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_fact_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_foreshadowing_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='event')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='character_state')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='relationship')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='fact')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='event')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='character_state')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='relationship')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='fact')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true
+    },
+    {
+      "name": "test_relationship_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_relationship_target_new_alias_ambiguity_cannot_be_reused",
+      "passed": true
+    },
+    {
+      "name": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_assertion_semantics_are_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_assertion_semantics_are_not_reused) (field='predicate')"
+    },
+    {
+      "name": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_assertion_semantics_are_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_assertion_semantics_are_not_reused) (field='valid_start')"
+    },
+    {
+      "name": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_assertion_semantics_are_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_assertion_semantics_are_not_reused) (field='valid_end')"
+    },
+    {
+      "name": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "passed": true
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_source_span_is_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_source_span_is_not_reused) (field='quote')"
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_source_span_is_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_source_span_is_not_reused) (field='quote_hash')"
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_source_span_is_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_source_span_is_not_reused) (field='start_codepoint')"
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_source_span_is_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_source_span_is_not_reused) (field='end_codepoint')"
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_source_span_is_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_source_span_is_not_reused) (field='start_utf8')"
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": true,
+      "subtest": "test_synthetically_changed_source_span_is_not_reused (__main__.AnalysisCandidateTypedHTTP.test_synthetically_changed_source_span_is_not_reused) (field='end_utf8')"
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": true
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='event')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='character_state')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='relationship')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='fact')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='event')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='character_state')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='relationship')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='fact')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T18:38:20.366207+00:00",
+  "finished_at": "2026-10-14T18:38:37.391609+00:00",
+  "observations": [
+    {
+      "test": "test_author_changed_character_state_event_cannot_be_reused",
+      "scenario": "author_changed_state_event_id",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_character_state_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_character_state",
+      "kind": "character_state",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_65cb726273fba245f50c2c917a8e8198",
+        "assertion_id": "asrt_2025b73ecec74cbf83a32ef86e16e70c",
+        "source_span_id": "span_ef3fc7ac92fc4441a42f5792ebd1de54",
+        "character_state_id": "state_6aad9707bb7c422cbcffd34d6a00e944"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_2025b73ecec74cbf83a32ef86e16e70c",
+        "character_state_id": "state_6aad9707bb7c422cbcffd34d6a00e944",
+        "memory_id": "analysis_65cb726273fba245f50c2c917a8e8198",
+        "source_span_id": "span_ef3fc7ac92fc4441a42f5792ebd1de54"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_event_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_event",
+      "kind": "event",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_01d8811cab4e033357fb34480c605cab",
+        "assertion_id": "asrt_d0702d7e070b488b9dc06a03c0c8b80b",
+        "source_span_id": "span_954bb17767ba4e30880970b9faac79b7",
+        "timeline_id": "time_a869d28d9e334a328b16954332b268c8"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_d0702d7e070b488b9dc06a03c0c8b80b",
+        "memory_id": "analysis_01d8811cab4e033357fb34480c605cab",
+        "source_span_id": "span_954bb17767ba4e30880970b9faac79b7",
+        "timeline_id": "time_a869d28d9e334a328b16954332b268c8"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_fact_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_fact",
+      "kind": "fact",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_c738f89b68e53cd0d8f84a0152730be4",
+        "assertion_id": "asrt_4d9508aa3ada47458fba20c85dbd5ba6",
+        "source_span_id": "span_1386981dcfd14f1dac7d15ad444a72a3"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_4d9508aa3ada47458fba20c85dbd5ba6",
+        "memory_id": "analysis_c738f89b68e53cd0d8f84a0152730be4",
+        "source_span_id": "span_1386981dcfd14f1dac7d15ad444a72a3"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_foreshadowing_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_foreshadowing",
+      "kind": "foreshadowing",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_5f45ab549d4a41b5c9280c66872f3dcc",
+        "assertion_id": "asrt_73564c6b8b5444bbabd1705b1de88f83",
+        "source_span_id": "span_10b399e570624964a10605b51eb9a762",
+        "plot_id": "plot_c2db6b9d12e0435b9818bdf925484e8c",
+        "foreshadow_link_id": "link_9dd86ff1dcae4a159993c95e3fe9d1a5"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_73564c6b8b5444bbabd1705b1de88f83",
+        "foreshadow_link_id": "link_9dd86ff1dcae4a159993c95e3fe9d1a5",
+        "memory_id": "analysis_5f45ab549d4a41b5c9280c66872f3dcc",
+        "plot_id": "plot_c2db6b9d12e0435b9818bdf925484e8c",
+        "source_span_id": "span_10b399e570624964a10605b51eb9a762"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_relationship_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_relationship",
+      "kind": "relationship",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_a0b8d2848fa5b8dfab6f275ab0a2f980",
+        "assertion_id": "asrt_14be87bc9e304aa593af423aef8de647",
+        "source_span_id": "span_761be6975d1f4f1fa34a3212e3d4910c",
+        "relationship_id": "rel_773d6b12235c4c2a83deb7baaa4989b8"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_14be87bc9e304aa593af423aef8de647",
+        "memory_id": "analysis_a0b8d2848fa5b8dfab6f275ab0a2f980",
+        "relationship_id": "rel_773d6b12235c4c2a83deb7baaa4989b8",
+        "source_span_id": "span_761be6975d1f4f1fa34a3212e3d4910c"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_relationship_target_new_alias_ambiguity_cannot_be_reused",
+      "scenario": "relationship_target_alias_ambiguity",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "scenario": "synthetic_assertion_predicate",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "scenario": "synthetic_assertion_valid_start",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "scenario": "synthetic_assertion_valid_end",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_source_span_is_not_reused",
+      "scenario": "synthetic_source_span_quote",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_source_span_is_not_reused",
+      "scenario": "synthetic_source_span_quote_hash",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_source_span_is_not_reused",
+      "scenario": "synthetic_source_span_start_codepoint",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_source_span_is_not_reused",
+      "scenario": "synthetic_source_span_end_codepoint",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_source_span_is_not_reused",
+      "scenario": "synthetic_source_span_start_utf8",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_source_span_is_not_reused",
+      "scenario": "synthetic_source_span_end_utf8",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "synthetic_only": true,
+  "free_provider_calls": 72,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "ae5752501b72777ae30c57d43040a73505cce6cb4a8d53f19c26a004039ae39d",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_candidate_typed_http_fixtures.py": "4d2aacbf066fb938f0de7e36f36f5d0e183833cc4458f03fa68d2629b04c6943"
+  },
+  "source_files_sha256_after": {
+    "server.py": "ae5752501b72777ae30c57d43040a73505cce6cb4a8d53f19c26a004039ae39d",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_candidate_typed_http_fixtures.py": "4d2aacbf066fb938f0de7e36f36f5d0e183833cc4458f03fa68d2629b04c6943"
+  },
+  "frozen_source_before": "artifacts/local-service-update-20261015/analysis-candidate-typed-v3-after/source-before",
+  "frozen_source_after": "artifacts/local-service-update-20261015/analysis-candidate-typed-v3-after/source-after",
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; actual saved AI jobs/reports; loopback HTTP; free local provider",
+  "mutation_boundary": "author-editable typed artifacts changed through real HTTP; fact assertion object and source/assertion corruption controls use explicitly recorded synthetic SQL only",
+  "claim_limit": "typed canonical artifact and source integrity only; no real manuscript, credential, literary-quality or first-tier claim",
+  "test_accounting": {
+    "test_groups": 13,
+    "passed_test_groups": 13,
+    "failed_test_groups": 0,
+    "observed_scenarios": 36,
+    "explicit_subtest_result_records": 29,
+    "unsuccessful_result_records": 0,
+    "all_result_records": 42,
+    "note": "Group success entries and subtest entries coexist; result records are not independent test groups."
+  },
+  "archive_redaction": {
+    "original_artifact_sha256": "e01e8986a4eb0c8c9706f806e3b547b25af39366fafbc003c55d97c8b9ab3929",
+    "original_private_file": "artifacts/local-service-update-20261015/analysis-candidate-typed-v3-after.json",
+    "original_private_retained": true,
+    "original_frozen_source_bytes_verified": true,
+    "source_fingerprints_preserved": true,
+    "categories": [],
+    "public_bytes_are_original": false,
+    "note": "Public structured copy adds accounting and provenance. Frozen source references still identify the retained private before/after originals."
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "passed": true,
+  "scope": "桌面真实浏览器、隔离 SQLite、免费本机提供方；规划归档、已保存作品重开、Unicode 导入及旧审稿作者决定",
+  "cases": [
+    {
+      "name": "五章规划归档首章仍五章，已有正文目标场景视角卷身份完整保留",
+      "passed": true
+    },
+    {
+      "name": "归档跳过已完成后续章，刷新重复归档不会追加空章",
+      "passed": true
+    },
+    {
+      "name": "无后续章仅新建一次，保存失败恢复复用身份且新章目标不覆盖交接",
+      "passed": true
+    },
+    {
+      "name": "归档新章保存等待切章，迟到成功回应不强行切回",
+      "passed": true
+    },
+    {
+      "name": "new保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "new保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "new保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "参考导入保存后回读失败，重试只打开参考库",
+      "passed": true
+    },
+    {
+      "name": "导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝",
+      "passed": true
+    },
+    {
+      "name": "新建作品200完整字符名称可保存，超限不会发出创建请求",
+      "passed": true
+    },
+    {
+      "name": "已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private isolated SQLite and logs retained locally; layout screenshots are withheld pending follow-up capture.",
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "bb1d9f0c67b2ec32fdbf8740e959b4a6123ebaaa36a0e094b02e1034b216147a"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "794b16e47c07379e1a42145623d15fa3167ac05fe7153313ffefbffdf7bf1e36"
+    },
+    {
+      "path": "server.py",
+      "sha256": "27c2ef90612963fe381939e580d008f9ba5d8a4ad7666fc6befbdd75d0cb1720"
+    },
+    {
+      "path": "moyu_analysis.py",
+      "sha256": "22e3fae1713841b4f9200ee91b976c82e942a8f3ef8a6a854b9ab9deb91123d0"
+    },
+    {
+      "path": "moyu_workspace.py",
+      "sha256": "973227adea1b08f4f4137ea05ffbecd927ecaa49ade2d31fd5ce663230d96202"
+    },
+    {
+      "path": "moyu_context.py",
+      "sha256": "3f1b2a7041481091d8247724ae7c38720d0e38ca6c53101e3f7b912491406483"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "2e24180ed7755a0ed861e89cb0f689e49c820ce4f24776fe4b67047ced3a5f2b"
+    },
+    {
+      "path": "tests/author_workspace_lifecycle_browser_regressions.cjs",
+      "sha256": "b5b77f3834f8ee7fc68f2081c549d21ec4df164143a557c15cc8e35555482b54"
+    }
+  ],
+  "recovery": [
+    {
+      "operation": "new",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "new",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "new",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    }
+  ],
+  "provider_calls": 1,
+  "source_unchanged": true,
+  "evidence_scope": "17 desktop lifecycle flows passed. Handoff styling and compact viewport screenshot capture still require follow-up; no claim of polished-layout acceptance.",
+  "external_model_calls": 0
+}

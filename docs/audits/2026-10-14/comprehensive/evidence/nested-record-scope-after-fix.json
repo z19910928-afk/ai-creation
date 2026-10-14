@@ -1,0 +1,208 @@
+{
+  "passed": true,
+  "checks": 12,
+  "cases": [
+    {
+      "name": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "passed": true,
+      "subtest": "test_copy_and_backup_remap_matching_nested_identifiers (__main__.NestedRecordScopeHTTP.test_copy_and_backup_remap_matching_nested_identifiers) (recovery='copy')"
+    },
+    {
+      "name": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "passed": true,
+      "subtest": "test_copy_and_backup_remap_matching_nested_identifiers (__main__.NestedRecordScopeHTTP.test_copy_and_backup_remap_matching_nested_identifiers) (recovery='backup')"
+    },
+    {
+      "name": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "passed": true
+    },
+    {
+      "name": "test_foreign_owned_card_cannot_be_pinned_by_matching_nested_declaration",
+      "passed": true
+    },
+    {
+      "name": "test_legacy_sync_and_description_edit_preserve_conflicting_nested_limit",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_branch_cannot_override_conflicting_top_branch",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_branch_ids_array",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_branches_array",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_chapter_timing",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_limits_still_obey_private_viewpoint",
+      "passed": true
+    },
+    {
+      "name": "test_matching_nested_ownership_keeps_preview_send_and_apply_connected",
+      "passed": true
+    },
+    {
+      "name": "test_matching_top_branch_cannot_override_conflicting_nested_branch",
+      "passed": true
+    },
+    {
+      "name": "test_nested_branch_declaration_blocks_local_branch_card",
+      "passed": true
+    },
+    {
+      "name": "test_nested_project_declaration_blocks_local_project_card",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T16:40:43.766227+00:00",
+  "finished_at": "2026-10-14T16:40:57.096822+00:00",
+  "observations": [
+    {
+      "test": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "scenario": "copy",
+      "ownership_remapped": true,
+      "branch_array_remapped": true,
+      "known_by_remapped": true,
+      "preview_status": 200,
+      "preview_contains_allowed_card": true
+    },
+    {
+      "test": "test_copy_and_backup_remap_matching_nested_identifiers",
+      "scenario": "backup",
+      "ownership_remapped": true,
+      "branch_array_remapped": true,
+      "known_by_remapped": true,
+      "preview_status": 200,
+      "preview_contains_allowed_card": true
+    },
+    {
+      "test": "test_foreign_owned_card_cannot_be_pinned_by_matching_nested_declaration",
+      "scenario": "foreign_ownership",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400
+        }
+      ],
+      "ledger_unchanged": true,
+      "provider_calls": 0
+    },
+    {
+      "test": "test_legacy_sync_and_description_edit_preserve_conflicting_nested_limit",
+      "scenario": "legacy_nested_limit_preserved",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_branch_cannot_override_conflicting_top_branch",
+      "scenario": "conflicting_top_matching_nested",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_branch_ids_array",
+      "scenario": "nested_match_branch_ids_conflict",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_branches_array",
+      "scenario": "nested_match_branches_conflict",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_chapter_timing",
+      "scenario": "nested_match_future_chapter",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_limits_still_obey_private_viewpoint",
+      "scenario": "nested_match_private_conflict",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_matching_nested_ownership_keeps_preview_send_and_apply_connected",
+      "scenario": "matching_nested",
+      "preview_contains_card": true,
+      "preview_equals_sent_user": true,
+      "current_dispatch_status": "success",
+      "apply_status": 200,
+      "applied": true,
+      "body_changed": true
+    },
+    {
+      "test": "test_matching_top_branch_cannot_override_conflicting_nested_branch",
+      "scenario": "matching_top_conflicting_nested",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_nested_branch_declaration_blocks_local_branch_card",
+      "scenario": "nested_branch",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    },
+    {
+      "test": "test_nested_project_declaration_blocks_local_project_card",
+      "scenario": "nested_project",
+      "fresh_preview_excludes_card": true,
+      "current_dispatch_status": "success",
+      "actual_sent_request_excludes_card": true,
+      "source_unchanged": true
+    }
+  ],
+  "free_provider_calls": 10,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "server.py": "a0b250e2b5ab784a5132a32c8a9fce9459765e318cb9ad204fec44f1e46a8468",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "tests/guidance_alias_http_fixtures.py": "664c0581e87e86303fb69b510f3af3905c132cb6e0acae7c715b717a361e35bc",
+    "tests/guidance_scope_change_http_fixtures.py": "ad8487aad85c4477f179a872d4cad962284b7a9a6bac9efdce52a0fe7cc5a875",
+    "tests/nested_record_scope_http_fixtures.py": "8407478ab51f19d8902bf4ca2b94c9182d216932876055a6f885fdf6596b4f16"
+  },
+  "source_files_sha256_after": {
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "server.py": "a0b250e2b5ab784a5132a32c8a9fce9459765e318cb9ad204fec44f1e46a8468",
+    "moyu_backups.py": "567cbb611ac0655db0f2519808e7934aab7ed1e8133f03a22aa531454117835b",
+    "tests/guidance_alias_http_fixtures.py": "664c0581e87e86303fb69b510f3af3905c132cb6e0acae7c715b717a361e35bc",
+    "tests/guidance_scope_change_http_fixtures.py": "ad8487aad85c4477f179a872d4cad962284b7a9a6bac9efdce52a0fe7cc5a875",
+    "tests/nested_record_scope_http_fixtures.py": "8407478ab51f19d8902bf4ca2b94c9182d216932876055a6f885fdf6596b4f16"
+  },
+  "source_unchanged": true,
+  "scope": "temporary synthetic DB; actual HTTP; matching ownership and independent nested declarations"
+}

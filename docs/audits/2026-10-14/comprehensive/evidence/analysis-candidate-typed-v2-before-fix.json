@@ -1,0 +1,565 @@
+{
+  "passed": false,
+  "checks": 11,
+  "cases": [
+    {
+      "name": "test_character_state_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_event_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_fact_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_foreshadowing_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='event')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='character_state')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='relationship')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true,
+      "subtest": "test_invalid_typed_artifacts_cannot_be_recreated (__main__.AnalysisCandidateTypedHTTP.test_invalid_typed_artifacts_cannot_be_recreated) (kind='fact')"
+    },
+    {
+      "name": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "passed": true
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='event')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='character_state')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='relationship')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true,
+      "subtest": "test_modified_typed_artifacts_cannot_be_blindly_reused (__main__.AnalysisCandidateTypedHTTP.test_modified_typed_artifacts_cannot_be_blindly_reused) (kind='fact')"
+    },
+    {
+      "name": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "passed": true
+    },
+    {
+      "name": "test_relationship_same_content_reuses_existing_artifacts",
+      "passed": true
+    },
+    {
+      "name": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_candidate_typed_http_fixtures.py\", line 268, in test_synthetically_changed_assertion_semantics_are_not_reused\n    self.assert_rejected_atomically(second, \"synthetic_assertion_semantics\")\n  File \"./tests/analysis_candidate_reuse_http_fixtures.py\", line 237, in assert_rejected_atomically\n    self.assertEqual(status, 409, response)\nAssertionError: 200 != 409 : {'analysis': {'analysis_key': '854378e5ea3278bbfa876ee5d0e0d28f88e68992e119c47aee4adefe909920bf', 'branch_id': 'main', 'candidates': [{'kind': 'fact', 'type': 'fact', 'name': '窗扣材质', 'note': '窗扣是铜制的。', 'epistemic_mode': 'world_truth', 'known_by': ['ent_3948090451c8469093bda5b154e0533c'], 'source_chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'source_revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_start': 0, 'source_end': 61, 'source_start_utf8': 0, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'branch_id': 'main', 'status': 'accepted', 'review_required': False, 'subject_name': '林岚', 'valid_start': '1', 'valid_end': '2', 'entity_ids': ['ent_3948090451c8469093bda5b154e0533c'], 'entity_resolution': 'resolved', 'id': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'dedupe_key': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'artifacts': {'assertion_id': 'asrt_16bedf8881f34b0c864861dcfcfc0063', 'memory_id': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'source_span_id': 'span_485c958d13d84da9bfd7d3b7d40ade3c'}, 'reviewed_by': 'local-user', 'reviewed_at': '2026-10-14T18:27:09.655078+00:00'}], 'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'decisions': [{'candidate_id': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'decision': 'accepted', 'at': '2026-10-14T18:27:09.655078+00:00', 'actor': 'local-user'}], 'guidance_source': {'blueprint_hash': '677052a3030dfbac678edf6851b4578c366dbfe5f5067a0f5425f315f96805db', 'chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'chapter_plan_hash': '09816f813f4b21a7cc123a5f494671040bed526b535f01319ac2b0d520ef0f8d', 'version': 2}, 'handoff': {'evidence': [{'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'source_end': 61, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '铜钥匙仍藏在窗缝。'}, 'id': 'chapter_analysis_854378e5ea3278bbfa876ee5d0e0', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_bff6e853d09643828cd150a600676f20', 'kind': 'chapter', 'sha256': '99f5ba9c5403dafc04f7d8f8519fc45790fa31002d6160b47b25e2b896bb954d'}, {'id': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'kind': 'memory', 'sha256': '06446e96f9874026470cd5572629af6380025b936aa1ddf7eb2df00eadd556de'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_020d2b397dde4b3c8a7dc75087243a0d', 'kind': 'record', 'sha256': 'b20490bb57d51ad74cc3f6d68d09be08073eca99831e702e6f8240294db52d3c'}, {'id': 'ent_3948090451c8469093bda5b154e0533c', 'kind': 'record', 'sha256': 'e447ef506305a5f8d87fcab4bc6763b7088996253b4f613a655704b2637efdff'}, {'id': 'ent_80760ded4734405987bc8688f476a121', 'kind': 'record', 'sha256': '44d269584ffd068c78c66f3f037ce108d565cfde1afa157806a8426aadf21aaa'}, {'id': 'ent_9b1a1c953b524e94ac2e2cd342ae6d84', 'kind': 'record', 'sha256': '5c6db77c78128145cc4c972d4e01a276042f876777d784d39ac14fcfb32cf979'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_1375610e85ea4c9285a701e23e938e1f', 'schema_version': 1, 'source_revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'source_end': 61, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '林岚在窗前听雨，周闻在窗外等候。'}, 'created_at': '2026-10-14T18:27:09.641823+00:00', 'updated_at': '2026-10-14T18:27:09.641823+00:00', 'decision_material_source': {'version': 1, 'project_id': 'default-project', 'branch_id': 'main', 'dependencies': [{'kind': 'chapter', 'id': 'ch_bff6e853d09643828cd150a600676f20', 'sha256': '99f5ba9c5403dafc04f7d8f8519fc45790fa31002d6160b47b25e2b896bb954d'}, {'kind': 'memory', 'id': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'sha256': '06446e96f9874026470cd5572629af6380025b936aa1ddf7eb2df00eadd556de'}, {'kind': 'project', 'id': 'default-project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'kind': 'record', 'id': 'ent_020d2b397dde4b3c8a7dc75087243a0d', 'sha256': 'b20490bb57d51ad74cc3f6d68d09be08073eca99831e702e6f8240294db52d3c'}, {'kind': 'record', 'id': 'ent_3948090451c8469093bda5b154e0533c', 'sha256': 'e447ef506305a5f8d87fcab4bc6763b7088996253b4f613a655704b2637efdff'}, {'kind': 'record', 'id': 'ent_80760ded4734405987bc8688f476a121', 'sha256': '44d269584ffd068c78c66f3f037ce108d565cfde1afa157806a8426aadf21aaa'}, {'kind': 'record', 'id': 'ent_9b1a1c953b524e94ac2e2cd342ae6d84', 'sha256': '5c6db77c78128145cc4c972d4e01a276042f876777d784d39ac14fcfb32cf979'}]}, 'decision_guidance_source': {'version': 2, 'blueprint_hash': '677052a3030dfbac678edf6851b4578c366dbfe5f5067a0f5425f315f96805db', 'chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'chapter_plan_hash': '09816f813f4b21a7cc123a5f494671040bed526b535f01319ac2b0d520ef0f8d'}, 'confirmed_candidates': [{'kind': 'fact', 'type': 'fact', 'name': '窗扣材质', 'note': '窗扣是铜制的。', 'epistemic_mode': 'world_truth', 'known_by': ['ent_3948090451c8469093bda5b154e0533c'], 'source_chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'source_revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_start': 0, 'source_end': 61, 'source_start_utf8': 0, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'branch_id': 'main', 'status': 'candidate', 'review_required': True, 'subject_name': '林岚', 'valid_start': '1', 'valid_end': '2', 'entity_ids': ['ent_3948090451c8469093bda5b154e0533c'], 'entity_resolution': 'resolved', 'id': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'dedupe_key': 'analysis_457a63b16862ab8a62e4d7d0c513546e'}]}, 'state': {'full_state': True, 'version': 18, 'branch_id': 'main', 'head_revision': 'rev_70d890daeda74685aea131c9306e8c5b', 'branch_status': 'active', 'project': {'id': 'default-project', 'title': '未命名长篇', 'genre': '', 'summary': '', 'goal': 50000, 'book_status': 'writing'}, 'chapters': [{'id': 'ch_bff6e853d09643828cd150a600676f20', 'title': '等候', 'body': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'status': '草稿', 'updated': '2026-10-14T18:27:09+00:00', 'revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'body_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': 'alias-volume', 'plan_id': 'alias-plan', 'scenes': [{'id': 'alias-scene', 'title': '窗边等候', 'goal': 'POV_ALIAS_SCENE_CANARY', 'location': '北窗', 'pov': '林岚'}], 'chapter_goal': '等待来客', 'scene_plan': '窗边等候：POV_ALIAS_SCENE_CANARY', 'pov': '岚', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}, {'id': 'ch_53660b59a1ac471f8a91755d35c2b157', 'title': '第一章 还没有开始的故事', 'body': '把故事写在这里。\\n\\n提示：先写一个你最想看到的场景，不必一次写好。', 'status': '草稿', 'updated': '2026-10-14T18:27:09+00:00', 'revision_id': 'rev_adfa3a2a53c84d6c9017d0636cd9f304', 'body_hash': '427bbf6bab7c5606f46db6d2ac048c8b1ae630e35975f77e848cdfa55929b084', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}], 'records': [{'id': 'ent_020d2b397dde4b3c8a7dc75087243a0d', 'type': '人物', 'name': '新人物', 'description': '记录人物的欲望、秘密和变化。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_80760ded4734405987bc8688f476a121', 'type': '地点', 'name': '新地点', 'description': '记录这里的气味、规则与冲突。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_3948090451c8469093bda5b154e0533c', 'type': '人物', 'name': '林岚', 'description': '合成资料版本 2；正文和原候选保持相同。', 'aliases': ['岚'], 'project_id': 'default-project'}, {'id': 'ent_9b1a1c953b524e94ac2e2cd342ae6d84', 'type': '人物', 'name': '周闻', 'description': '与林岚同行的合成人物。', 'aliases': [], 'project_id': 'default-project'}], 'plot': {'setup': [], 'develop': [], 'payoff': []}, 'memory': [{'id': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'key': 'analysis_457a63b16862ab8a62e4d7d0c513546e', 'type': '事实', 'name': '窗扣材质', 'source': '等候', 'status': '已确认', 'confidence': '已确认', 'confidence_score': 1.0, 'note': '窗扣是铜制的。', 'source_chapter_id': 'ch_bff6e853d09643828cd150a600676f20', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_start': 0, 'source_end': 61, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'source_span_id': 'span_485c958d13d84da9bfd7d3b7d40ade3c', 'source_revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'current_revision_id': 'rev_70d890daeda74685aea131c9306e8c5b', 'source_span_status': 'valid', 'knowledge_scope': {}, 'known_by': ['ent_3948090451c8469093bda5b154e0533c'], 'epistemic_mode': 'world_truth', 'valid_start': '1', 'valid_end': '2', 'project_id': 'default-project', 'branch_id': 'main', 'stale': False, 'assertion_id': 'asrt_16bedf8881f34b0c864861dcfcfc0063', 'approved_at': '2026-10-14T18:27:09+00:00', 'reviewed_by': 'local-user', 'created_by': 'local-user', 'created_at': '2026-10-14T18:27:09+00:00'}]}}\n"
+    },
+    {
+      "name": "test_synthetically_changed_source_span_is_not_reused",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/analysis_candidate_typed_http_fixtures.py\", line 280, in test_synthetically_changed_source_span_is_not_reused\n    self.assert_rejected_atomically(second, \"synthetic_source_span\")\n  File \"./tests/analysis_candidate_reuse_http_fixtures.py\", line 237, in assert_rejected_atomically\n    self.assertEqual(status, 409, response)\nAssertionError: 200 != 409 : {'analysis': {'analysis_key': '390caa86422dbadf678be5c7434b198fcdf611826247f738715272e8097036bf', 'branch_id': 'main', 'candidates': [{'kind': 'fact', 'type': 'fact', 'name': '窗扣材质', 'note': '窗扣是铜制的。', 'epistemic_mode': 'world_truth', 'known_by': ['ent_cdfce6afb0d8417bbe8afc8b831fe082'], 'source_chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'source_revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_start': 0, 'source_end': 61, 'source_start_utf8': 0, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'branch_id': 'main', 'status': 'accepted', 'review_required': False, 'subject_name': '林岚', 'valid_start': '1', 'valid_end': '2', 'entity_ids': ['ent_cdfce6afb0d8417bbe8afc8b831fe082'], 'entity_resolution': 'resolved', 'id': 'analysis_0e848611c230c3b6a1042a665739fc02', 'dedupe_key': 'analysis_0e848611c230c3b6a1042a665739fc02', 'artifacts': {'assertion_id': 'asrt_242ce9a2245248b1b44aabe2ad261e17', 'memory_id': 'analysis_0e848611c230c3b6a1042a665739fc02', 'source_span_id': 'span_961491729514443e9368cfc778996173'}, 'reviewed_by': 'local-user', 'reviewed_at': '2026-10-14T18:27:10.801111+00:00'}], 'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'decisions': [{'candidate_id': 'analysis_0e848611c230c3b6a1042a665739fc02', 'decision': 'accepted', 'at': '2026-10-14T18:27:10.801111+00:00', 'actor': 'local-user'}], 'guidance_source': {'blueprint_hash': '1b3aac6e9d06cd348b99ddf9acf7dd39aff1e1fd40a845ee6b283e512c3841b7', 'chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'chapter_plan_hash': '4755718ba507fd3c33f840b255c8716ef55cd63ef4d9bbc9d2a4223d8b1258ff', 'version': 2}, 'handoff': {'evidence': [{'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'source_end': 61, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '铜钥匙仍藏在窗缝。'}, 'id': 'chapter_analysis_390caa86422dbadf678be5c7434b', 'material_source': {'branch_id': 'main', 'dependencies': [{'id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'kind': 'chapter', 'sha256': 'a53b504da9bdd5064f542df7e473a405ad58c298459226d1362124caeba5ea97'}, {'id': 'default-project', 'kind': 'project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'id': 'ent_0b5fef19455f4461b5acf042aba9688d', 'kind': 'record', 'sha256': 'ee8c040df62c271c7348d3059464cfac94730600627b4a92c1e6f4e5d01dd112'}, {'id': 'ent_b70802548ac442779506bf6ad092dbf1', 'kind': 'record', 'sha256': 'cf8f1fc9f43cd2274588070fbe101942e6350104c94c517bbabd3f5a132e824b'}, {'id': 'ent_cdfce6afb0d8417bbe8afc8b831fe082', 'kind': 'record', 'sha256': 'cd40c278660ac0ae1802a6454fe2ad0d4d024aa416f1f327fd770962cad1cf5d'}, {'id': 'ent_e1c0252f064c4b6a8981249d2162fc60', 'kind': 'record', 'sha256': '62b9b46aa3069aaaf2578b387a1b70b7c73d5c39e526bd069646bb16109cf237'}], 'project_id': 'default-project', 'version': 1}, 'project_id': 'default-project', 'review_required': True, 'run_id': 'airun_1f04214787604c4284e942422238a618', 'schema_version': 1, 'source_revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'status': 'pending', 'summary': {'evidence': [{'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'source_chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'source_end': 61, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'source_start': 0, 'source_start_utf8': 0}], 'status': 'pending', 'text': '林岚在窗前听雨，周闻在窗外等候。'}, 'created_at': '2026-10-14T18:27:10.789186+00:00', 'updated_at': '2026-10-14T18:27:10.789186+00:00', 'decision_material_source': {'version': 1, 'project_id': 'default-project', 'branch_id': 'main', 'dependencies': [{'kind': 'chapter', 'id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'sha256': 'a53b504da9bdd5064f542df7e473a405ad58c298459226d1362124caeba5ea97'}, {'kind': 'project', 'id': 'default-project', 'sha256': 'a78ad6b28b283a93784a066cb11375fd0f4fd1284aef56fe302f18f4e39c7313'}, {'kind': 'record', 'id': 'ent_0b5fef19455f4461b5acf042aba9688d', 'sha256': 'ee8c040df62c271c7348d3059464cfac94730600627b4a92c1e6f4e5d01dd112'}, {'kind': 'record', 'id': 'ent_b70802548ac442779506bf6ad092dbf1', 'sha256': 'cf8f1fc9f43cd2274588070fbe101942e6350104c94c517bbabd3f5a132e824b'}, {'kind': 'record', 'id': 'ent_cdfce6afb0d8417bbe8afc8b831fe082', 'sha256': 'cd40c278660ac0ae1802a6454fe2ad0d4d024aa416f1f327fd770962cad1cf5d'}, {'kind': 'record', 'id': 'ent_e1c0252f064c4b6a8981249d2162fc60', 'sha256': '62b9b46aa3069aaaf2578b387a1b70b7c73d5c39e526bd069646bb16109cf237'}]}, 'decision_guidance_source': {'version': 2, 'blueprint_hash': '1b3aac6e9d06cd348b99ddf9acf7dd39aff1e1fd40a845ee6b283e512c3841b7', 'chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'chapter_plan_hash': '4755718ba507fd3c33f840b255c8716ef55cd63ef4d9bbc9d2a4223d8b1258ff'}, 'confirmed_candidates': [{'kind': 'fact', 'type': 'fact', 'name': '窗扣材质', 'note': '窗扣是铜制的。', 'epistemic_mode': 'world_truth', 'known_by': ['ent_cdfce6afb0d8417bbe8afc8b831fe082'], 'source_chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'source_revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_start': 0, 'source_end': 61, 'source_start_utf8': 0, 'source_end_utf8': 183, 'source_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'chapter_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'offset_unit': 'unicode_codepoint', 'project_id': 'default-project', 'branch_id': 'main', 'status': 'candidate', 'review_required': True, 'subject_name': '林岚', 'valid_start': '1', 'valid_end': '2', 'entity_ids': ['ent_cdfce6afb0d8417bbe8afc8b831fe082'], 'entity_resolution': 'resolved', 'id': 'analysis_0e848611c230c3b6a1042a665739fc02', 'dedupe_key': 'analysis_0e848611c230c3b6a1042a665739fc02'}]}, 'state': {'full_state': True, 'version': 18, 'branch_id': 'main', 'head_revision': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'branch_status': 'active', 'project': {'id': 'default-project', 'title': '未命名长篇', 'genre': '', 'summary': '', 'goal': 50000, 'book_status': 'writing'}, 'chapters': [{'id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'title': '等候', 'body': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'status': '草稿', 'updated': '2026-10-14T18:27:10+00:00', 'revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'body_hash': 'b8f27eb476e3e88e90e183fb3e628ae6c9c1d6d30c0ebe4fd334616c6b00b680', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': 'alias-volume', 'plan_id': 'alias-plan', 'scenes': [{'id': 'alias-scene', 'title': '窗边等候', 'goal': 'POV_ALIAS_SCENE_CANARY', 'location': '北窗', 'pov': '林岚'}], 'chapter_goal': '等待来客', 'scene_plan': '窗边等候：POV_ALIAS_SCENE_CANARY', 'pov': '岚', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}, {'id': 'ch_c1fa645815084c5685bcda87350586ed', 'title': '第一章 还没有开始的故事', 'body': '把故事写在这里。\\n\\n提示：先写一个你最想看到的场景，不必一次写好。', 'status': '草稿', 'updated': '2026-10-14T18:27:10+00:00', 'revision_id': 'rev_a80988beeaf24740b5f04d23088a18ab', 'body_hash': '427bbf6bab7c5606f46db6d2ac048c8b1ae630e35975f77e848cdfa55929b084', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}], 'records': [{'id': 'ent_b70802548ac442779506bf6ad092dbf1', 'type': '人物', 'name': '新人物', 'description': '记录人物的欲望、秘密和变化。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_e1c0252f064c4b6a8981249d2162fc60', 'type': '地点', 'name': '新地点', 'description': '记录这里的气味、规则与冲突。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_cdfce6afb0d8417bbe8afc8b831fe082', 'type': '人物', 'name': '林岚', 'description': '合成资料版本 2；正文和原候选保持相同。', 'aliases': ['岚'], 'project_id': 'default-project'}, {'id': 'ent_0b5fef19455f4461b5acf042aba9688d', 'type': '人物', 'name': '周闻', 'description': '与林岚同行的合成人物。', 'aliases': [], 'project_id': 'default-project'}], 'plot': {'setup': [], 'develop': [], 'payoff': []}, 'memory': [{'id': 'analysis_0e848611c230c3b6a1042a665739fc02', 'key': 'analysis_0e848611c230c3b6a1042a665739fc02', 'type': '事实', 'name': '窗扣材质', 'source': '等候', 'status': '已确认', 'confidence': '已确认', 'confidence_score': 1.0, 'note': '窗扣是铜制的。', 'source_chapter_id': 'ch_a5ceb3ed13874deb841efa8c95ddd7e4', 'source_quote': '林岚把左手指尖抵在铜制窗扣上，听见雨水落在石阶。同行的周闻站在北窗外，等她松开窗扣。她把铜钥匙藏进窗缝，留给周闻日后取用。', 'source_start': 0, 'source_end': 61, 'source_hash': '5b811c46a7a54d4218cad5ac5194505a93160e68678bbc199f1e0fa81ea537f6', 'source_span_id': 'span_961491729514443e9368cfc778996173', 'source_revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'current_revision_id': 'rev_466dd88d5c644f46850ed386ab2bf7c8', 'source_span_status': 'valid', 'knowledge_scope': {}, 'known_by': ['ent_cdfce6afb0d8417bbe8afc8b831fe082'], 'epistemic_mode': 'world_truth', 'valid_start': '1', 'valid_end': '2', 'project_id': 'default-project', 'branch_id': 'main', 'stale': False, 'assertion_id': 'asrt_242ce9a2245248b1b44aabe2ad261e17', 'approved_at': '2026-10-14T18:27:10+00:00', 'reviewed_by': 'local-user', 'created_by': 'local-user', 'created_at': '2026-10-14T18:27:10+00:00'}]}}\n"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='event')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='character_state')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='relationship')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_assertion_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_assertion_cannot_revive_any_candidate_type) (kind='fact')"
+    },
+    {
+      "name": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "passed": true
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='event')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='character_state')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='relationship')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='foreshadowing')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true,
+      "subtest": "test_withdrawn_memory_cannot_revive_any_candidate_type (__main__.AnalysisCandidateTypedHTTP.test_withdrawn_memory_cannot_revive_any_candidate_type) (kind='fact')"
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T18:27:00.798769+00:00",
+  "finished_at": "2026-10-14T18:27:14.785078+00:00",
+  "observations": [
+    {
+      "test": "test_character_state_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_character_state",
+      "kind": "character_state",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_ff713aa3314fa6d7a545a8c12559dfcf",
+        "assertion_id": "asrt_7848b59fd0554316b87bc8dc82dd3f8c",
+        "source_span_id": "span_11c7fd816b8d45e4850717a361a1ecb0",
+        "character_state_id": "state_02fcd5fc9e2e407da3d811286d6a02e6"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_7848b59fd0554316b87bc8dc82dd3f8c",
+        "character_state_id": "state_02fcd5fc9e2e407da3d811286d6a02e6",
+        "memory_id": "analysis_ff713aa3314fa6d7a545a8c12559dfcf",
+        "source_span_id": "span_11c7fd816b8d45e4850717a361a1ecb0"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_event_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_event",
+      "kind": "event",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_009c79c1e8ce9268a499e3d6f719d9a7",
+        "assertion_id": "asrt_c84df0b6e62c4eaeaeb2992b13790033",
+        "source_span_id": "span_0fbd1b42abab4542bae617843c435c3c",
+        "timeline_id": "time_5a4ece873a3a42cab3732ce5685adb8c"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_c84df0b6e62c4eaeaeb2992b13790033",
+        "memory_id": "analysis_009c79c1e8ce9268a499e3d6f719d9a7",
+        "source_span_id": "span_0fbd1b42abab4542bae617843c435c3c",
+        "timeline_id": "time_5a4ece873a3a42cab3732ce5685adb8c"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_fact_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_fact",
+      "kind": "fact",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_bf6870bc98c7c31e49141566b4034bad",
+        "assertion_id": "asrt_7fa34302db1f4153939844e682c3d3ba",
+        "source_span_id": "span_3aa95cfceb494bcb92d57c6db298a53a"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_7fa34302db1f4153939844e682c3d3ba",
+        "memory_id": "analysis_bf6870bc98c7c31e49141566b4034bad",
+        "source_span_id": "span_3aa95cfceb494bcb92d57c6db298a53a"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_foreshadowing_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_foreshadowing",
+      "kind": "foreshadowing",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_fe83c290a77c8c85f8c383a5494c5093",
+        "assertion_id": "asrt_79e0e550b0814288a2ad1909dda4c108",
+        "source_span_id": "span_336bc3855bf446e1a5d7d4f8f2880085",
+        "plot_id": "plot_463f60abf5d6437d8ed03f16b0b768b5",
+        "foreshadow_link_id": "link_be8679e32b8340058ae3e31a1b95ef6a"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_79e0e550b0814288a2ad1909dda4c108",
+        "foreshadow_link_id": "link_be8679e32b8340058ae3e31a1b95ef6a",
+        "memory_id": "analysis_fe83c290a77c8c85f8c383a5494c5093",
+        "plot_id": "plot_463f60abf5d6437d8ed03f16b0b768b5",
+        "source_span_id": "span_336bc3855bf446e1a5d7d4f8f2880085"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_typed_artifacts_cannot_be_recreated",
+      "scenario": "invalid_typed_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_modified_typed_artifacts_cannot_be_blindly_reused",
+      "scenario": "changed_typed_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_relationship_same_content_reuses_existing_artifacts",
+      "scenario": "unchanged_relationship",
+      "kind": "relationship",
+      "confirm_http_status": 200,
+      "error": null,
+      "old_artifacts": {
+        "memory_id": "analysis_109061afa1856d2cf418bd5e6df4115a",
+        "assertion_id": "asrt_9b375bb96c654d98acf724234b6678af",
+        "source_span_id": "span_446a273545eb46c8a392c6f42dd51c62",
+        "relationship_id": "rel_4755e78d5f854a449a9da6a1a3de894a"
+      },
+      "new_artifacts": {
+        "assertion_id": "asrt_9b375bb96c654d98acf724234b6678af",
+        "memory_id": "analysis_109061afa1856d2cf418bd5e6df4115a",
+        "relationship_id": "rel_4755e78d5f854a449a9da6a1a3de894a",
+        "source_span_id": "span_446a273545eb46c8a392c6f42dd51c62"
+      },
+      "canonical_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_assertion_semantics_are_not_reused",
+      "scenario": "synthetic_assertion_semantics",
+      "confirm_http_status": 200,
+      "error": "",
+      "database_unchanged": false,
+      "canonical_unchanged": true,
+      "state_unchanged": false,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_synthetically_changed_source_span_is_not_reused",
+      "scenario": "synthetic_source_span",
+      "confirm_http_status": 200,
+      "error": "",
+      "database_unchanged": false,
+      "canonical_unchanged": true,
+      "state_unchanged": false,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_assertion_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_assertion_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_event",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_character_state",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_relationship",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_foreshadowing",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_revive_any_candidate_type",
+      "scenario": "withdrawn_typed_memory_fact",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "synthetic_only": true,
+  "free_provider_calls": 54,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "e18c854a4ccd9cc9e29414511efca14f3334ec130cb139f33e008c4b0ed1cc87",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_candidate_typed_http_fixtures.py": "f274ce118c773c9db4cd0764cf0e3871d81a0d9bc80450e176bb2b8a593b7d12"
+  },
+  "source_files_sha256_after": {
+    "server.py": "e18c854a4ccd9cc9e29414511efca14f3334ec130cb139f33e008c4b0ed1cc87",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_candidate_typed_http_fixtures.py": "f274ce118c773c9db4cd0764cf0e3871d81a0d9bc80450e176bb2b8a593b7d12"
+  },
+  "frozen_source_before": "artifacts/local-service-update-20261015/analysis-candidate-typed-v2/source-before",
+  "frozen_source_after": "artifacts/local-service-update-20261015/analysis-candidate-typed-v2/source-after",
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; actual saved AI jobs/reports; loopback HTTP; free local provider",
+  "mutation_boundary": "author-editable typed artifacts changed through real HTTP; fact assertion object and source/assertion corruption controls use explicitly recorded synthetic SQL only",
+  "claim_limit": "typed canonical artifact and source integrity only; no real manuscript, credential, literary-quality or first-tier claim",
+  "test_accounting": {
+    "test_groups": 11,
+    "passed_test_groups": 9,
+    "failed_test_groups": 2,
+    "observed_scenarios": 27,
+    "explicit_subtest_result_records": 20,
+    "unsuccessful_result_records": 2,
+    "all_result_records": 31,
+    "note": "Group success entries and subtest entries coexist; result records are not independent test groups."
+  },
+  "archive_redaction": {
+    "original_artifact_sha256": "fb8f3c4e01cd206f891c26eb25c516a4ee0bade3fc803e895e6a46b6227b0e74",
+    "original_private_file": "artifacts/local-service-update-20261015/analysis-candidate-typed-v2.json",
+    "original_private_retained": true,
+    "original_frozen_source_bytes_verified": true,
+    "source_fingerprints_preserved": true,
+    "categories": [],
+    "public_bytes_are_original": false,
+    "note": "Public structured copy adds accounting and provenance. Frozen source references still identify the retained private before/after originals."
+  }
+}

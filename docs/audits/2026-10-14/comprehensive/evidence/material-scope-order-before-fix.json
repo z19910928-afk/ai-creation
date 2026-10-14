@@ -1,0 +1,136 @@
+{
+  "passed": false,
+  "checks": 9,
+  "cases": [
+    {
+      "name": "test_current_foreshadow_title_can_generate_new_plan",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 285, in test_current_foreshadow_title_can_generate_new_plan\n    source, _ = self.foreshadow_plan()\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/material_scope_order_http_fixtures.py\", line 136, in foreshadow_plan\n    self.assertGreater(index, 0)\nAssertionError: 0 not greater than 0\n"
+    },
+    {
+      "name": "test_current_scope_after_early_deletion_can_generate_and_apply",
+      "passed": true
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_completed_candidate_apply",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 210, in test_deleted_early_chapter_blocks_completed_candidate_apply\n    self.assertEqual(status, 400, result)\nAssertionError: 200 != 400 : {'applied': True, 'idempotent': False, 'chapter': {'id': 'ch_93cf444f39c942628b1a2a96090fd1a1', 'title': '章序校验当前章', 'body': '林岚看向北窗，继续等待。\\n\\n雨水顺着窗框淌下，她松开抵着铜扣的手。', 'status': '草稿', 'updated': '2026-10-14T17:04:01+00:00', 'revision_id': 'rev_19c913e73f5b4ab498a44b2416caf315', 'body_hash': '0ece6435dd10cec58a2b79152e03d3489de060319915ec06727fe486d9948512', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '林岚', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}, 'state': {'full_state': True, 'version': 14, 'branch_id': 'main', 'head_revision': 'rev_19c913e73f5b4ab498a44b2416caf315', 'branch_status': 'active', 'project': {'id': 'default-project', 'title': '未命名长篇', 'genre': '', 'summary': '', 'goal': 50000, 'book_status': 'writing'}, 'chapters': [{'id': 'ch_5cfa52f7a2504a51a404c2699eb39672', 'title': '第一章 还没有开始的故事', 'body': '把故事写在这里。\\n\\n提示：先写一个你最想看到的场景，不必一次写好。', 'status': '草稿', 'updated': '2026-10-14T17:04:01+00:00', 'revision_id': 'rev_3796fda445b24c9282deca9173ef3c58', 'body_hash': '427bbf6bab7c5606f46db6d2ac048c8b1ae630e35975f77e848cdfa55929b084', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}, {'id': 'ch_93cf444f39c942628b1a2a96090fd1a1', 'title': '章序校验当前章', 'body': '林岚看向北窗，继续等待。\\n\\n雨水顺着窗框淌下，她松开抵着铜扣的手。', 'status': '草稿', 'updated': '2026-10-14T17:04:01+00:00', 'revision_id': 'rev_19c913e73f5b4ab498a44b2416caf315', 'body_hash': '0ece6435dd10cec58a2b79152e03d3489de060319915ec06727fe486d9948512', 'project_id': 'default-project', 'branch_id': 'main', 'volume_id': '', 'plan_id': '', 'scenes': [], 'chapter_goal': '', 'scene_plan': '', 'pov': '林岚', 'foreshadowing_op': '', 'hook': '', 'recap': '', 'next_brief': '', 'review_status': 'unreviewed', 'review': {}, 'review_valid': False, 'reviewed_at': None}], 'records': [{'id': 'ent_058f0c36a7dc436f9160a27471c9592a', 'type': '人物', 'name': '新人物', 'description': '记录人物的欲望、秘密和变化。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_1a5cb05379af4c8983e4180dfc075524', 'type': '地点', 'name': '新地点', 'description': '记录这里的气味、规则与冲突。', 'aliases': [], 'project_id': 'default-project'}, {'id': 'ent_cde2e9d2ffb8407db2ff96c94a4644c3', 'type': '人物', 'name': '林岚', 'description': '守在北窗的人。', 'aliases': ['岚'], 'project_id': 'default-project'}, {'id': 'ent_f4b2a942548b44af861611ba6bd1abc6', 'type': '设定', 'name': '当前章序可见设定', 'description': 'ACTIVE_CHAPTER_INDEX_SCOPE_CANARY', 'aliases': [], 'project_id': 'default-project', 'available_from': 3}], 'plot': {'setup': [], 'develop': [], 'payoff': []}, 'memory': []}}\n"
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_frozen_dispatch",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 195, in test_deleted_early_chapter_blocks_frozen_dispatch\n    self.assert_dispatch_blocked(job, \"deleted_early_chapter\",\n  File \"./tests/material_scope_order_http_fixtures.py\", line 165, in assert_dispatch_blocked\n    self.assertEqual(result[\"status\"], \"failed\", result)\nAssertionError: 'success' != 'failed'\n- success\n+ failed\n : {'id': 'aijob_08ce8d2e21344f83bde3d665a0555aaf', 'project_id': 'default-project', 'branch_id': 'main', 'ai_run_id': 'airun_930bf14d41204275a31a01cda419ae1e', 'task': 'continue', 'chapter_id': 'ch_8eeeb398075f419492064f061d9c98da', 'response_format': 'text', 'max_tokens': 800, 'status': 'success', 'attempt': 1, 'retry_of': None, 'cancel_requested': False, 'error': None, 'created_at': '2026-10-14T17:04:02+00:00', 'started_at': '2026-10-14T17:04:02+00:00', 'finished_at': '2026-10-14T17:04:02+00:00', 'updated_at': '2026-10-14T17:04:02+00:00', 'result': {'mode': 'provider', 'model': 'guidance-alias-fixture', 'text': '雨水顺着窗框淌下，她松开抵着铜扣的手。', 'structured': None, 'response_format': 'text', 'truncated': False, 'finish_reason': 'stop', 'completion_state': 'complete', 'safe_to_apply': True, 'usage': {'prompt_tokens': 80, 'completion_tokens': 30, 'total_tokens': 110}, 'usage_state': 'reported', 'usage_accounting': {'state': 'reported', 'total_tokens': 110, 'reported_tokens_lower_bound': 110, 'source': 'provider_reported'}, 'returned_model': 'guidance-alias-fixture', 'provider_response_id': '', 'stream_transport': 'provider_json_fallback', 'provider_sse_complete': None, 'reasoning_observation': {'field_events': 0, 'nonempty_events': 0, 'invalid_events': 0, 'characters': 0, 'requested_disabled': False, 'unexpected_reasoning': False}, 'protocol_observation': {'events_observed': 1, 'events_recorded': 1, 'events_truncated': False, 'events': [{'type': 'object', 'fields': 3, 'keys': ['model', 'choices', 'usage'], 'choices': [{'type': 'object', 'fields': 2, 'finish_reason': 'stop', 'message': {'type': 'object', 'fields': {'content': {'type': 'string', 'chars': 19}}}}], 'usage': {'type': 'object', 'fields': 3}, 'event_sequence': 1}]}, 'request_audit': {'request_id': 'airun_930bf14d41204275a31a01cda419ae1e', 'endpoint': 'http://127.0.0.1:62522/v1/chat/completions', 'method': 'POST', 'requested_model': 'guidance-alias-fixture', 'request_sha256': 'beccfa2be7418412ba17c1bd41a938e8f6af6c94584e4768e2e23b1a280352cc', 'messages_sha256': '7a63a93f043f73eb80b5a89d31f538de39239fdda3901e2626bda135eba7bf11', 'request_bytes': 5100, 'effective_parameters': {'temperature': 0, 'max_tokens': 800, 'stream': True, 'response_format': 'text'}, 'created_at': '2026-10-14T17:04:02.243848+00:00', 'dispatched': True, 'provider_request_id': '', 'response_bytes': 224}, 'requested_model': 'guidance-alias-fixture', 'billing_state': 'usage_reported', 'latency_ms': 2, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_8eeeb398075f419492064f061d9c98da', 'source_revision_id': 'rev_71f88806a5ff4dda80bf29b16be1be9c', 'source_body_hash': '3e1ffaf0859bfcf0d47f81678975df5b712002b7eec62637710df8d7329cdb94', 'mode': 'append', 'range': {'start': 12, 'end': 12, 'quote': ''}}, 'output_validation': {'protocol_complete': True, 'characters': 19, 'contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'output_contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'issues': [], 'eligible': True, 'eligible_for_blind_review': True, 'hard_fact_status': 'requires_independent_review', 'scope': '字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。'}, 'author_decision': 'pending', 'restored_read_only': False, 'materials_read_only': False}, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_8eeeb398075f419492064f061d9c98da', 'source_revision_id': 'rev_71f88806a5ff4dda80bf29b16be1be9c', 'source_body_hash': '3e1ffaf0859bfcf0d47f81678975df5b712002b7eec62637710df8d7329cdb94', 'mode': 'append', 'range': {'start': 12, 'end': 12, 'quote': ''}}, 'restored_read_only': False, 'materials_read_only': False, 'author_decision': 'pending'}\n"
+    },
+    {
+      "name": "test_deleted_early_chapter_blocks_original_retries",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 220, in test_deleted_early_chapter_blocks_original_retries\n    self.assert_original_retries_blocked(job, \"deleted_early_chapter_original_retry\")\n  File \"./tests/material_scope_order_http_fixtures.py\", line 182, in assert_original_retries_blocked\n    self.assertEqual([item[\"status\"] for item in outcomes], [409, 409], result)\nAssertionError: Lists differ: [202, 200] != [409, 409]\n\nFirst differing element 0:\n202\n409\n\n- [202, 200]\n+ [409, 409] : {'mode': 'provider', 'model': 'guidance-alias-fixture', 'text': '雨水顺着窗框淌下，她松开抵着铜扣的手。', 'structured': None, 'response_format': 'text', 'truncated': False, 'finish_reason': 'stop', 'completion_state': 'complete', 'safe_to_apply': True, 'usage': {'prompt_tokens': 80, 'completion_tokens': 30, 'total_tokens': 110}, 'usage_state': 'reported', 'usage_accounting': {'state': 'reported', 'total_tokens': 110, 'reported_tokens_lower_bound': 110, 'source': 'provider_reported'}, 'returned_model': 'guidance-alias-fixture', 'provider_response_id': '', 'stream_transport': 'provider_json_fallback', 'provider_sse_complete': None, 'reasoning_observation': {'field_events': 0, 'nonempty_events': 0, 'invalid_events': 0, 'characters': 0, 'requested_disabled': False, 'unexpected_reasoning': False}, 'protocol_observation': {'events_observed': 1, 'events_recorded': 1, 'events_truncated': False, 'events': [{'type': 'object', 'fields': 3, 'keys': ['model', 'choices', 'usage'], 'choices': [{'type': 'object', 'fields': 2, 'finish_reason': 'stop', 'message': {'type': 'object', 'fields': {'content': {'type': 'string', 'chars': 19}}}}], 'usage': {'type': 'object', 'fields': 3}, 'event_sequence': 1}]}, 'request_audit': {'request_id': 'airun_ae743229b10c4032a82b34840bbbaeb2', 'endpoint': 'http://127.0.0.1:62549/v1/chat/completions', 'method': 'POST', 'requested_model': 'guidance-alias-fixture', 'request_sha256': 'ebceca5c8d5375da1a5aadef02a0d38e240f3e8943b7ca45024b55e379a53cc0', 'messages_sha256': '3253248bf84caab056e13efc5be50f8b2d37beaa2d6bc353fd52795bba45a60b', 'request_bytes': 5100, 'effective_parameters': {'temperature': 0, 'max_tokens': 800, 'stream': True, 'response_format': 'text'}, 'created_at': '2026-10-14T17:04:03.403183+00:00', 'dispatched': True, 'provider_request_id': '', 'response_bytes': 224}, 'requested_model': 'guidance-alias-fixture', 'billing_state': 'usage_reported', 'latency_ms': 2, 'source': {'project_id': 'default-project', 'branch_id': 'main', 'chapter_id': 'ch_bd4552561b0648f19c91bd74ed0281c0', 'source_revision_id': 'rev_25dbf14dae774af590c91cfc3cf3fc1d', 'source_body_hash': '3e1ffaf0859bfcf0d47f81678975df5b712002b7eec62637710df8d7329cdb94', 'mode': 'append', 'range': {'start': 12, 'end': 12, 'quote': ''}}, 'output_validation': {'protocol_complete': True, 'characters': 19, 'contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'output_contract': {'minimum_characters': None, 'maximum_characters': None, 'target_characters': None, 'counting': 'non_whitespace_characters_including_punctuation', 'source': 'unspecified', 'source_scope': 'chapter', 'source_characters': None, 'relative_minimum_percent': None, 'relative_maximum_percent': None}, 'issues': [], 'eligible': True, 'eligible_for_blind_review': True, 'hard_fact_status': 'requires_independent_review', 'scope': '字数和明显规划标记为机械检查；通过不证明事实、文风或文学质量。'}, 'author_decision': 'pending', 'restored_read_only': False, 'materials_read_only': False, 'task': 'continue', 'ai_run_id': 'airun_ae743229b10c4032a82b34840bbbaeb2', 'retry_of': 'airun_153edd2dbbd041548d15b94a12ef5880', 'stream': {'chunk_count': 1, 'last_seq': 1, 'replayable': True}}\n"
+    },
+    {
+      "name": "test_foreshadow_plan_title_change_blocks_frozen_dispatch",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 223, in test_foreshadow_plan_title_change_blocks_frozen_dispatch\n    source, link = self.foreshadow_plan()\n                   ^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/material_scope_order_http_fixtures.py\", line 136, in foreshadow_plan\n    self.assertGreater(index, 0)\nAssertionError: 0 not greater than 0\n"
+    },
+    {
+      "name": "test_foreshadow_plan_title_change_blocks_original_retries",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 236, in test_foreshadow_plan_title_change_blocks_original_retries\n    source, _ = self.foreshadow_plan()\n                ^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/material_scope_order_http_fixtures.py\", line 136, in foreshadow_plan\n    self.assertGreater(index, 0)\nAssertionError: 0 not greater than 0\n"
+    },
+    {
+      "name": "test_omitted_foreshadow_title_does_not_expire_planning_task",
+      "passed": false,
+      "error": "Traceback (most recent call last):\n  File \"./tests/material_scope_order_http_fixtures.py\", line 255, in test_omitted_foreshadow_title_does_not_expire_planning_task\n    source, link = self.foreshadow_plan()\n                   ^^^^^^^^^^^^^^^^^^^^^^\n  File \"./tests/material_scope_order_http_fixtures.py\", line 136, in foreshadow_plan\n    self.assertGreater(index, 0)\nAssertionError: 0 not greater than 0\n"
+    },
+    {
+      "name": "test_unconsumed_early_chapter_title_does_not_expire_task",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T17:03:58.808031+00:00",
+  "finished_at": "2026-10-14T17:04:08.221126+00:00",
+  "observations": [
+    {
+      "test": "test_current_scope_after_early_deletion_can_generate_and_apply",
+      "scenario": "current_chapter_order_control",
+      "dispatch_status": "success",
+      "apply_http_status": 200,
+      "body_changed": true,
+      "future_card_absent": true
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_completed_candidate_apply",
+      "scenario": "deleted_early_chapter_old_apply",
+      "http_status": 200,
+      "applied": true,
+      "ledger_unchanged": false,
+      "body_unchanged": false,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_frozen_dispatch",
+      "scenario": "deleted_early_chapter",
+      "dispatch_status": "success",
+      "billing_state": "usage_reported",
+      "extra_provider_calls": 1,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true,
+      "request_hash_preserved": true,
+      "material_read_only": false,
+      "original_chapter_number": 3,
+      "current_chapter_number": 2
+    },
+    {
+      "test": "test_deleted_early_chapter_blocks_original_retries",
+      "scenario": "deleted_early_chapter_original_retry",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 202
+        },
+        {
+          "entry": "runs",
+          "status": 200
+        }
+      ],
+      "ledger_unchanged": false,
+      "body_unchanged": true,
+      "extra_provider_calls": 1
+    },
+    {
+      "test": "test_unconsumed_early_chapter_title_does_not_expire_task",
+      "scenario": "unconsumed_early_chapter_title",
+      "dispatch_status": "success",
+      "free_provider_calls": 1,
+      "source_title_absent": true
+    }
+  ],
+  "free_provider_calls": 5,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "moyu_materials.py": "c07fa47abc25b81e984f5701043362ed9833ca910c8ea251fd63d5828a75fb1c",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "6a4ce2b6fc872f6464c7ff9fb37a6c807504f7aa76d903e0f0a0fc989d8ae608",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "54949eef8ef3617fec3470cfff895159b690452e837d2a48092e42ea03fea79a",
+    "tests/material_scope_order_http_fixtures.py": "b98e8af1c1b4e1bb029b178bf6529eb9b81e57827194a8e696df80db8d9aea81"
+  },
+  "source_files_sha256_after": {
+    "moyu_materials.py": "c07fa47abc25b81e984f5701043362ed9833ca910c8ea251fd63d5828a75fb1c",
+    "server.py": "a975477f4ab6a5e2e5401b0758847d0f0fcafc262ebb15a589f2bea8740fa1bb",
+    "moyu_analysis.py": "6a4ce2b6fc872f6464c7ff9fb37a6c807504f7aa76d903e0f0a0fc989d8ae608",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_dependency_http_fixtures.py": "54949eef8ef3617fec3470cfff895159b690452e837d2a48092e42ea03fea79a",
+    "tests/material_scope_order_http_fixtures.py": "b98e8af1c1b4e1bb029b178bf6529eb9b81e57827194a8e696df80db8d9aea81"
+  },
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; real loopback HTTP; free local provider; no real manuscript or credential",
+  "claim_limit": "chapter-scope and source-title integrity only; no literary-quality or competitiveness claim"
+}

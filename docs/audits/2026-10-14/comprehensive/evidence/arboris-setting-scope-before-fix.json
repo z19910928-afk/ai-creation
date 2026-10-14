@@ -1,0 +1,42 @@
+{
+  "captured_at_utc": "2026-10-14T14:47:09Z",
+  "status_at_capture": "reproduced_before_setting_scope_fix",
+  "moyu_head_commit": "64fe155387e0a3c2d902b60a2d82822f2457af0d",
+  "scope": "isolated_database_local_http_prompt_preview_no_provider_calls",
+  "synthetic_inputs": {
+    "current_chapter": 1,
+    "current_pov": "hero",
+    "future_setting_available_from": 9,
+    "private_setting_known_by": ["antagonist"],
+    "record_top_k": 20,
+    "chapter_top_k": 0,
+    "recent_window": 0,
+    "memory_top_k": 0
+  },
+  "http": {
+    "initial_state": 200,
+    "save": 200,
+    "reopen": 200,
+    "prompt_preview": 200
+  },
+  "all_http_200": true,
+  "in_memory_future_excluded": true,
+  "in_memory_private_excluded": true,
+  "reopened_future_scope_missing": true,
+  "reopened_private_scope_missing": true,
+  "prompt_contains_future_secret": true,
+  "prompt_contains_antagonist_only_secret": true,
+  "model_calls": 0,
+  "real_user_database_accessed": false,
+  "credentials_accessed": false,
+  "source_sha256": {
+    "server.py": "66be724062f36203125bb7025aabef42aa3cc29ab60e465f54bf096c36bcfa89",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796"
+  },
+  "interpretation": "The source-grounded context filter rejects the annotated settings before saving. The real state-save and state-read paths discard their scope metadata, so the subsequent first-chapter prompt preview contains both excluded secrets.",
+  "limits": [
+    "No real provider request or novel generation was executed.",
+    "This is a fixed pre-fix snapshot. Subsequent changes require separate verification.",
+    "The result proves loss of supplied setting scope, not that the model necessarily reveals every supplied secret."
+  ]
+}

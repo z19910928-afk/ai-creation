@@ -1,0 +1,387 @@
+{
+  "passed": true,
+  "checks": 7,
+  "cases": [
+    {
+      "name": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused",
+      "passed": true,
+      "subtest": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused (__main__.AnalysisCandidateReuseHTTP.test_changed_note_known_by_and_author_edit_are_not_blindly_reused) (change='note')"
+    },
+    {
+      "name": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused",
+      "passed": true,
+      "subtest": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused (__main__.AnalysisCandidateReuseHTTP.test_changed_note_known_by_and_author_edit_are_not_blindly_reused) (change='known_by')"
+    },
+    {
+      "name": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused",
+      "passed": true,
+      "subtest": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused (__main__.AnalysisCandidateReuseHTTP.test_changed_note_known_by_and_author_edit_are_not_blindly_reused) (change='author_edit')"
+    },
+    {
+      "name": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_assertion_cannot_be_restored_by_a_new_report",
+      "passed": true
+    },
+    {
+      "name": "test_same_prose_in_another_book_does_not_reuse_foreign_canon",
+      "passed": true
+    },
+    {
+      "name": "test_same_raw_candidate_after_description_change_reuses_canon",
+      "passed": true
+    },
+    {
+      "name": "test_same_raw_candidate_after_premise_change_reuses_canon",
+      "passed": true
+    },
+    {
+      "name": "test_same_report_repeat_remains_idempotent",
+      "passed": true
+    },
+    {
+      "name": "test_withdrawn_memory_cannot_be_reaccepted_from_a_new_report",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T18:21:15.066756+00:00",
+  "finished_at": "2026-10-14T18:21:23.122790+00:00",
+  "observations": [
+    {
+      "test": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused",
+      "scenario": "changed_note",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused",
+      "scenario": "changed_known_by",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_changed_note_known_by_and_author_edit_are_not_blindly_reused",
+      "scenario": "changed_author_edit",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_assertion_cannot_be_restored_by_a_new_report",
+      "scenario": "invalid_assertion",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_same_prose_in_another_book_does_not_reuse_foreign_canon",
+      "scenario": "other_book_control",
+      "own_confirm_http_status": 200,
+      "foreign_confirm_http_status": 400,
+      "foreign_confirm_error": "分析记录不存在。",
+      "original_book_canonical_unchanged": true,
+      "foreign_artifact_ids_disjoint": true,
+      "foreign_confirm_database_unchanged": true,
+      "original_manuscript_and_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_same_raw_candidate_after_description_change_reuses_canon",
+      "scenario": "same_candidate_after_description",
+      "new_analysis_identity": true,
+      "same_candidate_identity": true,
+      "first_accept_http_status": 200,
+      "second_accept_http_status": 200,
+      "second_accept_error": null,
+      "canonical_unchanged": true,
+      "canonical_artifact_ids_reused": true,
+      "original_artifact_ids": {
+        "memory_id": "analysis_50570942373c64c0df1c361a24253447",
+        "assertion_id": "asrt_afc755b4c8c8418eb2d31916d14ea2a4",
+        "source_span_id": "span_8b29c33d007c4a88816086e494194080",
+        "timeline_id": "time_80f92c1a73c34a2eb8dcabe7e68cd45f"
+      },
+      "current_artifact_ids": {
+        "assertion_id": "asrt_afc755b4c8c8418eb2d31916d14ea2a4",
+        "memory_id": "analysis_50570942373c64c0df1c361a24253447",
+        "source_span_id": "span_8b29c33d007c4a88816086e494194080",
+        "timeline_id": "time_80f92c1a73c34a2eb8dcabe7e68cd45f"
+      },
+      "canonical_before": {
+        "candidate_memory": {
+          "count": 1,
+          "rows_sha256": "bfd4b6665db841ce339e39ce24a882935cac0cf90087ecd6a29d25b8a8636acc"
+        },
+        "assertion": {
+          "count": 1,
+          "rows_sha256": "e478dc24f62a268f3897ab2a05cb559b5eb150f53a77929c0c87ff5d55386248"
+        },
+        "source_span": {
+          "count": 1,
+          "rows_sha256": "d75a99b6ca844b5501f10863e2c68a0b9d8d991a7274543efa8505b03d38565f"
+        },
+        "entity": {
+          "count": 3,
+          "rows_sha256": "da7ab64061800096ad1bdbf143905e55f979e9129361d2e0c9c737b59fe3a0b1"
+        },
+        "character_state": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_story_relation": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_timeline_event": {
+          "count": 1,
+          "rows_sha256": "6aa515c60927d150f46f41a1f0074bf069be11911fcf93e8ae318cce561aebb5"
+        },
+        "app_plot_item": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_foreshadow_link": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "canonical_after": {
+        "candidate_memory": {
+          "count": 1,
+          "rows_sha256": "bfd4b6665db841ce339e39ce24a882935cac0cf90087ecd6a29d25b8a8636acc"
+        },
+        "assertion": {
+          "count": 1,
+          "rows_sha256": "e478dc24f62a268f3897ab2a05cb559b5eb150f53a77929c0c87ff5d55386248"
+        },
+        "source_span": {
+          "count": 1,
+          "rows_sha256": "d75a99b6ca844b5501f10863e2c68a0b9d8d991a7274543efa8505b03d38565f"
+        },
+        "entity": {
+          "count": 3,
+          "rows_sha256": "da7ab64061800096ad1bdbf143905e55f979e9129361d2e0c9c737b59fe3a0b1"
+        },
+        "character_state": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_story_relation": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_timeline_event": {
+          "count": 1,
+          "rows_sha256": "6aa515c60927d150f46f41a1f0074bf069be11911fcf93e8ae318cce561aebb5"
+        },
+        "app_plot_item": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_foreshadow_link": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_same_raw_candidate_after_premise_change_reuses_canon",
+      "scenario": "same_candidate_after_premise",
+      "new_analysis_identity": true,
+      "same_candidate_identity": true,
+      "first_accept_http_status": 200,
+      "second_accept_http_status": 200,
+      "second_accept_error": null,
+      "canonical_unchanged": true,
+      "canonical_artifact_ids_reused": true,
+      "original_artifact_ids": {
+        "memory_id": "analysis_667928146bf6d40123a84db91dfb7c58",
+        "assertion_id": "asrt_5ddb823323ad48a3baa5cb7c3a880368",
+        "source_span_id": "span_c72ed9b67d9c48aca4ce0cba46cff904",
+        "timeline_id": "time_667bd4d5be044914a4ea5b345c9204bb"
+      },
+      "current_artifact_ids": {
+        "assertion_id": "asrt_5ddb823323ad48a3baa5cb7c3a880368",
+        "memory_id": "analysis_667928146bf6d40123a84db91dfb7c58",
+        "source_span_id": "span_c72ed9b67d9c48aca4ce0cba46cff904",
+        "timeline_id": "time_667bd4d5be044914a4ea5b345c9204bb"
+      },
+      "canonical_before": {
+        "candidate_memory": {
+          "count": 1,
+          "rows_sha256": "beccc685216ff5b7806f333279e6454ed5d0d3caab33f04a63b9ca7be893f92c"
+        },
+        "assertion": {
+          "count": 1,
+          "rows_sha256": "6b94326518cb02d9147fd7d9c3639b60efeb6ec58675aae547fa75a222b65276"
+        },
+        "source_span": {
+          "count": 1,
+          "rows_sha256": "49e383d58026c1228e09f5b9a6cb3660b59602faf53d7e4c51a4d5bff18569d9"
+        },
+        "entity": {
+          "count": 3,
+          "rows_sha256": "9f584e0597d4edf7729a0850bb3698ac85d47e26739642cee92a40cd86f80f9c"
+        },
+        "character_state": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_story_relation": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_timeline_event": {
+          "count": 1,
+          "rows_sha256": "a7781e5e6358585a01e477d824d370419dfc328bc977ee9ff64308f8ec975379"
+        },
+        "app_plot_item": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_foreshadow_link": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "canonical_after": {
+        "candidate_memory": {
+          "count": 1,
+          "rows_sha256": "beccc685216ff5b7806f333279e6454ed5d0d3caab33f04a63b9ca7be893f92c"
+        },
+        "assertion": {
+          "count": 1,
+          "rows_sha256": "6b94326518cb02d9147fd7d9c3639b60efeb6ec58675aae547fa75a222b65276"
+        },
+        "source_span": {
+          "count": 1,
+          "rows_sha256": "49e383d58026c1228e09f5b9a6cb3660b59602faf53d7e4c51a4d5bff18569d9"
+        },
+        "entity": {
+          "count": 3,
+          "rows_sha256": "9f584e0597d4edf7729a0850bb3698ac85d47e26739642cee92a40cd86f80f9c"
+        },
+        "character_state": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_story_relation": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_timeline_event": {
+          "count": 1,
+          "rows_sha256": "a7781e5e6358585a01e477d824d370419dfc328bc977ee9ff64308f8ec975379"
+        },
+        "app_plot_item": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        },
+        "app_foreshadow_link": {
+          "count": 0,
+          "rows_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      },
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_same_report_repeat_remains_idempotent",
+      "scenario": "same_report_repeat",
+      "confirm_http_status": 200,
+      "canonical_unchanged": true,
+      "canonical_artifact_ids_reused": true,
+      "decision_count": 1,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_withdrawn_memory_cannot_be_reaccepted_from_a_new_report",
+      "scenario": "withdrawn_memory",
+      "confirm_http_status": 409,
+      "error": "这条原句已有正式记忆，但内容、知情范围或有效状态不一致；请到记忆中枢核对并修订已有记录。",
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "synthetic_only": true,
+  "free_provider_calls": 15,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "e18c854a4ccd9cc9e29414511efca14f3334ec130cb139f33e008c4b0ed1cc87",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd"
+  },
+  "source_files_sha256_after": {
+    "server.py": "e18c854a4ccd9cc9e29414511efca14f3334ec130cb139f33e008c4b0ed1cc87",
+    "moyu_analysis.py": "dc1e972aebad6238757637e45bb59578f9c979deb8c7c5bc3cd6a0933bd1fee7",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd"
+  },
+  "frozen_source_before": "artifacts/local-service-update-20261015/analysis-candidate-reuse-after-v1/source-before",
+  "frozen_source_after": "artifacts/local-service-update-20261015/analysis-candidate-reuse-after-v1/source-after",
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; actual saved AI jobs and reports; real loopback HTTP; free local provider",
+  "baseline_failure": "unchanged cross-report candidates currently return HTTP 409 UNIQUE candidate_memory.id; existing rollback prevents duplicate or partial data; not HTTP 500",
+  "claim_limit": "canonical candidate reuse and conflict integrity only; no real manuscript, credential, literary-quality or first-tier claim",
+  "test_accounting": {
+    "test_groups": 7,
+    "passed_test_groups": 7,
+    "failed_test_groups": 0,
+    "observed_scenarios": 9,
+    "explicit_subtest_result_records": 3,
+    "unsuccessful_result_records": 0,
+    "all_result_records": 10,
+    "note": "Group success entries and subtest entries coexist; result records are not independent test groups."
+  },
+  "archive_redaction": {
+    "original_artifact_sha256": "236bab1789606c745297ad39d6ef7e0f6f4050c08fa3d7ef6d27ee41d3eb2120",
+    "original_private_file": "artifacts/local-service-update-20261015/analysis-candidate-reuse-after-v1.json",
+    "original_private_retained": true,
+    "original_frozen_source_bytes_verified": true,
+    "source_fingerprints_preserved": true,
+    "categories": [],
+    "public_bytes_are_original": false,
+    "note": "Public structured copy adds accounting and provenance. Frozen source references still identify the retained private before/after originals."
+  }
+}

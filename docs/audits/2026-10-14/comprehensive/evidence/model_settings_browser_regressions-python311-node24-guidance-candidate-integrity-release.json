@@ -1,0 +1,78 @@
+{
+  "passed": true,
+  "scope": "电脑端模型设置、隔离SQLite、免费本机模拟提供方",
+  "started_at": "2026-10-14T18:46:37.998Z",
+  "cases": [
+    {
+      "name": "只保存设置不调用模型，电脑两种宽度表单均无横向遮挡",
+      "passed": true
+    },
+    {
+      "name": "合格默认模型检测即刻更新设置和助手状态，刷新保留同次结果",
+      "passed": true
+    },
+    {
+      "name": "最近失败替换旧成功，跨页和刷新均显示失败且不重发模型",
+      "passed": true
+    },
+    {
+      "name": "回传模型不一致保留双方名称，不能显示所选模型检测成功",
+      "passed": true
+    },
+    {
+      "name": "只有一字的完整stop回复保留完成证据，但页面持续显示不合格",
+      "passed": true
+    },
+    {
+      "name": "关闭思考仍返回思考字段时不通过，页面和记录不展示思考内容",
+      "passed": true
+    },
+    {
+      "name": "另一窗口修改设置使旧检测失效，页面回读当前模型且不报成功",
+      "passed": true
+    },
+    {
+      "name": "同一作品保存新设置后，迟到旧检测不能覆盖页面内存或后续保存",
+      "passed": true
+    },
+    {
+      "name": "同一作品迟到旧保存响应不能覆盖新读取，后续保存不回写旧模型或调用模型",
+      "passed": true
+    },
+    {
+      "name": "设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置",
+      "passed": true
+    },
+    {
+      "name": "已发出的旧保存响应在离开设置页后不写回全局设置或状态",
+      "passed": true
+    },
+    {
+      "name": "设置PUT和检测在队列等待期间变旧时不发送旧操作",
+      "passed": true
+    },
+    {
+      "name": "保存后的状态读取等待期间切换作品，不向另一作品发送检测",
+      "passed": true
+    },
+    {
+      "name": "检测完成后的状态读取迟到，不向另一作品页面回写旧成功",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "source_files_sha256_before": {
+    "app.js": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54",
+    "author-workspace.js": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8"
+  },
+  "other_project": "book_6ae7131f9bac4aa78dbefe1a58e38e9f",
+  "provider_requests": 8,
+  "source_files_sha256_after": {
+    "app.js": "ba76e4df8d20e60fc107099263455fa3d3de2ebb548dbf6a7de99923005a7a54",
+    "author-workspace.js": "5cc990a1937037bb062a6d406919f1628181b108955838de67e263d1f00bac00",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8"
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-10-14T18:46:42.203Z"
+}

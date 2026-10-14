@@ -1,0 +1,164 @@
+{
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "branch": "codex/full-function-audit",
+  "commit": "64fe155387e0a3c2d902b60a2d82822f2457af0d",
+  "tree": "5d1352253ad63de070c010064d78389134cf85f8",
+  "workflow": "墨屿检查",
+  "run_id": 38575602238,
+  "url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/38575602238",
+  "status": "completed",
+  "conclusion": "success",
+  "run_attempt": 1,
+  "created_at_utc": "2026-10-14T13:53:06Z",
+  "completed_at_utc": "2026-10-14T13:58:28Z",
+  "recorded_at_utc": "2026-10-14T14:14:06.558Z",
+  "published_artifact_count": 0,
+  "jobs": [
+    {
+      "id": 115891739996,
+      "name": "checks",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at_utc": "2026-10-14T13:53:10Z",
+      "completed_at_utc": "2026-10-14T13:58:27Z",
+      "steps": [
+        {
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:53:11Z",
+          "completed_at_utc": "2026-10-14T13:53:13Z"
+        },
+        {
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:53:13Z",
+          "completed_at_utc": "2026-10-14T13:53:15Z"
+        },
+        {
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:53:15Z",
+          "completed_at_utc": "2026-10-14T13:53:15Z"
+        },
+        {
+          "name": "Set up Node",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:53:15Z",
+          "completed_at_utc": "2026-10-14T13:53:16Z"
+        },
+        {
+          "name": "Syntax checks",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:53:16Z",
+          "completed_at_utc": "2026-10-14T13:53:16Z"
+        },
+        {
+          "name": "Contract fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:53:16Z",
+          "completed_at_utc": "2026-10-14T13:56:00Z"
+        },
+        {
+          "name": "Evaluation fixtures",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:56:00Z",
+          "completed_at_utc": "2026-10-14T13:56:00Z"
+        },
+        {
+          "name": "Editor merge regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:56:00Z",
+          "completed_at_utc": "2026-10-14T13:56:00Z"
+        },
+        {
+          "name": "Install browser regression runtime",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:56:00Z",
+          "completed_at_utc": "2026-10-14T13:56:26Z"
+        },
+        {
+          "name": "Real browser regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:56:26Z",
+          "completed_at_utc": "2026-10-14T13:57:41Z"
+        },
+        {
+          "name": "Search browser regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:57:41Z",
+          "completed_at_utc": "2026-10-14T13:57:43Z"
+        },
+        {
+          "name": "Planning browser regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:57:43Z",
+          "completed_at_utc": "2026-10-14T13:57:57Z"
+        },
+        {
+          "name": "Model settings browser regressions",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:57:57Z",
+          "completed_at_utc": "2026-10-14T13:58:04Z"
+        },
+        {
+          "name": "Five chapter author flow",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:58:04Z",
+          "completed_at_utc": "2026-10-14T13:58:23Z"
+        },
+        {
+          "name": "Post Set up Node",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:58:23Z",
+          "completed_at_utc": "2026-10-14T13:58:23Z"
+        },
+        {
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:58:23Z",
+          "completed_at_utc": "2026-10-14T13:58:23Z"
+        },
+        {
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:58:23Z",
+          "completed_at_utc": "2026-10-14T13:58:23Z"
+        },
+        {
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success",
+          "started_at_utc": "2026-10-14T13:58:23Z",
+          "completed_at_utc": "2026-10-14T13:58:23Z"
+        }
+      ]
+    }
+  ],
+  "scope": [
+    "Python 3.11 and Node 24 syntax and repository fixtures",
+    "fixed evaluation runner and editor merge regressions",
+    "desktop browser, search, planning, model settings and five-chapter author flow"
+  ],
+  "limitations": [
+    "Uses offline fixtures and free local simulated providers.",
+    "Remote job and step status does not prove literary quality, factual safety, author efficiency, supplier costs or public deployment.",
+    "Remote status is tied only to the recorded commit and tree."
+  ]
+}

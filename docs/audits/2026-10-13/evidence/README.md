@@ -2,7 +2,9 @@
 
 审查日期：2026-10-13；交付记录更新至上海时间2026-10-14，目录沿用原审查日期。墨屿固定基线为 `62f1c66a7b16bb84f2940dc1af48e685aaf58818`。以下基线探针在独立临时数据库和新浏览器缓存中运行；当时未修改原产品代码、真实作品或用户数据库。生成文本来自离线逻辑或免费本机模拟，不含真实收费模型调用。
 
-最新工程入口为[中断片段与冻结契约完整复验](compatibility-python311-node24-interrupted-fragment-contract-final.json)，实际运行于上海时间2026-10-14 21:30:46至21:34:21：57项、38份Python测试和79个真实电脑浏览器场景通过，70份源码前后相同，20份附件归档。文学工具95项、模型设置14场景通过，范围见本文末尾。[本轮中间失败](compatibility-python311-node24-interrupted-fragment-contract-release.json)记录设置显示竞态和运行期间源码变化，原件保留，新成功不覆盖旧失败。
+最新七项目重新复核及电脑端工程证据见[2026-10-14验证索引](../../2026-10-14/comprehensive/evidence/README.md)，收尾延续至上海时间2026-10-15。本目录的数字、文件名及“本轮”保留各自历史范围，不替代之后代码验收。
+
+历史工程入口[中断片段与冻结契约完整复验](compatibility-python311-node24-interrupted-fragment-contract-final.json)，实际运行于上海时间2026-10-14 21:30:46至21:34:21：57项、38份Python测试和79个真实电脑浏览器场景通过，70份源码前后相同，20份附件归档。文学工具95项、模型设置14场景通过，范围见本文末尾。[该轮中间失败](compatibility-python311-node24-interrupted-fragment-contract-release.json)记录设置显示竞态和运行期间源码变化，原件保留，新成功不覆盖旧失败。
 
 历史[候选整理电脑端完整复验](compatibility-python311-node24-candidate-revision-final.json)于上海时间2026-10-14 02:03:08至02:06:19通过51项/55场景、66份源码不变、13份附件指纹核验；历史[电脑端交付复验](compatibility-python311-node24-desktop-release-final.json)于00:11:10至00:13:55通过50项/49场景、64份源码不变。它们只证明当时版本，不能替代本轮源码复验。
 
@@ -55,7 +57,7 @@ MOYU_CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" 
 node docs/audits/2026-10-13/evidence/browser_probe.cjs .
 
 python3 scripts/evaluation_runner.py \
-  --fixtures-dir tests/fixtures --output /tmp/moyu-fixed-evaluation-recheck.json --pretty
+  --fixtures-dir tests/fixtures --output <private-temporary-path> --pretty
 ```
 
 墨屿探针自行建立临时数据库、独立端口和浏览器缓存，并结束所建服务。上游脚本依赖 `./.audit-cache/2026-10-13/references/` 的固定源码；部分另读 `./.audit-cache/moyu-baseline/`。缓存不提交，失效时需按[固定来源](../sources.md)重新取得相同提交，再恢复路径。不能声称本目录独立包含了完整上游运行环境。个别上游脚本只输出标准输出，或仍将结果写到原缓存路径，需按脚本实际行为归档新结果。

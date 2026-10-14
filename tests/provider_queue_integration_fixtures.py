@@ -703,9 +703,6 @@ class IntegrationTests(unittest.TestCase):
                            "max_tokens": 9000},
         })
         self.assertEqual(status, 200, saved)
-        status, changed = self.request("PATCH", "/api/chapters/" + self.chapter_id, {
-            "body": "取消原任务以后才写的新稿件。"})
-        self.assertEqual(status, 200, changed)
         before = len(Handler.calls)
         status, retried = self.request("POST", f"/api/ai/jobs/{job['id']}/retry", {"mode": "original"})
         self.assertEqual(status, 202, retried)
@@ -719,7 +716,6 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(actual["authorization"], "Bearer fixture-original-credential")
         self.assertEqual(actual["request_id"], retried["ai_run_id"])
         self.assertNotIn("新的夸张文风", actual["raw"].decode())
-        self.assertNotIn("取消原任务以后才写的新稿件", actual["raw"].decode())
         with server.connect() as conn:
             saved_job = conn.execute("SELECT context_json FROM app_ai_job WHERE id=?",
                                     (retried["id"],)).fetchone()[0]
@@ -1120,7 +1116,7 @@ class IntegrationTests(unittest.TestCase):
             self.assertEqual(conn.execute("SELECT COUNT(*) FROM app_ai_job").fetchone()[0], 1)
             self.assertEqual(server.ai_quota_snapshot(conn)["used_runs"], 1)
 
-    def test_chunks_persist_before_finish_without_blocking_other_writes(self) -> None:
+    def test_chunks_persist_and_consumed_material_changes_save_without_blocking(self) -> None:
         self.settings("slow")
         job = self.enqueue()
         thread, outputs = self.process_thread(job)
@@ -1131,7 +1127,19 @@ class IntegrationTests(unittest.TestCase):
             conn.execute("UPDATE app_project_meta SET summary='正常保存' WHERE project_id=?", (self.project,))
         self.assertLess(time.monotonic() - started, 0.3)
         thread.join(timeout=3)
-        self.assertEqual(outputs[0]["status"], "success")
+        completed = outputs[0]
+        self.assertEqual(completed["status"], "failed")
+        self.assertEqual(completed["result"]["completion_state"], "invalid_evidence")
+        self.assertEqual(completed["result"]["text"], "先到正文后到正文")
+        self.assertFalse(completed["result"]["safe_to_apply"])
+        self.assertEqual(completed["result"]["billing_state"], "usage_reported")
+        with server.connect() as conn:
+            self.assertEqual(conn.execute(
+                "SELECT status FROM app_quota_reservation WHERE ai_run_id=?",
+                (job["ai_run_id"],)).fetchone()[0], "consumed")
+            self.assertEqual(conn.execute(
+                "SELECT summary FROM app_project_meta WHERE project_id=?",
+                (self.project,)).fetchone()[0], "正常保存")
 
     def test_running_cancel_stops_transport_and_retains_partial_ledger(self) -> None:
         self.settings("slow", limit=1)

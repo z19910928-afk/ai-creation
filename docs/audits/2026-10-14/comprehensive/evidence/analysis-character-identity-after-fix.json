@@ -1,0 +1,250 @@
+{
+  "passed": true,
+  "checks": 8,
+  "cases": [
+    {
+      "name": "test_fresh_character_state_rejects_noncharacter_subject",
+      "passed": true
+    },
+    {
+      "name": "test_fresh_relationship_rejects_noncharacter_subject",
+      "passed": true
+    },
+    {
+      "name": "test_fresh_relationship_rejects_noncharacter_target",
+      "passed": true
+    },
+    {
+      "name": "test_normal_character_state_accepts_and_reuses_current_character",
+      "passed": true
+    },
+    {
+      "name": "test_normal_relationship_accepts_and_reuses_current_characters",
+      "passed": true
+    },
+    {
+      "name": "test_renewed_character_state_rejects_subject_type_change",
+      "passed": true
+    },
+    {
+      "name": "test_renewed_relationship_rejects_subject_type_change",
+      "passed": true
+    },
+    {
+      "name": "test_renewed_relationship_rejects_target_type_change",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-14T18:38:24.372982+00:00",
+  "finished_at": "2026-10-14T18:38:33.338212+00:00",
+  "observations": [
+    {
+      "test": "test_fresh_character_state_rejects_noncharacter_subject",
+      "scenario": "fresh_character_state_subject_noncharacter",
+      "confirm_http_status": 400,
+      "error": "人物状态和人物关系必须对应人物；请到设定中核对角色类型。",
+      "new_analysis_current_at_confirmation": true,
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0,
+      "accepted_candidate_types": null,
+      "expected_rejection": [
+        400,
+        409
+      ]
+    },
+    {
+      "test": "test_fresh_relationship_rejects_noncharacter_subject",
+      "scenario": "fresh_relationship_subject_noncharacter",
+      "confirm_http_status": 400,
+      "error": "人物状态和人物关系必须对应人物；请到设定中核对角色类型。",
+      "new_analysis_current_at_confirmation": true,
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0,
+      "accepted_candidate_types": null,
+      "expected_rejection": [
+        400,
+        409
+      ]
+    },
+    {
+      "test": "test_fresh_relationship_rejects_noncharacter_target",
+      "scenario": "fresh_relationship_target_noncharacter",
+      "confirm_http_status": 400,
+      "error": "人物状态和人物关系必须对应人物；请到设定中核对角色类型。",
+      "new_analysis_current_at_confirmation": true,
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0,
+      "accepted_candidate_types": null,
+      "expected_rejection": [
+        400,
+        409
+      ]
+    },
+    {
+      "test": "test_normal_character_state_accepts_and_reuses_current_character",
+      "scenario": "normal_character_state_control",
+      "first_accept_http_status": 200,
+      "repeated_accept_http_status": 200,
+      "canonical_unchanged": true,
+      "artifact_ids_reused": true,
+      "candidate_types": {
+        "memory_kind": "人物",
+        "subject_kind": "人物"
+      },
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_normal_relationship_accepts_and_reuses_current_characters",
+      "scenario": "normal_relationship_control",
+      "first_accept_http_status": 200,
+      "repeated_accept_http_status": 200,
+      "canonical_unchanged": true,
+      "artifact_ids_reused": true,
+      "candidate_types": {
+        "memory_kind": "人物",
+        "subject_kind": "人物",
+        "target_kind": "人物"
+      },
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_renewed_character_state_rejects_subject_type_change",
+      "scenario": "renewed_identity_changed",
+      "candidate_kind": "character_state",
+      "changed_role": "subject",
+      "distinct_analysis_id": true,
+      "same_candidate_id": true,
+      "stored_candidate_types": {
+        "memory_kind": "人物",
+        "subject_kind": "设定"
+      }
+    },
+    {
+      "test": "test_renewed_character_state_rejects_subject_type_change",
+      "scenario": "renewed_character_state_subject_noncharacter",
+      "confirm_http_status": 409,
+      "error": "人物状态和人物关系必须对应人物；请到设定中核对角色类型。",
+      "new_analysis_current_at_confirmation": true,
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0,
+      "accepted_candidate_types": null,
+      "expected_rejection": [
+        409
+      ]
+    },
+    {
+      "test": "test_renewed_relationship_rejects_subject_type_change",
+      "scenario": "renewed_identity_changed",
+      "candidate_kind": "relationship",
+      "changed_role": "subject",
+      "distinct_analysis_id": true,
+      "same_candidate_id": true,
+      "stored_candidate_types": {
+        "memory_kind": "人物",
+        "subject_kind": "设定",
+        "target_kind": "人物"
+      }
+    },
+    {
+      "test": "test_renewed_relationship_rejects_subject_type_change",
+      "scenario": "renewed_relationship_subject_noncharacter",
+      "confirm_http_status": 409,
+      "error": "人物状态和人物关系必须对应人物；请到设定中核对角色类型。",
+      "new_analysis_current_at_confirmation": true,
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0,
+      "accepted_candidate_types": null,
+      "expected_rejection": [
+        409
+      ]
+    },
+    {
+      "test": "test_renewed_relationship_rejects_target_type_change",
+      "scenario": "renewed_identity_changed",
+      "candidate_kind": "relationship",
+      "changed_role": "target",
+      "distinct_analysis_id": true,
+      "same_candidate_id": true,
+      "stored_candidate_types": {
+        "memory_kind": "人物",
+        "subject_kind": "人物",
+        "target_kind": "设定"
+      }
+    },
+    {
+      "test": "test_renewed_relationship_rejects_target_type_change",
+      "scenario": "renewed_relationship_target_noncharacter",
+      "confirm_http_status": 409,
+      "error": "人物关系的两端必须对应人物；请到设定中核对角色类型。",
+      "new_analysis_current_at_confirmation": true,
+      "database_unchanged": true,
+      "canonical_unchanged": true,
+      "state_unchanged": true,
+      "manuscript_and_all_revisions_unchanged": true,
+      "extra_provider_calls": 0,
+      "accepted_candidate_types": null,
+      "expected_rejection": [
+        409
+      ]
+    }
+  ],
+  "synthetic_only": true,
+  "free_provider_calls": 13,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "ae5752501b72777ae30c57d43040a73505cce6cb4a8d53f19c26a004039ae39d",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_character_identity_http_fixtures.py": "9c78fa0b7e405a4f852bb381696d2c84d8cbfa7b4064f0bc401b16ba73f8cc31"
+  },
+  "source_files_sha256_after": {
+    "server.py": "ae5752501b72777ae30c57d43040a73505cce6cb4a8d53f19c26a004039ae39d",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_context.py": "4a5eff1f5ff0ab17f3bf6ad9ec969c3fdfe7ee81ba88776f2f10d688388941b0",
+    "moyu_materials.py": "ec997c1c2e6e547ec0f533732d41a20023839e360d211ff8221dad144e80b172",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_character_identity_http_fixtures.py": "9c78fa0b7e405a4f852bb381696d2c84d8cbfa7b4064f0bc401b16ba73f8cc31"
+  },
+  "frozen_source_before": "<private-isolated>/source-before",
+  "frozen_source_after": "<private-isolated>/source-after",
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; saved AI jobs; actual loopback HTTP; character identity type validation",
+  "claim_limit": "character state and relationship identity integrity only; no literary-quality or first-tier claim",
+  "archive_provenance": {
+    "private_report_sha256": "c72ec6a0db051a7560e6ca3415dcea476c831e283cc0b0daa299d2645de9ef42",
+    "private_artifacts_retained": true,
+    "local_paths_redacted": true,
+    "original_source_hashes_preserved": true
+  }
+}
