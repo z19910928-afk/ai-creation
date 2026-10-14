@@ -351,6 +351,11 @@ def default_plan() -> dict[str, Any]:
         "arms": [{"id": "baseline", "label": "通用固定材料基线", "source": "plain-context"},
                  {"id": "moyu", "label": "墨屿实际提示", "source": "moyu-prompt"}],
         "candidate_arm": "moyu", "repetitions": 1,
+        # A real paid pilot must not spend the remaining cases after the
+        # first baseline/candidate pair already fails its mechanical gate.
+        # The flag is frozen in the plan so exploratory plans can opt out
+        # explicitly without changing an existing run.
+        "stop_after_first_ineligible_pair": True,
         # The tested endpoint documents ``thinking.type`` as the portable
         # switch. Do not add a second alias to a frozen request: gateways may
         # interpret or reject unknown reasoning parameters differently.
@@ -398,6 +403,8 @@ def validate_plan(plan: dict[str, Any]) -> None:
             raise ValueError("评测次数和输出长度必须为正整数。")
     if not isinstance(plan.get("writer_stream", False), bool):
         raise ValueError("候选分段回复设置必须为开关。")
+    if not isinstance(plan.get("stop_after_first_ineligible_pair", True), bool):
+        raise ValueError("首对候选失败停止设置必须为开关。")
     budget = plan.get("budget", {})
     if isinstance(budget.get("max_requests"), bool) or not isinstance(budget.get("max_requests"), int) or budget["max_requests"] < 1:
         raise ValueError("评测必须设定请求总次数上限。")
@@ -447,6 +454,24 @@ def execution_lock(out: Path) -> Iterator[None]:
         yield
     finally:
         path.unlink(missing_ok=True)
+
+
+def ensure_fresh_evaluation_directory(out: Path) -> None:
+    """Require a new plan to start in an empty, dedicated directory.
+
+    Existing runs are intentionally resumable, but a new plan must never be
+    created beside an old ledger, candidate, or private blind mapping.  An
+    empty directory is still accepted when a caller creates it ahead of time;
+    missing directories are created here.  We reject files as well as hidden
+    entries so a stale lock or editor metadata cannot silently mix runs.
+    """
+    if out.exists():
+        if not out.is_dir():
+            raise ValueError("评测输出路径必须是目录；请为新评测使用独立的空目录。")
+        if any(out.iterdir()):
+            raise ValueError("新评测必须使用独立的空目录；旧评测目录不会被覆盖或混用。")
+        return
+    out.mkdir(parents=True, exist_ok=False)
 
 
 def provider_config(model: str) -> dict[str, Any]:
@@ -800,6 +825,18 @@ def generate(plan: dict[str, Any], plan_path: Path, out: Path, model: str, *,
                 print(json.dumps({"sample": sample_id, "status": record["status"]}, ensure_ascii=False),
                       flush=True)
                 ledger.check_unknown_failures()
+            if plan.get("stop_after_first_ineligible_pair", True):
+                pair_records = [
+                    read_json(out / "samples" / (
+                        f"{case['id']}--{repetition + 1}--{arm['id']}.json"))
+                    for arm in plan["arms"]
+                    if (out / "samples" / (
+                        f"{case['id']}--{repetition + 1}--{arm['id']}.json")).exists()
+                ]
+                if len(pair_records) == len(plan["arms"]) and any(
+                        not sample_validation(case, record)["eligible_for_blind_review"]
+                        for record in pair_records):
+                    return
 
 
 def blind_pairs(plan: dict[str, Any], out: Path) -> dict[str, Any]:
@@ -1641,6 +1678,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
     out = args.output_dir.resolve()
     if args.command == "plan":
+        ensure_fresh_evaluation_directory(out)
         target = args.plan or out / "plan.json"
         if target.exists():
             raise ValueError("方案文件已存在，不会覆盖已固定的题目。")

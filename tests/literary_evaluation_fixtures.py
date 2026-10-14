@@ -186,6 +186,10 @@ class EvaluationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 evaluation.validate_plan(plan)
         plan = copy.deepcopy(self.plan)
+        plan["stop_after_first_ineligible_pair"] = "yes"
+        with self.assertRaises(ValueError):
+            evaluation.validate_plan(plan)
+        plan = copy.deepcopy(self.plan)
         plan["cases"][0]["rules"] = []
         with self.assertRaises(ValueError):
             evaluation.validate_plan(plan)
@@ -232,6 +236,20 @@ class EvaluationTests(unittest.TestCase):
             plan["acceptance"]["minimum_preference_lower_95"] = value
             with self.subTest(value=value), self.assertRaises(ValueError):
                 evaluation.validate_plan(plan)
+
+    def test_new_plan_requires_a_dedicated_empty_output_directory(self) -> None:
+        occupied = self.out / "occupied-run"
+        occupied.mkdir()
+        sentinel = occupied / "request-ledger.json"
+        sentinel.write_text("[]\n", encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "独立的空目录"):
+            evaluation.main(["plan", "--output-dir", str(occupied)])
+        self.assertFalse((occupied / "plan.json").exists())
+        self.assertEqual(sentinel.read_text(encoding="utf-8"), "[]\n")
+
+        fresh = self.out / "fresh-run"
+        self.assertEqual(evaluation.main(["plan", "--output-dir", str(fresh)]), 0)
+        self.assertTrue((fresh / "plan.json").exists())
 
     def test_sample_validation_enforces_absolute_relative_lengths_and_planning_markers(self) -> None:
         self.generated()
@@ -604,6 +622,25 @@ class EvaluationTests(unittest.TestCase):
         self.assertFalse(result["acceptance_gates"]["all_sample_outputs_eligible"])
         self.assertFalse(result["pilot_quality_passed"])
 
+    def test_generation_stops_after_first_ineligible_pair_without_manual_request_cap(self) -> None:
+        def short_response(config, messages, **kwargs):
+            result = self.response(config, messages, **kwargs)
+            result["text"] = "只有一句正文。"
+            return result
+        with patch.object(evaluation, "provider_config", side_effect=self.config_for), \
+                patch.object(evaluation, "call_chat_completion", side_effect=short_response), \
+                contextlib.redirect_stdout(io.StringIO()):
+            evaluation.generate(self.plan, self.plan_path, self.out, "writer-fixture")
+        self.assertEqual(len(self.calls), 2)
+        self.assertEqual(len(evaluation.read_json(self.out / "request-ledger.json")), 2)
+        self.assertEqual(sorted(path.name for path in (self.out / "samples").glob("*.json")),
+                         ["mystery-tide--1--baseline.json", "mystery-tide--1--moyu.json"])
+        evaluation.blind_pairs(self.plan, self.out)
+        report = evaluation.report(self.plan, self.out)
+        self.assertEqual(report["generation"]["recorded_samples"], 2)
+        self.assertFalse(report["acceptance_gates"]["all_sample_outputs_eligible"])
+        self.assertFalse(report["first_tier_proven"])
+
     def test_report_rechecks_tampered_samples_instead_of_trusting_saved_validation(self) -> None:
         self.generated()
         self.graded()
@@ -763,6 +800,16 @@ class EvaluationTests(unittest.TestCase):
                              snapshot["request_sha256"])
         self.assertNotIn(self.config["api_key"], (self.out / "frozen-writer-requests.json").read_text())
         self.assertNotIn(self.config["api_key"], (self.out / "request-ledger.json").read_text())
+
+    def test_all_evaluation_artifacts_redact_provider_credentials(self) -> None:
+        self.generated()
+        self.graded()
+        paths = [path for path in self.out.rglob("*") if path.is_file()]
+        self.assertGreater(len(paths), 0)
+        secret = self.config["api_key"].encode("utf-8")
+        for path in paths:
+            with self.subTest(path=path.relative_to(self.out)):
+                self.assertNotIn(secret, path.read_bytes())
 
     def test_freeze_persists_one_run_identity_and_new_freeze_has_another(self) -> None:
         first = evaluation.freeze_run(self.out, self.plan, "writer-fixture",

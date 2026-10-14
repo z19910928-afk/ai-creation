@@ -176,6 +176,33 @@ def bounded_text(value: Any, limit: int, label: str) -> str:
     return text
 
 
+def aliases_input(value: Any, label: str = "aliases") -> list[str]:
+    """Validate and normalize author-maintained entity aliases.
+
+    Aliases are part of the searchable story vocabulary, so accepting an
+    arbitrary JSON value here would make retrieval behavior non-deterministic
+    and could index unbounded user input.
+    """
+    if value is None:
+        return []
+    if not isinstance(value, (list, tuple)):
+        raise ValueError(f"{label} must be a list")
+    result: list[str] = []
+    seen: set[str] = set()
+    for raw in value:
+        alias = bounded_text(raw, 100, label).strip()
+        if not alias:
+            continue
+        folded = alias.casefold()
+        if folded in seen:
+            continue
+        seen.add(folded)
+        result.append(alias)
+        if len(result) > 20:
+            raise ValueError(f"{label} may contain at most 20 items")
+    return result
+
+
 CONTEXT_PROFILE_DEFAULTS = {
     "max_tokens": 24_000,
     "chapter_top_k": 20,
@@ -2390,6 +2417,44 @@ def _search_excerpt(text: Any, query: str, limit: int = 320) -> str:
     return value
 
 
+def _search_source_range(text: Any, query: str) -> dict[str, Any] | None:
+    """Locate one exact codepoint range supporting a lexical search hit.
+
+    FTS may match a Chinese bigram rather than the complete query string.
+    Prefer the full query and then the longest useful CJK/Latin term so the
+    returned quote always maps back to the exact stored revision.
+    """
+    value = str(text or "")
+    if not value or not str(query or "").strip():
+        return None
+    candidates: list[str] = [str(query).strip()]
+    candidates.extend(
+        sequence for sequence in re.findall(r"[\u4e00-\u9fff]+", str(query))
+        if sequence.strip()
+    )
+    candidates.extend(re.findall(r"[A-Za-z0-9_]{2,}", str(query)))
+    seen: set[str] = set()
+    for candidate in sorted(candidates, key=lambda item: (-len(item), item)):
+        if not candidate or candidate.casefold() in seen:
+            continue
+        seen.add(candidate.casefold())
+        exact = value.find(candidate)
+        if exact < 0:
+            match = re.search(re.escape(candidate), value, flags=re.IGNORECASE)
+            exact = match.start() if match else -1
+            end = match.end() if match else -1
+        else:
+            end = exact + len(candidate)
+        if exact >= 0 and end > exact:
+            return {
+                "start": exact,
+                "end": end,
+                "quote": value[exact:end],
+                "offset_unit": "unicode_codepoint",
+            }
+    return None
+
+
 def _search_grams(text: Any) -> str:
     """Build deterministic CJK bigram/trigram tokens for SQLite FTS5.
 
@@ -2432,11 +2497,21 @@ def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     """Project chapters and story metadata into one searchable local corpus."""
     entities = []
     for row in conn.execute(
-        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description,COALESCE(m.updated_at,'') updated_at "
+        "SELECT e.id,e.kind,e.canonical_name,e.aliases_json,COALESCE(m.description,'') description,COALESCE(m.updated_at,'') updated_at "
         "FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id "
         "WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid", (project_id(),)
     ):
-        entities.append(dict(row))
+        item = dict(row)
+        raw_aliases = _json_object(item.get("aliases_json"), [])
+        if isinstance(raw_aliases, dict):
+            raw_aliases = raw_aliases.get("aliases", [])
+        try:
+            item["aliases"] = aliases_input(raw_aliases)
+        except ValueError:
+            # A malformed legacy card must not take the whole local index
+            # offline; it simply contributes no alias until the author edits it.
+            item["aliases"] = []
+        entities.append(item)
     entity_names = [(item["id"], str(item["canonical_name"] or "")) for item in entities if item.get("canonical_name")]
     documents: list[dict[str, Any]] = []
 
@@ -2472,8 +2547,10 @@ def _search_documents(conn: sqlite3.Connection) -> list[dict[str, Any]]:
             entity_ids=chapter_entity_ids, source_chapter_id=chapter["id"], status=chapter.get("status", ""),
             recency_at=chapter.get("updated", ""), evidence_score=1, evidence="chapter_body")
     for entity in entities:
+        aliases = entity.get("aliases") or []
         put("setting", entity["id"], f"{entity['kind']} · {entity['canonical_name']}", entity.get("description", ""),
-            metadata={"kind": entity["kind"], "name": entity["canonical_name"]}, entity_ids=[entity["id"]],
+            metadata={"kind": entity["kind"], "name": entity["canonical_name"], "aliases": aliases},
+            entity_ids=[entity["id"]],
             recency_at=entity.get("updated_at", ""), evidence_score=1, evidence="entity_card")
     for row in conn.execute(
         "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.entity_id,cm.source_span_id,cm.created_at,ss.document_node_id source_chapter_id,ss.quote source_quote "
@@ -2628,6 +2705,32 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: 
         if filters.get("time_to") and (not event_time or event_time > filters["time_to"]):
             return
         lexical = fts_hits.get(doc_key) or {}
+        source_range = extra.get("source_range")
+        source_ranges = extra.get("source_ranges")
+        source_revision_id = extra.get("source_revision_id")
+        source_quote = extra.get("source_quote")
+        source_hash = extra.get("source_hash")
+        source_body_hash = extra.get("source_body_hash")
+        if source_range is not None and source_ranges is None:
+            source_ranges = [source_range]
+        if source_ranges is not None and not isinstance(source_ranges, list):
+            source_ranges = list(source_ranges)
+        if source_quote is None and isinstance(source_range, dict):
+            source_quote = source_range.get("quote", "")
+        if source_quote and source_hash is None:
+            source_hash = hash_text(str(source_quote))
+        if source_chapter_id and source_revision_id:
+            source_evidence = {
+                "source_chapter_id": source_chapter_id,
+                "source_revision_id": source_revision_id,
+                "source_ranges": source_ranges or [],
+                "source_quote": source_quote or "",
+                "source_hash": source_hash or "",
+                "source_body_hash": source_body_hash or "",
+                "offset_unit": "unicode_codepoint",
+                "status": "valid",
+            }
+            extra.setdefault("source_evidence", source_evidence)
         found.append({
             "type": kind,
             "id": str(item_id),
@@ -2646,19 +2749,33 @@ def search_rows(conn: sqlite3.Connection, query: str, limit: int = 50, filters: 
         })
 
     for chapter in chapter_rows(conn):
+        matched_range = _search_source_range(chapter["body"], needle)
         add("chapter", chapter["id"], chapter["title"], chapter["body"],
             source_chapter_id=chapter["id"], source_chapter_title=chapter["title"],
             score_text=" ".join((chapter.get("chapter_goal", ""), chapter.get("recap", ""), chapter.get("hook", ""))),
-            status=chapter.get("status"), source_range=None)
+            status=chapter.get("status"), source_range=matched_range,
+            source_ranges=[matched_range] if matched_range else [],
+            source_revision_id=chapter.get("revision_id"),
+            source_body_hash=chapter.get("body_hash"),
+            source_quote=matched_range.get("quote") if matched_range else "",
+            source_hash=hash_text(matched_range["quote"]) if matched_range else "")
 
     for row in conn.execute(
-        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description "
+        "SELECT e.id,e.kind,e.canonical_name,e.aliases_json,COALESCE(m.description,'') description "
         "FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id "
         "WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid",
         (project_id(),),
     ):
+        raw_aliases = _json_object(row["aliases_json"], [])
+        if isinstance(raw_aliases, dict):
+            raw_aliases = raw_aliases.get("aliases", [])
+        try:
+            aliases = aliases_input(raw_aliases)
+        except ValueError:
+            aliases = []
         add("setting", row["id"], f"{row['kind']} · {row['canonical_name']}", row["description"],
-            score_text=row["kind"], setting_kind=row["kind"], name=row["canonical_name"])
+            score_text=" ".join([row["kind"], row["canonical_name"], *aliases]),
+            setting_kind=row["kind"], name=row["canonical_name"], aliases=aliases)
 
     memory_rows = conn.execute(
         "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.confidence,cm.source_span_id,"
@@ -3888,14 +4005,22 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
         kind = bounded_text(record.get("type") or "其他", 100, "record type")
         name = bounded_text(record.get("name") or "未命名", 500, "record name")
         description = bounded_text(record.get("description") or "", 20_000, "record description")
-        old = conn.execute("SELECT kind,canonical_name FROM entity WHERE id=? AND project_id=?", (rid, project_id())).fetchone()
+        aliases = aliases_input(record.get("aliases", []))
+        old = conn.execute("SELECT kind,canonical_name,aliases_json FROM entity WHERE id=? AND project_id=?", (rid, project_id())).fetchone()
         if old is None:
-            conn.execute("INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status) VALUES(?,?,?,?,?,?)", (rid, project_id(), kind, name, "[]", "active"))
-            append_event(conn, rid, "entity.created", {"type": kind, "name": name, "description": description})
+            conn.execute("INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status) VALUES(?,?,?,?,?,?)", (rid, project_id(), kind, name, json_text(aliases), "active"))
+            append_event(conn, rid, "entity.created", {"type": kind, "name": name, "aliases": aliases, "description": description})
         else:
-            conn.execute("UPDATE entity SET kind=?,canonical_name=?,status='active' WHERE id=? AND project_id=?", (kind, name, rid, project_id()))
-            if old["kind"] != kind or old["canonical_name"] != name:
-                append_event(conn, rid, "entity.updated", {"type": kind, "name": name, "description": description})
+            previous_aliases = _json_object(old["aliases_json"], [])
+            if isinstance(previous_aliases, dict):
+                previous_aliases = previous_aliases.get("aliases", [])
+            try:
+                previous_aliases = aliases_input(previous_aliases)
+            except ValueError:
+                previous_aliases = []
+            conn.execute("UPDATE entity SET kind=?,canonical_name=?,aliases_json=?,status='active' WHERE id=? AND project_id=?", (kind, name, json_text(aliases), rid, project_id()))
+            if old["kind"] != kind or old["canonical_name"] != name or previous_aliases != aliases:
+                append_event(conn, rid, "entity.updated", {"type": kind, "name": name, "aliases": aliases, "description": description})
         conn.execute("INSERT OR REPLACE INTO app_entity_meta(entity_id,description,updated_at) VALUES(?,?,?)", (rid, description, now()))
     incoming_memory = state.get("memory") or []
     incoming_memory_ids = {str(m.get("id")) for m in incoming_memory if m.get("id")}
@@ -5291,10 +5416,11 @@ class Handler(SimpleHTTPRequestHandler):
                     rid = checked_id(data.get("id") or uid("ent_"), "record id")
                     kind, name = bounded_text(data.get("type") or "其他", 100, "record type"), bounded_text(data.get("name") or "未命名", 500, "record name")
                     description = bounded_text(data.get("description") or "", 20_000, "record description")
-                    conn.execute("INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status) VALUES(?,?,?,?,?,?)", (rid, project_id(), kind, name, "[]", "active"))
+                    aliases = aliases_input(data.get("aliases", []))
+                    conn.execute("INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status) VALUES(?,?,?,?,?,?)", (rid, project_id(), kind, name, json_text(aliases), "active"))
                     conn.execute("INSERT INTO app_entity_meta(entity_id,description,updated_at) VALUES(?,?,?)", (rid, description, now()))
-                    append_event(conn, rid, "entity.created", {"type": kind, "name": name, "description": description})
-                    return self.send_json(201, {"id": rid, "type": kind, "name": name, "description": description})
+                    append_event(conn, rid, "entity.created", {"type": kind, "name": name, "aliases": aliases, "description": description})
+                    return self.send_json(201, {"id": rid, "type": kind, "name": name, "aliases": aliases, "description": description})
                 if parsed.path == "/api/memory":
                     mid = checked_id(data.get("id") or uid("mem_"), "memory id")
                     status = "accepted" if data.get("status") in {"accepted", "已确认"} else "candidate"
@@ -5995,16 +6121,20 @@ class Handler(SimpleHTTPRequestHandler):
                         return self.send_json(404, {"error": "chapter not found"})
                     return self.send_json(200, next(c for c in chapter_rows(conn) if c["id"] == item_id))
                 if parsed.path.startswith("/api/records/"):
-                    row = conn.execute("SELECT e.kind,e.canonical_name,COALESCE(m.description,'') description FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id WHERE e.id=? AND e.project_id=? AND e.status<>'archived'", (item_id, project_id())).fetchone()
+                    row = conn.execute("SELECT e.kind,e.canonical_name,e.aliases_json,COALESCE(m.description,'') description FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id WHERE e.id=? AND e.project_id=? AND e.status<>'archived'", (item_id, project_id())).fetchone()
                     if row is None:
                         return self.send_json(404, {"error": "record not found"})
                     kind, name = bounded_text(data.get("type", row["kind"]), 100, "record type"), bounded_text(data.get("name", row["canonical_name"]), 500, "record name")
                     desc = bounded_text(data.get("description", row["description"]), 20_000, "record description")
-                    old = {"type": row["kind"], "name": row["canonical_name"]}
-                    conn.execute("UPDATE entity SET kind=?,canonical_name=? WHERE id=? AND project_id=?", (kind, name, item_id, project_id()))
+                    raw_aliases = _json_object(row["aliases_json"], [])
+                    if isinstance(raw_aliases, dict):
+                        raw_aliases = raw_aliases.get("aliases", [])
+                    aliases = aliases_input(data["aliases"]) if "aliases" in data else aliases_input(raw_aliases)
+                    old = {"type": row["kind"], "name": row["canonical_name"], "aliases": aliases_input(raw_aliases)}
+                    conn.execute("UPDATE entity SET kind=?,canonical_name=?,aliases_json=? WHERE id=? AND project_id=?", (kind, name, json_text(aliases), item_id, project_id()))
                     conn.execute("INSERT OR REPLACE INTO app_entity_meta(entity_id,description,updated_at) VALUES(?,?,?)", (item_id, desc, now()))
-                    append_event(conn, item_id, "entity.updated", {"before": old, "type": kind, "name": name, "description": desc})
-                    return self.send_json(200, {"id": item_id, "type": kind, "name": name, "description": desc})
+                    append_event(conn, item_id, "entity.updated", {"before": old, "type": kind, "name": name, "aliases": aliases, "description": desc})
+                    return self.send_json(200, {"id": item_id, "type": kind, "name": name, "aliases": aliases, "description": desc})
                 if parsed.path.startswith("/api/memory/"):
                     row = conn.execute("SELECT kind,payload_json,status,confidence,source_span_id,entity_id FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?", (item_id, project_id(), branch_id())).fetchone()
                     if row is None:

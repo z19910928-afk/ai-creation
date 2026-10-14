@@ -4,7 +4,7 @@
 
 最新[候选整理电脑端完整快照](evidence/compatibility-python311-node24-candidate-revision-final.json)于上海时间2026-10-14 02:03:08至02:06:19通过51个执行项、36份Python测试、8项JavaScript语法与55个电脑浏览器场景；66份源码前后相同，13份附件指纹核验。候选整理19项、正文HTTP15项、20轮连续写作与五章10次专用候选检查均实际执行，只使用临时数据库和免费本机模拟提供方。随后修复检查服务启动等待并以提交 `89ab69d4fd62f3561831b747da2c7b111f829132` 上传；[GitHub Actions 运行38447803077](evidence/github-actions-candidate-revision-ci-fix-success.json)已于上海时间2026-10-14 02:34:09至02:38:17成功。
 
-历史[Python 3.11 / Node 24电脑端交付快照](evidence/compatibility-python311-node24-desktop-release-final.json)于上海时间2026-10-14 00:11:10至00:13:55完整执行50个检查项、35份Python测试、8项JavaScript语法和49个浏览器场景，全部通过且64份源码前后相同。提供方45项、队列54项、文学工具62项、输出34项、编辑器12项，连续20轮写作和五章10次专用候选检查在该次实际执行。历史Node 20、`desktop-flow-baseline` 和 `usage-ui-final` 只证明各自当时快照；手机记录保留为历史补充，当前验收仅电脑端。工程历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传分支 `codex/full-function-audit`，[GitHub增强运行38434003558](evidence/github-actions-desktop-release-success.json)于上海时间00:52:11至00:56:02成功；上述历史成功不覆盖本次候选整理改动。[整理中间检查](evidence/compatibility-python311-node24-candidate-revision-release.json)因三组浏览器启动失败和源码变化未通过，随后新完整快照通过，两份原件分别保留。分支尚未合并 `main`；历史本机健康与真实编辑器启动正常，作品保存于不上传的本机数据库。
+历史[Python 3.11 / Node 24电脑端交付快照](evidence/compatibility-python311-node24-desktop-release-final.json)于上海时间2026-10-14 00:11:10至00:13:55完整执行50个检查项、35份Python测试、8项JavaScript语法和49个浏览器场景，全部通过且64份源码前后相同。提供方45项、队列54项、文学工具62项、输出34项、编辑器12项，连续20轮写作和五章10次专用候选检查在该次实际执行。历史Node 20、`desktop-flow-baseline` 和`usage-ui-final` 只证明各自当时快照；手机记录保留为历史补充，当前验收仅电脑端。工程历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 的运行38434003558、候选整理提交 `89ab69d4fd62f3561831b747da2c7b111f829132` 的运行38447803077均成功；当前提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 也已通过[GitHub运行38487730352](evidence/github-actions-current-success.json)，三份记录分别保留。上述远程检查均是工程回归，不是文学效果验收。[整理中间检查](evidence/compatibility-python311-node24-candidate-revision-release.json)因三组浏览器启动失败和源码变化未通过，随后新完整快照通过，两份原件分别保留。分支尚未合并 `main`；历史本机健康与真实编辑器启动正常，作品保存于不上传的本机数据库。
 
 第四至第十二轮真实文学诊断仍没有有效对照；第五/六/十轮只有基线合格，其余有超长、思考、截断或空正文。[第十二轮](literary-pilot-v12/report.md)首对基线942字、墨屿868字均超600至850字，输出合格0/6、有效评审0/12、题材3/1/0/0，未扩其余两题、未发盲评。相比第十一轮只改墨屿系统中的一条收束要求，基线请求、作者要求、材料与参数保持相同，不能凭单对差异宣称文学改善。截至该轮，含协议诊断累计31条请求预留、49642个可信完整tokens与已知下界，仍有10条缺少完整用量，实际金额未知。
 
@@ -55,7 +55,7 @@
 - **R**：[实际 HTTP 与发送材料检索结果](evidence/context-provider-recall-actual.json)，合成 30/100/300 章，每规模五条标注查询，捕获最终发送材料。
 - **P**：[规划工作流](../../../tests/planning_workflow_fixtures.py)、[真实本机 HTTP](../../../tests/planning_http_fixtures.py)和[规划备份恢复](../../../tests/planning_backup_fixtures.py)，在 D 的指定快照中完整通过。
 - **D**：[Python 3.11 / Node 24电脑端交付快照](evidence/compatibility-python311-node24-desktop-release-final.json)，50个执行项，含35份Python测试和8项JavaScript语法；[基础浏览器37场景](evidence/browser-python311-node24-desktop-release-final.json)、[规划保稿5场景](evidence/planning-browser-python311-node24-desktop-release-final.json)和[五章作者7场景](evidence/desktop-author-flow-python311-node24-desktop-release-final.json)，合计49个场景，另含连续20轮写作和五章10次专用候选检查。64份源码前后相同，附件实际路径可直接读取；更早[作者链基线](evidence/compatibility-python311-node24-desktop-flow-baseline.json)和[用量与候选快照](evidence/compatibility-python311-node24-usage-ui-final.json)保留历史原字节，未来修复须单独复验。
-- **G**：[历史GitHub增强检查成功记录](evidence/github-actions-desktop-release-success.json)，提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886`，分支 `codex/full-function-audit`，运行 `38434003558`。Linux远程检查的语法、全部Python契约测试、固定评测、编辑器12项和基础37/规划5/五章7浏览器场景成功；模型仍为免费本机模拟，不是文学成绩或公网部署，也不覆盖本次候选整理。
+- **G**：[当前GitHub检查成功记录](evidence/github-actions-current-success.json)绑定提交 `3e64501b759092cac6fe39805330f71a5f86f8e6`、分支 `codex/full-function-audit`、运行 `38487730352`；`checks` 作业及语法、契约/固定评测、编辑器合并、基础/规划/模型设置/五章电脑回归步骤全部成功。历史提交运行 `38434003558`、`38447803077` 另有记录；这些Linux远程检查仍使用免费本机模拟，不是文学成绩或公网部署。
 - **L**：[真实模型执行方式与边界](../../evaluations/README.md)、[第三轮基线响应](literary-pilot-v3/samples/mystery-tide--1--baseline.json)和[墨屿响应](literary-pilot-v3/samples/mystery-tide--1--moyu.json)，以及[第四轮](literary-pilot-v4/report.md)、[第五轮](literary-pilot-v5/report.md)、[第六轮](literary-pilot-v6/report.md)、[第七轮](literary-pilot-v7/report.md)、[第八轮](literary-pilot-v8/report.md)、[第九轮](literary-pilot-v9/report.md)、[第十轮](literary-pilot-v10/report.md)、[第十一轮](literary-pilot-v11/report.md)和[第十二轮](literary-pilot-v12/report.md)。第五/六/十轮只有基线合格；第七至第九轮为模型兼容诊断。第十一轮1133/965字与第十二轮942/868字均超原字数门，两轮均输出0/6、有效评审0/12、题材3/1/0/0，仅实际执行首题，不代表三题材完成。第十二轮每个对照完成评审的独立故事为0/30。全部无有效盲评，实际金额未知。
 - **V**：[原候选整理失败诊断](literary-revision-v1/diagnosis.md)，同一故事父稿保留、双方各追加一次整理，两份均1字、整理输出0/2，未修复首稿、未盲评、未增加独立故事；新增9487 tokens，当前累计33条请求/59129个可信完整tokens及已知下界/10条缺完整用量。不是文学、事实安全或效率通过证据。
 - **F**：[最新候选整理完整快照](evidence/compatibility-python311-node24-candidate-revision-final.json)，51项检查、36份Python测试、8项JavaScript语法，66份源码前后相同；[基础浏览器43场景](evidence/browser-python311-node24-candidate-revision-final.json)、[规划5场景](evidence/planning-browser-python311-node24-candidate-revision-final.json)、[五章7场景](evidence/desktop-author-flow-python311-node24-candidate-revision-final.json)，合计55个电脑场景。包含整理19项、正文HTTP15项、20轮与五章10次检查；13份附件指纹核验，免费本机模拟，不是新远程或文学结论。
@@ -81,8 +81,8 @@
 | W17 旧书与参考库 | TXT/MD/EPUB解析、编码、分章拆合/改名、原始字节、来源检索和独立稿件导入；C/B 验证错误包/回滚与参考范围 | 第三方EPUB版式/字体/图片有明确损失；原稿32MB/2000章、EPUB展开128MB边界仍应按实际规模验收 |
 | W18 出版交付 | MD/EPUB内嵌原稿指纹，实际HTTP导出→解析→导入正文与标题一致；D真实页面完稿、刷新持久、禁止继续归档建章，下载MD/EPUB逐字核对五章标题/正文、原稿字节指纹、EPUB阅读顺序，空白交接章不进入出版文件 | DOCX/PDF未实现；正文精确回读不等于完整格式往返；出版原稿16MB上限需分卷，不等于平台正式发布 |
 | W19 自然语言助手 | 有限关键词意图、只读检索、7种任务注册、签名预览、稿件指纹、30分钟过期与确认后建候选；C/B 验证跨书拒绝和重复确认 | 不是开放式自主工具代理；重启后预览需重做，正文/正典仍由独立确认路径修改 |
-| W20 真实验收 | F最新电脑端51项/55场景通过，66份源码前后相同，13附件核验；候选整理19项与正文HTTP15项实际执行。提交 `89ab69d` 的 GitHub Actions 运行38447803077也已成功，C/B/R/D历史证据保留 | 原失败基线不能作为当前结论；中间51项失败原件保留。远程工程通过不代表文学或公网生产 |
-| W21 同条件盲评 | 固定方案、冻结请求、次数/用量停止条件、保守费用账本、匿名双顺序和至少两个不同实际评审模型工具已实现，D复验文学工具62项。每个对照仅计入双方合格且两个实际模型双顺序均完成的故事，门槛各30。L第十二轮保留3/1/0/0题材、0/6输出、0/12评审、对照0/30故事；V同一故事追加整理0/2、无盲评或新增故事，累计33/59129/10 | 第五/六/十轮只有基线合格，尚无完整有效对照或盲评；整理没有修复首稿。文学质量、事实安全、作者效率、七竞品实跑和第一梯队未证明；计划、单份合格或生成30题不能代替各对照30个完整评审故事，实际金额未知 |
+| W20 真实验收 | F最新电脑端51项/55场景通过，66份源码前后相同，13附件核验；候选整理19项与正文HTTP15项实际执行。当前提交 `3e64501` 的 GitHub Actions 运行38487730352也已成功，历史运行和C/B/R/D证据保留 | 原失败基线不能作为当前结论；中间51项失败原件保留。远程工程通过不代表文学或公网生产 |
+| W21 同条件盲评 | 固定方案、冻结请求、次数/用量停止条件、保守费用账本、匿名双顺序和至少两个不同实际评审模型工具已实现，D复验文学工具62项。每个对照仅计入双方合格且两个实际模型双顺序均完成的故事，门槛各30。L第十二轮保留3/1/0/0题材、0/6输出、0/12评审、对照0/30故事；V同一故事追加整理0/2、无盲评或新增故事；v24基线/墨屿1000/879字、0/12输出、0/24盲评，累计57/104029/10 | 第五/六/十轮只有基线合格，v24虽完整返回但双方均超字数门，尚无完整有效对照或盲评；整理没有修复首稿。文学质量、事实安全、作者效率、七竞品实跑和第一梯队未证明；计划、单份合格或生成30题不能代替各对照30个完整评审故事，实际金额未知 |
 
 ## 依赖与实施批次
 
@@ -133,7 +133,7 @@
 
 本轮没有需要作者执行的技术步骤。实现者继续完成修复、离线/模拟验证及已授权的真实文学评测，保留失败与费用未知账本，不能通过删除旧运行或换目录重置已发生的请求计数。用户已授权的操作不重复索要技术确认。
 
-历史工程源码已上传 `codex/full-function-audit`，精确提交 `eaca358` 的增强GitHub检查已成功；候选整理修复后的提交 `89ab69d` 也已通过运行38447803077，记录见[evidence](evidence/github-actions-candidate-revision-ci-fix-success.json)。分支尚未合并main，正式对外发布与生产验收仍为不同步骤。文学诊断尚不合格，整理也没有修复首稿，不能由源码上传或工程检查通过写成文学通过。多人/云端使用、旧稿覆盖或删除等新增业务或不可撤销动作需按实际授权处理；不要求作者选择框架、数据库或执行开发命令。
+历史工程源码已上传 `codex/full-function-audit`，精确提交 `eaca358` 的增强检查、候选整理修复后的提交 `89ab69d` 的运行38447803077以及当前提交 `3e64501` 的运行38487730352均已成功，当前记录见[evidence](evidence/github-actions-current-success.json)。分支尚未合并main，正式对外发布与生产验收仍为不同步骤。文学诊断尚不合格，整理也没有修复首稿，不能由源码上传或工程检查通过写成文学通过。多人/云端使用、旧稿覆盖或删除等新增业务或不可撤销动作需按实际授权处理；不要求作者选择框架、数据库或执行开发命令。
 
 ## 最新真实诊断
 
@@ -142,3 +142,5 @@
 随后仅合并同一冻结请求的两个相邻 `user` 消息并执行一次非流式请求；结果仍为“铁”1字和5621字符非空 `reasoning_content`，第二阶段未执行。当前累计35条预留、68623个可信完整tokens，仍有10条缺完整用量，费用未知；[消息边界诊断报告](literary-message-shape-v1/report.md)只支持异常复现，不能支持文学质量或第一梯队结论。
 
 远程检查首次失败是 `ai_contract_fixtures.py` 在Linux运行器中健康等待窗口过短，修复为最多10秒并保留提前退出日志；本机修复后[新快照](evidence/compatibility-python311-node24-candidate-revision-ci-fix.json)再次通过51项和55个电脑场景。该测试修复不改变真实模型结果、费用账本或第一梯队门槛。
+
+随后 v24 在全新的独立评测目录中按当前冻结提示实际发送一对 `MiniMax-M3` 非流式请求，使用 `https://api.icodexs.com/v1`；基线1000字、墨屿879字，均返回完整 `stop`、完整用量，且关闭思考后没有非空思考字段，但两份都超过600至850字硬门，输出合格0/12、盲评0/24。默认首对失败保护因此停止其余题目，没有继续消耗同一方案的付费请求。v24新增3012个可信完整tokens；全目录账本复核为57条请求、104029个已知tokens、10条用量未知，实际金额仍未知。该轮证明新提示已到达真实接口并改善了协议一致性，却没有解决输出收束，不能支持文学质量或第一梯队结论；原始请求与候选在[literary-pilot-v24-live-probe](../../2026-10-14/literary-pilot-v24-live-probe/)保留，私有密钥和匿名映射不纳入版本库。

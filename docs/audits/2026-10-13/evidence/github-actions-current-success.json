@@ -1,0 +1,47 @@
+{
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "branch": "codex/full-function-audit",
+  "commit": "3e64501b759092cac6fe39805330f71a5f86f8e6",
+  "workflow": "墨屿检查",
+  "run_id": 38487730352,
+  "url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/38487730352",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at_utc": "2026-10-14T00:01:24Z",
+  "completed_at_utc": "2026-10-14T00:06:35Z",
+  "run_attempt": 1,
+  "jobs": [
+    {
+      "id": 115605308985,
+      "name": "checks",
+      "status": "completed",
+      "conclusion": "success",
+      "steps": [
+        "Syntax checks",
+        "Contract fixtures",
+        "Evaluation fixtures",
+        "Editor merge regressions",
+        "Install browser regression runtime",
+        "Real browser regressions",
+        "Planning browser regressions",
+        "Model settings browser regressions",
+        "Five chapter author flow"
+      ]
+    }
+  ],
+  "scope": [
+    "Python 3.11 syntax and repository fixture checks",
+    "Node 24 JavaScript syntax",
+    "fixed evaluation runner",
+    "editor merge regressions",
+    "desktop browser regressions",
+    "desktop planning browser regressions",
+    "desktop model-settings browser regressions",
+    "five-chapter desktop author flow"
+  ],
+  "limitations": [
+    "The workflow uses offline fixtures and free local simulated providers.",
+    "This does not prove first-tier literary quality, factual safety, author efficiency, supplier cost, or public deployment.",
+    "The run had no downloadable artifacts; the job and step conclusions are the authoritative remote result."
+  ]
+}

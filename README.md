@@ -14,9 +14,9 @@
 
 随后四轮新的电脑端 MiniMax-M3 探针继续验证输出协议：v14 第一条基线为1197字且有非空思考字段；v15 两条为1327/1201字；v16 在 `max_tokens=900` 下为783/1114字；v17 在 `max_tokens=560` 下为825字截断/859字完整超限。四轮新增7条请求、10954个可信完整 tokens，截至v17累计44条请求预留、84072个可信完整 tokens；没有一轮形成双方合格候选或盲评，第一梯队仍未证明。评测说明见[最新真实探针记录](docs/evaluations/README.md)。
 
-随后 v18-v23 又进行了六轮只做电脑端的首题参数探针：v18（520 tokens）两份均截断；v19（560 tokens、目标约620字）墨屿762字完整但基线截断；v20（600 tokens）两份超限；v21（580 tokens、温度0.3）基线841字合格但墨屿截断超限；v22（580 tokens、目标约600字）两份截断超限；v23（560 tokens、温度0.3）两份均截断。新增12条请求、17080个可信完整 tokens，截至v23累计56条请求预留、101152个可信完整 tokens；仍未形成双方合格候选、盲评或第一梯队证据。每轮完整账本与报告见[文学评测记录](docs/evaluations/README.md)。
+随后 v18-v23 又进行了六轮只做电脑端的首题参数探针：v18（520 tokens）两份均截断；v19（560 tokens、目标约620字）墨屿762字完整但基线截断；v20（600 tokens）两份超限；v21（580 tokens、温度0.3）基线841字合格但墨屿截断超限；v22（580 tokens、目标约600字）两份截断超限；v23（560 tokens、温度0.3）两份均截断。按原始账本复核，v23 前累计55条请求预留、101017个已知 tokens；仍未形成双方合格候选、盲评或第一梯队证据。每轮完整账本与报告见[文学评测记录](docs/evaluations/README.md)。
 
-随后产品提示新增“达到目标字数附近立即收束”的短篇续写要求；v14-v23 的冻结请求没有这条新提示，因此旧探针不能证明该修复已被真实接口验证。目前只有离线契约测试和本机提示预览证据，尚未用新的真实付费请求验证。
+随后产品提示新增“达到目标字数附近立即收束”的短篇续写要求。新的[v24 电脑端真实探针](docs/audits/2026-10-14/literary-pilot-v24-live-probe/report.md)在同一新冻结方案中实际发送两条非流式请求：基线1000字、墨屿879字，均为完整 `stop`、关闭思考且无非空思考字段，但都超过600至850字硬门；因此输出合格0/12、盲评0/24，按首对失败保护停止后续请求。v24 新增3012个可信完整 tokens；全目录账本复核为57条请求、104029个已知 tokens、10条用量未知，实际金额仍未知。新提示已完成真实验证但没有修复输出收束，第一梯队仍未证明。
 
 后续[原候选整理诊断](docs/audits/2026-10-13/literary-revision-v1/diagnosis.md)为这两份失败首稿各追加一次整理，完整保留父稿并沿用相同冻结模型、参数、3000 tokens输出上限和600至850字要求。两份回复均为“铁”1字，均返回 `glm-5.1`、`stop`、完整协议，整理输出合格0/2；没有修复首稿，没有新增独立故事或发送盲评。新增4740和4747、合计9487 tokens，当前累计33条请求预留、59129个可信完整tokens与已知下界，仍有10条缺完整用量、实际金额未知。文学质量、事实安全、作者效率和第一梯队均未证明。
 
@@ -24,7 +24,7 @@
 
 随后[相邻用户消息合并诊断](docs/audits/2026-10-13/literary-message-shape-v1/report.md)只把同一固定输入的两条相邻 `user` 消息合并为两个换行，实际执行第一阶段非流式请求一次。接口仍返回正文“铁”1字，并在关闭思考时返回非空 `reasoning_content`（计数1次、字符数5621）；HTTP 200、模型名、`stop` 和用量4747 tokens完整，但字数与思考一致性闸门失败，第二阶段未执行、没有重试或盲评。累计35条请求预留、68623个可信完整tokens及已知下界，仍有10条缺完整用量，费用未知；消息边界变化未消除异常，文学质量、事实安全、作者效率和第一梯队仍未证明。
 
-工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`。增强版GitHub Actions（GitHub自动运行的检查）运行 `38434003558` 于上海时间2026-10-14 00:52:11至00:56:02实际完成并成功，语法、全部Python契约测试、固定评测、12项编辑器合并、37个基础浏览器、5个规划和7个五章作者场景均通过，见[远程成功记录](docs/audits/2026-10-13/evidence/github-actions-desktop-release-success.json)。这项结果只对应上述提交，不覆盖本次候选整理改动；历史基线 `62f1c66` 的成功记录仍只覆盖其旧配置。本次[中间检查](docs/audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)因源码变化和浏览器启动失败未通过，随后独立的 `candidate-revision-final` 完整复验通过；新源码尚未记录对应上传和远程结果。分支尚未合并至 `main`，没有公网部署验收结论。修复和剩余验收见[路线图](docs/audits/2026-10-13/roadmap.md)，原始失败与当前入口见[审查报告](docs/audits/2026-10-13/README.md)。
+工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`。历史增强版运行 `38434003558` 和候选整理提交运行 `38447803077` 均成功；最新提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 也已上传同一分支，GitHub Actions（GitHub自动运行的检查）运行 `38487730352` 于 UTC 2026-10-14 00:01:24 至 00:06:35 完成并成功，`checks` 作业的语法、契约与固定评测、编辑器合并、基础/规划/模型设置/五章电脑端回归步骤全部成功，见[当前远程成功记录](docs/audits/2026-10-13/evidence/github-actions-current-success.json)。这项远程工程结果仍只证明当前提交的自动检查，不证明文学质量、第一梯队、费用或公网部署；历史基线和中间失败原件继续保留。分支尚未合并至 `main`，没有公网部署验收结论。修复和剩余验收见[路线图](docs/audits/2026-10-13/roadmap.md)，原始失败与当前入口见[审查报告](docs/audits/2026-10-13/README.md)。
 
 ## 运行
 
@@ -214,7 +214,7 @@ node tests/planning_browser_regressions.cjs
 node tests/desktop_author_flow_regressions.cjs
 ```
 
-浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。检查配置存在和本机通过不能替代实际远程执行；本轮已另有对应提交 `eaca358` 的[GitHub成功记录](docs/audits/2026-10-13/evidence/github-actions-desktop-release-success.json)，后续源码变动应重新运行。
+浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。检查配置存在和本机通过不能替代实际远程执行；当前提交的[GitHub成功记录](docs/audits/2026-10-13/evidence/github-actions-current-success.json)已核对，后续源码变动仍应重新运行。
 
 ## 备份、恢复与导入
 
