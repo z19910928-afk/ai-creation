@@ -10,11 +10,17 @@
 
 墨屿审查起点为 `64fe155387e0a3c2d902b60a2d82822f2457af0d`，同时存在备份恢复与完整字符名称处理的未提交修复。本文新增复现固定在 `2026-10-14T14:47:09Z` 的 `server.py` 与 `moyu_context.py` 指纹；主流程随后开始修复设定范围，不得把本报告的修前失败当成修后结论。
 
-Arboris 的创意对话、可编辑蓝图、三种方向候选和定向润色确有作者入口。墨屿现在已有书架、四阶段规划、卷章场景、选区差异、任务中心、章后提取、逐项确认、伏笔证据、语义审稿和完整恢复，不能重复写成全部缺失。修前新复现的问题是：**设定范围能在内存过滤，却无法通过真实保存回读保留；未来和反派独知资料因此进入早章材料。**随后已实施范围持久化，[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的23项隔离HTTP通过。后续范围变更、嵌套归属、材料与章序依赖也已取得独立专项结果，见[依赖保护索引](../evidence/README.md#范围材料与历史结果依赖)；当前完整结果使用下述85项整轮。
+Arboris 的创意对话、可编辑蓝图、三种方向候选和定向润色确有作者入口。墨屿现在已有书架、四阶段规划、卷章场景、选区差异、任务中心、章后提取、逐项确认、伏笔证据、语义审稿和完整恢复，不能重复写成全部缺失。修前新复现的问题是：**设定范围能在内存过滤，却无法通过真实保存回读保留；未来和反派独知资料因此进入早章材料。**随后已实施范围持久化，[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的23项隔离HTTP通过。后续范围变更、嵌套归属、材料与章序依赖也已取得独立专项结果，见[依赖保护索引](../evidence/README.md#范围材料与历史结果依赖)；该阶段完整结果为下述历史85项整轮。
 
 规划的读者、创作约定、卷概要未进入普通正文任务也是修前缺陷，现已实施有界指南；[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的指南HTTP10项验证预览与发送一致、计划与事实分开及超预算拒绝。结构化人物字段、创意多轮讨论、多候选比较与便捷润色维度仍是待实施体验项。文学、长篇收益和第一梯队地位仍未证明。
 
-最新[指南与确认完整性整轮](../evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)在上海2026-10-15 02:39:43至02:46:58完成85项全部通过，95份来源前后相同，10组真实电脑浏览器125场景，11份JSON及32张截图共43份附件SHA一致。本报告独立读取及重算指纹；包含范围保存、材料消费、冻结请求、指南及人物身份保护，源码推送、远程检查、真实服务和文学效果仍分别验收。
+历史[指南与确认完整性整轮](../evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)在上海2026-10-15 02:39:43至02:46:58完成85项全部通过，95份来源前后相同，10组真实电脑浏览器125场景，11份JSON及32张截图共43份附件SHA一致。本报告当时独立读取及重算指纹；原文件不改，只覆盖该版本范围保存、材料消费、冻结请求、指南及人物身份保护，不能覆盖之后参考包、远程或实际服务。
+
+2026-10-15续修新增显式参考原句，和当前人物知情事实分区：作者手选一段900完整字符以内的原句，只用于本次续写/润色；服务端重读当前书/分支、范围及三hash，预览与真实发送共用材料，必保超容量先拒绝。参考只供写作技法，不用于章后事实分析；已消费来源变化或冻结材料/审计损坏时旧发送、重试、整理和采纳均拒绝。独立完整性13方法/15场景、3次免费，以及真实电脑15场景/5次免费通过，收费0，见[参考证据](../evidence/README.md#显式参考原句与冻结请求完整性)。这些保护不能证明真实模型不会误用参考或文学领先。
+
+修后[参考包完整复验](../evidence/compatibility-python311-node24-reference-passages-integrity-refined-release-20261015.json)于上海2026-10-15 03:57:31至04:05:50完成，89项全部通过，11套浏览器140个电脑场景，98份来源不变；14份JSON与36张截图共50份附件指纹一致。文档续核独立读取最终报告并重算来源与附件SHA，没有重跑浏览器；首次87/89的失败报告保留，新GitHub与实际服务更新仍待验，收费0，不扩成文学或第一梯队成绩。
+
+主流程另完成[实际服务独立链](../evidence/local-service-reconciled-20261015.md)，对应 `3a369807252e5dcda9ce5bda039d169744fedee5`：首次失败保留，64张原表全内容/结构一致，7张搜索衍生表修复，两个尺寸8个只读场景通过、0模型。该提交GitHub运行 `38620315120` 为failure，1280布局超0.359375像素、后4项跳过；参考包自己的远程与实际服务验收尚待核验，不把别人的服务操作说成本专项执行。
 
 证据记号：R 为本次实际执行；E 为源码链；D 为声明；U 为未测。组件 R 只证明其原函数行为；本轮未完整启动上游应用，不能记上游整机通过。
 
@@ -37,9 +43,9 @@ Arboris 的创意对话、可编辑蓝图、三种方向候选和定向润色确
 | 审稿与定向润色 | E：`ChapterContent.vue:322,346` 有对话/环境/心理/节奏优化、预览和应用；`six_dimension_review_service.py:145` 失败默认80/各维100，且普通页面不调用该六维入口 | E：墨屿有证据绑定的语义审稿、处理记录和选区润色；缺少便捷的维度选择及正式审稿准确率成绩。无需模仿失败高分 |
 | 连续创作与任务控制 | E：Arboris 普通 UI `api/novel.ts:224-249` 等完整 JSON，多版本顺序生成；未见同路径持久队列/断线续片/取消 | E：墨屿任务中心、逐片落盘、取消、未知不重发、刷新恢复和只读中断片段已经实现。真实服务取消计费仍 U |
 | 模型与风格 | E：Arboris 个人 LLM 设置页及实际调用读用户配置存在；其用户密钥持久化数据库，不可用 README 的 env 描述替代隐私结论 | E：墨屿模型设置、用途模型、温度、长度、额度、私有凭据及掩码已完成。模板分类/变量/版本仍是后续项，真实文学仍失败 |
-| 多作品与恢复 | E：Arboris 有书架、用户所有权；重生成删旧候选，未见完整项目恢复作者链 | E：墨屿书架、作品隔离、完整 ZIP、独立副本恢复、历史候选只读已有真实测试；长名称、恢复与只读重开已随当前85项整轮重新验证，旧[中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)保留 |
+| 多作品与恢复 | E：Arboris 有书架、用户所有权；重生成删旧候选，未见完整项目恢复作者链 | E：墨屿书架、作品隔离、完整 ZIP、独立副本恢复、历史候选只读已有真实测试；长名称、恢复与只读重开随历史85项及上文新89项整轮验证，旧[中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)保留 |
 | 导入与出版 | E：Arboris TXT 导入逐项 commit、依赖模型解析；`ChapterContent.vue:295` 有单章 TXT 导出 | E：墨屿已有 TXT/MD/EPUB 预览、独立参考库、原子稿件导入、MD/EPUB 出版往返。DOCX/PDF、自动定时备份未实现，需按作者真实需求排期 |
-| 工程与效果证明 | U：本轮未运行上游整机、真实向量或模型文学比较；部署与健康文件只能作 E | 墨屿当前85项整轮覆盖最新指南与确认完整性修复，使用免费工程样本；旧[中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)及文学对照失败保留。七项目源码审查与工程通过不能证明文学第一梯队 |
+| 工程与效果证明 | U：本轮未运行上游整机、真实向量或模型文学比较；部署与健康文件只能作 E | 墨屿历史85项整轮覆盖当时指南与确认完整性修复，参考新包另验；旧[中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)及文学对照失败保留。七项目源码审查与工程通过不能证明文学第一梯队 |
 
 ## 本轮新问题：设定范围保存丢失
 
@@ -60,7 +66,7 @@ Arboris 的创意对话、可编辑蓝图、三种方向候选和定向润色确
 
 [材料修后77项整轮](../evidence/compatibility-python311-node24-materials-comprehensive-refined-release.json)后来取得122个电脑场景和40附件一致，仍在后续发现保存报告的指南依赖遗漏：只改故事前提或创作约定、不重建章节，旧章后分析仍可确认，缺指南审稿与旧说明未失效。[章后12项首修后](../evidence/analysis-guidance-after-fix.json)、[审稿11项首修后](../evidence/review-guidance-after-fix.json)分别通过，完整原来源保存，正常自身确认单独更新决定指南，外部变动先拒绝；旧审稿免费说明始终绑定当前指南，蓝图再变重新阻断。阶段计数、原件与旧测试前提纠正在[指南索引](../evidence/README.md#保存报告的创作指南依赖)记录，77项不代表这些新源码的最终验收。
 
-[部分来源修前8项](../evidence/analysis-partial-source-before-fix.json)继续得到6个失败测试组、2个通过，合成报告无实际run但保留部分私有来源仍误放行；[冻结同8项修后](../evidence/analysis-partial-source-after-fix.json)全通过，0请求、0收费、11份来源不变。原材料和指南必须完整，孤立/空决定来源不替代原凭据，仅指南旧说明随人物description改变也重新失效。[人物身份8项修前](../evidence/analysis-character-identity-before-fix.json)另有6项误200、2正常控制通过；[同8项修后](../evidence/analysis-character-identity-after-fix.json)全通过，前后各13次免费、0收费。人物状态主体及关系两端都须当前人物，首次非人物400、已确认后改类型的新报告409，均全库不变；正常人物的首次确认与新报告复用仍200。人物字段数量不能替代稳定类型与真实消费边界，这些脚本均已纳入当前85项整轮。
+[部分来源修前8项](../evidence/analysis-partial-source-before-fix.json)继续得到6个失败测试组、2个通过，合成报告无实际run但保留部分私有来源仍误放行；[冻结同8项修后](../evidence/analysis-partial-source-after-fix.json)全通过，0请求、0收费、11份来源不变。原材料和指南必须完整，孤立/空决定来源不替代原凭据，仅指南旧说明随人物description改变也重新失效。[人物身份8项修前](../evidence/analysis-character-identity-before-fix.json)另有6项误200、2正常控制通过；[同8项修后](../evidence/analysis-character-identity-after-fix.json)全通过，前后各13次免费、0收费。人物状态主体及关系两端都须当前人物，首次非人物400、已确认后改类型的新报告409，均全库不变；正常人物的首次确认与新报告复用仍200。人物字段数量不能替代稳定类型与真实消费边界，这些脚本均已纳入历史85项整轮。
 
 [跨报告复用同7项](../evidence/analysis-candidate-reuse-after-fix.json)、[五类记录同13项](../evidence/analysis-candidate-typed-after-fix.json)和[指南电脑同3场景](../evidence/analysis-guidance-browser-after-fix.json)也通过，分别15、72、3次免费、0收费。未变内容复用原正式记录，改动、撤回、身份歧义及来源证据损坏不恢复；typed为13测试组、36观察场景、29显式子测试，不把42条结果扩成42测试。规范修前与早期隔离错误见[确认完整性索引](../evidence/README.md#跨报告确认复用证据与人物身份)，不能据此判断上游人物理解或中文文学领先。
 
@@ -98,7 +104,7 @@ Arboris 的创意对话、可编辑蓝图、三种方向候选和定向润色确
 
 ## 建议实施顺序与交付边界
 
-1. **范围真实保存及依赖保护已实施并通过当前整轮。**[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的23项HTTP证明初始保存；后续范围、嵌套声明、材料与章序有独立结果。当前85项整轮已重新核对页面、持久化、消费与冻结请求，后续改动仍需新快照。
+1. **范围真实保存及依赖保护已实施并取得对应整轮。**[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的23项HTTP证明初始保存；后续范围、嵌套声明、材料与章序有独立结果。历史85项整轮重新核对该阶段页面、持久化、消费与冻结请求，后来参考包使用上文新89项快照。
 2. **规划进入正文任务已实施。**[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)的10项HTTP专项验证创作约定、当前卷章及场景；未来情节不混入已发生事实。后续冻结源码和整轮结果从[总入口](../README.md)核验。
 3. **补结构化人物与定向改稿体验。**人物欲望、限制、能力等先用稳定字段；润色维度只改变作者意图，不扩大默认付费调用。
 4. **再评估创意多轮与多候选比较。**先证明作者减少复制与修改成本，再增加多调用；不得以“生成三个版本”替代文学收益测量。

@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "observed_local_date": "2026-10-15",
+  "timezone": "Asia/Shanghai",
+  "scope": "Local desktop service acceptance for the approved commit; separate from the GitHub workflow result.",
+  "approved_commit": "3a369807252e5dcda9ce5bda039d169744fedee5",
+  "local_service_acceptance_passed": true,
+  "all_validation_passed": false,
+  "original_activation": {
+    "passed": false,
+    "stage": "post_restart_verification",
+    "failure_type": "GuardFailure",
+    "reason": "Startup added the committed empty app_entity_scope table, so the original exact table-count guard rejected the update.",
+    "backup_performed": true,
+    "service_restarted": true,
+    "original_failure_preserved": true,
+    "outcome_sha256": "7787b63f36cbc251ed650575e7e17add86f45461e417f737b8b412c9e44f3f5c"
+  },
+  "independent_schema_reconciliation": {
+    "passed": true,
+    "stage": "additive_schema_reconciled",
+    "original_activation_passed": false,
+    "original_failure_preserved": true,
+    "existing_tables_compared": 64,
+    "current_tables_compared": 65,
+    "all_existing_table_content_counts_columns_and_schema_unchanged": true,
+    "all_existing_schema_objects_unchanged": true,
+    "manuscript_and_all_document_revisions_unchanged": true,
+    "branches_events_jobs_runs_and_reservations_unchanged": true,
+    "added_tables": {
+      "app_entity_scope": 0
+    },
+    "added_schema_objects": [
+      "index:sqlite_autoindex_app_entity_scope_1",
+      "table:app_entity_scope"
+    ],
+    "added_schema_matches_committed_installer": true,
+    "production_database_modified": false,
+    "search_called": false,
+    "external_model_calls": 0,
+    "service_restarted": false,
+    "backup_performed": false,
+    "private_evidence_sha256": {
+      "outcome": "59e27e0079d1d43209164199164c5c52f324ef62b24e39d26e14398ca00b6ab2",
+      "original_baseline": "59b97af3b72224e75061944fcdfee97cef2c1deeca0eab200eec484849bf9346",
+      "backup_table_and_schema_fingerprints": "3f26da5712bd70a94dc62f03727d4f686b34890c8a3cd0be26ee7ec828e44f22",
+      "current_table_and_schema_fingerprints": "6c0f56479b851853f6744c69c4ec6e1948175014e88da865c6c21c3390992f91",
+      "current_metadata_snapshot": "73b39f14d11f4bd709594ad62bfc86acf01b39f921c239f60d275e8379b5b93f"
+    }
+  },
+  "derived_search_repair": {
+    "passed": true,
+    "stage": "acceptance_complete",
+    "acceptance_chain": "independent_additive_schema_reconciliation",
+    "original_activation_passed": false,
+    "original_failure_preserved": true,
+    "production_database_modified": true,
+    "changed_tables_are_search_derived_only": true,
+    "changed_tables": [
+      "app_search_document",
+      "app_search_fts",
+      "app_search_fts_content",
+      "app_search_fts_data",
+      "app_search_fts_docsize",
+      "app_search_fts_idx",
+      "app_search_index_state"
+    ],
+    "protected_tables_content_and_counts_unchanged": true,
+    "database_schema_unchanged": true,
+    "manuscript_and_all_document_revisions_unchanged": true,
+    "branches_events_jobs_runs_and_reservations_unchanged": true,
+    "source_matches_approved_full_verification": true,
+    "health_ok": true,
+    "provider_mode": "offline",
+    "projection_status": "healthy",
+    "search_index": {
+      "status": "current",
+      "mode": "bigram",
+      "lag": 0,
+      "indexed_version": 1,
+      "state_version": 1,
+      "indexed_documents": 3,
+      "expected_documents": 3
+    },
+    "external_model_calls": 0,
+    "service_restarted": false,
+    "backup_performed": false,
+    "private_evidence_sha256": {
+      "outcome": "22d4662cb078a9449536c7be315daa019338363e13371b0c617fb581330f14a1",
+      "before": "9b8bcc5a19ef0f1bf7ceadc78ef5e8eee660ee930416664e626b840be24a7842",
+      "after": "3045d7534bc17901259bb65cf111889602752fe88a29ae16fe967944843fcfa9"
+    }
+  },
+  "actual_desktop_read_only_acceptance": {
+    "passed": true,
+    "timing": "After schema reconciliation and before the derived search repair.",
+    "viewports": [
+      {"width": 1440, "height": 1000},
+      {"width": 1280, "height": 900}
+    ],
+    "views": ["editor", "world", "references", "tasks"],
+    "cases": 8,
+    "cases_passed": 8,
+    "compared_tables": 65,
+    "all_tables_content_counts_and_schema_unchanged": true,
+    "submitted_write_requests": 0,
+    "blocked_requests": 0,
+    "page_errors": 0,
+    "production_database_modified": false,
+    "external_model_calls": 0,
+    "service_restarted": false,
+    "backup_performed": false,
+    "screenshots_private_only": true,
+    "private_evidence_sha256": {
+      "outcome": "5ae44f96e98f46f01412f1865ab544b6487a20a6fd92d4b62e57bc8aad9b66f0",
+      "browser_report": "9acf1d0937beb0b5c4b22b3f0bef6289627d2d596d03299f7b6d2229f8665078",
+      "large_desktop_screenshot": "ba48e811cde163a6e4ac6162d42f38c44ece8905d2ff94bc985bf518d27d0bb4",
+      "small_desktop_screenshot": "b068619486df007fbd088afaf6a60fdf99e0c10ab3e59aa747bd790b8bc4c068"
+    }
+  },
+  "synthetic_guards": {
+    "all_passed": true,
+    "reconciliation_checks": 33,
+    "post_update_checks": 49,
+    "explicit_reconciliation_chain_checks": 36,
+    "independent_review_checks": 56,
+    "production_database_accessed": false,
+    "real_search_called": false,
+    "real_backup_created": false,
+    "real_service_restarted": false,
+    "external_model_calls": 0,
+    "private_evidence_sha256": {
+      "reconciliation_guards": "dc6aa7bada2303a98c1e590f5731a03e29cb791a3b3dcae165e667cd6e53b515",
+      "post_update_guards": "fef759227c9fb1013e3b1c715b9a5887c073fe56e4381d0a0162fa1c95c27e54",
+      "explicit_chain_guards": "903a6041f6abaed6e9505ca405cfb4fbd2fc89cdf0c564c54c2ca32d1d9f551d",
+      "independent_review": "57151ba5d619f961821e320987aad7fb67e781871e223d08c8d01e9be8fb9c4c",
+      "reconciliation_program": "dd6eef2b10dcb7bba3a7f2590253739d8260bd63baa78e4b8e7a0943d57421cf",
+      "post_update_program": "1601e3b28c165a8dfae6241c5d611dfef82ef037f860bb1dc57cb7fc4838df59"
+    }
+  },
+  "previous_local_full_verification": {
+    "passed": true,
+    "check_count": 85,
+    "source_count": 95,
+    "artifact_count": 43,
+    "report": "compatibility-python311-node24-guidance-candidate-integrity-release.json",
+    "report_sha256": "0064a16632294b6104fa26175ab3bce5d1b9cdb63a2423257e79b5ce404313d9",
+    "report_modified": false,
+    "source_inventory_sha256": "1dfe2625ed15abf086b8032169c22de06fc8149db97d0bae7b840af1fd99e1d6"
+  },
+  "github_workflow": {
+    "run_id": 38620315120,
+    "head_sha": "3a369807252e5dcda9ce5bda039d169744fedee5",
+    "status": "completed",
+    "conclusion": "failure",
+    "all_steps_passed": false,
+    "failed_step": "Instruction draft browser regressions",
+    "passed_behavior_cases_before_layout_failure": 10,
+    "large_desktop_fit_passed": true,
+    "small_desktop_fit": {
+      "viewport_width": 1280,
+      "viewport_height": 900,
+      "control_top_px": 861.96875,
+      "control_height_px": 38.390625,
+      "control_bottom_px": 900.359375,
+      "overflow_px": 0.359375,
+      "within": false
+    },
+    "successful_validation_steps": [
+      "Syntax checks",
+      "Contract fixtures",
+      "Evaluation fixtures",
+      "Editor merge regressions",
+      "Real browser regressions",
+      "Search browser regressions",
+      "Planning browser regressions",
+      "Model settings browser regressions",
+      "Five chapter author flow"
+    ],
+    "skipped_validation_steps": [
+      "Author lifecycle browser regressions",
+      "Export override browser regressions",
+      "Material dependency browser regressions",
+      "Analysis guidance browser regressions"
+    ],
+    "later_rerun_status": "not_yet_verified",
+    "private_evidence_sha256": {
+      "live_status": "3c54866f569322ae799b554d2da1286624a30298037a77359c2ea46facf1269c",
+      "failed_step_log": "d344d8c9b39e8603fa8756544c6654b12892272695e68dd0b9a758a941dc64c9"
+    }
+  },
+  "privacy": {
+    "private_evidence_identified_by_sha256_only": true,
+    "absolute_paths_included": false,
+    "manuscript_or_reference_text_included": false,
+    "database_rows_or_credentials_included": false,
+    "personal_information_included": false,
+    "private_screenshots_published": false
+  }
+}

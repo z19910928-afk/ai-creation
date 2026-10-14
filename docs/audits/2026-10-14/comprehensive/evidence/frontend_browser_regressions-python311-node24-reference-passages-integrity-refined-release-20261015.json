@@ -1,0 +1,617 @@
+{
+  "passed": true,
+  "scope": "真实浏览器、隔离SQLite、免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "慢保存继续输入，新文字落库且版本连续推进",
+      "passed": true
+    },
+    {
+      "name": "断网不会假报已保存，恢复后保留并保存草稿",
+      "passed": true
+    },
+    {
+      "name": "粗体、引用、场景分隔和撤销真正修改并保存正文",
+      "passed": true
+    },
+    {
+      "name": "请求等待时切章，迟到候选保持来源身份且单次采纳",
+      "passed": true
+    },
+    {
+      "name": "emoji选区润色只替换选中范围",
+      "passed": true
+    },
+    {
+      "name": "连续20轮写作、切章、实际生成与单次采纳保持完整",
+      "passed": true
+    },
+    {
+      "name": "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+      "passed": true
+    },
+    {
+      "name": "结构候选更新场景计划并保持正文与作者决定",
+      "passed": true
+    },
+    {
+      "name": "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+      "passed": true
+    },
+    {
+      "name": "截断任务在无缓存窗口完整恢复只读片段，已知用量可手动重试",
+      "passed": true
+    },
+    {
+      "name": "缺少流式结束标记的未知结果可回看片段，不显示重发且拒绝过期来源",
+      "passed": true
+    },
+    {
+      "name": "只有本机分片账本时只读恢复未知结果，读取中断可续读且不会再次调用模型",
+      "passed": true
+    },
+    {
+      "name": "未完成的结构分析和JSON正文保留原始片段，只读复制且无法整理或采纳",
+      "passed": true
+    },
+    {
+      "name": "长章无选区润色不会全文覆盖",
+      "passed": true
+    },
+    {
+      "name": "两窗口同句冲突展示双方并可手工合并",
+      "passed": true
+    },
+    {
+      "name": "两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段",
+      "passed": true
+    },
+    {
+      "name": "两窗口合并后撤销本页改稿并重做，两次都保留另一页新增段落",
+      "passed": true
+    },
+    {
+      "name": "同起点插入与删除双方向显示双方稿件，选择后保存及撤销重做不丢字",
+      "passed": true
+    },
+    {
+      "name": "重做插入遇到另一页同起点删字时保留正文和重做记录，恢复后可继续重做",
+      "passed": true
+    },
+    {
+      "name": "粗体撤销后接收另一页新改稿，快捷键重做和撤销仅变化粗体",
+      "passed": true
+    },
+    {
+      "name": "另一页覆盖本页撤销位置时拒绝操作，保留正文和可重试的撤销记录",
+      "passed": true
+    },
+    {
+      "name": "真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存",
+      "passed": true
+    },
+    {
+      "name": "自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆后新浏览器仍回读真实作品",
+      "passed": true
+    },
+    {
+      "name": "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+      "passed": true
+    },
+    {
+      "name": "语义审稿显示原句并保存作者解释，改稿后报告过期",
+      "passed": true
+    },
+    {
+      "name": "多问题审稿明确选择原句，精确修订第二重复句并重新审稿",
+      "passed": true
+    },
+    {
+      "name": "超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿",
+      "passed": true
+    },
+    {
+      "name": "整理超限候选保留父原文，双击仅一次调用且合限子候选等待明确采纳",
+      "passed": true
+    },
+    {
+      "name": "手工编辑过的父候选禁止模型整理，正文和原候选均继续保留",
+      "passed": true
+    },
+    {
+      "name": "整理确认期间原稿变化会阻止发送，过期候选保留供阅读",
+      "passed": true
+    },
+    {
+      "name": "整理回应丢失后刷新只读取已有任务，保持请求身份且不重复模型调用",
+      "passed": true
+    },
+    {
+      "name": "模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用",
+      "passed": true
+    },
+    {
+      "name": "关闭思考设置遇到非空思考字段，正文保留且采纳和整理均禁用",
+      "passed": true
+    },
+    {
+      "name": "队列先完成后人工编辑，迟到流式分片不覆盖候选、缓存或原稿",
+      "passed": true
+    },
+    {
+      "name": "1280×800电脑窗口无横向溢出，编辑和生成控件可用",
+      "passed": true
+    },
+    {
+      "name": "复制作品的完整历史候选同步只读标记，旧完整缓存也不能整理或采纳",
+      "passed": true
+    },
+    {
+      "name": "两作品切换隔离，卷章场景保存后建立目录",
+      "passed": true
+    },
+    {
+      "name": "电脑端四阶段规划中途刷新和失败重做，最终采用蓝图不改变已写正文",
+      "passed": true
+    },
+    {
+      "name": "同一时刻连续点击打开两书，最终作品与缓存完全隔离",
+      "passed": true
+    },
+    {
+      "name": "旧作品读取成功与错误迟到，均不改变当前正文、缓存和保存状态",
+      "passed": true
+    },
+    {
+      "name": "旧作品模型设置迟到，当前模型身份保持正确",
+      "passed": true
+    },
+    {
+      "name": "服务回应作品身份错误时拒绝覆盖，恢复后仍为原书",
+      "passed": true
+    },
+    {
+      "name": "设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型",
+      "passed": true
+    },
+    {
+      "name": "电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关",
+      "passed": true
+    },
+    {
+      "name": "旧书预览拆分合并导入独立作品，原作品保持原稿",
+      "passed": true
+    },
+    {
+      "name": "作为参考来源导入、阅读和按原句搜索不改变本书正文",
+      "passed": true
+    },
+    {
+      "name": "完整备份下载与恢复副本保留正文和参考来源",
+      "passed": true
+    },
+    {
+      "name": "200字作品名恢复可读写，读取失败后只重开已建立副本且不提前报成功",
+      "passed": true
+    },
+    {
+      "name": "恢复成功回复后原作和副本读取同时失败，重开仍只有一次恢复写入",
+      "passed": true
+    },
+    {
+      "name": "含emoji的名称按完整字符恢复，刷新与默认复制都能打开且保留原稿",
+      "passed": true
+    },
+    {
+      "name": "200字作品名在大小电脑窗口中保留写作入口，导航独立滚动且不遮挡正文",
+      "passed": true
+    },
+    {
+      "name": "设定的揭晓章节和知情人物经页面保存刷新后仍限制实际写作材料",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "rounds": [
+    {
+      "round": 1,
+      "run_id": "airun_cd11cbe8c5714faab2d09a38462a7fd7",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 2,
+      "run_id": "airun_ba12926643bf4da4892c834d860c47ae",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 3,
+      "run_id": "airun_c0f1741772874d58b945cec454027afb",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 4,
+      "run_id": "airun_34103cfbc6604fe2a1ff516d2925e6be",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 5,
+      "run_id": "airun_8047a200d0204f5ea9da86bc03de6054",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 6,
+      "run_id": "airun_f6785d79be494ff2b945b4ad522d25c4",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 7,
+      "run_id": "airun_a964cf775d1247ae85ab004c927dfe8c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 8,
+      "run_id": "airun_a78ff361da2943288a27e24d5365c90e",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 9,
+      "run_id": "airun_c396930f34f04705b608afeeb7a32ecf",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 10,
+      "run_id": "airun_ebb9795c73424f2a886af7e73bfe4f31",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 11,
+      "run_id": "airun_b20e202e9bd745ccb1386e1568be976c",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 12,
+      "run_id": "airun_a0f7bfa59bfd4e0088a1e0f359a0efa1",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 13,
+      "run_id": "airun_3574fabadeba451d83324ceed0fbc202",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 14,
+      "run_id": "airun_62fe31a9787540f0a45f075668c1ffa7",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 15,
+      "run_id": "airun_6dc0c950f74643ec80d6585e090fe3a6",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 16,
+      "run_id": "airun_46cd20c0a0254919ab9c6bf0974f41e8",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 17,
+      "run_id": "airun_b9fa632826fa4efa9a7375c03c6afdcb",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 18,
+      "run_id": "airun_80de88fc5cf84d1d8b143b0b488e0492",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 19,
+      "run_id": "airun_2a20c6d6be454a81aa173f7c3ef36c7d",
+      "body_preserved": true,
+      "candidate_count": 1
+    },
+    {
+      "round": 20,
+      "run_id": "airun_95b61c5a88a44842820b044dd469dc47",
+      "body_preserved": true,
+      "candidate_count": 1
+    }
+  ],
+  "unknown_fragment": {
+    "run_id": "airun_3fbaf6de8ed5400aafe7f462de8c3763",
+    "job_id": "aijob_d028319fcf9a48a097289cd0b9d49bae",
+    "text": "结束状态未知的完整可见片段。保留钥匙，不写入原稿。"
+  },
+  "native_composition_events": [
+    {
+      "type": "compositionstart",
+      "data": "",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "lin",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "lin",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "linlan",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "linlan",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionupdate",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": true
+    },
+    {
+      "type": "input",
+      "data": "林岚",
+      "isComposing": true,
+      "trusted": true
+    },
+    {
+      "type": "compositionend",
+      "data": "林岚",
+      "isComposing": false,
+      "trusted": false
+    }
+  ],
+  "review_decision_recovery": {
+    "accepted_repair_available": true,
+    "failed_read_retained_window": true,
+    "decision_posts": 1,
+    "failed_review_reads": 1,
+    "extra_model_calls": 0,
+    "reopen_restores_saved_decisions": true,
+    "manuscript_unchanged": true
+  },
+  "candidate_revision": {
+    "parent_run_id": "airun_c4ba3ca8c3c84c108f339586cf86d572",
+    "child_run_id": "airun_578504b48b424b88b8217bc4712ca8dc",
+    "provider_calls": 1,
+    "parent_preserved": true,
+    "child_explicitly_adopted_once": true,
+    "recovered_outside_queue_list": true,
+    "mechanical_and_workflow_only": true,
+    "facts_and_literature_accepted": false
+  },
+  "imported_project": "book_d64b045d292c4638bba4b19bd41d381f",
+  "reference_document": "reference_6f9b728804e5410bbfd85f0e71a78d21",
+  "restored_project": "book_684520b9e98240d692619021e2192064",
+  "backup_reopen": {
+    "source_project": "book_818c897488384425843591c6021e8b5e",
+    "restored_project": "book_2e8e3dd9d050431aae5130fe1a90eabc",
+    "copied_project": "book_c945766c4618453a9361880d5757de67",
+    "restore_requests": 1,
+    "project_created_once": true,
+    "source_preserved": true,
+    "reloaded_and_saved": true,
+    "model_requests": 0
+  },
+  "backup_post_commit_reopen": {
+    "source_project": "book_c945766c4618453a9361880d5757de67",
+    "restored_project": "book_dc52820b29c14b78a7254e398585518c",
+    "failed_state_reads": 2,
+    "restore_requests": 1,
+    "project_created_once": true,
+    "source_preserved": true,
+    "model_requests": 0
+  },
+  "backup_unicode": {
+    "source_project": "book_cf34ab10b3354ba7ae70360c05f95675",
+    "restored_project": "book_20f4499535d84719a05a08e9e9a0d635",
+    "copied_project": "book_9723aaa92d974702bec1bd7eaf4d8395",
+    "title_characters": 200,
+    "title_utf16_units": 201,
+    "source_preserved": true,
+    "reloaded_and_saved": true,
+    "model_requests": 0
+  },
+  "long_title_navigation": {
+    "title_characters": 200,
+    "measurements": [
+      {
+        "viewport": {
+          "width": 1440,
+          "height": 1000
+        },
+        "layout": {
+          "title": "新书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书😀 · · 副本",
+          "full_title": "新书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书😀 · · 副本",
+          "title_height": 53.1875,
+          "title_line_height": 26.6,
+          "header": {
+            "top": 0,
+            "bottom": 64,
+            "left": 0,
+            "right": 1440,
+            "height": 64
+          },
+          "sidebar": {
+            "top": 64,
+            "bottom": 1000,
+            "left": 0,
+            "right": 222,
+            "height": 936
+          },
+          "main": {
+            "top": 64,
+            "bottom": 1358.578125,
+            "left": 222,
+            "right": 1440,
+            "height": 1294.578125
+          },
+          "page_scroll": 0,
+          "nav_scroll": 0,
+          "nav_height": 637,
+          "nav_content_height": 637,
+          "library_visible": true,
+          "editor_visible": true,
+          "edit_visible": true,
+          "horizontal_overflow": false
+        },
+        "last": {
+          "page_scroll": 0,
+          "nav_scroll": 0,
+          "visible": true,
+          "hit": true
+        },
+        "scrolled": {
+          "page_scroll": 220,
+          "sidebar_top": 64,
+          "header_top": 0
+        }
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "layout": {
+          "title": "新书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书😀 · · 副本",
+          "full_title": "新书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书😀 · · 副本",
+          "title_height": 53.1875,
+          "title_line_height": 26.6,
+          "header": {
+            "top": 0,
+            "bottom": 64,
+            "left": 0,
+            "right": 1280,
+            "height": 64
+          },
+          "sidebar": {
+            "top": 64,
+            "bottom": 900,
+            "left": 0,
+            "right": 222,
+            "height": 836
+          },
+          "main": {
+            "top": 64,
+            "bottom": 1358.578125,
+            "left": 222,
+            "right": 1280,
+            "height": 1294.578125
+          },
+          "page_scroll": 0,
+          "nav_scroll": 0,
+          "nav_height": 537,
+          "nav_content_height": 561,
+          "library_visible": true,
+          "editor_visible": true,
+          "edit_visible": true,
+          "horizontal_overflow": false
+        },
+        "last": {
+          "page_scroll": 0,
+          "nav_scroll": 24,
+          "visible": true,
+          "hit": true
+        },
+        "scrolled": {
+          "page_scroll": 220,
+          "sidebar_top": 64,
+          "header_top": 0
+        }
+      },
+      {
+        "viewport": {
+          "width": 1280,
+          "height": 800
+        },
+        "layout": {
+          "title": "新书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书😀 · · 副本",
+          "full_title": "新书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书书😀 · · 副本",
+          "title_height": 53.1875,
+          "title_line_height": 26.6,
+          "header": {
+            "top": 0,
+            "bottom": 64,
+            "left": 0,
+            "right": 1280,
+            "height": 64
+          },
+          "sidebar": {
+            "top": 64,
+            "bottom": 800,
+            "left": 0,
+            "right": 222,
+            "height": 736
+          },
+          "main": {
+            "top": 64,
+            "bottom": 1358.578125,
+            "left": 222,
+            "right": 1280,
+            "height": 1294.578125
+          },
+          "page_scroll": 0,
+          "nav_scroll": 0,
+          "nav_height": 437,
+          "nav_content_height": 561,
+          "library_visible": true,
+          "editor_visible": true,
+          "edit_visible": true,
+          "horizontal_overflow": false
+        },
+        "last": {
+          "page_scroll": 0,
+          "nav_scroll": 124,
+          "visible": true,
+          "hit": true
+        },
+        "scrolled": {
+          "page_scroll": 220,
+          "sidebar_top": 64,
+          "header_top": 0
+        }
+      }
+    ]
+  },
+  "record_scope": {
+    "record_id": "ent_3bdbcf045e6346fc821b1448a538a2e6",
+    "refresh_preserved": true,
+    "hidden_before_reveal": true,
+    "visible_after_author_change": true,
+    "json_scope_preserved": true,
+    "invalid_range_rejected": true,
+    "model_requests": 0
+  }
+}

@@ -435,9 +435,16 @@ def fit_budget(context: dict[str, Any], max_tokens: int, *, reserve_bytes: int =
     })
     for key in ("retrieved_chapters", "previous_chapters", "confirmed_memory", "story_cards", "author_plans"):
         truncation["pinned"].extend(str(item.get("id")) for item in context.get(key, []) if item.get("_pinned"))
+    if context.get("reference_passages"):
+        truncation["pinned"].extend(str(item["id"]) for item in context["reference_passages"])
     meta.update({"estimated_chars": 0, "estimated_tokens": 0, "estimated_utf8_bytes": 0})
     def refresh_counts():
         ids = [str(item["id"]) for key in ("retrieved_chapters", "previous_chapters", "confirmed_memory", "story_cards", "author_plans") for item in context.get(key, []) if item.get("id")]
+        if context.get("reference_passages"):
+            ids.extend(str(item["id"]) for item in context["reference_passages"])
+            meta["reference_passage_count"] = len(context["reference_passages"])
+            meta["reference_quote_utf8_bytes"] = sum(
+                len(item["source_quote"].encode("utf-8")) for item in context["reference_passages"])
         meta["context_item_ids"] = list(dict.fromkeys(ids))
         meta["retrieved_count"] = len(context.get("retrieved_chapters", []))
         meta["previous_count"] = len(context.get("previous_chapters", []))
@@ -504,6 +511,8 @@ def fit_budget(context: dict[str, Any], max_tokens: int, *, reserve_bytes: int =
                     removed = ("story_structure." + key, items.pop())
                     break
         if not removed:
+            if context.get("reference_passages"):
+                raise ValueError("当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。")
             raise ValueError("current chapter or pinned material exceeds the conservative prompt budget; select a passage or increase the context budget")
         truncation["applied"] = True
         truncation["removed"].append({"kind": removed[0], "id": removed[1].get("id"), "reason": "conservative_prompt_budget"})
@@ -602,6 +611,7 @@ def assemble_context(
     task: str = "continue",
     selection: Mapping[str, Any] | None = None,
     guidance: Mapping[str, Any] | None = None,
+    reference_passages: list[dict[str, Any]] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any] | None]:
     """Assemble the exact material later serialized into a provider request."""
     profile_values = normalize_profile(profile)
@@ -814,6 +824,10 @@ def assemble_context(
     }
     if guidance is not None:
         context["author_guidance"] = copy.deepcopy(dict(guidance))
+    if reference_passages:
+        if task not in {"continue", "polish"} or chapter is None:
+            raise ValueError("本次参考片段只能用于当前章节的续写或润色。")
+        context["reference_passages"] = copy.deepcopy(reference_passages)
     return fit_budget(context, profile_values["max_tokens"], reserve_bytes=1800 + len(instruction.encode("utf-8"))), chapter
 
 

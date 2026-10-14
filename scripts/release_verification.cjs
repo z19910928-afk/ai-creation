@@ -49,12 +49,12 @@ fs.mkdirSync(logs, {recursive: true});
 fs.mkdirSync(evidence, {recursive: true});
 const save = () => fs.writeFileSync(output, JSON.stringify(safeValue(report), null, 2) + '\n');
 
-async function run(name, command, arguments_, timeout = 180000) {
+async function run(name, command, arguments_, timeout = 180000, overrides = {}) {
   console.log(JSON.stringify({check: name, status: 'running'}));
   const started = Date.now();
   const result = await new Promise(resolve => {
     let text = '', expired = false, spawnError;
-    const child = spawn(command, arguments_, {cwd: root, env: environment, stdio: ['ignore', 'pipe', 'pipe']});
+    const child = spawn(command, arguments_, {cwd: root, env: {...environment, ...overrides}, stdio: ['ignore', 'pipe', 'pipe']});
     const timer = setTimeout(() => {expired = true; child.kill('SIGTERM');}, timeout);
     child.stdout.on('data', chunk => text += chunk.toString());
     child.stderr.on('data', chunk => text += chunk.toString());
@@ -100,6 +100,8 @@ const requiredScreenshots = {
   desktop_author_flow_regressions: ['desktop-five-chapter-author.png', 'compact-desktop-five-chapter-author.png',
     'desktop-stale-payoff-blocked.png', 'desktop-final-complete.png'],
   instruction_draft_browser_regressions: ['instruction-draft-desktop.png', 'instruction-draft-desktop-1280x900.png'],
+  reference_passages_browser_regressions: ['reference-passages-1440x1000.png', 'reference-passages-1280x900.png',
+    'reference-passages-original-1440x1000.png', 'reference-passages-original-1280x900.png'],
   author_workspace_lifecycle_browser_regressions: ['planned-next-chapter.png',
     'planned-next-chapter-1280x900.png', 'stale-review-author-explanation.png'],
   export_override_browser_regressions: ['export-override-desktop.png'],
@@ -109,7 +111,38 @@ const requiredScreenshots = {
 const optionalScreenshots = {
   planning_browser_regressions: ['planning-browser-failure.png'],
   desktop_author_flow_regressions: ['desktop-author-flow-failure.png'],
+  reference_passages_browser_regressions: ['reference-passages-failure.png'],
 };
+const fixtureReports = {
+  'tests/reference_passages_http_fixtures.py': {
+    environment: 'MOYU_REFERENCE_PASSAGES_REPORT', name: 'reference-passages-http',
+  },
+  'tests/reference_passages_integrity_http_fixtures.py': {
+    environment: 'MOYU_REFERENCE_INTEGRITY_REPORT', name: 'reference-passages-integrity-http',
+  },
+};
+
+async function runFixture(script) {
+  const evidenceType = fixtureReports[script];
+  const localReport = evidenceType && path.join(logs, evidenceType.name + '.json');
+  const overrides = evidenceType ? {[evidenceType.environment]: localReport} : {};
+  await run('Python fixtures: ' + script, python, [script], 180000, overrides);
+  if (!evidenceType) return;
+  const check = report.checks.at(-1);
+  if (!fs.existsSync(localReport)) {
+    check.passed = false;
+    check.missing_structured_fixture_result = true;
+  } else {
+    const value = JSON.parse(fs.readFileSync(localReport, 'utf8'));
+    saveStructuredEvidence(evidenceType.name, evidenceType.name + '-' + suffix + '.json', value);
+    check.fixture_count = value.checks;
+    if (value.passed !== true || value.source_unchanged !== true) {
+      check.passed = false;
+      check.structured_fixture_result_failed = true;
+    }
+  }
+  save();
+}
 
 function structuredBrowserResult(text) {
   const starts = [...text.matchAll(/(?:^|\n)(?=\{)/g)].map(match =>
@@ -158,7 +191,7 @@ async function main() {
   if (!/^Python 3\.11\./.test(report.runtimes.python)) throw new Error('This release check requires Python 3.11');
   await run('Python syntax', python, ['-m', 'py_compile', ...pythonFiles]);
   for (const file of javascriptFiles) await run('JavaScript syntax: ' + file, process.execPath, ['--check', file]);
-  for (const file of filesIn('tests', /_fixtures\.py$/)) await run('Python fixtures: ' + file, python, [file]);
+  for (const file of filesIn('tests', /_fixtures\.py$/)) await runFixture(file);
   const fixedOutput = path.join(logs, 'fixed-evaluation.json');
   await run('Fixed evaluation', python, ['scripts/evaluation_runner.py', '--fixtures-dir', 'tests/fixtures', '--output', fixedOutput]);
   if (fs.existsSync(fixedOutput)) {

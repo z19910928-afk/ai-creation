@@ -6,7 +6,13 @@
 
 当前差距已经不是“没有书架、任务队列、选区改稿、层级规划或章后记忆”。这些流程在墨屿现有代码中已经连接。修前最需先修的是：**已保存并建立章节的蓝图，没有完整进入续写、润色和故事审稿的真实材料。** 本轮用隔离作品及免费本机模型实际复现了这个断点；随后已实施有界当前指南，[已归档中间快照](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)中的10项真实HTTP与捕获验证通过。后续范围、别名、材料和章序保护已取得[独立专项结果](../evidence/README.md#范围材料与历史结果依赖)，最新兼容修复后的完整源码验收从[总入口](../README.md)查阅。
 
-当前最新[指南与确认完整性整轮](../evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)在上海2026-10-15 02:39:43至02:46:58完成85项全部通过，95份冻结来源不变，10组真实电脑浏览器125场景，11份JSON与32张截图共43份附件指纹一致。本报告独立读取结果及逐份重算SHA；涵盖指南、部分来源、候选复用与人物身份，不等同源码推送、远程检查、真实服务或文学效果验收。
+历史[指南与确认完整性整轮](../evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)在上海2026-10-15 02:39:43至02:46:58完成85项全部通过，95份冻结来源不变，10组真实电脑浏览器125场景，11份JSON与32张截图共43份附件指纹一致。本报告当时独立读取结果及逐份重算SHA；原文件不改，只覆盖该阶段指南、部分来源、候选复用与人物身份，不覆盖后来参考包，也不等同远程、真实服务或文学验收。
+
+2026-10-15继续接通手选参考原句，与NF01的作者规划指南分开：单次一段900完整字符以内，只用于续写/润色，服务端重读范围与三hash，明确为写作技法材料，不冒充已发生事实。独立完整性13方法/15场景、3次免费，以及真实电脑15场景/5次免费通过，收费均0；参考与冻结实际请求、审计共同核对，损坏或已消费来源改变时旧任务拒绝。新完整包与方法计数见[参考证据](../evidence/README.md#显式参考原句与冻结请求完整性)，不能用历史85项代替；NF02至NF08不因新参考按钮自动完成。
+
+修后[参考包完整复验](../evidence/compatibility-python311-node24-reference-passages-integrity-refined-release-20261015.json)于上海2026-10-15 03:57:31至04:05:50完成，89项全部通过，11套浏览器140个电脑场景，98份来源不变；14份JSON与36张截图共50份附件指纹一致。文档续核独立读取最终报告并重算来源与附件SHA，没有重跑浏览器；首次87/89的失败报告保留，新GitHub与实际服务更新仍待验，收费0，不扩成文学或第一梯队成绩。
+
+[实际服务独立链](../evidence/local-service-reconciled-20261015.md)对应 `3a369807252e5dcda9ce5bda039d169744fedee5`，原更新失败保留，后续64张既有表全内容/结构一致、仅7搜索衍生表刷新及8个只读电脑场景通过、0模型。该提交GitHub运行 `38620315120` 为failure，1280布局超0.359375像素、后4项跳过；新参考包远程与服务验收尚待核验，不把主流程执行说成本专项独立重跑。
 
 NovelForge值得学习的是结构化设定、按类型组织材料、作者可复用的提示与参数、灵活卡片树和逐条改稿建议。不能从这些源码推出它的文学效果、收费任务恢复或生产稳定性领先。本轮没有运行NovelForge整站，没有调用真实收费模型，没有比较文学质量。
 
@@ -62,11 +68,11 @@ python3 artifacts/comprehensive-review-20261014/blueprint-consumption-probe.py
 
 这不是建议把整个蓝图无条件塞入上下文。蓝图还包含未来计划、未发生的事件和其他场景视角；全量注入可能破坏现有知情边界。修前`M server.py:1768-1801`基本审稿指纹也没有蓝图字段。修后将“创作约定、当前卷章场景指南”和“可被角色知道的事实”分区，指南身份进入创建、派发、重试、采纳及审稿校验；空指南不占固定预算，预览=发送、材料字节统计和超预算拒绝均由[10项HTTP测试脚本](../../../../../tests/blueprint_guidance_http_fixtures.py)及[指定快照成功结果](../evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)验证。后续别名扩展11项、范围扩展14项与材料扩展29项已分别通过，计数与源码快照另见[能力矩阵](../capability-matrix.md)及依赖索引。
 
-旧任务依赖还包括实际消费的资料与章序，而非只有蓝图字段。[章序专项9项](../evidence/material-scope-order-after-fix.json)覆盖删除早章后的派发、采纳与原任务两种重试，以及无正文证据伏笔的已消费标题。真实旧AI分析缺材料标记时保留只读，旧审稿可免费按当前全作品资料解释；资料在生成期间改变后完整结果与用量仍保存，不能沿原任务重发。这些是工程边界，不证明模型遵循规划或文学收益；当前完整结果使用85项新整轮。
+旧任务依赖还包括实际消费的资料与章序，而非只有蓝图字段。[章序专项9项](../evidence/material-scope-order-after-fix.json)覆盖删除早章后的派发、采纳与原任务两种重试，以及无正文证据伏笔的已消费标题。真实旧AI分析缺材料标记时保留只读，旧审稿可免费按当前全作品资料解释；资料在生成期间改变后完整结果与用量仍保存，不能沿原任务重发。这些是工程边界，不证明模型遵循规划或文学收益；该阶段完整结果为历史85项整轮，后来参考包按上文新89项快照独立复验。
 
-后来[77项材料修后整轮](../evidence/compatibility-python311-node24-materials-comprehensive-refined-release.json)虽然取得122个电脑场景和40附件一致，继续复核仍发现章后分析未冻结原指南：只改故事前提或创作约定、不重新建立章节，旧summary/handoff/candidate仍能确认；缺指南审稿与双缺旧说明也未正确失效。[章后12项首修后](../evidence/analysis-guidance-after-fix.json)和[审稿11项首修后](../evidence/review-guidance-after-fix.json)均通过，原反例、正常自身确认、他书隔离和最小组件边界见[指南阶段](../evidence/README.md#保存报告的创作指南依赖)。原guidance保留，决定后当前guidance单独记录，不因确认交接或新增人物使正常后续确认失效；外部改动仍先拒绝。77项是发现该问题前的中间快照，当前85项整轮已经覆盖后续修复。
+后来[77项材料修后整轮](../evidence/compatibility-python311-node24-materials-comprehensive-refined-release.json)虽然取得122个电脑场景和40附件一致，继续复核仍发现章后分析未冻结原指南：只改故事前提或创作约定、不重新建立章节，旧summary/handoff/candidate仍能确认；缺指南审稿与双缺旧说明也未正确失效。[章后12项首修后](../evidence/analysis-guidance-after-fix.json)和[审稿11项首修后](../evidence/review-guidance-after-fix.json)均通过，原反例、正常自身确认、他书隔离和最小组件边界见[指南阶段](../evidence/README.md#保存报告的创作指南依赖)。原guidance保留，决定后当前guidance单独记录，不因确认交接或新增人物使正常后续确认失效；外部改动仍先拒绝。77项是发现该问题前的中间快照，历史85项整轮覆盖该阶段后续修复。
 
-部分私有来源另有独立反例：无实际run却只剩指南、孤立或空决定标记时仍可确认。[原8项修前](../evidence/analysis-partial-source-before-fix.json)6个测试组失败、2个通过；[冻结同8项修后](../evidence/analysis-partial-source-after-fix.json)全通过，前后0请求、0收费、11份来源不变。决定来源不能代替原来源，原值只需完整而不因作者正常自身决定被替换；仅指南旧审稿的免费说明也绑定当前全作品材料，人物说明变化后旧理由失效。原审稿11项最新复验通过，计数与额外形状校验限制见[部分来源阶段](../evidence/README.md#部分私有来源与组件兼容边界)；两项均纳入当前85项整轮。
+部分私有来源另有独立反例：无实际run却只剩指南、孤立或空决定标记时仍可确认。[原8项修前](../evidence/analysis-partial-source-before-fix.json)6个测试组失败、2个通过；[冻结同8项修后](../evidence/analysis-partial-source-after-fix.json)全通过，前后0请求、0收费、11份来源不变。决定来源不能代替原来源，原值只需完整而不因作者正常自身决定被替换；仅指南旧审稿的免费说明也绑定当前全作品材料，人物说明变化后旧理由失效。原审稿11项最新复验通过，计数与额外形状校验限制见[部分来源阶段](../evidence/README.md#部分私有来源与组件兼容边界)；两项均纳入历史85项整轮。
 
 跨报告正常确认另取得[复用7项](../evidence/analysis-candidate-reuse-after-fix.json)、[五类记录13项](../evidence/analysis-candidate-typed-after-fix.json)及[人物身份8项](../evidence/analysis-character-identity-after-fix.json)同集合修后通过，分别15、72、13次免费、0收费。未变内容复用原正式记录，撤回/改动/歧义/来源损坏均原子拒绝；状态主体和关系两端须当前人物。[指南电脑3场景](../evidence/analysis-guidance-browser-after-fix.json)也通过，3次免费、0收费。13为正式测试组，36为观察场景、29为显式子测试，42条结果不等于42测试；早期隔离错误与各自修前在[完整性索引](../evidence/README.md#跨报告确认复用证据与人物身份)区分，不扩成自动动态资料质量或文学成绩。
 
@@ -98,7 +104,7 @@ NF08是逐条改稿能力，不是“NovelForge已证明多模型多候选竞赛
 - 普通正文证据化记忆及语义审稿：`M moyu_context.py:789-911,930-1040`、`M moyu_analysis.py`及`M author-workspace.js:905-1097`。
 - 完整作品备份/隔离恢复：`M moyu_backups.py:89-124`及后续移植；`M author-workspace.js:669-708`。恢复名称、失败重开与长标题已在[指定53项浏览器快照](../evidence/frontend_browser_regressions-python311-node24-comprehensive-workflow-refined-final.json)通过；本报告没有把该工作树或局部成功冒充已发布提交及后续源码验收。
 
-这些是本轮E以及已有roadmap记录的指定运行范围；本专责没有重跑全部电脑场景，也没有验证真实4173服务已加载这次后端修改。
+这些是本轮E以及已有roadmap记录的指定运行范围；本专责没有重跑全部电脑场景。真实服务由主流程另取得上文独立链，只对应 `3a369807`，不能扩成后来参考包已经加载。
 
 ## 两项目独立交叉复核
 

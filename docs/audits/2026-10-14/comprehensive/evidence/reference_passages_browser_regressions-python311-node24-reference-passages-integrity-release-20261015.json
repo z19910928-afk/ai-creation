@@ -1,0 +1,8 @@
+{
+  "passed": true,
+  "cases": 15,
+  "local_mock_model_requests": 5,
+  "paid_provider_calls": 0,
+  "report": "<temporary-root>/moyu-reference-browser-qrR7g6/results.json",
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report."
+}

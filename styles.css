@@ -83,9 +83,25 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .ai-copilot-head{align-items:center}
 .ai-copilot-head h3{font-family:inherit;font-size:15px}
 .ai-badge{background:#e7f2ef;color:#176b65;border:0;border-radius:4px}
-.ai-controls{grid-template-columns:minmax(140px,.7fr) minmax(200px,1.4fr) auto;align-items:stretch}
+.ai-controls{grid-template-columns:minmax(140px,.7fr) minmax(200px,1.4fr) auto;align-items:stretch;padding-bottom:6px;scroll-margin-block:16px}
 .ai-controls select,.ai-controls input{width:100%;min-width:0;border-color:var(--line);background:#fff;min-height:40px}
 .ai-controls .ghost-btn{min-height:36px}
+.ai-reference-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:7px 0 2px;padding:9px 0;border-top:1px solid var(--line);font-size:12px;min-width:0}
+.reference-current{flex:1 1 220px;min-width:0;overflow-wrap:anywhere;color:var(--muted);line-height:1.6}
+.reference-current strong{color:var(--ink);font-weight:600}
+.reference-current small{display:block}
+.reference-tools{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.reference-tools .ghost-btn{font-size:12px;min-height:34px}
+.reference-preview-section{padding:10px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.reference-preview-section h4{font-size:13px;margin:0 0 8px}
+.reference-full-quote,.reference-preview-section blockquote{margin:10px 0;padding:10px 14px;border-left:3px solid #87aaa3;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.8}
+.reference-picker .search-box{margin-top:12px}
+.reference-hit-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;flex-wrap:wrap}
+.reference-hit-footer small,.reference-choice-error{color:var(--muted);font-size:11px;overflow-wrap:anywhere}
+.reference-choice-error{display:block;margin-top:8px}
+.reference-search-result{margin-bottom:10px;border-radius:6px;overflow-wrap:anywhere}
+.reference-picker .ghost-btn:disabled{cursor:default;opacity:.55}
+.ai-contract-preview{max-height:50vh;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.6}
 .ai-output{border-color:var(--line);min-height:180px;background:#fff}
 .ai-result-meta{flex-wrap:wrap;align-items:flex-start;line-height:1.7}
 .ai-actions{flex-wrap:wrap}

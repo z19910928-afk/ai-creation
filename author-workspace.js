@@ -21,6 +21,7 @@ let authorSettingsSeq=0;
 let authorBackups=[];
 let authorReferences=[];
 let authorLoadToken=0;
+let authorReferenceDialogSeq=0;
 let authorEditorBlueprintRequest=null;
 let authorSwitchChain=Promise.resolve();
 const editorUndo=new Map();
@@ -113,7 +114,7 @@ function authorEditorView(){
  <option value="continue">续写</option><option value="polish">润色所选文字</option><option value="scene">本章场景计划</option>
  <option value="outline">故事总纲</option><option value="brainstorm">创意方向</option><option value="summary">回顾与交接</option>
  <option value="check">连续性检查</option></select><input id="aiInstruction" maxlength="2000" aria-label="补充要求" placeholder="补充要求">
- <button class="primary-btn" id="aiGenerate">生成候选</button></div><p class="ai-status" id="aiStatus"></p>
+ <button class="primary-btn" id="aiGenerate">生成候选</button></div><div class="ai-reference-row" id="aiReferenceTools" aria-live="polite"></div><p class="ai-status" id="aiStatus"></p>
  <textarea class="ai-output" id="aiOutput" aria-label="AI 候选结果">${esc(aiDraft?.text||'')}</textarea>
  <div class="ai-result-meta"><span>${esc(aiStatus.model||'未配置模型')}</span><div class="ai-actions">
  <button class="ghost-btn" id="aiCopy" ${aiDraft?'':'disabled'}>复制</button><button class="ghost-btn" id="aiClear">拒绝 / 停止</button>
@@ -299,6 +300,7 @@ async function authorPerformProjectSwitch(id){
  if(backendOnline&&!await syncBackend()){toast('当前草稿需要先保存或合并，切换已暂停');return false}
  if(authorBlueprintDirty&&!await authorSaveBlueprint())return false;
  cacheDraft();persistCandidates();clearTimeout(syncTimer);++authorLoadToken;
+ invalidateReferenceScope();
  for(const controller of streamReaders.values())controller.abort();
  streamReaders.clear();jobSources.clear();clearTimeout(queueTimer);
  backendOnline=false;requestedProject=id;storage.set(CURRENT_PROJECT_KEY,id);
@@ -847,23 +849,102 @@ function authorRenderReferences(){
  const host=document.querySelector('#referenceList');if(!host)return;
  host.innerHTML=authorReferences.map(r=>`<article class="book-row"><div><h3>${esc(r.title)}</h3><p>${esc(r.filename||'')} · ${Number(r.metadata?.chapter_count||0)} 章 · ${Number(r.metadata?.characters||0).toLocaleString()} 字</p></div>
  <button class="ghost-btn" data-reference-open="${safeId(r.id)}">查看来源</button></article>`).join('')||'<div class="empty">还没有参考来源。</div>';
- host.querySelectorAll('[data-reference-open]').forEach(button=>button.onclick=async()=>{
-  try{
-   const data=await authorJSON(`/api/references/${encodeURIComponent(button.dataset.referenceOpen)}`);
-   const r=data.reference||data;const chapters=data.chapters||r.chapters||[];
-   const wrap=document.createElement('div');wrap.className='modal-backdrop';
-   wrap.innerHTML=`<div class="modal candidate-modal"><h3>${esc(r.title||'参考来源')}</h3><div class="search-box"><input id="referenceQuery" placeholder="搜索此来源中的原句"><button class="primary-btn" data-reference-search>搜索</button></div>
-   <div id="referenceResults">${chapters.map(c=>`<details class="analysis-item"><summary>${esc(c.title)} · ${Array.from(c.body||'').length} 字</summary><pre class="prompt-preview">${esc(c.body||'')}</pre></details>`).join('')}</div>
-   <div class="modal-actions"><button class="ghost-btn" data-close>关闭</button></div></div>`;
-   document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
-   wrap.querySelector('[data-reference-search]').onclick=async()=>{
-    const q=wrap.querySelector('#referenceQuery').value.trim();if(!q)return;
-    try{const result=await authorJSON(`/api/references/${encodeURIComponent(button.dataset.referenceOpen)}/search?q=${encodeURIComponent(q)}`);
-     wrap.querySelector('#referenceResults').innerHTML=(result.results||[]).map(item=>`<article class="result"><strong>${esc(item.title||'')}</strong><p>${esc(item.source_quote||item.body||'')}</p><small>${esc(item.filename||r.filename||'')}</small></article>`).join('')||'<div class="empty">此来源没有匹配原句。</div>';
-    }catch(error){toast(error.message)}
-   };
-  }catch(error){toast(error.message)}
+ host.querySelectorAll('[data-reference-open]').forEach(button=>button.onclick=()=>authorReferenceDialog(button.dataset.referenceOpen));
+}
+function authorChooseReference(){
+ if(!chapter())return toast('请先选择写作章节');
+ if(!backendOnline)return toast('请先恢复连接，再选择参考片段');
+ return authorReferenceDialog();
+}
+async function authorReferenceDialog(documentId=null){
+ const captured=syncReferenceScope(),token=++authorReferenceDialogSeq;
+ const headers={'X-Moyu-Project':captured.scope.project_id,'X-Moyu-Branch':captured.scope.branch_id};
+ document.querySelector('[data-reference-dialog]')?.remove();
+ const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.referenceDialog='1';
+ wrap.innerHTML=`<div class="modal candidate-modal reference-picker"><h3>参考来源</h3>
+  <label>参考书<select id="referenceDocument" aria-label="参考书" disabled><option>正在读取…</option></select></label>
+  <div class="search-box"><input id="referenceQuery" aria-label="搜索参考原句" placeholder="搜索此来源中的原句">
+  <button type="button" class="primary-btn" data-reference-search disabled>搜索</button></div>
+  <div id="referenceResults"><div class="empty">正在读取参考来源…</div></div>
+  <p class="form-error" data-reference-error role="alert"></p><div class="modal-actions">
+  ${captured.scope.chapter_id?'<button type="button" class="ghost-btn" data-reference-editor>返回写作</button>':''}
+  <button type="button" class="ghost-btn" data-close>关闭</button></div></div>`;
+ document.body.append(wrap);
+ const current=()=>wrap.isConnected&&token===authorReferenceDialogSeq&&referenceScopeCurrent(captured);
+ wrap.querySelector('[data-close]').onclick=()=>{++authorReferenceDialogSeq;wrap.remove()};
+ wrap.querySelector('[data-reference-editor]')?.addEventListener('click',()=>{
+  if(!current())return;++authorReferenceDialogSeq;wrap.remove();
+  if(view==='editor'&&document.querySelector('#chapterBody')){renderReferenceTools();return}
+  view='editor';render();
+  const body=document.querySelector('#chapterBody');
+  if(body&&savedSelection?.chapter_id===captured.scope.chapter_id&&savedSelection.body===body.value){
+   body.setSelectionRange(savedSelection.start,savedSelection.end);captureSelection();
+  }
  });
+ const select=wrap.querySelector('#referenceDocument'),results=wrap.querySelector('#referenceResults');
+ const searchButton=wrap.querySelector('[data-reference-search]'),errorBox=wrap.querySelector('[data-reference-error]');
+ let searchSeq=0;
+ const displayHits=(hits,warnings=[])=>{
+  results.innerHTML=warnings.map(message=>`<p class="modal-help">${esc(message)}</p>`).join('')+
+   (hits.length?hits.map((hit,index)=>{
+    const reason=referenceSelectionReason(hit,captured.scope),selected=referenceChoice?.selection;
+    const chosen=selected?.document_id===hit.source_document_id&&selected?.section_id===hit.source_section_id&&
+     selected?.section_start===hit.section_start&&selected?.section_end===hit.section_end&&selected?.source_hash===hit.source_hash;
+    return `<article class="result reference-search-result"><strong>${esc(hit.title||'')}</strong>
+     <p class="reference-source-quote">${esc(hit.source_quote||'')}</p><div class="reference-hit-footer">
+     <small>${esc(hit.document_title||hit.filename||'参考来源')} · ${Array.from(hit.source_quote||'').length} 字</small>
+     <button type="button" class="ghost-btn" data-reference-use="${index}" ${reason?'disabled':''} title="${esc(reason||'选择这段完整原句')}">
+      ${chosen?'撤回本次参考':'用于本次写作'}</button></div>${reason?`<small class="reference-choice-error">${esc(reason)}</small>`:''}</article>`;
+   }).join(''):'<div class="empty">此来源没有匹配原句。</div>');
+  results.querySelectorAll('[data-reference-use]').forEach(button=>button.onclick=()=>{
+   if(!current())return;
+   try{
+    const hit=hits[Number(button.dataset.referenceUse)],selected=referenceChoice?.selection;
+    if(selected?.document_id===hit.source_document_id&&selected?.section_id===hit.source_section_id&&
+     selected?.section_start===hit.section_start&&selected?.section_end===hit.section_end&&selected?.source_hash===hit.source_hash)
+     clearReferencePassage();
+    else selectReferencePassage(hit,captured);
+    errorBox.textContent='';displayHits(hits,warnings);
+   }catch(error){errorBox.textContent=error.message}
+  });
+ };
+ const showDocument=async()=>{
+  const id=select.value,sequence=++searchSeq;errorBox.textContent='';
+  results.innerHTML='<div class="empty">正在读取参考原文…</div>';
+  try{
+   const data=await authorJSON(`/api/references/${encodeURIComponent(id)}`,{headers});
+   if(!current()||sequence!==searchSeq||select.value!==id)return;
+   const chapters=data.chapters||data.reference?.chapters||[];
+   results.innerHTML=chapters.map(c=>`<details class="analysis-item"><summary>${esc(c.title)} · ${Array.from(c.body||'').length} 字</summary>
+    <pre class="prompt-preview">${esc(c.body||'')}</pre></details>`).join('')||'<div class="empty">此来源暂无正文。</div>';
+  }catch(error){if(current()&&sequence===searchSeq)errorBox.textContent=error.message}
+ };
+ const search=async()=>{
+  const query=wrap.querySelector('#referenceQuery').value.trim(),id=select.value,sequence=++searchSeq;
+  if(!query||!id||!current())return;
+  errorBox.textContent='';results.innerHTML='<div class="empty">正在搜索原句…</div>';
+  try{
+   const data=await authorJSON(`/api/references/${encodeURIComponent(id)}/search?q=${encodeURIComponent(query)}`,{headers});
+   if(!current()||sequence!==searchSeq||select.value!==id||wrap.querySelector('#referenceQuery').value.trim()!==query)return;
+   if(!Array.isArray(data.results))throw new Error('参考搜索返回格式异常，请重试');
+   displayHits(data.results,Array.isArray(data.warnings)?data.warnings:[]);
+  }catch(error){if(current()&&sequence===searchSeq)errorBox.textContent=error.message}
+ };
+ searchButton.onclick=search;
+ wrap.querySelector('#referenceQuery').addEventListener('keydown',event=>{
+  if(event.key==='Enter'){event.preventDefault();search()}
+ });
+ select.onchange=showDocument;
+ try{
+  const data=await authorJSON('/api/references',{headers});if(!current())return;
+  const references=Array.isArray(data.references)?data.references:[];
+  select.innerHTML=references.map(item=>`<option value="${safeId(item.id)}">${esc(item.title||item.filename||'参考来源')}</option>`).join('')||
+   '<option value="">暂无参考来源</option>';
+  select.disabled=!references.length;searchButton.disabled=!references.length;
+  if(!references.length){results.innerHTML='<div class="empty">还没有参考来源。</div>';return}
+  if(documentId&&references.some(item=>item.id===documentId))select.value=documentId;
+  await showDocument();
+ }catch(error){if(current()){results.innerHTML='<div class="empty">参考来源暂时无法读取。</div>';errorBox.textContent=error.message}}
 }
 
 views.plot=()=>`${authorPageHead('情节与伏笔','<button class="primary-btn" data-action="newPlot">＋ 伏笔</button>')}

@@ -36,6 +36,11 @@ MAX_CHAPTERS = 2000
 MAX_CHAPTER_CHARS = 2_000_000
 MAX_SEARCH_SECTIONS = 4000
 MAX_SEARCH_UTF8_BYTES = 16 * 1024 * 1024
+MAX_REFERENCE_PASSAGE_CHARS = 900
+REFERENCE_SELECTION_FIELDS = frozenset({
+    "document_id", "section_id", "section_start", "section_end",
+    "source_sha256", "section_hash", "source_hash",
+})
 MAX_XML_DEPTH = 128
 MAX_XML_ELEMENTS = 250_000
 _OPF = "http://www.idpf.org/2007/opf"
@@ -843,3 +848,66 @@ def search_references(conn: sqlite3.Connection, scope: Mapping[str, Any], query:
         "warnings": ["参考库超过单次搜索范围，本次只检索已计入的完整章节，请缩小参考书范围或拆分大书。"] if count > scanned else [],
     })
     return result
+
+
+def resolve_reference_selections(conn: sqlite3.Connection, scope: Mapping[str, Any],
+                                 selections: Any) -> list[dict[str, Any]]:
+    """Read the author's exact passage from its current, separately scoped source."""
+    project, branch = _scope(scope)
+    if not isinstance(selections, list) or len(selections) > 1:
+        raise ImportRejected("本次参考应为空或只选择一段原句。")
+    passages = []
+    for selected in selections:
+        if not isinstance(selected, Mapping) or set(selected) != REFERENCE_SELECTION_FIELDS:
+            raise ImportRejected("参考片段来源信息不完整，请重新选择原句。")
+        for field in ("document_id", "section_id"):
+            value = selected[field]
+            if (not isinstance(value, str)
+                    or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{0,127}", value)):
+                raise ImportRejected("参考书或章节编号无效，请重新选择原句。")
+        for field in ("source_sha256", "section_hash", "source_hash"):
+            if not isinstance(selected[field], str) or not re.fullmatch(r"[0-9a-f]{64}", selected[field]):
+                raise ImportRejected("参考片段校验信息无效，请重新选择原句。")
+        start, end = selected["section_start"], selected["section_end"]
+        if type(start) is not int or type(end) is not int or not 0 <= start < end:
+            raise ImportRejected("参考片段范围无效，请重新选择原句。")
+        if end - start > MAX_REFERENCE_PASSAGE_CHARS:
+            raise ImportRejected("本次参考最多 900 字，请选择更短的完整段落。")
+        row = conn.execute(
+            "SELECT s.body,s.title,s.ordinal,s.source_json,d.title,d.filename,d.source_sha256 "
+            "FROM app_reference_section s JOIN app_reference_document d ON d.id=s.document_id "
+            "AND d.project_id=s.project_id AND d.branch_id=s.branch_id "
+            "WHERE s.project_id=? AND s.branch_id=? AND s.document_id=? AND s.id=?",
+            (project, branch, selected["document_id"], selected["section_id"]),
+        ).fetchone()
+        if row is None:
+            raise ImportRejected("参考片段不存在或不属于当前作品和分支，请重新选择。")
+        body, title, ordinal, source_json, document_title, filename, document_sha = row
+        if not isinstance(body, str) or end > len(body):
+            raise ImportRejected("参考片段范围已变化，请重新选择原句。")
+        quote = body[start:end]
+        if (document_sha != selected["source_sha256"]
+                or text_hash(body) != selected["section_hash"]
+                or text_hash(quote) != selected["source_hash"]):
+            raise ImportRejected("参考书或原句已变化，请重新选择片段。")
+        try:
+            source = json.loads(source_json)
+        except (TypeError, ValueError):
+            raise ImportRejected("参考章节来源损坏，请重新导入参考书。") from None
+        if (not isinstance(source, dict) or type(source.get("source_start")) is not int
+                or type(source.get("source_end")) is not int
+                or not 0 <= source["source_start"] < source["source_end"]
+                or source["source_end"] - source["source_start"] != len(body)
+                or source.get("source_hash") != text_hash(body)):
+            raise ImportRejected("参考章节来源与原文不一致，请重新导入参考书。")
+        passages.append({
+            "id": selected["section_id"] + ":" + str(start) + ":" + str(end),
+            **dict(selected), "project_id": project, "branch_id": branch,
+            "document_title": document_title, "title": title, "filename": filename,
+            "ordinal": ordinal, "source_quote": quote,
+            "source_start": source["source_start"] + start,
+            "source_end": source["source_start"] + end,
+            "offset_unit": "unicode_codepoint", "material_kind": "reference",
+            "use": "narrative_technique_only_not_story_fact",
+        })
+    return passages

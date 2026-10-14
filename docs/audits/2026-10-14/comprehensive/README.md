@@ -8,7 +8,13 @@
 
 已实施设定范围持久化、当前规划指南消费、语义审稿待办进入归档与出版、沿已有后续章继续、已保存作品只读重开、创作要求草稿隔离、完整字符名称及长标题布局、中文出版例外理由。专项后又修复空指南占预算、实际材料字节统计、人物别名变化后旧任务失效，以及审稿决定保存后局部修订按钮不可用的问题。
 
-当前最新[指南与确认完整性整轮](evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)在上海时间2026-10-15 02:39:43至02:46:58完成，85项检查全部通过，95份冻结来源前后相同，10组真实电脑浏览器共125个场景通过，11份JSON及32张截图共43份附件指纹一致。本报告独立读取结果并逐份重算来源与附件SHA，均无差异；工程测试使用隔离作品和免费本机提供方，覆盖后述指南、部分来源、跨报告复用、人物身份及两条旧测试前提纠正。源码推送、远程检查与真实服务状态单独验收，不能从此整轮推出文学或第一梯队结论。
+历史[指南与确认完整性整轮](evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)在上海时间2026-10-15 02:39:43至02:46:58完成，85项检查全部通过，95份冻结来源前后相同，10组真实电脑浏览器共125个场景通过，11份JSON及32张截图共43份附件指纹一致。本报告独立读取结果并逐份重算来源与附件SHA，均无差异；该报告及附件保持不变，只覆盖当时的指南、部分来源、跨报告复用、人物身份及两条旧测试前提纠正。后续参考包源码须独立完整验收，不能从此整轮推出新版本、文学或第一梯队结论。
+
+本轮继续实施显式参考原句：作者从当前作品参考库手选一段，最多900个完整字符，只用于本次续写或润色。服务端按身份、范围及三份指纹重读，预览与实际发送共用材料，预算不足先拒绝；只绑定已消费来源，参考不进入本书正典或章后事实。独立复核发现“两份参考绑定都丢失仍发送旧请求”和“冻结原句被改但审计未核对”的真实保护缺口，已修复并以同13个方法复验通过；正式迁移版13方法覆盖15个叶场景，3次免费调用、收费0；指定真实电脑参考15场景也通过。首次[参考包整轮](evidence/compatibility-python311-node24-reference-passages-integrity-release-20261015.json)89项中87通过、2失败，98份源码前后相同；旧稿整理409被资料检查提前变400、浏览器汇总输出使整轮漏登完整场景/4截图，两项失败保留。
+
+修正后[参考包完整复验](evidence/compatibility-python311-node24-reference-passages-integrity-refined-release-20261015.json)于上海2026-10-15 03:57:31至04:05:50完成，89项全部通过、11套真实浏览器共140个电脑场景；98份来源前后相同，14份JSON与36张截图共50份附件指纹均匹配。本报告独立读取最终JSON并重算来源与附件SHA；正式参考HTTP36方法、完整性13方法/15叶场景及参考页面15场景均通过。全部使用临时数据及免费本机提供方，未新增收费请求；这是参考包本机工程结果，新提交的GitHub及实际服务仍另行验收。
+
+[实际本地服务验收链](evidence/local-service-reconciled-20261015.md)单独对应 `3a369807252e5dcda9ce5bda039d169744fedee5`：首次新增空表使严格数量检查失败，原件保留；独立只读核对证明64张既有表全部内容及结构、原稿和历史不变。随后只刷新7张搜索衍生表，healthy/current、滞后0；两个电脑尺寸共8个只读页面场景通过、0写请求、0模型。该提交GitHub运行 `38620315120` 为failure，创作要求布局在1280×900底部超0.359375像素，后4项跳过；参考包的新GitHub结果尚待核验。不能将服务链通过写成原更新或全部检查通过，也不代表新参考代码已加载实际服务。
 
 [中间冻结复验](evidence/compatibility-python311-node24-comprehensive-workflow-refined-final.json)在上海时间2026-10-15 00:12:56至00:17:19完成68项、117个真实电脑浏览器场景，79份源码前后相同，9份JSON和27张截图共36份附件指纹一致。之后又发现设定范围、已消费资料、章序和真实旧AI报告的依赖断点，不能用该快照覆盖后续源码。
 
@@ -18,9 +24,9 @@
 
 作者归档还暴露“仅把章节改为完成，就让刚保存的解释过期”的真实回归。[作者说明归档9项](evidence/author-resolution-material-after-fix.json)已通过：只在作者说明凭据中排除章节状态，正文、资料和计划变化仍失效，专用凭据不能授权模型任务；旧解释不静默升级。之后[旧报告10项复验](evidence/material-legacy-after-author-resolution.json)通过。[材料修后中间整轮](evidence/compatibility-python311-node24-materials-comprehensive-refined-release.json)上海2026-10-15 01:44:44至01:50:46取得77项全部通过、88份来源不变、122个电脑场景及40份附件指纹一致；后续仍发现指南断点，不能作为当前最终发布结论。
 
-新断点只需保存故事前提或创作约定，不必重新建立章节：任务历史已经只读，旧章后分析却仍能保存摘要、交接或候选；审稿缺指南标记时仍能认领、生成修订队列，双缺标记旧审稿的作者说明也不随蓝图变化失效。[章后分析修前12项](evidence/analysis-guidance-before-fix.json)11项未通过、1项组件兼容通过；[同12项首修后](evidence/analysis-guidance-after-fix.json)全部通过，前后各12次免费。[审稿修前11项](evidence/review-guidance-before-fix.json)7项保护失败、4项控制通过；[同11项首修后](evidence/review-guidance-after-fix.json)全部通过，前后各9次免费。正常分析自身连续确认保留原冻结指南、单独记录决定后的当前指南，外部改动先拒绝；旧报告按当前指南免费说明，指南再变旧理由失效。两条过时测试前提另留[失败记录](evidence/legacy-guidance-outdated-assertions-before-update.json)，纠正后[旧报告10项](evidence/material-legacy-after-guidance-fixture-update.json)及[出版闭环11项](evidence/story-review-publication-after-guidance-fixture-update.json)通过，不计作新增产品漏洞或同集合修前成绩。这些源码与测试变化已纳入最新85项完整验收。
+新断点只需保存故事前提或创作约定，不必重新建立章节：任务历史已经只读，旧章后分析却仍能保存摘要、交接或候选；审稿缺指南标记时仍能认领、生成修订队列，双缺标记旧审稿的作者说明也不随蓝图变化失效。[章后分析修前12项](evidence/analysis-guidance-before-fix.json)11项未通过、1项组件兼容通过；[同12项首修后](evidence/analysis-guidance-after-fix.json)全部通过，前后各12次免费。[审稿修前11项](evidence/review-guidance-before-fix.json)7项保护失败、4项控制通过；[同11项首修后](evidence/review-guidance-after-fix.json)全部通过，前后各9次免费。正常分析自身连续确认保留原冻结指南、单独记录决定后的当前指南，外部改动先拒绝；旧报告按当前指南免费说明，指南再变旧理由失效。两条过时测试前提另留[失败记录](evidence/legacy-guidance-outdated-assertions-before-update.json)，纠正后[旧报告10项](evidence/material-legacy-after-guidance-fixture-update.json)及[出版闭环11项](evidence/story-review-publication-after-guidance-fixture-update.json)通过，不计作新增产品漏洞或同集合修前成绩。这些源码与测试变化已纳入历史85项完整验收。
 
-继续扩展到“没有实际模型run、但持有服务端私有来源”的合成旧报告，又发现仅剩指南、只有孤立决定材料或显式空决定来源仍可能放行。[部分来源修前8项](evidence/analysis-partial-source-before-fix.json)有6个测试组失败、2个控制组通过，含子测试共8个失败断言；不是8个独立漏洞。[冻结同8项修后](evidence/analysis-partial-source-after-fix.json)全部通过，前后0请求、0收费、11份来源相同。决定标记不能代替原凭据，显式null不能回退组件；仅指南旧审稿的免费说明现在绑定当前全作品材料，人物说明改变且指南不变仍使旧说明失效，旧source409原子拒绝、新source200免费解除。[原审稿11项最新复验](evidence/review-guidance-after-partial-source-fix.json)也通过，9次免费、0收费、10份来源不变。最新85项整轮已经覆盖此修复，不用首修后23项或77项覆盖最新源码。
+继续扩展到“没有实际模型run、但持有服务端私有来源”的合成旧报告，又发现仅剩指南、只有孤立决定材料或显式空决定来源仍可能放行。[部分来源修前8项](evidence/analysis-partial-source-before-fix.json)有6个测试组失败、2个控制组通过，含子测试共8个失败断言；不是8个独立漏洞。[冻结同8项修后](evidence/analysis-partial-source-after-fix.json)全部通过，前后0请求、0收费、11份来源相同。决定标记不能代替原凭据，显式null不能回退组件；仅指南旧审稿的免费说明现在绑定当前全作品材料，人物说明改变且指南不变仍使旧说明失效，旧source409原子拒绝、新source200免费解除。[原审稿11项最新复验](evidence/review-guidance-after-partial-source-fix.json)也通过，9次免费、0收费、10份来源不变。历史85项整轮覆盖该阶段，不用首修后23项、77项或85项覆盖之后参考包源码。
 
 新报告确认相同原句事实还有跨报告冲突。[复用7项](evidence/analysis-candidate-reuse-after-fix.json)修前5失败/2通过，最新同7项全部通过；[五类正式记录13项](evidence/analysis-candidate-typed-after-fix.json)规范修前9通过/4失败，含11个失败结果记录，修后13项通过、36场景及29个显式子测试，不把42条结果记作42项测试。未改内容复用原正式记录；作者改动、撤回、身份歧义及来源证据损坏均拒绝而不覆盖。[人物身份同8项](evidence/analysis-character-identity-after-fix.json)也通过，修前6目标误200/2正常控制通过；人物状态和关系两端必须仍是当前人物。[章后指南同3场景电脑修后](evidence/analysis-guidance-browser-after-fix.json)通过，旧报告只读且强制确认409，当前分步确认保留。上述各自前后分别15、72、13、3次免费，收费均0、源码前后相同，原失败、早期隔离错误及集合边界见[确认完整性索引](evidence/README.md#跨报告确认复用证据与人物身份)。
 
@@ -44,9 +50,9 @@
 
 ## 还差什么
 
-[合并能力矩阵](capability-matrix.md)记录九类本轮修复和十二类剩余差距，不把墨屿已有书架、四阶段规划、候选确认、任务恢复、原句证据与完整备份重复列成缺失。
+[合并能力矩阵](capability-matrix.md)记录九类先前修复、新增显式参考原句以及十一类剩余差距，不把墨屿已有书架、四阶段规划、候选确认、任务恢复、原句证据与完整备份重复列成缺失。参考原句的专项通过与新完整验收分开记录。
 
-下一批优先接通显式参考片段和电脑文件ZIP恢复，再接正文/规划/审稿用途参数与有版本的作者写法。之后处理安全查找替换、专业档案、场景重组、受控多章创作、持续审阅和大稿量测。每项都需要正常页面入口、保存、真实消费、错误恢复及当前源码验收；具体顺序见[修复路线](repair-roadmap.md)。
+参考原句的完整电脑复验已经通过，本批继续核对新提交检查与实际服务；下一包优先接通电脑文件ZIP恢复，再接正文/规划/审稿用途参数与有版本的作者写法。之后处理安全查找替换、专业档案、场景重组、受控多章创作、持续审阅和大稿量测。每项都需要正常页面入口、保存、真实消费、错误恢复及当前源码验收；具体顺序见[修复路线](repair-roadmap.md)。
 
 ## 文学与预算
 

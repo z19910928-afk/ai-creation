@@ -81,6 +81,14 @@ _QUERIES = {
         "FROM app_plot_item p WHERE p.project_id=? AND p.branch_id=? AND p.id=?",
         True,
     ),
+    "reference_section": (
+        "SELECT s.id,s.document_id,s.project_id,s.branch_id,s.ordinal,s.title,s.body,s.source_json,"
+        "d.filename,d.title document_title,d.source_sha256,d.text_sha256,d.metadata_json "
+        "FROM app_reference_section s JOIN app_reference_document d ON d.id=s.document_id "
+        "AND d.project_id=s.project_id AND d.branch_id=s.branch_id "
+        "WHERE s.project_id=? AND s.branch_id=? AND s.id=?",
+        True,
+    ),
 }
 _STRUCTURE = {
     "relationships": "relationship", "timeline": "timeline",
@@ -210,6 +218,8 @@ def author_resolution_snapshot(conn: sqlite3.Connection, project: str, branch: s
     """Bind a legacy author explanation when the old consumed set is unknown."""
     sources = []
     for kind in _QUERIES:
+        if kind == "reference_section":
+            continue
         if kind == "project":
             identifiers = [project]
         else:
@@ -281,6 +291,10 @@ def capture(conn: sqlite3.Connection, project: str, branch: str, context: Mappin
             raise ValueError("规划资料缺少可校验的来源，请重新打开当前作品")
         for kind in sorted(kinds):
             add(kind, item)
+    for item in context.get("reference_passages") or []:
+        if not isinstance(item, Mapping):
+            raise ValueError("本次参考片段缺少可校验的来源，请重新选择。")
+        add("reference_section", {"id": item.get("section_id")})
     return {
         "version": 1, "project_id": project, "branch_id": branch,
         "dependencies": [
@@ -349,3 +363,81 @@ def author_resolution_materials(conn: sqlite3.Connection, project: str, branch: 
 def validate(conn: sqlite3.Connection, project: str, branch: str, marker: Mapping[str, Any]):
     if refresh(conn, project, branch, marker) != marker:
         raise ValueError(_CHANGED)
+
+
+def validate_reference_context(conn: sqlite3.Connection, project: str, branch: str,
+                               context: Mapping[str, Any]) -> None:
+    """Require the exact quote and its consumed dependency to remain together."""
+    from moyu_import import REFERENCE_SELECTION_FIELDS, resolve_reference_selections
+
+    passages = context.get("reference_passages", [])
+    marker = context.get("_material_source")
+    dependencies = marker.get("dependencies", []) if isinstance(marker, Mapping) else []
+    if not isinstance(dependencies, list):
+        raise ValueError(_LEGACY)
+    bound = [item.get("id") for item in dependencies
+             if isinstance(item, Mapping) and item.get("kind") == "reference_section"]
+    if not isinstance(passages, list) or len(passages) > 1:
+        raise ValueError("本次参考片段记录损坏，请按当前原句生成新候选。")
+    selections = []
+    for item in passages:
+        if not isinstance(item, Mapping) or not REFERENCE_SELECTION_FIELDS <= set(item):
+            raise ValueError("本次参考片段来源缺失，请重新选择原句生成新候选。")
+        selections.append({key: item[key] for key in REFERENCE_SELECTION_FIELDS})
+    if bound != [item["section_id"] for item in selections]:
+        raise ValueError("本次参考片段与来源记录不一致，请重新选择原句生成新候选。")
+    if passages and resolve_reference_selections(
+            conn, {"project_id": project, "branch_id": branch}, selections) != passages:
+        raise ValueError("本次参考原句或来源已变化，请按当前资料生成新候选。")
+
+
+def validate_frozen_reference_context(context: Mapping[str, Any], audit: Any, *,
+                                      input_hash: str | None = None,
+                                      prompt_hash: str | None = None) -> None:
+    """Keep the stored consumed set and the actual frozen request inseparable."""
+    issue = "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
+    if input_hash is not None:
+        encoded = json.dumps(context, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+        if hashlib.sha256(encoded.encode("utf-8")).hexdigest() != input_hash:
+            raise ValueError(issue)
+    payload = audit.get("payload") if isinstance(audit, Mapping) else None
+    messages = payload.get("messages") if isinstance(payload, Mapping) else None
+    materials = []
+    if isinstance(messages, list):
+        for message in messages:
+            content = message.get("content") if isinstance(message, Mapping) else None
+            if (message.get("role") if isinstance(message, Mapping) else None) != "user":
+                continue
+            if not isinstance(content, str) or not content.startswith("<manuscript>\n"):
+                continue
+            try:
+                value, end = json.JSONDecoder().raw_decode(content[len("<manuscript>\n"):])
+            except ValueError:
+                continue
+            if (isinstance(value, dict)
+                    and content[len("<manuscript>\n") + end:].startswith("\n</manuscript>\n")):
+                materials.append(value)
+    marker = context.get("_material_source")
+    dependencies = marker.get("dependencies", []) if isinstance(marker, Mapping) else []
+    context_has_reference = bool(context.get("reference_passages")) or (
+        isinstance(dependencies, list) and any(
+            isinstance(item, Mapping) and item.get("kind") == "reference_section"
+            for item in dependencies))
+    sent_has_reference = any(bool(item.get("reference_passages")) for item in materials)
+    if not context_has_reference and not sent_has_reference:
+        return
+    if (len(materials) != 1
+            or materials[0].get("reference_passages", []) != context.get("reference_passages", [])):
+        raise ValueError(issue)
+    if materials[0] != {key: value for key, value in context.items() if not key.startswith("_")}:
+        raise ValueError(issue)
+    try:
+        encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+        encoded_messages = json.dumps(messages, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
+    except (TypeError, ValueError):
+        raise ValueError(issue) from None
+    request_hash = hashlib.sha256(encoded.encode("utf-8")).hexdigest()
+    if (audit.get("request_sha256") != request_hash
+            or audit.get("messages_sha256") != hashlib.sha256(encoded_messages.encode("utf-8")).hexdigest()
+            or (prompt_hash is not None and prompt_hash != request_hash)):
+        raise ValueError(issue)

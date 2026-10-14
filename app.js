@@ -83,6 +83,122 @@ const editorInputBindings=new WeakMap();
 const instructionDraftFallback=new Map();
 const instructionDraftTasks=new Set(['continue','polish','scene','outline','brainstorm','summary','check']);
 let instructionDraftBinding=null;
+let referenceChoice=null;let referenceScopeEpoch=0;let referenceChoiceSeq=0;
+let referenceObservedScope=null;let aiPreviewSeq=0;
+function referenceScope(c=chapter()){
+ return {project_id:requestedProject||state.project?.id||'',branch_id:state.branch_id||state.project?.branch_id||'main',
+  chapter_id:c?.id||null};
+}
+function referenceScopeKey(scope=referenceScope()){
+ return JSON.stringify([scope.project_id,scope.branch_id,scope.chapter_id]);
+}
+function syncReferenceScope(){
+ const key=referenceScopeKey();
+ if(key!==referenceObservedScope){
+  referenceObservedScope=key;referenceChoice=null;++referenceScopeEpoch;++referenceChoiceSeq;++aiPreviewSeq;
+  document.querySelectorAll('[data-reference-dialog],[data-reference-preview]').forEach(wrap=>wrap.remove());
+ }
+ return {scope:referenceScope(),key,epoch:referenceScopeEpoch};
+}
+function invalidateReferenceScope(){
+ referenceChoice=null;referenceObservedScope=null;++referenceScopeEpoch;++referenceChoiceSeq;++aiPreviewSeq;
+ document.querySelectorAll('[data-reference-dialog],[data-reference-preview]').forEach(wrap=>wrap.remove());
+}
+function referenceScopeCurrent(captured){
+ const current=syncReferenceScope();
+ return captured.key===current.key&&captured.epoch===current.epoch;
+}
+function referenceSelectionReason(hit,scope=referenceScope()){
+ if(!scope.chapter_id)return '请先选择写作章节';
+ if(!hit||hit.project_id!==scope.project_id||hit.branch_id!==scope.branch_id)return '这段原句属于其他作品或版本';
+ if(!safeId(hit.source_document_id)||!safeId(hit.source_section_id)||hit.offset_unit!=='unicode_codepoint'||
+  !Number.isInteger(hit.section_start)||!Number.isInteger(hit.section_end)||
+  hit.section_start<0||hit.section_end<=hit.section_start||typeof hit.source_quote!=='string'||
+  hit.section_end-hit.section_start!==Array.from(hit.source_quote).length||
+  ![hit.source_sha256,hit.section_hash,hit.source_hash].every(value=>typeof value==='string'&&/^[a-f0-9]{64}$/.test(value)))
+  return '这段原句缺少完整来源，请重新搜索';
+ return Array.from(hit.source_quote).length>900?'这段原句超过900字，请选择较短的完整段落':'';
+}
+function selectReferencePassage(hit,captured=syncReferenceScope()){
+ if(!referenceScopeCurrent(captured))throw new Error('作品或章节已切换，请重新选择参考片段');
+ const reason=referenceSelectionReason(hit,captured.scope);if(reason)throw new Error(reason);
+ referenceChoice={selection:{document_id:hit.source_document_id,section_id:hit.source_section_id,
+  section_start:hit.section_start,section_end:hit.section_end,source_sha256:hit.source_sha256,
+  section_hash:hit.section_hash,source_hash:hit.source_hash},
+  quote:hit.source_quote,title:String(hit.title||''),document_title:String(hit.document_title||hit.filename||'参考来源')};
+ ++referenceChoiceSeq;invalidateAIPreviews();renderReferenceTools();
+}
+function clearReferencePassage(){
+ referenceChoice=null;++referenceChoiceSeq;invalidateAIPreviews();renderReferenceTools();
+}
+function invalidateAIPreviews(){
+ ++aiPreviewSeq;document.querySelectorAll('[data-reference-preview]').forEach(wrap=>wrap.remove());
+}
+function referenceRequestSnapshot(task){
+ const captured=syncReferenceScope();
+ if(referenceChoice&&!['continue','polish'].includes(task))throw new Error('当前任务不支持参考片段，请改为续写或润色，或撤回本次参考');
+ return {...captured,sequence:referenceChoiceSeq,selections:referenceChoice?[{...referenceChoice.selection}]:[]};
+}
+function referenceRequestCurrent(captured){
+ return referenceScopeCurrent(captured)&&captured.sequence===referenceChoiceSeq;
+}
+function consumeReferencePassage(captured){
+ if(captured.selections.length&&referenceRequestCurrent(captured))clearReferencePassage();
+}
+function referencePassageMarkup(passages){
+ if(!Array.isArray(passages)||!passages.length)return '';
+ return `<section class="reference-preview-section"><h4>本次参考原句</h4>${passages.map(item=>
+  `<p class="modal-help">${esc(item.document_title||item.filename||'参考来源')} · ${esc(item.title||item.section_title||'')}
+  · ${Array.from(String(item.source_quote??item.body??'')).length} 字</p><blockquote>${esc(item.source_quote??item.body??'')}</blockquote>`).join('')}</section>`;
+}
+function renderReferenceTools(){
+ syncReferenceScope();const host=document.querySelector('#aiReferenceTools');if(!host)return;
+ const choice=referenceChoice,task=document.querySelector('#aiTask')?.value||'continue';
+ host.innerHTML=`<div class="reference-current">${choice?
+  `<span><strong>本次参考</strong> ${esc(choice.document_title)} · ${esc(choice.title)} · ${Array.from(choice.quote).length} 字</span>`:
+  '<span>本次参考：未选择</span>'}${choice&&!['continue','polish'].includes(task)?'<small class="check-bad">当前任务不支持参考片段</small>':''}</div>
+  <div class="reference-tools"><button type="button" class="ghost-btn" data-reference-pick>选择参考片段</button>
+  ${choice?'<button type="button" class="ghost-btn" data-reference-inspect>查看原句</button><button type="button" class="ghost-btn" data-reference-remove>撤回</button>':''}</div>`;
+ host.querySelector('[data-reference-pick]').onclick=()=>authorChooseReference();
+ host.querySelector('[data-reference-remove]')?.addEventListener('click',clearReferencePassage);
+ host.querySelector('[data-reference-inspect]')?.addEventListener('click',()=>{
+  const captured=syncReferenceScope(),selected=referenceChoice;if(!selected)return;
+  const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.referencePreview='1';
+  wrap.innerHTML=`<div class="modal candidate-modal"><h3>本次参考原句</h3><p class="modal-help">${esc(selected.document_title)}
+   · ${esc(selected.title)} · ${Array.from(selected.quote).length} 字</p><blockquote class="reference-full-quote">${esc(selected.quote)}</blockquote>
+   <div class="modal-actions"><button type="button" class="ghost-btn" data-close>关闭</button><button type="button" class="ghost-btn" data-remove>撤回</button></div></div>`;
+  document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
+  wrap.querySelector('[data-remove]').onclick=()=>{
+   if(referenceScopeCurrent(captured)&&referenceChoice===selected)clearReferencePassage();wrap.remove();
+  };
+ });
+}
+function aiRequestSnapshot(c,task,instruction,source,controls=materialControls(),profile=retrievalProfile()){
+ const references=referenceRequestSnapshot(task);
+ const originalSource=source||candidateSource(task,c);
+ return {references,body:c.body,task,instruction,source:originalSource,
+  payload:{task,chapter_id:c.id,instruction,source:originalSource,
+   material_controls:MoyuSync.copy(controls),retrieval_profile:{...profile},reference_selections:references.selections}};
+}
+function aiRequestCurrent(snapshot){
+ return referenceRequestCurrent(snapshot.references)&&chapter()?.id===snapshot.payload.chapter_id&&
+  chapter()?.body===snapshot.body;
+}
+async function sealAIPreviewSnapshot(snapshot){
+ const body=snapshot.body;snapshot.payload.source={...snapshot.source,
+  source_revision_id:chapter(snapshot.payload.chapter_id)?.revision_id,source_body_hash:await sha256(body)};
+ if(!aiRequestCurrent(snapshot))throw new Error('原稿或本次参考已变化，请重新预览');
+}
+async function readAIPromptPreview(snapshot){
+ await sealAIPreviewSnapshot(snapshot);
+ const response=await fetch(`${API_BASE}/ai/prompt-preview`,{method:'POST',headers:{'Content-Type':'application/json',
+  'X-Moyu-Project':snapshot.references.scope.project_id,'X-Moyu-Branch':snapshot.references.scope.branch_id},
+  body:JSON.stringify(snapshot.payload)});
+ const result=await response.json().catch(()=>({}));
+ if(!response.ok)throw new Error(result.error||`预览读取失败（${response.status}）`);
+ if(!aiRequestCurrent(snapshot))throw new Error('原稿或本次参考已变化，请重新预览');
+ return result;
+}
 function instructionDraftKey(c=chapter()){
  if(!c?.id)return null;
  return `${KEY}:instruction-draft:${JSON.stringify([requestedProject||state.project?.id||'default-project',
@@ -123,7 +239,7 @@ function bindInstructionDraft(){
  clear.textContent='清空要求';clear.title='清空本章补充要求，恢复续写';clear.setAttribute('aria-label','清空当前章节任务和补充要求');
  clear.addEventListener('click',()=>{
   if(instructionDraftBinding!==binding||!instruction.isConnected)return;
-  task.value='continue';instruction.value='';cacheInstructionDraft(binding);instruction.focus();
+  task.value='continue';instruction.value='';cacheInstructionDraft(binding);renderReferenceTools();instruction.focus();
  });
  document.querySelector('.ai-controls')?.append(clear);
 }
@@ -630,6 +746,7 @@ function receiveState(remote,base=confirmedState){
  const result=base?MoyuSync.merge(base,state,remote):{value:remote,conflicts:[]};
  confirmedState=MoyuSync.copy(remote);
  state=result.value;
+ syncReferenceScope();
  const current=chapter();
  if(current)for(const [id,key] of Object.entries({chapterBody:'body',chapterTitle:'title',...CHAPTER_PLAN_FIELDS})){
   const input=document.querySelector('#'+id);const value=current[key]||'';
@@ -832,7 +949,7 @@ async function generateAI(options={}){
  const task=document.querySelector('#aiTask')?.value||'continue';
  const instruction=document.querySelector('#aiInstruction')?.value||'';const requestBody=c.body;
  const status=document.querySelector('#aiStatus');const owner=requestedProject;
- let source;
+ let source,snapshot;
  if(fixedSource){
   const branch=state.branch_id||state.project?.branch_id||'main';
   if(task!=='polish'||fixedSource.project_id!==requestedProject||fixedSource.branch_id!==branch||
@@ -843,11 +960,13 @@ async function generateAI(options={}){
  }else{
   try{source=candidateSource(task,c)}catch(error){return toast(error.message)}
  }
+ try{snapshot=aiRequestSnapshot(c,task,instruction,source)}catch(error){return toast(error.message)}
  if(!backendOnline)return toast('请先恢复连接；离线时可以继续写作和保留草稿');
  aiBusy=true;if(status)status.textContent='正在保存原稿并准备候选…';
  try{
   if(!await syncBackend())throw new Error('当前稿件还未保存，请先处理保存提示');
-  const original=chapter(source.chapter_id);if(!original||owner!==requestedProject)throw new Error('作品已经切换，请在原作品重新发起');
+  const original=chapter(source.chapter_id);if(!original||owner!==requestedProject||!aiRequestCurrent(snapshot))
+   throw new Error('原稿、作品或本次参考已经变化，请重新生成');
   if(original.body!==requestBody)throw new Error('准备期间正文有变化，请按当前新稿重新生成');
   const currentHash=await sha256(original.body);
   if(fixedSource){
@@ -858,12 +977,21 @@ async function generateAI(options={}){
    source.source_revision_id=original.revision_id;source.source_body_hash=currentHash;
   }
   const responseFormat=['outline','scene','summary','check','brainstorm','semantic_review'].includes(task)?'json':'text';
-  const request={task,chapter_id:source.chapter_id,instruction,
-   source,stream:true,response_format:responseFormat,material_controls:materialControls(),retrieval_profile:retrievalProfile()};
+  const request={...snapshot.payload,source,stream:true,response_format:responseFormat};
   if(reviewSource)request.review_source=reviewSource;
-  const data=await durableOperation(`${API_BASE}/ai/queue`,'POST',request);
+  let committedJob=null;
+  const data=await durableOperation(`${API_BASE}/ai/queue`,'POST',request,
+   ()=>aiRequestCurrent(snapshot),committed=>{
+    const job=committed.job||committed;
+    if(job.ai_run_id&&job.id){committedJob=job;consumeReferencePassage(snapshot.references)}
+   }).catch(error=>{
+    if(!committedJob)throw error;
+    toast('候选任务已保存，页面暂未刷新；任务中心会继续读取');
+    return {job:committedJob};
+   });
   const job=data.job||data;const runId=job.ai_run_id;
   if(!runId||!job.id)throw new Error('任务未返回保存身份，候选仍未应用');
+  if(owner!==requestedProject||!referenceScopeCurrent(snapshot.references))return;
   jobSources.set(job.id,source);
   const draft={task,text:'',originalText:'',model:aiStatus.model,ai_run_id:runId,job_id:job.id,source:job.source||source,
    complete:false,decision:'pending',last_seq:0};
@@ -873,7 +1001,22 @@ async function generateAI(options={}){
  }catch(error){if(status&&owner===requestedProject)status.textContent=error.message;toast(error.message)}
  finally{aiBusy=false}
 }
-async function aiPromptContract(){const c=chapter();if(!c)return toast('请先选择章节');const task=document.querySelector('#aiTask')?.value||'continue';const instruction=document.querySelector('#aiInstruction')?.value||'';try{const r=await fetch(`${API_BASE}/ai/prompt-preview`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task,chapter_id:c.id,instruction,material_controls:materialControls(),retrieval_profile:retrievalProfile()})});if(!r.ok)throw new Error('提示词预览不可用');const p=await r.json();const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.innerHTML=`<div class="modal"><h3>AI 任务契约预览</h3><p class="modal-help">任务：${esc(p.task)} · 输出：${esc(p.contract?.output||'')} · 格式：${esc(p.contract?.response_format||'text')} · 估算 ${p.estimated_tokens||0} tokens</p><pre class="ai-contract-preview">${esc(p.system)}\n\n${esc(p.user.slice(0,12000))}</pre><div class="modal-actions"><button class="ghost-btn" data-close>关闭</button></div></div>`;document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove()}catch(e){toast(e.message)}}
+async function aiPromptContract(){
+ const c=chapter();if(!c)return toast('请先选择章节');
+ syncReferenceScope();
+ const sequence=++aiPreviewSeq;
+ try{
+  const snapshot=aiRequestSnapshot(c,document.querySelector('#aiTask')?.value||'continue',
+   document.querySelector('#aiInstruction')?.value||'');
+  const p=await readAIPromptPreview(snapshot);if(sequence!==aiPreviewSeq)return;
+  const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.referencePreview='1';
+  wrap.innerHTML=`<div class="modal candidate-modal"><h3>AI 任务契约预览</h3><p class="modal-help">任务：${esc(p.task)}
+   · 输出：${esc(p.contract?.output||'')} · 格式：${esc(p.contract?.response_format||'text')} · 估算 ${p.estimated_tokens||0} tokens</p>
+   ${referencePassageMarkup(p.reference_passages)}<pre class="ai-contract-preview">${esc(p.system||'')}\n\n${esc(p.user||'')}</pre>
+   <div class="modal-actions"><button type="button" class="ghost-btn" data-close>关闭</button></div></div>`;
+  document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
+ }catch(error){if(sequence===aiPreviewSeq)toast(error.message)}
+}
 async function adoptAI(){
  const draft=aiDraft;if(terminalCandidateFailure(draft))return toast('未完成的片段仅供阅读和复制，不能采纳');
  if(!draft?.complete||!draft.text.trim())return toast('请等待候选完整生成');
@@ -1206,7 +1349,7 @@ async function showFinalizationCheck(){
 }
 function words(){return state.chapters.reduce((n,c)=>n+c.body.replace(/\s/g,'').length,0)}
 function chapter(id=activeChapter){return state.chapters.find(c=>c.id===id)}
-function render(){cacheInstructionDraft();const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
+function render(){cacheInstructionDraft();syncReferenceScope();const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
  document.querySelector('#projectTitle').textContent=state.project.title;document.querySelector('#projectTitle').title=state.project.title;document.querySelector('#projectMeta').textContent=`${state.chapters.length} 章 · ${words()} 字`;
  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
  document.querySelector('#main').innerHTML=(views[view]||views.dashboard)();bind();ensureFinishButton();saveIndicator();updateTaskCount();
@@ -1350,6 +1493,7 @@ function bind(){
  if(status)status.onchange=()=>{const c=chapter();if(!c)return;c.status=status.value;c.review_status='unreviewed';c.updated=Date.now();save();toast(`章节状态已更新为“${c.status}”`)};
  document.querySelector('#searchInput')?.addEventListener('keydown',e=>e.key==='Enter'&&actions.search());document.querySelectorAll('[data-record]').forEach(b=>b.onclick=()=>editRecord(b.dataset.record));document.querySelectorAll('[data-memory]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memory,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`)));document.querySelectorAll('[data-memory-evidence]').forEach(b=>b.onclick=()=>showMemoryEvidence(b.dataset.memoryEvidence));document.querySelectorAll('[data-memory-reanchor]').forEach(b=>b.onclick=()=>reanchorMemory(b.dataset.memoryReanchor));document.querySelectorAll('[data-memory-reject]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReject,'rejected').catch(error=>toast(`记忆拒绝失败：${error.message}`)));document.querySelectorAll('[data-memory-review]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReview,'candidate').catch(error=>toast(`记忆更新失败：${error.message}`)));document.querySelector('#aiGenerate')?.addEventListener('click',generateAI);document.querySelector('#aiAdopt')?.addEventListener('click',adoptAI);document.querySelector('#aiCopy')?.addEventListener('click',async()=>{if(!aiDraft)return;try{await navigator.clipboard.writeText(document.querySelector('#aiOutput').value);toast('候选已复制')}catch{document.querySelector('#aiOutput').select()}});document.querySelector('#aiClear')?.addEventListener('click',clearAI);document.querySelector('#aiOutput')?.addEventListener('input',editCandidateText);const generateButton=document.querySelector('#aiGenerate');if(generateButton&&!generateButton.parentElement.querySelector('[data-context-preview]')){const preview=document.createElement('button');preview.className='ghost-btn';preview.dataset.contextPreview='1';preview.textContent='上下文预览';preview.onclick=()=>actions.contextPreview();generateButton.after(preview);const contract=document.createElement('button');contract.className='ghost-btn';contract.textContent='任务契约';contract.onclick=aiPromptContract;preview.after(contract)}
  bindInstructionDraft();
+ renderReferenceTools();document.querySelector('#aiTask')?.addEventListener('change',renderReferenceTools);
 }
 window.addEventListener('beforeunload',()=>cacheInstructionDraft());
 document.addEventListener('click',e=>{const button=e.target.closest?.('[data-chapter]');if(button?.dataset.chapter)localStorage.setItem(ACTIVE_KEY,button.dataset.chapter)});
@@ -1361,18 +1505,96 @@ actions.finalCheck=()=>showFinalizationCheck();
 actions.search=runSearch;
 actions.contextPreview=async()=>{
  const c=chapter();if(!c)return toast('请先选择章节');
- const profile=retrievalProfile();let pack;
- if(backendOnline){try{const r=await fetch(`/api/context?chapter_id=${encodeURIComponent(c.id)}&materials=${materialQuery()}&retrieval_profile=${profileQuery()}`);if(!r.ok)throw new Error();pack=await r.json()}catch{pack=null}}
- if(!pack){pack={budget:{retrieved_count:0,previous_count:0,estimated_tokens:Math.ceil((c.body||'').length/4),retrieval:'offline',profile},current_chapter:{plan:{}},retrieved_chapters:[],previous_chapters:[],memory:state.memory.filter(m=>m.status==='已确认').map(m=>({id:m.id,name:m.name,source_chapter_id:m.source_chapter_id,source_span_id:m.source_span_id}))}}
- const b=pack.budget||{};const truncation=b.truncation||{};const scope=b.knowledge_scope||{};const truncationNote=truncation.applied?`已裁剪 ${truncation.removed?.length||0} 项、截短 ${(truncation.clipped||[]).length} 项；固定 ${(truncation.pinned||[]).length} 项。`:'';const scopeNote=scope.character_states_filtered?`已隐藏 ${scope.character_states_filtered} 条超出当前章节范围的人物状态。`:'';const controls=materialControls();const items=[...(pack.previous_chapters||[]).map(x=>({...x,kind:'chapters',label:`近章：${x.title}`})),...(pack.retrieved_chapters||[]).map(x=>({...x,kind:'chapters',label:`召回：${x.title} · 相关度 ${x.relevance}`})),...(pack.records||[]).map(x=>({...x,kind:'records',label:`设定：${x.type||'卡片'} · ${x.name}`})),...(pack.memory||[]).map(x=>({...x,kind:'memory',label:`记忆：${x.name}`}))];
- const checked=(item,field)=>controls[item.kind]?.[item.id]?.[field]?'checked':'';const shownProfile=b.profile||profile;
- const profileFields=[['max_tokens','预算 tokens',4000,64000],['chapter_top_k','召回章节',0,50],['recent_window','近章窗口',0,10],['memory_top_k','记忆上限',0,120],['record_top_k','设定上限',0,80]];
- const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.innerHTML=`<div class="modal context-modal"><h3>AI 材料与提示预览</h3><p class="modal-help">估算 ${b.estimated_tokens||0} tokens，当前预算 ${b.max_tokens||profile.max_tokens}。先调整召回边界，再固定或排除具体材料。${truncationNote?`<br>${esc(truncationNote)}`:''}${scopeNote?`<br>${esc(scopeNote)}`:''}</p><section class="context-profile"><div class="profile-heading"><strong>上下文配置</strong><span>只影响 AI 召回，不会修改正文</span></div><div class="profile-grid">${profileFields.map(([key,label,min,max])=>`<label>${label}<input type="number" data-profile="${key}" value="${shownProfile[key]??profile[key]}" min="${min}" max="${max}" step="1"></label>`).join('')}</div><p class="modal-help profile-help">百万字作品通过分层召回逐步进入上下文；这里控制每次生成的上限，避免把无关章节塞满。</p></section><div class="material-list">${items.length?items.map(x=>`<label class="material-row"><input type="checkbox" data-material-pin data-kind="${x.kind}" data-id="${safeId(x.id)}" ${checked(x,'pin')}> 固定 <input type="checkbox" data-material-omit data-kind="${x.kind}" data-id="${safeId(x.id)}" ${checked(x,'omit')}> 排除 <input type="number" class="material-order" data-material-order data-kind="${x.kind}" data-id="${safeId(x.id)}" value="${controls[x.kind]?.[x.id]?.order??''}" placeholder="顺序" min="0" max="999"><span>${esc(x.label)}</span></label>`).join(''):'<p class="modal-help">暂无可召回来源。</p>'}</div><div class="modal-actions"><button class="ghost-btn" data-profile-reset>恢复默认配置</button><button class="ghost-btn" data-prompt-preview>完整 Prompt 预览</button><button class="ghost-btn" data-close>关闭</button><button class="primary-btn" data-save-material>保存材料选择</button></div></div>`;
- document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
- const readProfile=()=>{const next={};wrap.querySelectorAll('[data-profile]').forEach(input=>{next[input.dataset.profile]=Number(input.value)});return saveRetrievalProfile(next)};
- wrap.querySelector('[data-profile-reset]').onclick=()=>{const defaults=saveRetrievalProfile(CONTEXT_PROFILE_DEFAULTS);wrap.querySelectorAll('[data-profile]').forEach(input=>{input.value=defaults[input.dataset.profile]});toast('已恢复默认上下文配置')};
- wrap.querySelector('[data-save-material]').onclick=()=>{const next={...controls};wrap.querySelectorAll('[data-material-pin],[data-material-omit]').forEach(input=>{const kind=input.dataset.kind,id=input.dataset.id;next[kind]??={};next[kind][id]??={};next[kind][id][input.hasAttribute('data-material-pin')?'pin':'omit']=input.checked});wrap.querySelectorAll('[data-material-order]').forEach(input=>{const kind=input.dataset.kind,id=input.dataset.id;next[kind]??={};next[kind][id]??={};if(input.value!=='')next[kind][id].order=Number(input.value)});saveMaterialControls(next);readProfile();wrap.remove();toast('材料与上下文配置已保存')};
- wrap.querySelector('[data-prompt-preview]').onclick=async()=>{if(!backendOnline)return toast('启动 SQLite 服务后可查看完整 Prompt');const r=await fetch(`${API_BASE}/ai/prompt-preview`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task:document.querySelector('#aiTask')?.value||'continue',chapter_id:c.id,instruction:document.querySelector('#aiInstruction')?.value||'',material_controls:controls,retrieval_profile:readProfile()})});const data=await r.json();const preview=document.createElement('div');preview.className='modal-backdrop';preview.innerHTML=`<div class="modal"><h3>完整 Prompt 预览</h3><p class="modal-help">${data.prompt_chars||0} 字符，约 ${data.estimated_tokens||0} tokens；仅预览，不会调用模型。</p><pre class="prompt-preview">${esc((data.system||'')+'\n\n'+(data.user||''))}</pre><div class="modal-actions"><button class="ghost-btn" data-close>关闭</button></div></div>`;document.body.append(preview);preview.querySelector('[data-close]').onclick=()=>preview.remove()};
+ syncReferenceScope();
+ const sequence=++aiPreviewSeq;
+ try{
+  const snapshot=aiRequestSnapshot(c,document.querySelector('#aiTask')?.value||'continue',
+   document.querySelector('#aiInstruction')?.value||'');
+  const profile=snapshot.payload.retrieval_profile,controls=snapshot.payload.material_controls;let pack;
+  if(snapshot.references.selections.length&&!backendOnline)throw new Error('请先恢复连接，再核对本次参考原句');
+  if(backendOnline){
+   try{
+    await sealAIPreviewSnapshot(snapshot);
+    const previewSource={...snapshot.payload.source,range:{
+     start:snapshot.payload.source.range.start,end:snapshot.payload.source.range.end}};
+    const query=new URLSearchParams({chapter_id:c.id,task:snapshot.task,instruction:snapshot.instruction,
+     materials:JSON.stringify(controls),retrieval_profile:JSON.stringify(profile),
+     source:JSON.stringify(previewSource),reference_selections:JSON.stringify(snapshot.references.selections)});
+    const response=await fetch(`${API_BASE}/context?${query}`,{headers:{
+     'X-Moyu-Project':snapshot.references.scope.project_id,'X-Moyu-Branch':snapshot.references.scope.branch_id}});
+    const result=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(result.error||`材料预览读取失败（${response.status}）`);
+    pack=result;
+   }catch(error){if(snapshot.references.selections.length)throw error;pack=null}
+  }
+  if(sequence!==aiPreviewSeq||!aiRequestCurrent(snapshot))return;
+  if(!pack)pack={budget:{retrieved_count:0,previous_count:0,estimated_tokens:Math.ceil((c.body||'').length/4),
+   retrieval:'offline',profile},current_chapter:{plan:{}},retrieved_chapters:[],previous_chapters:[],
+   memory:state.memory.filter(m=>m.status==='已确认').map(m=>({id:m.id,name:m.name,source_chapter_id:m.source_chapter_id,source_span_id:m.source_span_id}))};
+  const b=pack.budget||{},truncation=b.truncation||{},scope=b.knowledge_scope||{};
+  const truncationNote=truncation.applied?`已裁剪 ${truncation.removed?.length||0} 项、截短 ${(truncation.clipped||[]).length} 项；固定 ${(truncation.pinned||[]).length} 项。`:'';
+  const scopeNote=scope.character_states_filtered?`已隐藏 ${scope.character_states_filtered} 条超出当前章节范围的人物状态。`:'';
+  const items=[...(pack.previous_chapters||[]).map(x=>({...x,kind:'chapters',label:`近章：${x.title}`})),
+   ...(pack.retrieved_chapters||[]).map(x=>({...x,kind:'chapters',label:`召回：${x.title} · 相关度 ${x.relevance}`})),
+   ...(pack.records||[]).map(x=>({...x,kind:'records',label:`设定：${x.type||'卡片'} · ${x.name}`})),
+   ...(pack.memory||[]).map(x=>({...x,kind:'memory',label:`记忆：${x.name}`}))];
+  const checked=(item,field)=>controls[item.kind]?.[item.id]?.[field]?'checked':'',shownProfile=b.profile||profile;
+  const fields=[['max_tokens','预算 tokens',4000,64000],['chapter_top_k','召回章节',0,50],
+   ['recent_window','近章窗口',0,10],['memory_top_k','记忆上限',0,120],['record_top_k','设定上限',0,80]];
+  const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.referencePreview='1';
+  wrap.innerHTML=`<div class="modal context-modal"><h3>AI 材料与提示预览</h3><p class="modal-help">估算 ${b.estimated_tokens||0} tokens，
+   当前预算 ${b.max_tokens||profile.max_tokens}。${esc(truncationNote)} ${esc(scopeNote)}</p>
+   ${referencePassageMarkup(pack.reference_passages)}<section class="context-profile"><div class="profile-heading"><strong>上下文配置</strong></div>
+   <div class="profile-grid">${fields.map(([key,label,min,max])=>`<label>${label}<input type="number" data-profile="${key}"
+    value="${shownProfile[key]??profile[key]}" min="${min}" max="${max}" step="1"></label>`).join('')}</div></section>
+   <div class="material-list">${items.length?items.map(x=>`<label class="material-row"><input type="checkbox" data-material-pin data-kind="${x.kind}"
+    data-id="${safeId(x.id)}" ${checked(x,'pin')}> 固定 <input type="checkbox" data-material-omit data-kind="${x.kind}" data-id="${safeId(x.id)}"
+    ${checked(x,'omit')}> 排除 <input type="number" class="material-order" data-material-order data-kind="${x.kind}" data-id="${safeId(x.id)}"
+    value="${controls[x.kind]?.[x.id]?.order??''}" placeholder="顺序" min="0" max="999"><span>${esc(x.label)}</span></label>`).join(''):
+    '<p class="modal-help">暂无可召回来源。</p>'}</div><p class="form-error" data-preview-error role="alert"></p>
+   <div class="modal-actions"><button type="button" class="ghost-btn" data-profile-reset>恢复默认配置</button>
+   <button type="button" class="ghost-btn" data-prompt-preview>完整 Prompt 预览</button><button type="button" class="ghost-btn" data-close>关闭</button>
+   <button type="button" class="primary-btn" data-save-material>保存材料选择</button></div></div>`;
+  document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
+  const readProfile=()=>{
+   const next={};wrap.querySelectorAll('[data-profile]').forEach(input=>{
+    const [min,max]=CONTEXT_PROFILE_LIMITS[input.dataset.profile],value=Number(input.value);
+    next[input.dataset.profile]=Number.isFinite(value)?Math.max(min,Math.min(max,Math.round(value))):profile[input.dataset.profile];
+   });return next;
+  };
+  const readControls=()=>{
+   const next=MoyuSync.copy(controls);
+   wrap.querySelectorAll('[data-material-pin],[data-material-omit],[data-material-order]').forEach(input=>{
+    const kind=input.dataset.kind,id=input.dataset.id;next[kind]??={};next[kind][id]??={};
+    if(input.hasAttribute('data-material-order')){
+     if(input.value==='')delete next[kind][id].order;else next[kind][id].order=Number(input.value);
+    }else next[kind][id][input.hasAttribute('data-material-pin')?'pin':'omit']=input.checked;
+   });return next;
+  };
+  wrap.querySelector('[data-profile-reset]').onclick=()=>{
+   wrap.querySelectorAll('[data-profile]').forEach(input=>input.value=CONTEXT_PROFILE_DEFAULTS[input.dataset.profile]);
+  };
+  wrap.querySelector('[data-save-material]').onclick=()=>{
+   if(!referenceScopeCurrent(snapshot.references))return;
+   saveMaterialControls(readControls());saveRetrievalProfile(readProfile());wrap.remove();toast('材料与上下文配置已保存');
+  };
+  wrap.querySelector('[data-prompt-preview]').onclick=async()=>{
+   const button=wrap.querySelector('[data-prompt-preview]');button.disabled=true;
+   try{
+    if(!backendOnline)throw new Error('请先恢复连接，再查看完整提示');
+    const request={...snapshot,payload:{...snapshot.payload,material_controls:readControls(),retrieval_profile:readProfile()}};
+    const data=await readAIPromptPreview(request);
+    if(!wrap.isConnected||sequence!==aiPreviewSeq)return;
+    const preview=document.createElement('div');preview.className='modal-backdrop';preview.dataset.referencePreview='1';
+    preview.innerHTML=`<div class="modal candidate-modal"><h3>完整 Prompt 预览</h3><p class="modal-help">${data.prompt_chars||0} 字符，
+     约 ${data.estimated_tokens||0} tokens</p>${referencePassageMarkup(data.reference_passages)}
+     <pre class="prompt-preview">${esc((data.system||'')+'\n\n'+(data.user||''))}</pre>
+     <div class="modal-actions"><button type="button" class="ghost-btn" data-close>关闭</button></div></div>`;
+    document.body.append(preview);preview.querySelector('[data-close]').onclick=()=>preview.remove();
+   }catch(error){if(wrap.isConnected)wrap.querySelector('[data-preview-error]').textContent=error.message}
+   finally{button.disabled=false}
+  };
+ }catch(error){if(sequence===aiPreviewSeq)toast(error.message)}
 };
 function localReview(c){const chars=c.body.replace(/\s/g,'').length;const blocking=[];const warnings=[];if(chars<60)blocking.push({code:'too_short',message:'正文少于 60 个非空白字符。'});if(c.status!=='完成')blocking.push({code:'status_incomplete',message:'章节状态还不是“完成”。'});if(!c.chapter_goal)warnings.push({code:'missing_goal',message:'没有填写本章任务卡目标。'});if(!c.hook)warnings.push({code:'missing_hook',message:'没有填写章节出口或钩子。'});if(!c.recap)warnings.push({code:'missing_recap',message:'尚未沉淀章节回顾，长篇召回会变弱。'});const tags=[...c.body.matchAll(/(?:【|\[)(人物|物品|地点|势力)(?:】|\])\s*([^\n，。]+)/g)];tags.forEach(t=>{if(!state.records.some(r=>r.type===t[1]&&r.name===t[2].trim()))warnings.push({code:'unknown_entity',message:`标记实体“${t[2].trim()}”尚未进入设定库。`})});const pending=state.memory.filter(m=>m.source_chapter_id===c.id&&m.status!=='已确认').length;if(pending)warnings.push({code:'pending_memory',message:`本章仍有 ${pending} 条记忆候选未确认。`});return {chapter_id:c.id,status:blocking.length?'needs_revision':'passed',score:Math.max(0,100-blocking.length*35-warnings.length*8),blocking,warnings,checked_at:new Date().toISOString()}}
 function showReviewReport(report){const wrap=document.createElement('div');wrap.className='modal-backdrop';const items=[...(report.blocking||[]).map(x=>`<li class="check-bad">阻断 · ${esc(x.message)}</li>`),...(report.warnings||[]).map(x=>`<li>建议 · ${esc(x.message)}</li>`)];wrap.innerHTML=`<div class="modal"><h3>本章审查 · ${report.score} 分</h3><p class="modal-help">审查只生成报告，不会自动改正文。${report.status==='passed'?'当前章节满足基础归档条件。':'请处理阻断项，或由作者确认后继续。'}</p>${items.length?`<ul class="check-list">${items.join('')}</ul>`:'<p class="modal-help check-ok">没有发现基础阻断项或提醒。</p>'}<div class="modal-actions"><button class="ghost-btn" data-close>关闭</button></div></div>`;document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove()}
