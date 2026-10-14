@@ -2,7 +2,9 @@
 
 审查日期：2026-10-13；交付记录更新至上海时间2026-10-14，目录沿用原审查日期。墨屿固定基线为 `62f1c66a7b16bb84f2940dc1af48e685aaf58818`。以下基线探针在独立临时数据库和新浏览器缓存中运行；当时未修改原产品代码、真实作品或用户数据库。生成文本来自离线逻辑或免费本机模拟，不含真实收费模型调用。
 
-最新工程入口为[候选整理电脑端完整复验](compatibility-python311-node24-candidate-revision-final.json)，实际运行于上海时间2026-10-14 02:03:08至02:06:19：51个执行项、36份Python测试与55个真实电脑浏览器场景通过，66份源码前后相同，13份附件指纹核验，详细范围列在末尾。历史[电脑端交付复验](compatibility-python311-node24-desktop-release-final.json)于00:11:10至00:13:55通过50项/49场景、64份源码不变，仅证明当时版本；本次中间失败与新成功分别保留，旧通过不覆盖本次代码。
+最新工程入口为[中断片段与冻结契约完整复验](compatibility-python311-node24-interrupted-fragment-contract-final.json)，实际运行于上海时间2026-10-14 21:30:46至21:34:21：57项、38份Python测试和79个真实电脑浏览器场景通过，70份源码前后相同，20份附件归档。文学工具95项、模型设置14场景通过，范围见本文末尾。[本轮中间失败](compatibility-python311-node24-interrupted-fragment-contract-release.json)记录设置显示竞态和运行期间源码变化，原件保留，新成功不覆盖旧失败。
+
+历史[候选整理电脑端完整复验](compatibility-python311-node24-candidate-revision-final.json)于上海时间2026-10-14 02:03:08至02:06:19通过51项/55场景、66份源码不变、13份附件指纹核验；历史[电脑端交付复验](compatibility-python311-node24-desktop-release-final.json)于00:11:10至00:13:55通过50项/49场景、64份源码不变。它们只证明当时版本，不能替代本轮源码复验。
 
 工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`，[增强检查运行38434003558](github-actions-desktop-release-success.json)、候选整理提交的[运行38447803077](github-actions-candidate-revision-ci-fix-success.json)和前一版提交的[运行38487730352](github-actions-current-success.json)均成功；代码提交 `e96e00c0e7bcebe9e045623a90cf970041bcc1bb` 的[最新运行38491492838](github-actions-e96e00c-success.json)也已完成且成功。详细范围见四份远程记录。工程通过不代表文学、第一梯队或公网部署通过。
 
@@ -191,3 +193,21 @@ python3 scripts/evaluation_runner.py \
 [回复模式诊断](../literary-transport-v1/report.md)在相同冻结墨屿整理输入上先执行一次不分段请求。返回200、`glm-5.1`、`stop`、完整用量4747 tokens，但正文仍只有1字“铁”，同时观察到非空 `reasoning_content`；因此第二次流式请求按停止条件未执行。该真实请求新增一条，累计34条预留、63876个可信完整tokens，10条缺完整用量，费用未知。它是接口行为诊断，不是文学质量或第一梯队证据。
 
 [消息边界诊断](../literary-message-shape-v1/report.md)随后只合并两个相邻 `user` 消息并执行一次非流式请求。返回200、`glm-5.1`、`stop`、完整用量4747 tokens，但正文仍只有1字“铁”，并观察到5621字符的非空 `reasoning_content`；第二阶段未执行。该真实请求新增一条，累计35条预留、68623个可信完整tokens，10条缺完整用量，费用未知。它同样只是接口行为诊断，不是文学质量或第一梯队证据。
+
+## 中断片段与契约完整快照
+
+[本轮中间检查](compatibility-python311-node24-interrupted-fragment-contract-release.json)于上海时间2026-10-14 21:13:42至21:17:15执行57项，其中模型设置浏览器项失败；运行期间 `app.js` 和基础浏览器测试指纹变化，整体 `passed=false`、`source_unchanged=false`。设置表单先显示新模型，助手状态尚未读完，确有显示竞态。修复为状态和设置读完后重新核对作品、页面及操作身份再显示，并增加慢回应和等待期间切页回归。失败报告与其附件保留原字节。
+
+[最终完整检查](compatibility-python311-node24-interrupted-fragment-contract-final.json)于上海时间2026-10-14 21:30:46至21:34:21执行57项并全部通过，环境为macOS arm64、Python 3.11.17、Node 24.19.0和真实Chrome。38份Python测试、10项JavaScript语法、固定评测、12项编辑器检查和5组浏览器检查共同执行；70份源码前后指纹一致。只使用临时数据库、新浏览器缓存和免费本机模拟提供方，没有发送真实收费请求或修改真实作品。
+
+| 文件 | 实际范围 | 结果与限制 |
+| --- | --- | --- |
+| [基础浏览器](browser-python311-node24-interrupted-fragment-contract-final.json) | 48个电脑场景，含20轮连续写作 | 失败、取消、截断与未知片段在刷新和无缓存窗口可回读；仅分片账本时中断读取可续读，复制真实片段，禁止采纳、整理和未知重发。错误运行、过期来源及迟到流隔离继续通过。 |
+| [搜索浏览器](search-browser-python311-node24-interrupted-fragment-contract-final.json) | 5个电脑搜索场景 | 服务失败或损坏响应回退到本地稿、迟到关键词保护、Unicode原句定位及旧证据拒绝通过。 |
+| [规划浏览器](planning-browser-python311-node24-interrupted-fragment-contract-final.json) | 5个规划场景 | 连续保存、采用跨页锁定、草稿恢复、两窗口冲突及第二轮保留原稿通过。 |
+| [模型设置浏览器](model-settings-browser-python311-node24-interrupted-fragment-contract-final.json) | 14个模型设置场景 | 设置和助手状态同步显示、等待期间切页及切作品隔离、迟到保存或检测保护、模型不一致和协议不合格提示通过。 |
+| [五章作者链](desktop-author-flow-python311-node24-interrupted-fragment-contract-final.json) | 7个电脑场景，含10次专用候选检查 | 五章记忆、审稿、归档、伏笔失效重锚、完稿及真实MD/EPUB下载逐字核对通过；全部作者写入经可见控件。 |
+| [固定评测](fixed-evaluation-python311-node24-interrupted-fragment-contract-final.json) | 固定样本及预先门槛 | 实际通过；不作为真实小说或文学效果成绩。 |
+| [片段回看](node24-interrupted-fragment-contract-final-desktop-interrupted-fragment.png)、[任务中心](node24-interrupted-fragment-contract-final-desktop-interrupted-task.png)、[模型设置](node24-interrupted-fragment-contract-final-desktop-settings.png) | 本轮真实页面截图 | 布局及片段状态经过查看，功能结论仍以实际操作、原稿和数据回读为准。 |
+
+五组浏览器合计79个电脑场景；20轮写作和10次专用候选检查已包含其中，不额外增加场景数。总报告登记6份JSON和14张PNG，共20份附件，均使用真实 `interrupted-fragment-contract-final` 路径。文学离线工具95项通过，保证两臂冻结契约一致，不证明模型遵守字数。最新[v25真实诊断](../../2026-10-14/literary-pilot-v25-single-candidate/diagnosis.md)898字仍失败，无基线和评审；第一梯队未证明。

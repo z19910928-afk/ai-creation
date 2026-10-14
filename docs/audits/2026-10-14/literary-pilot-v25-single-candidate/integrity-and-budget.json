@@ -1,0 +1,154 @@
+{
+  "checked_at": "2026-10-14T13:13:42.224Z",
+  "scope": "Read-only literary evidence and budget verification; no credential reads or model calls.",
+  "passed": true,
+  "historical_files": 404,
+  "historical_sha256_before": "f460a4da83ecc92b89dc1b54746c344122b345ef1e9f2a50c2e95261ba980a1a",
+  "historical_sha256_after": "f460a4da83ecc92b89dc1b54746c344122b345ef1e9f2a50c2e95261ba980a1a",
+  "historical_unchanged": true,
+  "raw_ledger_rows": 58,
+  "budget": {
+    "protocol": "moyu-literary-historical-budget-v1",
+    "captured_at": "2026-10-14T13:13:42.216330+00:00",
+    "request_cap": 60,
+    "reported_tokens_stop_threshold": 180000,
+    "requests_reserved": 56,
+    "reported_tokens_lower_bound": 105621,
+    "requests_without_complete_usage": 8,
+    "requests_with_partial_usage": 0,
+    "requests_with_inconsistent_usage": 0,
+    "remaining_requests_at_capture": 4,
+    "remaining_known_tokens_at_capture": 74379,
+    "cost_state": "unknown",
+    "sources": [
+      {
+        "id": "workspace-docs-audits",
+        "path": "docs/audits",
+        "files": [
+          {
+            "path": "2026-10-13/literary-message-shape-v1/request-ledger.json",
+            "sha256": "98e9d971a8e09b7e1ac81e7af45b9420f9b32517a76b829ca4d2b90f8082ebfe"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v10/request-ledger.json",
+            "sha256": "e8675f33018626844f328d921076a4b66e3b9dfd640aa0789f720ca466505ec7"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v11/request-ledger.json",
+            "sha256": "6179a704b35510c8a544f665f2cde2eabb14b4a622376b7df0001906e6d25e4f"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v12/request-ledger.json",
+            "sha256": "1b74133c6767ca6e80620b3ffd3ba1d78687f92b71976048a1b5d136befe5395"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v2/request-ledger.json",
+            "sha256": "c7daa84cbfb415787986c4f8521081dabd4e27fee97ba99eea93d22ea595d51c"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v3/request-ledger.json",
+            "sha256": "16d897dbd9dc25c4d4321d2b435ef62f54e313b749cdbfff51ce57da2fc89d40"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v4/request-ledger.json",
+            "sha256": "4a52659d8f48458ef9d47268df0c5f727abeb8cccd81e82fceff6cbaa0a57535"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v5/request-ledger.json",
+            "sha256": "2a8de90af040e176f79f6f38e7f4ea6fddef1f88eba852d985c4851e51099032"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v6/request-ledger.json",
+            "sha256": "7946bc3283cb153b3b74cbd8b2349c5c8d1738bcb6cc8a43a0ac6a18d900502a"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v7/request-ledger.json",
+            "sha256": "7efb51ed44af49e040a575da61781224dc67e85aeee7831c5ec8b23367fd2ff3"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v8/request-ledger.json",
+            "sha256": "1dad5afa0cf7bb1863a69f0936ab479343cc9b87ae43173081f09636958802cf"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v9/request-ledger.json",
+            "sha256": "6b952d774e9e088073b0e795eb28bfeb578ac94b9832d43fce1255ac5ec2b2fa"
+          },
+          {
+            "path": "2026-10-13/literary-pilot/request-ledger.json",
+            "sha256": "1312fa97bcf7b477699e017c7b807518feffe1a88b5f62dfbe262bd6b3a4db81"
+          },
+          {
+            "path": "2026-10-13/literary-revision-v1/request-ledger.json",
+            "sha256": "d66fdcba60659cacfa27ddc929c062fc28d205fb1bcc682ac02ebb21a52bc906"
+          },
+          {
+            "path": "2026-10-13/literary-transport-v1/request-ledger.json",
+            "sha256": "074d4aa7eb8a17f130f097c872d5ee7799f45a0c48fdfc766e60f4feed82e58b"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v13/request-ledger.json",
+            "sha256": "11079536391f8db4b680ba761d8ea88e972ced9047c52356efb60517703c7f0d"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v14-probe/request-ledger.json",
+            "sha256": "b42c51905f2bbda92eb082a311566a99bce6beef43df7dbb1f4684c2fc57748b"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v15-probe/request-ledger.json",
+            "sha256": "f57e9173aebc8cd9a6e7c895f1c9d0d9fe71d055833ecd9012feb86f4484aa61"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v16-budget-probe/request-ledger.json",
+            "sha256": "b6d76fca0d35f8715c082aa2878df4f35c07fdedbc0643c0a28ad011f8bbcaa7"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v17-budget-probe/request-ledger.json",
+            "sha256": "1e0b0faba1ff72570e35b328941803cbbfe1a1a1dddafea4099921e28b792968"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v18-budget-probe/request-ledger.json",
+            "sha256": "d988ef9add52121180efc09e61d674a2793cf0c66fa4537e15358f3f060f95d1"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v19-budget-probe/request-ledger.json",
+            "sha256": "9589a3039bdd158bcd0080fab8511e6ae04ebf251e034f8549caf9bd6c4c7729"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v20-budget-probe/request-ledger.json",
+            "sha256": "3c6803891ec1da6424fe816fcca319b8b041d13fbea803bed07fb03f66f0cf24"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v21-budget-probe/request-ledger.json",
+            "sha256": "22a679864a45c74175392feceaad9e3f657cac7d2e831fc7dc008acb4356411a"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v22-budget-probe/request-ledger.json",
+            "sha256": "d2a6ac9e925586673d22a4aae56b0eadbb12adae4bbf00d98709e98d18bb23ce"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v23-budget-probe/request-ledger.json",
+            "sha256": "da5d4d9109b0a968af08ed6014a7c6bc8a42f4c29b5fc341343d044524ef88da"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v24-live-probe/request-ledger.json",
+            "sha256": "c9fef69be2b852916aaeea8596aa25197d8b092e9006dd29f764f4fa936e3665"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v25-single-candidate/request-ledger.json",
+            "sha256": "ba504aeeab7b7ad4d975322156878a9420755420366c8ef2bd0319a9c715d05b"
+          }
+        ]
+      }
+    ],
+    "snapshot_sha256": "f22b77d17bdd75e2ec203367312e1b705bb3abfa2a89ea724672ba383818934b",
+    "scope": "只读取指定目录中的request-ledger.json；不读取候选正文或独立协议诊断。"
+  },
+  "current_run": {
+    "requests_reserved": 1,
+    "known_tokens": 1592,
+    "characters": 898,
+    "blind_pairs": 0,
+    "valid_grades": 0,
+    "first_tier_proven": false
+  }
+}

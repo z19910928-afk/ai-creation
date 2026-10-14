@@ -1,0 +1,705 @@
+{
+  "passed": true,
+  "scope": "Real desktop Chrome, isolated SQLite, free local provider; all author mutations use visible controls.",
+  "viewport": {
+    "width": 1440,
+    "height": 1000
+  },
+  "started_at": "2026-10-14T13:16:59.023Z",
+  "source_files_sha256_before": {
+    "app.js": "4e09997f54abffc43590638d039bfeae2db494d5c1c32d168dfb4a1e2401afba",
+    "author-workspace.js": "f93a2927c9020be16b07cf1272a0d8a4e6c7c23e0f79f7e66399c921fd6a0503",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "index.html": "5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3",
+    "moyu_analysis.py": "8e826c3bdc42b70c8b2d4ad05a850a953e6ab95d8125577e32f77466dbb000dd",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "4969eb279d7058bce41d4fbe183996f1aed9a1020f85d34057102454f26c6f3d",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8",
+    "moyu_workspace.py": "2e478fb15e9f369e0d32f7f3fe7b02ef6e17a457e22577c3a091e07dc199d868",
+    "server.py": "66be724062f36203125bb7025aabef42aa3cc29ab60e465f54bf096c36bcfa89",
+    "styles.css": "3ecb9f3ad1a415479a75eee4aaf065e3d378cc10fc32dd3357fce1f1fa166a5a",
+    "tests/desktop_author_flow_regressions.cjs": "42469ec378744f01531db7c26fb4c9e59ba2919b6a252b68c714fabbb74397b4"
+  },
+  "cases": [
+    {
+      "name": "作者通过书架创建作品并真实填写五章、记忆确认、审稿和归档",
+      "passed": true
+    },
+    {
+      "name": "第1章埋、第3章推进、第5章回收原句可定位且刷新后原稿完整",
+      "passed": true
+    },
+    {
+      "name": "删除回收原句后真实终稿和导出拒绝，其他四章逐字保留",
+      "passed": true
+    },
+    {
+      "name": "恢复原句仍需作者重新确认原链接，不能靠恢复文字自动放行",
+      "passed": true
+    },
+    {
+      "name": "1280电脑窗口保留五章原稿与终稿入口，编辑区没有横向溢出",
+      "passed": true
+    },
+    {
+      "name": "终稿通过后完稿状态持久保存，完稿期间不能再归档创建章节",
+      "passed": true
+    },
+    {
+      "name": "真实下载Markdown和EPUB均含五章原稿，空白交接章不进入出版文件",
+      "passed": true
+    }
+  ],
+  "artifacts": "Browser logs and private temporary DB are retained locally; desktop screenshots listed in this report.",
+  "provider_requests": [
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "ch_9fe6dcfe29c343119a923ac5cae2ffe1",
+      "input_sha256": "569dc08301966d6581658e6c021f47bccdbe2e9f54d905db30783a0c169bb310",
+      "output_sha256": "d4e53f79dd698daeb11f3a4c07b5cc99222047e1b50ca61e55019256bf30d640",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "ch_9fe6dcfe29c343119a923ac5cae2ffe1",
+      "input_sha256": "0d0a20d98c68da2ec0f03408954a1f8d82804ea171702e083d16a4c008b4fae5",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "809ab3ab-b8df-417d-b090-2f6cdbb0d621",
+      "input_sha256": "fec751554cf3cb11d30839cb8f283c5b237483d7fcff2bf37ea46471e7a6016a",
+      "output_sha256": "9fb4cc65a18bce7d63315e427fe995cb3d4d1a92b19c6c0c593e4fcc02c92cf8",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "809ab3ab-b8df-417d-b090-2f6cdbb0d621",
+      "input_sha256": "d1ed356e1b7de0762f5bb9b3f57fd2e789987a2ded90fac2659d17a1c38de25e",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "ea20bc39-292b-4b97-bc44-cace8407df5f",
+      "input_sha256": "80881e52d8bcfc6037ae74b689ecd30e6c5a26f2f2f5761646b18d0090143c78",
+      "output_sha256": "cc5239f4de4c1a863265fa8ec1282fcc240869c562fc1284961465417e85939f",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "ea20bc39-292b-4b97-bc44-cace8407df5f",
+      "input_sha256": "ab6315083b4fa6820fb478f872b6b6fb1852ff51ecf797f627d82272c52a42dd",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "475ec2af-883b-42e3-a20b-053871c436a0",
+      "input_sha256": "1443120725654f4bdf87e80cd76c4052830c8e98d4412fd5ff4088ad73dda504",
+      "output_sha256": "0f55a93f47c57fc6fb29832b500bf065e87e454f6e5a487e46ca84fe0dd4c7fb",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "475ec2af-883b-42e3-a20b-053871c436a0",
+      "input_sha256": "0a639de0e1e5a37f0b929ca7cd19b5f302879f07c24166a46d5e01357890c087",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "chapter_analysis",
+      "chapter_id": "a8a736f7-5108-4e56-ac24-d58e5e905d7a",
+      "input_sha256": "61c5022dadcb50a9123edf54877d2f65cebe24713e8f9db905e571ec0a9da516",
+      "output_sha256": "4aa110740c890d9d5d2f695981bf50c9883f84b90d1ee000174ac95c0ff9e4c0",
+      "local_only": true
+    },
+    {
+      "model": "desktop-author-mock",
+      "task": "semantic_review",
+      "chapter_id": "a8a736f7-5108-4e56-ac24-d58e5e905d7a",
+      "input_sha256": "ffbfe765348144288c047fa376f75916cbe4ca8f716349049bdc3210deee5a95",
+      "output_sha256": "d4dc9521316abd49ff96e2b2371496267773079b9510c3b47b72b64b6d2bbcba",
+      "local_only": true
+    }
+  ],
+  "analysis_candidate_checks": [
+    {
+      "chapter_id": "ch_9fe6dcfe29c343119a923ac5cae2ffe1",
+      "task": "chapter_analysis",
+      "title": "章后记忆",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "b0ef550cea23cbc2a35f477e585ab015be0091eb0d7cbcc84828b0fb8b694033",
+      "manuscript_sha256": "e84ae2f4e87ad363647fb0039ac9d27ff3ca36c0bd05abfe6dbf06286220f06f"
+    },
+    {
+      "chapter_id": "ch_9fe6dcfe29c343119a923ac5cae2ffe1",
+      "task": "semantic_review",
+      "title": "故事审稿",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "466f2a7879133c17bf2f2ece254a44ac407e2b3c2980837feeea6fe06c4af93d",
+      "manuscript_sha256": "e84ae2f4e87ad363647fb0039ac9d27ff3ca36c0bd05abfe6dbf06286220f06f"
+    },
+    {
+      "chapter_id": "809ab3ab-b8df-417d-b090-2f6cdbb0d621",
+      "task": "chapter_analysis",
+      "title": "章后记忆",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "04c92e0b274e71f26dd3e6a91d2904f406802ae072b9e6c1d9ad6845ee1df0c0",
+      "manuscript_sha256": "b55f47cf892f3eedd0266e585cab4495b81e9eadf42517a878c0cabd9c3e608a"
+    },
+    {
+      "chapter_id": "809ab3ab-b8df-417d-b090-2f6cdbb0d621",
+      "task": "semantic_review",
+      "title": "故事审稿",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "466f2a7879133c17bf2f2ece254a44ac407e2b3c2980837feeea6fe06c4af93d",
+      "manuscript_sha256": "b55f47cf892f3eedd0266e585cab4495b81e9eadf42517a878c0cabd9c3e608a"
+    },
+    {
+      "chapter_id": "ea20bc39-292b-4b97-bc44-cace8407df5f",
+      "task": "chapter_analysis",
+      "title": "章后记忆",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "973ec56f64da471a15ade6f346297a5bfe06c08423d46d92912689cc3ac068ef",
+      "manuscript_sha256": "2a9d1fd01260ce41d9f561a1ce9f2e5cd589b21ceeae014dd632826bec3900d7"
+    },
+    {
+      "chapter_id": "ea20bc39-292b-4b97-bc44-cace8407df5f",
+      "task": "semantic_review",
+      "title": "故事审稿",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "466f2a7879133c17bf2f2ece254a44ac407e2b3c2980837feeea6fe06c4af93d",
+      "manuscript_sha256": "2a9d1fd01260ce41d9f561a1ce9f2e5cd589b21ceeae014dd632826bec3900d7"
+    },
+    {
+      "chapter_id": "475ec2af-883b-42e3-a20b-053871c436a0",
+      "task": "chapter_analysis",
+      "title": "章后记忆",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "ef10afc1ab4e9a1d75cc8c6f811d5c22f73c56a93607e43d3bd38efcf2e6c88c",
+      "manuscript_sha256": "f794543bc3c4f1983d4d39163a827cbb9dd1dccfcfc8607afcce4cd5bc7b90a3"
+    },
+    {
+      "chapter_id": "475ec2af-883b-42e3-a20b-053871c436a0",
+      "task": "semantic_review",
+      "title": "故事审稿",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "466f2a7879133c17bf2f2ece254a44ac407e2b3c2980837feeea6fe06c4af93d",
+      "manuscript_sha256": "f794543bc3c4f1983d4d39163a827cbb9dd1dccfcfc8607afcce4cd5bc7b90a3"
+    },
+    {
+      "chapter_id": "a8a736f7-5108-4e56-ac24-d58e5e905d7a",
+      "task": "chapter_analysis",
+      "title": "章后记忆",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "9cfe81a3bf49ea2892515928847c132fd8071840ab7b3c596eaf5141c0e904fe",
+      "manuscript_sha256": "a0ff23af2744eecc2ddc18bd440b841beec742ce37de12ad537bab3787464b70"
+    },
+    {
+      "chapter_id": "a8a736f7-5108-4e56-ac24-d58e5e905d7a",
+      "task": "semantic_review",
+      "title": "故事审稿",
+      "readonly": true,
+      "raw_json_hidden": true,
+      "next_generation_task": "continue",
+      "dedicated_dialog": true,
+      "manuscript_unchanged": true,
+      "preview_sha256": "466f2a7879133c17bf2f2ece254a44ac407e2b3c2980837feeea6fe06c4af93d",
+      "manuscript_sha256": "a0ff23af2744eecc2ddc18bd440b841beec742ce37de12ad537bab3787464b70"
+    }
+  ],
+  "default_project_before": [
+    [
+      "ch_5bfd63a710484bd3af2184abe637290e",
+      "427bbf6bab7c5606f46db6d2ac048c8b1ae630e35975f77e848cdfa55929b084"
+    ]
+  ],
+  "chapter_ids": [
+    "ch_9fe6dcfe29c343119a923ac5cae2ffe1",
+    "809ab3ab-b8df-417d-b090-2f6cdbb0d621",
+    "ea20bc39-292b-4b97-bc44-cace8407df5f",
+    "475ec2af-883b-42e3-a20b-053871c436a0",
+    "a8a736f7-5108-4e56-ac24-d58e5e905d7a"
+  ],
+  "deleted_payoff_link": {
+    "id": "flink_dec644dfd9ed4b39b07db1115b61872d",
+    "stale": true,
+    "evidence_status": "stale"
+  },
+  "reconfirmed_payoff_link": {
+    "id": "flink_dec644dfd9ed4b39b07db1115b61872d",
+    "same_id": true,
+    "source_span_id": "span_801581d3e6eb4143a7186d392673d830",
+    "source_quote": "林岚取出月牙铜匙打开旧闸门，让困在下游的守灯人走了出来。"
+  },
+  "compact_viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "exports": [
+    {
+      "format": "markdown",
+      "file": "five-chapter-final.md",
+      "sha256": "ecee9f19cb02b447056ecb9c3800107436f268513a69a25cdb6bfa97bb38a850",
+      "chapters": 5,
+      "exact_source_checked": true
+    },
+    {
+      "format": "epub",
+      "file": "five-chapter-final.epub",
+      "sha256": "cd01477952c2d34b53f466da7779871bd3a160f6a7fb19d55be6406e9aec75e2",
+      "source_sha256": "193ac670277057332ac59561d0db0f4fd508bb152eec497efe306d549ef937d1",
+      "chapters": 5,
+      "exact_source_checked": true
+    }
+  ],
+  "author_write_requests": [
+    {
+      "method": "POST",
+      "route": "/api/projects",
+      "project": "default-project"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapter-analysis/chapter_analysis_693565dea60dd96675968e87b3c5/confirm",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/story/foreshadow-links",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/plot/5741dc0a-4dfc-4f6d-afb2-8b231e8e26d0",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/ch_9fe6dcfe29c343119a923ac5cae2ffe1/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/ch_9fe6dcfe29c343119a923ac5cae2ffe1/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/ch_9fe6dcfe29c343119a923ac5cae2ffe1/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapter-analysis/chapter_analysis_a8f44bd829f13cb4a624a51f29d5/confirm",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/809ab3ab-b8df-417d-b090-2f6cdbb0d621/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/809ab3ab-b8df-417d-b090-2f6cdbb0d621/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/809ab3ab-b8df-417d-b090-2f6cdbb0d621/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapter-analysis/chapter_analysis_840961719e854ecac71f968fbd38/confirm",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/story/foreshadow-links",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/plot/5741dc0a-4dfc-4f6d-afb2-8b231e8e26d0",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/ea20bc39-292b-4b97-bc44-cace8407df5f/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/ea20bc39-292b-4b97-bc44-cace8407df5f/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/ea20bc39-292b-4b97-bc44-cace8407df5f/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapter-analysis/chapter_analysis_014ae716896ea098c5303f0cf0e1/confirm",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/475ec2af-883b-42e3-a20b-053871c436a0/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/475ec2af-883b-42e3-a20b-053871c436a0/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/475ec2af-883b-42e3-a20b-053871c436a0/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapter-analysis/chapter_analysis_5ae5be2064ab9d27aaedd6dee9bb/confirm",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/ai/queue",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/story/foreshadow-links",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/plot/5741dc0a-4dfc-4f6d-afb2-8b231e8e26d0",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/a8a736f7-5108-4e56-ac24-d58e5e905d7a/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/a8a736f7-5108-4e56-ac24-d58e5e905d7a/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/chapters/a8a736f7-5108-4e56-ac24-d58e5e905d7a/commit",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/story/foreshadow-links/flink_dec644dfd9ed4b39b07db1115b61872d",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PATCH",
+      "route": "/api/plot/5741dc0a-4dfc-4f6d-afb2-8b231e8e26d0",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "POST",
+      "route": "/api/review",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    },
+    {
+      "method": "PUT",
+      "route": "/api/state",
+      "project": "book_f03893999b884850976154714df4ce6b"
+    }
+  ],
+  "source_files_sha256_after": {
+    "app.js": "4e09997f54abffc43590638d039bfeae2db494d5c1c32d168dfb4a1e2401afba",
+    "author-workspace.js": "f93a2927c9020be16b07cf1272a0d8a4e6c7c23e0f79f7e66399c921fd6a0503",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "index.html": "5da739910f352b46aac82c7bb965e94c30fb4e31bd83bc84d536a247c93778a3",
+    "moyu_analysis.py": "8e826c3bdc42b70c8b2d4ad05a850a953e6ab95d8125577e32f77466dbb000dd",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "4969eb279d7058bce41d4fbe183996f1aed9a1020f85d34057102454f26c6f3d",
+    "moyu_context.py": "c088ad577fb1f9f8db087d7561500d4c11acad6e9768dadef49f9cb167bf7796",
+    "moyu_import.py": "0be9528a7ace5d49bda1c90b52ad2906fdf97fd56c5ed65fe8a86311861d33c1",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8",
+    "moyu_workspace.py": "2e478fb15e9f369e0d32f7f3fe7b02ef6e17a457e22577c3a091e07dc199d868",
+    "server.py": "66be724062f36203125bb7025aabef42aa3cc29ab60e465f54bf096c36bcfa89",
+    "styles.css": "3ecb9f3ad1a415479a75eee4aaf065e3d378cc10fc32dd3357fce1f1fa166a5a",
+    "tests/desktop_author_flow_regressions.cjs": "42469ec378744f01531db7c26fb4c9e59ba2919b6a252b68c714fabbb74397b4"
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-10-14T13:17:12.951Z"
+}

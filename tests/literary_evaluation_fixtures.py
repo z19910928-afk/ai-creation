@@ -203,6 +203,65 @@ class EvaluationTests(unittest.TestCase):
         self.assertIn("作者要求：" + case["instruction"], messages[1]["content"])
         self.assertEqual(case["output_contract"]["target_characters"], 725)
 
+    def test_actual_prompt_uses_frozen_contract_without_changing_material(self) -> None:
+        for case, contract in (
+                (self.plan["cases"][0], {"minimum_characters": 600,
+                                        "maximum_characters": 850, "target_characters": 620}),
+                (next(case for case in self.plan["cases"] if case["task"] == "polish"),
+                 {"minimum_characters": 120, "maximum_characters": 185,
+                  "target_characters": 150})):
+            with self.subTest(task=case["task"]):
+                case = copy.deepcopy(case)
+                case["output_contract"] = contract
+                before = copy.deepcopy(case)
+                constraints = moyu_output.output_prompt_constraints(
+                    case["task"], evaluation.output_contract(case))
+                for arm in self.plan["arms"]:
+                    messages = evaluation.messages_for(case, arm, self.plan_path, self.config)
+                    self.assertIn(constraints, messages[0]["content"])
+                    self.assertIn(case["instruction"], messages[1]["content"])
+                    self.assertNotIn("_output_contract", messages[1]["content"])
+                    if arm["source"] == "moyu-prompt":
+                        material = json.loads(messages[1]["content"].split(
+                            "<manuscript>\n", 1)[1].split("\n</manuscript>", 1)[0])
+                    else:
+                        material = json.loads(messages[1]["content"].split("\n作者要求：", 1)[0])
+                    self.assertEqual(material, case["context"])
+                    self.assertEqual(case, before)
+
+    def test_actual_prompt_preserves_legacy_and_unspecified_contracts(self) -> None:
+        for explicit in (False, True):
+            case = copy.deepcopy(self.plan["cases"][0])
+            if explicit:
+                case["output_contract"] = {}
+            else:
+                case.pop("output_contract")
+            before = copy.deepcopy(case)
+            expected = moyu_output.output_prompt_constraints(
+                case["task"], evaluation.output_contract(case))
+            for arm in self.plan["arms"]:
+                messages = evaluation.messages_for(case, arm, self.plan_path, self.config)
+                self.assertIn(expected, messages[0]["content"])
+                self.assertEqual("允许600至850字" in messages[0]["content"], not explicit)
+            self.assertEqual(case, before)
+
+    def test_frozen_requests_use_same_explicit_contract_in_both_arms(self) -> None:
+        self.plan["cases"] = [self.plan["cases"][0]]
+        self.plan["cases"][0]["output_contract"]["target_characters"] = 620
+        before = copy.deepcopy(self.plan)
+        with patch.object(evaluation, "call_chat_completion") as transport:
+            evaluation.freeze_run(self.out, self.plan, self.config["model"],
+                                  plan_path=self.plan_path, config=self.config)
+        transport.assert_not_called()
+        requests = evaluation.read_json(self.out / "frozen-writer-requests.json")
+        for request in requests.values():
+            self.assertIn("正文长度目标约620字，允许600至850字。",
+                          request["payload"]["messages"][0]["content"])
+            self.assertEqual(request["context_sha256"], evaluation.sha(
+                self.plan["cases"][0]["context"]))
+            self.assertNotIn("_output_contract", request["body_utf8"])
+        self.assertEqual(self.plan, before)
+
     def test_plan_rejects_boolean_limits_and_missing_rules(self) -> None:
         for key in ("repetitions", "max_output_tokens", "max_judge_output_tokens"):
             plan = copy.deepcopy(self.plan)

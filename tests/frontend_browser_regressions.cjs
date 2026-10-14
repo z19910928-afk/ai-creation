@@ -14,6 +14,7 @@ const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-browser-regression-')
 const results={passed:false,scope:'真实浏览器、隔离SQLite、免费本机模拟提供方',cases:[],artifacts:temporary};
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let app,provider,browser,base,providerText='来源甲章的候选。',providerReasoning=null,providerDelay=600,providerStreamGate=null,reviewMode='single',planningFailure=false;
+let providerFinishReason='stop',providerOmitDone=false;
 let serverLog='',providerPort;
 const providerRequests=[];
 async function freePort(){
@@ -90,6 +91,7 @@ async function main(){
  provider=http.createServer((request,response)=>{
   let raw='';request.on('data',chunk=>raw+=chunk);request.on('end',()=>{
    const input=JSON.parse(raw||'{}');providerRequests.push(input);const text=providerOutput(input);
+   const finishReason=providerFinishReason,omitDone=providerOmitDone;
    if(input.stream){
     response.writeHead(200,{'Content-Type':'text/event-stream','Cache-Control':'no-cache'});
     if(providerReasoning!==null)response.write(`data: ${JSON.stringify({choices:[{delta:{reasoning_content:providerReasoning},finish_reason:null}]})}\n\n`);
@@ -99,13 +101,13 @@ async function main(){
     setTimeout(async()=>{
      if(streamGate)await streamGate;
      if(response.destroyed)return;
-     response.write(`data: ${JSON.stringify({choices:[{delta:{content:text.slice(middle)},finish_reason:'stop'}],usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})}\n\n`);
-     response.end('data: [DONE]\n\n');
+     response.write(`data: ${JSON.stringify({choices:[{delta:{content:text.slice(middle)},finish_reason:finishReason}],usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})}\n\n`);
+     response.end(omitDone?'':'data: [DONE]\n\n');
     },providerDelay);
    }else{
     response.writeHead(200,{'Content-Type':'application/json'});
     const message={content:text};if(providerReasoning!==null)message.reasoning_content=providerReasoning;
-    setTimeout(()=>response.end(JSON.stringify({model:'browser-mock',choices:[{message,finish_reason:'stop'}],
+    setTimeout(()=>response.end(JSON.stringify({model:'browser-mock',choices:[{message,finish_reason:finishReason}],
      usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})),providerDelay);
    }
   });
@@ -253,16 +255,164 @@ async function main(){
  await test('真实流式任务停止后刷新仍为已停止且迟到内容不落正文',async()=>{
   const before=await currentBody(firstId);providerDelay=4000;providerText='取消任务不准进入正文。';
   await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
-  await desktop.page.waitForFunction(()=>aiDraft?.job_id&&!aiDraft.complete);
-  const jobId=await desktop.page.evaluate(()=>aiDraft.job_id);
+  await desktop.page.waitForFunction(()=>aiDraft?.job_id&&!aiDraft.complete&&aiDraft.text,null,{timeout:15000});
+  const {jobId,runId}=await desktop.page.evaluate(()=>({jobId:aiDraft.job_id,runId:aiDraft.ai_run_id}));
+  assert.equal(await desktop.page.locator('#aiOutput').evaluate(el=>el.readOnly),true);
   await desktop.page.locator('#aiClear').click();
-  await desktop.page.waitForFunction(value=>queueJobs.some(job=>job.id===value&&job.status==='canceled'),jobId,{timeout:15000});
+  await desktop.page.waitForFunction(({jobId,runId})=>queueJobs.some(job=>job.id===jobId&&job.status==='canceled')&&
+   candidateStore.get(runId)?.text&&(candidateStore.get(runId).terminal_snapshot||candidateStore.get(runId).terminal_replay_complete),
+   {jobId,runId},{timeout:15000});
+  const partial=await desktop.page.evaluate(id=>candidateStore.get(id).text,runId);
   await desktop.page.reload();await desktop.page.waitForFunction(()=>backendOnline);
   await desktop.page.locator('[data-view="tasks"]').click();
   await desktop.page.waitForFunction(value=>queueJobs.some(job=>job.id===value&&job.status==='canceled'),jobId);
   assert.equal(await currentBody(firstId),before);
-  await desktop.page.locator(`[data-task-cancel="${jobId}"]`).count().then(count=>assert.equal(count,0));
-  await desktop.page.locator('[data-view="editor"]').click();providerDelay=80;
+  assert.equal(await desktop.page.locator(`[data-task-cancel="${jobId}"]`).count(),0);
+  assert.equal(await desktop.page.locator(`[data-task-retry="${jobId}"]`).count(),0);
+  await desktop.page.locator(`[data-task-open="${runId}"]`).click();
+  assert.equal(await desktop.page.locator('#aiOutput').inputValue(),partial);
+  assert.equal(await desktop.page.locator('#aiOutput').evaluate(el=>el.readOnly),true);
+  assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),false);
+  assert.equal(await desktop.page.locator('#aiRevise').isEnabled(),false);
+  assert.equal(await desktop.page.locator('#aiClear').isEnabled(),false);
+  assert.equal(await desktop.page.locator('#aiCopy').isEnabled(),true);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/已停止.*仅供阅读和复制/);
+  const fresh=await open(),calls=providerRequests.length;
+  await fresh.page.locator('[data-view="tasks"]').click();
+  await fresh.page.locator(`[data-task-open="${runId}"]`).click();
+  await fresh.page.waitForFunction(text=>aiDraft?.text===text,partial);
+  assert.equal(await fresh.page.locator('#aiOutput').inputValue(),partial);
+  assert.equal(await fresh.page.locator('#aiOutput').evaluate(el=>el.readOnly),true);
+  await fresh.page.evaluate(async()=>{
+   const output=document.querySelector('#aiOutput');output.value='不允许修改已停止片段';output.dispatchEvent(new Event('input'));
+   await clearAI();await reviseAI();await adoptAI();
+  });
+  assert.equal(await fresh.page.locator('#aiOutput').inputValue(),partial);
+  assert.equal(await fresh.page.locator('[data-apply],[data-revise-dialog]').count(),0);
+  assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),before);
+  assert.deepEqual(fresh.errors,[]);await fresh.context.close();providerDelay=80;
+ });
+ await test('截断任务在无缓存窗口完整恢复只读片段，已知用量可手动重试',async()=>{
+  const before=await currentBody(firstId),text='截断前收到的内容，只能阅读，不准进入原稿。';
+  providerText=text;providerFinishReason='length';providerDelay=80;
+  try{
+   await desktop.page.locator('#aiTask').selectOption('continue');await desktop.page.locator('#aiGenerate').click();
+   await desktop.page.waitForFunction(value=>aiDraft?.text===value&&aiDraft.job_status==='failed',text,{timeout:15000});
+   const {runId,jobId}=await desktop.page.evaluate(()=>({runId:aiDraft.ai_run_id,jobId:aiDraft.job_id}));
+   const calls=providerRequests.length,fresh=await open();
+   await fresh.page.locator('[data-view="tasks"]').click();
+   await fresh.page.locator(`[data-task-open="${runId}"]`).waitFor();
+   assert.equal(await fresh.page.locator(`[data-task-open="${runId}"]`).innerText(),'查看片段');
+   assert.equal(await fresh.page.locator(`[data-task-retry="${jobId}"]`).count(),1);
+   await fresh.page.locator(`[data-task-open="${runId}"]`).click();
+   assert.equal(await fresh.page.locator('#aiOutput').inputValue(),text);
+   assert.equal(await fresh.page.locator('#aiOutput').evaluate(el=>el.readOnly),true);
+   assert.equal(await fresh.page.locator('#aiAdopt').isEnabled(),false);
+   assert.equal(await fresh.page.locator('#aiRevise').isEnabled(),false);
+   assert.equal(await fresh.page.locator('#aiClear').isEnabled(),false);
+   assert.equal(await fresh.page.locator('#aiCopy').isEnabled(),true);
+   assert.equal(await fresh.page.evaluate(()=>aiDraft.complete),false);
+   assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),before);
+   assert.deepEqual(fresh.errors,[]);await fresh.context.close();
+  }finally{providerFinishReason='stop'}
+ });
+ await test('缺少流式结束标记的未知结果可回看片段，不显示重发且拒绝过期来源',async()=>{
+  const before=await currentBody(firstId),text='结束状态未知的完整可见片段。保留钥匙，不写入原稿。';
+  providerText=text;providerOmitDone=true;providerDelay=80;
+  try{
+   await desktop.page.locator('#aiGenerate').click();
+   await desktop.page.waitForFunction(value=>aiDraft?.text===value&&aiDraft.job_status==='failed'&&
+    aiDraft.completion_state==='unknown',text,{timeout:15000});
+   const {runId,jobId}=await desktop.page.evaluate(()=>({runId:aiDraft.ai_run_id,jobId:aiDraft.job_id}));
+   const calls=providerRequests.length,fresh=await open();
+   await fresh.page.locator('[data-view="tasks"]').click();
+   await fresh.page.locator(`[data-task-open="${runId}"]`).waitFor();
+   assert.equal(await fresh.page.locator(`[data-task-retry="${jobId}"]`).count(),0);
+   await fresh.page.screenshot({path:path.join(temporary,'desktop-interrupted-task.png'),fullPage:true});
+   await fresh.page.locator(`[data-task-open="${runId}"]`).click();
+   assert.equal(await fresh.page.locator('#aiOutput').inputValue(),text);
+   assert.equal(await fresh.page.locator('#aiOutput').evaluate(el=>el.readOnly),true);
+   for(const id of ['aiAdopt','aiRevise','aiClear'])assert.equal(await fresh.page.locator('#'+id).isEnabled(),false);
+   assert.match(await fresh.page.locator('#aiStatus').innerText(),/执行结果未知.*仅供阅读和复制/);
+   await fresh.page.screenshot({path:path.join(temporary,'desktop-interrupted-fragment.png'),fullPage:true});
+   await fresh.context.grantPermissions(['clipboard-read','clipboard-write']);
+   await fresh.page.locator('#aiCopy').click();
+   assert.equal(await fresh.page.evaluate(()=>navigator.clipboard.readText()),text);
+   await fresh.page.locator('[data-view="tasks"]').click();
+   const source=await fresh.page.evaluate(id=>({...candidateStore.get(id).source}),runId);
+   await fresh.page.evaluate(id=>{
+    candidateStore.get(id).source={...candidateStore.get(id).source,project_id:'stale-project'};
+    document.querySelector(`[data-task-open="${id}"]`).click();
+   },runId);
+   assert.equal(await fresh.page.evaluate(()=>view),'tasks');
+   assert.match(await fresh.page.locator('#toast').innerText(),/来源作品/);
+   await fresh.page.evaluate(({id,source})=>{
+    candidateStore.get(id).source={...source,chapter_id:'deleted-chapter'};
+    document.querySelector(`[data-task-open="${id}"]`).click();
+   },{id:runId,source});
+   assert.equal(await fresh.page.evaluate(()=>view),'tasks');
+   assert.match(await fresh.page.locator('#toast').innerText(),/章节已不存在/);
+   await fresh.page.evaluate(({id,source})=>{candidateStore.get(id).source=source},{id:runId,source});
+   assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),before);
+   assert.deepEqual(fresh.errors,[]);await fresh.context.close();
+   results.unknown_fragment={run_id:runId,job_id:jobId,text};
+  }finally{providerOmitDone=false}
+ });
+ await test('只有本机分片账本时只读恢复未知结果，读取中断可续读且不会再次调用模型',async()=>{
+  const {run_id:runId,job_id:jobId,text}=results.unknown_fragment;
+  const before=await currentBody(firstId),calls=providerRequests.length,context=await browser.newContext({viewport:{width:1440,height:1000}});
+  const page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(error.message));
+  const queueRoute=/\/api\/ai\/queue(?:\?|$)/,streamRoute=new RegExp(`/api/ai/runs/${runId}/stream(?:\\?|$)`);
+  let reads=0,readFailed;const failed=new Promise(resolve=>readFailed=resolve);
+  await page.route(queueRoute,async route=>{
+   const response=await route.fetch(),data=await response.json();
+   for(const job of data.jobs||[])if(job.ai_run_id===runId){
+    delete job.result.text;delete job.result.structured;delete job.result.completion_state;
+   }
+   await route.fulfill({response,json:data});
+  });
+  await page.route(streamRoute,async route=>{
+   reads++;
+   if(reads===1){await route.abort('failed');readFailed();return}
+   return route.continue();
+  });
+  await page.goto(base);await page.waitForFunction(()=>backendOnline);await failed;
+  await page.waitForFunction(id=>!streamReaders.has(id)&&!queueLoading,jobId);
+  assert.equal(await page.evaluate(id=>!!candidateStore.get(id).terminal_replay_complete,runId),false);
+  await page.evaluate(()=>refreshQueue());
+  await page.waitForFunction(id=>candidateStore.get(id)?.terminal_replay_complete,runId,{timeout:15000});
+  assert.equal(reads,2);
+  await page.locator('[data-view="tasks"]').click();
+  assert.equal(await page.locator(`[data-task-retry="${jobId}"]`).count(),0);
+  await page.locator(`[data-task-open="${runId}"]`).click();
+  assert.equal(await page.locator('#aiOutput').inputValue(),text);
+  assert.equal(await page.locator('#aiOutput').evaluate(el=>el.readOnly),true);
+  assert.equal(await page.locator('#aiAdopt').isEnabled(),false);
+  assert.equal(await page.locator('#aiRevise').isEnabled(),false);
+  assert.equal(await page.evaluate(()=>aiDraft.complete),false);
+  assert.match(await page.locator('#aiStatus').innerText(),/执行结果未知.*仅供阅读和复制/);
+  await page.waitForFunction(()=>!queueLoading);await page.evaluate(()=>refreshQueue());
+  assert.equal(reads,2);assert.equal(await page.locator('#aiOutput').inputValue(),text);
+  assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),before);
+  assert.deepEqual(errors,[]);await context.close();
+ });
+ await test('未完成的结构分析和JSON正文保留原始片段，只读复制且无法整理或采纳',async()=>{
+  const before=await currentBody(firstId),calls=providerRequests.length;
+  await desktop.page.evaluate(()=>{
+   const source={...aiDraft.source};
+   for(const [task,text] of [['chapter_analysis','{"summary":"未完成的分析片段'],['continue','{"content":"未完成的正文片段']]){
+    const id=`browser_fragment_${task}`;
+    const draft=receiveCandidateJob({id,ai_run_id:id,task,source,status:'failed',error:'回复被截断',
+     result:{response_format:'json',text,finish_reason:'length',safe_to_apply:false,billing_state:'usage_reported'}});
+    displayCandidate(draft);
+    if(document.querySelector('#aiOutput').value!==text||!document.querySelector('#aiOutput').readOnly||
+     document.querySelector('#aiCopy').disabled||!document.querySelector('#aiAdopt').disabled||!document.querySelector('#aiClear').disabled)
+     throw new Error('未完成的结构回复没有完整保留只读片段');
+    candidateStore.delete(id);
+   }
+   displayCandidate(activeCandidate());persistCandidates();
+  });
+  assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),before);
  });
  await test('长章无选区润色不会全文覆盖',async()=>{
   const value='不可删除章首。'+'完整正文。'.repeat(2600);

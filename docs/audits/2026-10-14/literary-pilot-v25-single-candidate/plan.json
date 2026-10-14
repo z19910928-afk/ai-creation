@@ -1,0 +1,310 @@
+{
+  "acceptance": {
+    "maximum_hard_violation_rate": 0,
+    "minimum_distinct_stories_for_tier_claim": 30,
+    "minimum_genres": 3,
+    "minimum_preference_lower_95": 0.4
+  },
+  "arms": [
+    {
+      "id": "moyu",
+      "label": "墨屿实际提示",
+      "source": "moyu-prompt"
+    },
+    {
+      "id": "baseline",
+      "label": "通用固定材料基线",
+      "source": "plain-context"
+    }
+  ],
+  "budget": {
+    "currency_cost": "unknown_until_provider_prices_are_recorded",
+    "max_requests": 2,
+    "reported_tokens_stop_threshold": 180000
+  },
+  "candidate_arm": "moyu",
+  "cases": [
+    {
+      "context": {
+        "character_states": [],
+        "confirmed_memory": [
+          {
+            "assertion": "月牙钥匙藏在林岚左靴内侧。",
+            "id": "mystery-tide-fact-1",
+            "source_quote": "月牙钥匙藏在林岚左靴内侧。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "涨潮时间是22点10分。",
+            "id": "mystery-tide-fact-2",
+            "source_quote": "涨潮时间是22点10分。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "林岚不知道陆衡的凶手。",
+            "id": "mystery-tide-fact-3",
+            "source_quote": "林岚不知道陆衡的凶手。",
+            "status": "confirmed"
+          },
+          {
+            "assertion": "林岚手机没有信号。",
+            "id": "mystery-tide-fact-4",
+            "source_quote": "林岚手机没有信号。",
+            "status": "confirmed"
+          }
+        ],
+        "context_budget": {
+          "fixed_evaluation_materials": true
+        },
+        "current_chapter": {
+          "body": "21点56分。仓库外的海水还在台阶下。林岚摸到左靴里冰凉的金属，听见门后有人拖动铁链。她手机只剩百分之一电量，没有信号。墙上有两把锁，下面那把的钥匙孔弯得像月牙。",
+          "body_complete": true,
+          "chapter_hash": "9c80eeb2de6b0cf3ddf7306fd71fd262c9ab9ac3d07c5179cf5c8496087bc076",
+          "id": "mystery-tide",
+          "plan": {
+            "chapter_goal": "仓库的第二把锁",
+            "pov": "林岚"
+          },
+          "source_range": {
+            "end": 81,
+            "start": 0
+          },
+          "title": "仓库的第二把锁"
+        },
+        "previous_chapters": [
+          {
+            "chapter_hash": "bb9a596a4230ab52b2babb1e5445a883a7b8744bbb6313f90f60d173a32e0604",
+            "excerpt": "陆衡死后第三天，林岚在旧码头收到一封没有邮戳的信。信里只有一句话：第二把锁认得月牙。她把银色月牙钥匙缝在左靴内侧。港口广播说今晚22点10分涨潮。",
+            "id": "mystery-tide-previous",
+            "source_range": {
+              "end": 73,
+              "start": 0
+            },
+            "title": "上一章"
+          }
+        ],
+        "retrieved_chapters": [],
+        "story_cards": [],
+        "timeline": []
+      },
+      "genre": "悬疑",
+      "id": "mystery-tide",
+      "instruction": "续写600至850字，目标约650字。约四个自然段，只围绕取出左靴内侧月牙钥匙、尝试开下锁、根据旧码头退路作出选择、22点10分前实际离开仓库这一条动作链。最后一段须写出已经离开及直接结果，不停在开锁或犹豫。限林岚视角，保持未知声响和凶手身份未知。从21点56分到22点10分只有14分钟，时间推进不得倒转。不新增关键人物、第二件万能工具或陆衡死亡背景。只输出正文。",
+      "output_contract": {
+        "maximum_characters": 850,
+        "minimum_characters": 600,
+        "target_characters": 650
+      },
+      "rules": [
+        {
+          "description": "月牙钥匙不能改到口袋或右靴。",
+          "id": "key-location"
+        },
+        {
+          "description": "涨潮固定22点10分。",
+          "id": "tide-time"
+        },
+        {
+          "description": "林岚不能直接知道凶手身份。",
+          "id": "limited-pov"
+        },
+        {
+          "description": "不能用没有信号的手机即时联网获救。",
+          "id": "no-mobile-rescue"
+        },
+        {
+          "description": "21点56分到22点10分只有14分钟；时刻与剩余时间一致且不得倒转。",
+          "id": "time-arithmetic"
+        },
+        {
+          "description": "结尾必须已在22点10分前实际离开仓库，不能只开锁、犹豫或等待。",
+          "id": "deadline-exit"
+        }
+      ],
+      "task": "continue"
+    }
+  ],
+  "created_at": "2026-10-14T12:51:58.517231+00:00",
+  "diagnostic": {
+    "changed": [
+      "single_story_scope",
+      "candidate_first",
+      "author_instruction",
+      "target_characters",
+      "time_and_exit_rules",
+      "shared_frozen_contract"
+    ],
+    "literary_blind_review_planned": false,
+    "maximum_new_requests": 1,
+    "missing_baseline_expected": true,
+    "preserved": [
+      "source_material",
+      "writer_model",
+      "temperature",
+      "thinking_disabled",
+      "max_output_tokens",
+      "non_streaming",
+      "600_to_850_character_gate"
+    ],
+    "previous_run": "literary-pilot-v24-live-probe"
+  },
+  "historical_budget": {
+    "captured_at": "2026-10-14T12:51:58.534513+00:00",
+    "cost_state": "unknown",
+    "protocol": "moyu-literary-historical-budget-v1",
+    "remaining_known_tokens_at_capture": 75971,
+    "remaining_requests_at_capture": 5,
+    "reported_tokens_lower_bound": 104029,
+    "reported_tokens_stop_threshold": 180000,
+    "request_cap": 60,
+    "requests_reserved": 55,
+    "requests_with_inconsistent_usage": 0,
+    "requests_with_partial_usage": 0,
+    "requests_without_complete_usage": 8,
+    "scope": "只读取指定目录中的request-ledger.json；不读取候选正文或独立协议诊断。",
+    "snapshot_sha256": "8b62f0aab2406db5cf5953121ab1180f713612a338008ed80d5bec280ec7edd6",
+    "sources": [
+      {
+        "files": [
+          {
+            "path": "2026-10-13/literary-message-shape-v1/request-ledger.json",
+            "sha256": "98e9d971a8e09b7e1ac81e7af45b9420f9b32517a76b829ca4d2b90f8082ebfe"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v10/request-ledger.json",
+            "sha256": "e8675f33018626844f328d921076a4b66e3b9dfd640aa0789f720ca466505ec7"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v11/request-ledger.json",
+            "sha256": "6179a704b35510c8a544f665f2cde2eabb14b4a622376b7df0001906e6d25e4f"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v12/request-ledger.json",
+            "sha256": "1b74133c6767ca6e80620b3ffd3ba1d78687f92b71976048a1b5d136befe5395"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v2/request-ledger.json",
+            "sha256": "c7daa84cbfb415787986c4f8521081dabd4e27fee97ba99eea93d22ea595d51c"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v3/request-ledger.json",
+            "sha256": "16d897dbd9dc25c4d4321d2b435ef62f54e313b749cdbfff51ce57da2fc89d40"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v4/request-ledger.json",
+            "sha256": "4a52659d8f48458ef9d47268df0c5f727abeb8cccd81e82fceff6cbaa0a57535"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v5/request-ledger.json",
+            "sha256": "2a8de90af040e176f79f6f38e7f4ea6fddef1f88eba852d985c4851e51099032"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v6/request-ledger.json",
+            "sha256": "7946bc3283cb153b3b74cbd8b2349c5c8d1738bcb6cc8a43a0ac6a18d900502a"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v7/request-ledger.json",
+            "sha256": "7efb51ed44af49e040a575da61781224dc67e85aeee7831c5ec8b23367fd2ff3"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v8/request-ledger.json",
+            "sha256": "1dad5afa0cf7bb1863a69f0936ab479343cc9b87ae43173081f09636958802cf"
+          },
+          {
+            "path": "2026-10-13/literary-pilot-v9/request-ledger.json",
+            "sha256": "6b952d774e9e088073b0e795eb28bfeb578ac94b9832d43fce1255ac5ec2b2fa"
+          },
+          {
+            "path": "2026-10-13/literary-pilot/request-ledger.json",
+            "sha256": "1312fa97bcf7b477699e017c7b807518feffe1a88b5f62dfbe262bd6b3a4db81"
+          },
+          {
+            "path": "2026-10-13/literary-revision-v1/request-ledger.json",
+            "sha256": "d66fdcba60659cacfa27ddc929c062fc28d205fb1bcc682ac02ebb21a52bc906"
+          },
+          {
+            "path": "2026-10-13/literary-transport-v1/request-ledger.json",
+            "sha256": "074d4aa7eb8a17f130f097c872d5ee7799f45a0c48fdfc766e60f4feed82e58b"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v13/request-ledger.json",
+            "sha256": "11079536391f8db4b680ba761d8ea88e972ced9047c52356efb60517703c7f0d"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v14-probe/request-ledger.json",
+            "sha256": "b42c51905f2bbda92eb082a311566a99bce6beef43df7dbb1f4684c2fc57748b"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v15-probe/request-ledger.json",
+            "sha256": "f57e9173aebc8cd9a6e7c895f1c9d0d9fe71d055833ecd9012feb86f4484aa61"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v16-budget-probe/request-ledger.json",
+            "sha256": "b6d76fca0d35f8715c082aa2878df4f35c07fdedbc0643c0a28ad011f8bbcaa7"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v17-budget-probe/request-ledger.json",
+            "sha256": "1e0b0faba1ff72570e35b328941803cbbfe1a1a1dddafea4099921e28b792968"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v18-budget-probe/request-ledger.json",
+            "sha256": "d988ef9add52121180efc09e61d674a2793cf0c66fa4537e15358f3f060f95d1"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v19-budget-probe/request-ledger.json",
+            "sha256": "9589a3039bdd158bcd0080fab8511e6ae04ebf251e034f8549caf9bd6c4c7729"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v20-budget-probe/request-ledger.json",
+            "sha256": "3c6803891ec1da6424fe816fcca319b8b041d13fbea803bed07fb03f66f0cf24"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v21-budget-probe/request-ledger.json",
+            "sha256": "22a679864a45c74175392feceaad9e3f657cac7d2e831fc7dc008acb4356411a"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v22-budget-probe/request-ledger.json",
+            "sha256": "d2a6ac9e925586673d22a4aae56b0eadbb12adae4bbf00d98709e98d18bb23ce"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v23-budget-probe/request-ledger.json",
+            "sha256": "da5d4d9109b0a968af08ed6014a7c6bc8a42f4c29b5fc341343d044524ef88da"
+          },
+          {
+            "path": "2026-10-14/literary-pilot-v24-live-probe/request-ledger.json",
+            "sha256": "c9fef69be2b852916aaeea8596aa25197d8b092e9006dd29f764f4fa936e3665"
+          }
+        ],
+        "id": "workspace-docs-audits",
+        "path": "/Users/zhaozhen/Documents/ChatGPT/神经网络写作/docs/audits"
+      }
+    ]
+  },
+  "judging": {
+    "blind": true,
+    "both_orders": true,
+    "criteria": [
+      "continuity",
+      "character_motivation",
+      "causality",
+      "style",
+      "task_fit"
+    ],
+    "human_review_required_for_author_efficiency": true,
+    "minimum_distinct_judge_models": 2
+  },
+  "max_judge_output_tokens": 2200,
+  "max_output_tokens": 2000,
+  "protocol": "moyu-literary-v1",
+  "repetitions": 1,
+  "scope": "电脑端单候选收束诊断；本次仅发送墨屿一条请求，不续跑基线或发送评审。只验证冻结输出与任务要求，不属于文学对照、作者效率或第一梯队证明。",
+  "seed": 20261013,
+  "stop_after_first_ineligible_pair": true,
+  "writer_parameters": {
+    "temperature": 0.65,
+    "thinking": {
+      "type": "disabled"
+    }
+  },
+  "writer_stream": false
+}

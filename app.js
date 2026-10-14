@@ -176,6 +176,15 @@ function candidateOutputIssues(candidate){
 const AI_TASK_NAMES={continue:'续写',polish:'润色',outline:'故事总纲',scene:'场景计划',summary:'回顾与交接',
  check:'连续性检查',brainstorm:'创意方向',chapter_analysis:'章后记忆',semantic_review:'故事审稿'};
 function isAnalysisCandidate(candidate){return ['chapter_analysis','semantic_review'].includes(candidate?.task)}
+function terminalCandidateFailure(candidate){return ['failed','canceled','unknown','interrupted'].includes(candidate?.job_status)}
+function candidateReadOnly(candidate){
+ return !candidate?.complete||terminalCandidateFailure(candidate)||candidate.truncated||isAnalysisCandidate(candidate)||
+  ['accepted','rejected'].includes(candidate?.decision)||!!candidate?.restored_read_only;
+}
+function editCandidateText(event){
+ if(candidateReadOnly(aiDraft)){displayCandidate(aiDraft);return}
+ aiDraft.text=event.target.value;persistCandidates();displayCandidate(aiDraft);
+}
 function analysisCandidatePreview(candidate){
  const label=AI_TASK_NAMES[candidate.task];
  if(!candidate.complete)return candidate.error?`${label}未完成：${candidate.error}`:`${label}正在生成，完成后显示摘要。`;
@@ -206,10 +215,11 @@ function displayCandidate(candidate){
  aiDraft=candidate;aiRunId=candidate?.ai_run_id||null;
  const decided=['accepted','rejected'].includes(candidate?.decision),analysis=isAnalysisCandidate(candidate);
  const taskName=candidate?.candidate_revision?`整理后的${AI_TASK_NAMES[candidate.task]||'正文'}`:AI_TASK_NAMES[candidate?.task]||'AI';
- const preview=analysis?analysisCandidatePreview(candidate):candidate?.text||'';
+ const incomplete=terminalCandidateFailure(candidate);
+ const preview=analysis&&!incomplete?analysisCandidatePreview(candidate):candidate?.text||'';
  const heading=document.querySelector('.ai-copilot h3');if(heading)heading.textContent=candidate?`${taskName}${analysis?'':'候选'}`:'AI 候选';
  const output=document.querySelector('#aiOutput');if(output){
-  if(output.value!==preview)output.value=preview;output.readOnly=analysis||decided||!!candidate?.restored_read_only;
+  if(output.value!==preview)output.value=preview;output.readOnly=candidateReadOnly(candidate);
   output.setAttribute('aria-label',analysis?`${taskName}摘要`:'AI 候选结果');
  }
  const status=document.querySelector('#aiStatus');
@@ -217,13 +227,14 @@ function displayCandidate(candidate){
  if(status)status.textContent=candidate?.restored_read_only?'恢复的候选仅供阅读，请按当前稿件生成新候选':decided?`${taskName} · ${candidate.decision==='accepted'?'已采纳':'已拒绝'} · 历史记录`:candidate?(candidate.complete?
   outputIssues.length?`候选需要整理：${outputIssues.join('；')}`:
    `${analysis?`${taskName}已生成`:'候选已准备好'} · ${candidate.model||'创作助手'}${candidate.truncated?' · 输出不完整，仅可阅读':''}`:
-  candidate.error?`${taskName}未完成：${candidate.error}`:`${analysis?`${taskName}正在生成`:'正在生成'} · 已收到 ${Array.from(candidate.text||'').length} 字`):'';
+  incomplete?`${taskName}${taskStatus(candidate.completion_state==='unknown'?'unknown':candidate.job_status)} · ${candidate.error||'任务未完整结束'} · ${candidate.text?'已保留片段，仅供阅读和复制':'没有已保存的片段'}`:
+   candidate.error?`${taskName}未完成：${candidate.error}`:`${analysis?`${taskName}正在生成`:'正在生成'} · 已收到 ${Array.from(candidate.text||'').length} 字`):'';
  const adopt=document.querySelector('#aiAdopt');if(adopt){
   adopt.textContent=analysis?`查看${taskName}`:'比较并采纳';
-  adopt.disabled=!candidate?.complete||candidate.truncated||outputIssues.length>0||decided||adopting||!!candidate.restored_read_only;
+  adopt.disabled=!candidate?.complete||incomplete||candidate.truncated||outputIssues.length>0||decided||adopting||!!candidate.restored_read_only;
  }
- const clear=document.querySelector('#aiClear');if(clear)clear.disabled=!candidate||decided||!!candidate.restored_read_only;
- const copy=document.querySelector('#aiCopy');if(copy)copy.disabled=!candidate?.text||analysis&&!candidate.complete;
+ const clear=document.querySelector('#aiClear');if(clear)clear.disabled=!candidate||incomplete||decided||!!candidate.restored_read_only;
+ const copy=document.querySelector('#aiCopy');if(copy)copy.disabled=!preview||analysis&&!candidate.complete&&!incomplete;
  renderAIProvenance(candidate);
  updateCandidateRevisionControls();
 }
@@ -254,6 +265,7 @@ function candidateRevisionChild(candidate){
 function candidateRevisionReason(candidate){
  if(!candidate||!['continue','polish'].includes(candidate.task))return '只支持整理续写或润色正文';
  if(candidate.restored_read_only)return '恢复的候选仅供阅读，请生成新候选';
+ if(terminalCandidateFailure(candidate))return '未完成的片段仅供阅读和复制，不能整理';
  const validation=candidate.output_validation;
  if(!hasProviderValidationShape(candidate,validation))
   return '候选缺少后端输出验证，请重新生成';
@@ -296,7 +308,7 @@ async function updateCandidateRevisionControls(){
  const busy=candidate&&(revisionInFlight.has(candidateRevisionKey(candidate))||revisionOpening.has(candidateRevisionKey(candidate)));
  button.textContent=child?'查看整理候选':recovering?'恢复整理任务':'整理候选';button.disabled=true;
  if(busy){button.title='正在核对整理任务，请稍候';return}
- if(child||recovering){button.disabled=!candidateScopeCurrent(candidate)||!!candidate.restored_read_only;button.title='读取已有整理任务，不会自动再次调用模型';return}
+ if(child||recovering){button.disabled=!candidateScopeCurrent(candidate)||!!candidate.restored_read_only||terminalCandidateFailure(candidate);button.title='读取已有整理任务，不会自动再次调用模型';return}
  const reason=candidateRevisionReason(candidate);button.title=reason||'另行生成一份整理候选，单独计入模型用量';
  if(reason||!backendOnline)return;
  try{
@@ -313,13 +325,20 @@ function receiveCandidateJob(job){
  const metadata={candidate_revision:job.candidate_revision||result.candidate_revision||draft?.candidate_revision,
   restored_read_only:!!(job.restored_read_only||result.restored_read_only),job_status:job.status,created_at:job.created_at||draft?.created_at};
  if(!draft)draft={task:job.task,text:'',originalText:'',ai_run_id:job.ai_run_id,job_id:job.id,source,complete:false,last_seq:0};
- if(job.status==='success'&&job.result&&!draft.complete){
+ const incomplete=['canceled','failed','unknown','interrupted'].includes(job.status);
+ if(job.result&&!draft.complete&&(job.status==='success'||incomplete)){
   const prose=['continue','polish'].includes(job.task)&&result.response_format==='json';
-  const text=String(prose?result.structured?.content||'':result.text??(result.structured?JSON.stringify(result.structured,null,2):''));
-  draft={...draft,...result,text,originalText:text,complete:true,truncated:!!result.truncated,error:''};
+  const text=String(prose?result.structured?.content??(incomplete?result.text||'':''):
+   result.text??(result.structured?JSON.stringify(result.structured,null,2):''));
+  if(job.status==='success'||text){
+   draft={...draft,...result,text,originalText:text,complete:job.status==='success',truncated:!!result.truncated,
+    terminal_snapshot:incomplete,error:''};
+  }else{
+   const {text:emptyText,...details}=result;Object.assign(draft,details);
+  }
  }
  Object.assign(draft,{...metadata,task:job.task,ai_run_id:job.ai_run_id,job_id:job.id,source,decision});
- if(['canceled','failed','unknown','interrupted'].includes(job.status)){draft.complete=false;draft.error=job.error||taskStatus(job.status)}
+ if(incomplete){draft.complete=false;draft.safe_to_apply=false;draft.error=job.error||taskStatus(job.status)}
  candidateStore.set(job.ai_run_id,draft);
  const parent=candidateStore.get(metadata.candidate_revision?.parent_run_id);
  if(parent){
@@ -350,6 +369,7 @@ async function readCandidateRun(runId,owner=requestedProject,branch=state.branch
 }
 async function reviseAI(){
  const candidate=aiDraft;if(!candidate)return;
+ if(terminalCandidateFailure(candidate))return toast('未完成的片段仅供阅读和复制，不能整理');
  const key=candidateRevisionKey(candidate);if(revisionInFlight.has(key)||revisionOpening.has(key))return;
  revisionOpening.add(key);updateCandidateRevisionControls();
  try{
@@ -801,7 +821,8 @@ async function generateAI(options={}){
 }
 async function aiPromptContract(){const c=chapter();if(!c)return toast('请先选择章节');const task=document.querySelector('#aiTask')?.value||'continue';const instruction=document.querySelector('#aiInstruction')?.value||'';try{const r=await fetch(`${API_BASE}/ai/prompt-preview`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({task,chapter_id:c.id,instruction,material_controls:materialControls(),retrieval_profile:retrievalProfile()})});if(!r.ok)throw new Error('提示词预览不可用');const p=await r.json();const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.innerHTML=`<div class="modal"><h3>AI 任务契约预览</h3><p class="modal-help">任务：${esc(p.task)} · 输出：${esc(p.contract?.output||'')} · 格式：${esc(p.contract?.response_format||'text')} · 估算 ${p.estimated_tokens||0} tokens</p><pre class="ai-contract-preview">${esc(p.system)}\n\n${esc(p.user.slice(0,12000))}</pre><div class="modal-actions"><button class="ghost-btn" data-close>关闭</button></div></div>`;document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove()}catch(e){toast(e.message)}}
 async function adoptAI(){
- const draft=aiDraft;if(!draft?.complete||!draft.text.trim())return toast('请等待候选完整生成');
+ const draft=aiDraft;if(terminalCandidateFailure(draft))return toast('未完成的片段仅供阅读和复制，不能采纳');
+ if(!draft?.complete||!draft.text.trim())return toast('请等待候选完整生成');
  if(draft.restored_read_only)return toast('恢复的候选仅供阅读，请按当前稿件生成新候选');
  if(draft.task==='chapter_analysis')return actions.chapterAnalysis();
  if(draft.task==='semantic_review')return actions.reviewChapter();
@@ -846,6 +867,7 @@ function showCandidateDifference(draft){
 }
 async function clearAI(){
  const draft=aiDraft;if(!draft||['accepted','rejected'].includes(draft.decision))return;
+ if(terminalCandidateFailure(draft))return toast('任务已结束，保留的片段仅供阅读和复制');
  if(draft.restored_read_only)return toast('恢复的候选仅供阅读，请按当前稿件生成新候选');
  if(!draft.complete)return cancelJob(draft.job_id);
  try{
@@ -865,7 +887,8 @@ async function refreshQueue(){
   queueJobs=data.jobs||[];
   for(const job of [...queueJobs].reverse()){
    const draft=receiveCandidateJob(job);
-   if(draft&&['queued','running'].includes(job.status))startRunStream(job,draft,owner);
+   if(draft&&(['queued','running'].includes(job.status)||
+    terminalCandidateFailure(draft)&&!draft.terminal_snapshot&&!draft.terminal_replay_complete))startRunStream(job,draft,owner);
   }
   displayCandidate(activeCandidate());
   persistCandidates();
@@ -880,30 +903,50 @@ function parseSSE(block){
  try{return {event,data:JSON.parse(raw)}}catch{return null}
 }
 async function startRunStream(job,draft,owner){
- if(streamReaders.has(job.id)||draft.complete)return;
+ if(streamReaders.has(job.id)||draft.complete||draft.terminal_snapshot||draft.terminal_replay_complete)return;
+ const branch=state.branch_id||state.project?.branch_id||'main';
  const controller=new AbortController();streamReaders.set(job.id,controller);
+ let lastReplaySequence=null,finished=false;
+ const current=()=>owner===requestedProject&&branch===(state.branch_id||state.project?.branch_id||'main')&&
+  candidateStore.get(job.ai_run_id)===draft&&draft.job_id===job.id&&draft.ai_run_id===job.ai_run_id&&candidateScopeCurrent(draft);
  const accept=block=>{
-  const event=parseSSE(block);if(!event||owner!==requestedProject)return;
-  if(event.event==='delta'&&candidateStore.get(job.ai_run_id)===draft&&!draft.complete&&
-   ['queued','running'].includes(draft.job_status)&&Number(event.data.seq)>Number(draft.last_seq||0)){
-   draft.last_seq=Number(event.data.seq);draft.text+=event.data.text||'';persistCandidates();
+  const event=parseSSE(block);if(!event||!current()||event.data?.ai_run_id!==job.ai_run_id)return;
+  if(event.event==='run'&&event.data.streaming==='ledger_replay'&&
+   Number.isInteger(event.data.last_seq)&&event.data.last_seq>=0){
+   lastReplaySequence=event.data.last_seq;
+   if(terminalCandidateFailure(draft)&&event.data.status==='unknown'){
+    draft.completion_state='unknown';persistCandidates();
+    if(aiDraft===draft)displayCandidate(draft);
+   }
+  }
+  if(event.event==='delta'&&!draft.complete&&!draft.terminal_snapshot&&
+   (['queued','running'].includes(draft.job_status)||terminalCandidateFailure(draft))&&
+   Number.isInteger(event.data.seq)&&event.data.seq>Number(draft.last_seq||0)&&typeof event.data.text==='string'){
+   draft.last_seq=event.data.seq;draft.text+=event.data.text;persistCandidates();
    if(activeChapter===draft.source?.chapter_id&&candidateScopeCurrent(draft)&&(!aiDraft||aiDraft.ai_run_id===draft.ai_run_id))displayCandidate(draft);
   }
-  if(event.event==='done')scheduleQueue(0);
+  if(event.event==='done'){
+   if(Number.isInteger(event.data.last_seq)&&event.data.last_seq>=0)lastReplaySequence=event.data.last_seq;
+   scheduleQueue(0);
+  }
  };
  try{
   const response=await fetch(`${API_BASE}/ai/runs/${encodeURIComponent(job.ai_run_id)}/stream?after_seq=${draft.last_seq||0}`,
-   {headers:{Accept:'text/event-stream'},signal:controller.signal});
+   {headers:{Accept:'text/event-stream','X-Moyu-Project':owner,'X-Moyu-Branch':branch},signal:controller.signal});
   if(!response.ok||!response.body)return;
   const reader=response.body.getReader();const decoder=new TextDecoder();let buffer='';
   while(true){
-   const {value,done}=await reader.read();if(done)break;
+   const {value,done}=await reader.read();if(done){finished=true;break}
    buffer+=decoder.decode(value,{stream:true});const blocks=buffer.split(/\r?\n\r?\n/);buffer=blocks.pop();
    for(const block of blocks)accept(block);
   }
   if(buffer.trim())accept(buffer);
- }catch(error){if(error.name!=='AbortError')draft.streamError='连接暂时中断，任务仍在本机继续'}
- finally{streamReaders.delete(job.id)}
+  if(finished&&current()&&terminalCandidateFailure(draft)&&lastReplaySequence!==null&&
+   Number(draft.last_seq||0)>=lastReplaySequence){draft.terminal_replay_complete=true;persistCandidates()}
+  else if(finished&&current()&&terminalCandidateFailure(draft))scheduleQueue(0);
+ }catch(error){if(error.name!=='AbortError')draft.streamError=terminalCandidateFailure(draft)?
+  '已保存的片段暂未读全，稍后可继续查看':'连接暂时中断，任务仍在本机继续'}
+ finally{if(streamReaders.get(job.id)===controller)streamReaders.delete(job.id)}
 }
 function taskStatus(status){return ({queued:'排队中',running:'生成中',success:'候选已完成',failed:'失败',canceled:'已停止',unknown:'执行结果未知',interrupted:'已中断'})[status]||status}
 function updateTaskCount(){const el=document.querySelector('#taskCount');if(el){const n=queueJobs.filter(j=>['queued','running'].includes(j.status)).length;el.textContent=n?String(n):''}}
@@ -923,22 +966,30 @@ function renderTaskList(){
   const planning=job.planning_workflow;
   const revision=job.candidate_revision||draft?.candidate_revision;
   const running=['queued','running'].includes(job.status);const error=job.error||draft?.error||'';
+  const incomplete=['failed','canceled','unknown','interrupted'].includes(job.status);
+  const billing=job.result?.billing_state||draft?.billing_state;
+  const retryable=!planning&&!job.restored_read_only&&['failed','canceled'].includes(job.status)&&
+   ['usage_reported','not_dispatched'].includes(billing)&&job.result?.completion_state!=='unknown'&&
+   draft?.completion_state!=='unknown';
   return `<article class="task-row"><div><strong>${esc(revision?'整理候选':({continue:'续写',polish:'润色',outline:'规划',scene:'场景计划',summary:'章节回顾',check:'连续性检查',chapter_analysis:'章后记忆',semantic_review:'故事审稿'})[job.task]||job.task)}</strong>
-  <span class="record-tag">${esc(taskStatus(job.status))}</span><p>${esc(planning?'创作规划':c?.title||'来源章节')} · ${esc(job.created_at||'')}</p>
+  <span class="record-tag">${esc(taskStatus(draft?.completion_state==='unknown'?'unknown':job.status))}</span><p>${esc(planning?'创作规划':c?.title||'来源章节')} · ${esc(job.created_at||'')}</p>
   ${revision?`<p>整理原候选 ${revision.parent_characters??'未知'} 字 · ${esc(AI_TASK_NAMES[job.task]||job.task)}</p>`:''}
   ${error?`<p class="check-bad">${esc(error)}</p>`:''}${draft?.text?`<p class="task-preview">${esc(draft.text.slice(0,160))}</p>`:''}</div>
   <div class="task-actions">${running?`<button class="ghost-btn" data-task-cancel="${safeId(job.id)}">停止</button>`:''}
   ${planning?`<button class="primary-btn" data-task-planning="${safeId(planning.id)}">查看创作规划</button>`:
-   job.status==='success'?`<button class="primary-btn" data-task-open="${safeId(job.ai_run_id)}">${['accepted','partial','edited','rejected'].includes(job.author_decision)?'查看记录':'查看候选'}</button>`:''}
-  ${!planning&&!job.restored_read_only&&['failed','canceled'].includes(job.status)?`<button class="ghost-btn" data-task-retry="${safeId(job.id)}">按原任务重试</button>`:''}</div></article>`;
+   job.status==='success'||incomplete?`<button class="primary-btn" data-task-open="${safeId(job.ai_run_id)}">${incomplete?(draft?.text?'查看片段':'查看记录'):['accepted','partial','edited','rejected'].includes(job.author_decision)?'查看记录':'查看候选'}</button>`:''}
+  ${retryable?`<button class="ghost-btn" data-task-retry="${safeId(job.id)}">按原任务重试</button>`:''}</div></article>`;
  }).join('')||'<div class="empty">还没有生成任务。</div>';
  host.querySelectorAll('[data-task-cancel]').forEach(button=>button.onclick=()=>cancelJob(button.dataset.taskCancel));
  host.querySelectorAll('[data-task-retry]').forEach(button=>button.onclick=()=>retryJob(button.dataset.taskRetry));
  host.querySelectorAll('[data-task-planning]').forEach(button=>button.onclick=()=>actions.openPlanning(button.dataset.taskPlanning));
  host.querySelectorAll('[data-task-open]').forEach(button=>button.onclick=()=>{
   const draft=candidateStore.get(button.dataset.taskOpen);if(!draft?.source)return toast('该旧任务没有原稿身份，请重新生成');
+  if(!candidateScopeCurrent(draft))return toast('作品或版本已切换，请回到候选的来源作品');
+  if(!chapter(draft.source.chapter_id))return toast('来源章节已不存在，无法打开候选');
   activeChapter=draft.source.chapter_id;rememberCandidateView(draft);view='editor';render();
-  if(draft.task==='chapter_analysis')actions.chapterAnalysis();else if(draft.task==='semantic_review')actions.reviewChapter();else displayCandidate(draft);
+  if(draft.complete&&draft.task==='chapter_analysis')actions.chapterAnalysis();
+  else if(draft.complete&&draft.task==='semantic_review')actions.reviewChapter();else displayCandidate(draft);
  });
 }
 function captureMemories(){let added=false;const seen=new Set(state.memory.map(m=>m.key)); state.chapters.forEach(c=>{const tags=[...c.body.matchAll(/(?:【|\[)(人物|物品|地点|伏笔|剧情)(?:】|\])\s*([^\n，。]+)/g)]; tags.forEach(t=>{const key=t[1]+':'+t[2].trim(); if(!seen.has(key)){const start=Array.from(c.body.slice(0,t.index??0)).length;const end=start+Array.from(t[0]).length;state.memory.push({id:crypto.randomUUID(),key,type:t[1],name:t[2].trim(),source:c.title,source_chapter_id:c.id,source_quote:t[0],source_start:start,source_end:end,status:'待确认',confidence:'候选',note:'由章节标记自动捕获，确认后才进入正式记忆。'}); seen.add(key);added=true}})});return added}
@@ -1242,7 +1293,7 @@ function bind(){
   });
  }
  if(status)status.onchange=()=>{const c=chapter();if(!c)return;c.status=status.value;c.review_status='unreviewed';c.updated=Date.now();save();toast(`章节状态已更新为“${c.status}”`)};
- document.querySelector('#searchInput')?.addEventListener('keydown',e=>e.key==='Enter'&&actions.search());document.querySelectorAll('[data-record]').forEach(b=>b.onclick=()=>editRecord(b.dataset.record));document.querySelectorAll('[data-memory]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memory,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`)));document.querySelectorAll('[data-memory-evidence]').forEach(b=>b.onclick=()=>showMemoryEvidence(b.dataset.memoryEvidence));document.querySelectorAll('[data-memory-reanchor]').forEach(b=>b.onclick=()=>reanchorMemory(b.dataset.memoryReanchor));document.querySelectorAll('[data-memory-reject]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReject,'rejected').catch(error=>toast(`记忆拒绝失败：${error.message}`)));document.querySelectorAll('[data-memory-review]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReview,'candidate').catch(error=>toast(`记忆更新失败：${error.message}`)));document.querySelector('#aiGenerate')?.addEventListener('click',generateAI);document.querySelector('#aiAdopt')?.addEventListener('click',adoptAI);document.querySelector('#aiCopy')?.addEventListener('click',async()=>{if(!aiDraft)return;try{await navigator.clipboard.writeText(document.querySelector('#aiOutput').value);toast('候选已复制')}catch{document.querySelector('#aiOutput').select()}});document.querySelector('#aiClear')?.addEventListener('click',clearAI);document.querySelector('#aiOutput')?.addEventListener('input',e=>{if(aiDraft&&!isAnalysisCandidate(aiDraft)){aiDraft.text=e.target.value;persistCandidates();displayCandidate(aiDraft)}});const generateButton=document.querySelector('#aiGenerate');if(generateButton&&!generateButton.parentElement.querySelector('[data-context-preview]')){const preview=document.createElement('button');preview.className='ghost-btn';preview.dataset.contextPreview='1';preview.textContent='上下文预览';preview.onclick=()=>actions.contextPreview();generateButton.after(preview);const contract=document.createElement('button');contract.className='ghost-btn';contract.textContent='任务契约';contract.onclick=aiPromptContract;preview.after(contract)}
+ document.querySelector('#searchInput')?.addEventListener('keydown',e=>e.key==='Enter'&&actions.search());document.querySelectorAll('[data-record]').forEach(b=>b.onclick=()=>editRecord(b.dataset.record));document.querySelectorAll('[data-memory]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memory,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`)));document.querySelectorAll('[data-memory-evidence]').forEach(b=>b.onclick=()=>showMemoryEvidence(b.dataset.memoryEvidence));document.querySelectorAll('[data-memory-reanchor]').forEach(b=>b.onclick=()=>reanchorMemory(b.dataset.memoryReanchor));document.querySelectorAll('[data-memory-reject]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReject,'rejected').catch(error=>toast(`记忆拒绝失败：${error.message}`)));document.querySelectorAll('[data-memory-review]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReview,'candidate').catch(error=>toast(`记忆更新失败：${error.message}`)));document.querySelector('#aiGenerate')?.addEventListener('click',generateAI);document.querySelector('#aiAdopt')?.addEventListener('click',adoptAI);document.querySelector('#aiCopy')?.addEventListener('click',async()=>{if(!aiDraft)return;try{await navigator.clipboard.writeText(document.querySelector('#aiOutput').value);toast('候选已复制')}catch{document.querySelector('#aiOutput').select()}});document.querySelector('#aiClear')?.addEventListener('click',clearAI);document.querySelector('#aiOutput')?.addEventListener('input',editCandidateText);const generateButton=document.querySelector('#aiGenerate');if(generateButton&&!generateButton.parentElement.querySelector('[data-context-preview]')){const preview=document.createElement('button');preview.className='ghost-btn';preview.dataset.contextPreview='1';preview.textContent='上下文预览';preview.onclick=()=>actions.contextPreview();generateButton.after(preview);const contract=document.createElement('button');contract.className='ghost-btn';contract.textContent='任务契约';contract.onclick=aiPromptContract;preview.after(contract)}
 }
 document.addEventListener('click',e=>{const button=e.target.closest?.('[data-chapter]');if(button?.dataset.chapter)localStorage.setItem(ACTIVE_KEY,button.dataset.chapter)});
 document.addEventListener('click',e=>{const assertion=e.target.closest?.('[data-assertion-review]');if(!assertion)return;e.preventDefault();e.stopPropagation();reviewAssertion(assertion.dataset.assertionReview,assertion.dataset.assertionState,assertion.dataset.memoryId)},true);

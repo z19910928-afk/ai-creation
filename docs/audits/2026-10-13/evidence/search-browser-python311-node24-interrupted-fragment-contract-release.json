@@ -1,0 +1,30 @@
+{
+  "passed": true,
+  "scope": "电脑端全文搜索、隔离 SQLite、本机模拟数据",
+  "cases": [
+    {
+      "name": "后端搜索失败时实际回退到本地草稿并可搜别名",
+      "passed": true
+    },
+    {
+      "name": "后端返回损坏响应时回退到本地草稿",
+      "passed": true
+    },
+    {
+      "name": "较早的搜索响应不会覆盖后来提交的关键词",
+      "passed": true
+    },
+    {
+      "name": "搜索结果显示精确原文并按 Unicode 字符范围定位到章节",
+      "passed": true
+    },
+    {
+      "name": "章节正文改变后，旧搜索证据不能定位到错误位置",
+      "passed": true
+    }
+  ],
+  "artifacts": "Browser logs and private temporary DB are retained locally; desktop screenshots listed in this report.",
+  "desktop_scenario_count": 5,
+  "seeded_chapter_id": "ch_45bfbdfcf1df470eb132ef9ef096048c",
+  "seeded_project_version": 1
+}

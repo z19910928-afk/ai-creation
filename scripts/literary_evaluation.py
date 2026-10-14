@@ -1107,7 +1107,9 @@ def messages_for(case: dict[str, Any], arm: dict[str, Any], plan_path: Path,
     source = arm.get("source")
     if source == "moyu-prompt":
         import server
-        preview = server.ai_prompt_preview(case["task"], case["context"], case["instruction"], "text",
+        # Share the frozen contract without adding evaluation metadata to the material.
+        context = {**case["context"], "_output_contract": output_contract(case)}
+        preview = server.ai_prompt_preview(case["task"], context, case["instruction"], "text",
                                            config=config)
         return preview.get("messages") or [{"role": "system", "content": preview["system"]},
                                             {"role": "user", "content": preview["user"]}]

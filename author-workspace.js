@@ -227,7 +227,9 @@ async function authorLoadPage(){
    settingsSequence=authorBeginSettingsOperation();
    const data=await authorJSON('/api/ai/settings');
    if(token!==authorLoadToken||owner!==requestedProject||settingsSequence!==authorSettingsSeq)return;
-   authorSettings=data.settings||data;authorRenderSettings();await loadAIStatus();
+   await loadAIStatus();
+   if(token!==authorLoadToken||owner!==requestedProject||settingsSequence!==authorSettingsSeq||view!=='settings')return;
+   authorSettings=data.settings||data;authorRenderSettings();
   }
   if(which==='backups'){
    const data=await authorJSON('/api/backups');if(token!==authorLoadToken||owner!==requestedProject)return;

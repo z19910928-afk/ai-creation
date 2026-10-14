@@ -222,6 +222,51 @@ async function main(){
   assert.equal(await page.locator('#modelDefault').inputValue(),'stale-save-B-fixture');
   assert.equal(calls.length,count);
  });
+ await test('设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置',async()=>{
+  const count=calls.length;
+  const previous=await page.evaluate(()=>({model:authorSettings.model,status:aiStatus.model}));
+  await page.locator('[data-view="editor"]').click();
+  await api('/api/ai/settings','PUT',{model:'delayed-settings-C-fixture'},'default-project');
+  let releaseStatus,observed;const held=new Promise(resolve=>observed=resolve);
+  let captured=false;
+  await page.route('**/api/ai/status',async route=>{
+   if(captured)return route.continue();
+   captured=true;const response=await route.fetch();observed();
+   await new Promise(resolve=>{releaseStatus=resolve});await route.fulfill({response});
+  });
+  await page.locator('[data-view="settings"]').click();await held;
+  try{
+   assert.equal(await page.locator('#modelSettings').count(),0);
+   assert.deepEqual(await page.evaluate(()=>({model:authorSettings.model,status:aiStatus.model})),previous);
+  }finally{releaseStatus()}
+  await page.locator('#modelSettings').waitFor();await page.unroute('**/api/ai/status');
+  assert.deepEqual(await page.evaluate(()=>({model:authorSettings.model,status:aiStatus.model,input:document.querySelector('#modelDefault').value})),
+   {model:'delayed-settings-C-fixture',status:'delayed-settings-C-fixture',input:'delayed-settings-C-fixture'});
+
+  await page.locator('[data-view="editor"]').click();
+  await api('/api/ai/settings','PUT',{model:'delayed-settings-D-fixture'},'default-project');
+  let releaseNext,observeNext;const nextHeld=new Promise(resolve=>observeNext=resolve);
+  captured=false;
+  await page.route('**/api/ai/status',async route=>{
+   if(captured)return route.continue();
+   captured=true;const response=await route.fetch();observeNext();
+   await new Promise(resolve=>{releaseNext=resolve});await route.fulfill({response});
+  });
+  await page.evaluate(()=>{
+   const load=authorLoadPage;authorLoadPage=()=>window.pendingSettingsLoad=load();
+   try{view='settings';render()}finally{authorLoadPage=load}
+  });
+  await nextHeld;
+  await page.locator('[data-view="editor"]').click();
+  releaseNext();await page.evaluate(()=>window.pendingSettingsLoad);await page.unroute('**/api/ai/status');
+  assert.equal(await page.evaluate(()=>view),'editor');
+  assert.equal(await page.locator('#modelSettings').count(),0);
+  assert.equal(await page.evaluate(()=>authorSettings.model),'delayed-settings-C-fixture');
+  await settingsPage();
+  assert.deepEqual(await page.evaluate(()=>({model:authorSettings.model,status:aiStatus.model,input:document.querySelector('#modelDefault').value})),
+   {model:'delayed-settings-D-fixture',status:'delayed-settings-D-fixture',input:'delayed-settings-D-fixture'});
+  assert.equal(calls.length,count);
+ });
  await test('已发出的旧保存响应在离开设置页后不写回全局设置或状态',async()=>{
   await page.locator('[data-view="library"]').click();await page.locator('[data-project-open="default-project"]').click();
   await page.waitForFunction(()=>requestedProject==='default-project'&&backendOnline===true);
