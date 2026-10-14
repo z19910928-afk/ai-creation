@@ -1,0 +1,193 @@
+{
+  "passed": true,
+  "scope": "真实桌面Chrome、隔离SQLite、本机免费模拟提供方",
+  "cases": [
+    {
+      "name": "切页查看设定与刷新后保留当前章任务及完整要求",
+      "passed": true
+    },
+    {
+      "name": "不同章节任务草稿互相隔离，刷新仍回到该章草稿",
+      "passed": true
+    },
+    {
+      "name": "两部作品各自保留要求，离开再回来不会串用",
+      "passed": true
+    },
+    {
+      "name": "同作品同章的合成分支身份具有独立草稿",
+      "passed": true
+    },
+    {
+      "name": "旧作品已卸载控件的迟到输入和清空事件不会改写任一作品草稿",
+      "passed": true
+    },
+    {
+      "name": "程序写入要求后重新渲染或立即刷新仍保存原控件身份",
+      "passed": true
+    },
+    {
+      "name": "显式清空恢复续写，刷新不复活旧要求且其他章节和作品不受影响",
+      "passed": true
+    },
+    {
+      "name": "损坏或不支持的草稿被忽略，不影响编辑器和原稿",
+      "passed": true
+    },
+    {
+      "name": "浏览器存储失败时同页保留要求并提示，恢复存储后无需重新输入即可补存",
+      "passed": true
+    },
+    {
+      "name": "已保存生成任务继续使用原冻结要求，后改草稿和刷新不重发模型",
+      "passed": true
+    },
+    {
+      "name": "两种电脑尺寸下清空与生成控件可见且互不遮挡",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "external_model_calls": 0,
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "25a2d3f4bdd3ece1e05071acc206de196ba49cb80f2590df0456bdffd29ccad6"
+    },
+    {
+      "path": "tests/instruction_draft_browser_regressions.cjs",
+      "sha256": "dfb7cefe4c3bd13fe753034a07635bba4e9b98752151d43ec41124b87fd8026d"
+    }
+  ],
+  "desktop_viewports": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "controls": [
+        {
+          "id": "aiTask",
+          "x": 442,
+          "y": 889.1875,
+          "width": 287.328125,
+          "height": 42,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "aiInstruction",
+          "x": 737.328125,
+          "y": 889.1875,
+          "width": 574.671875,
+          "height": 42,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "aiGenerate",
+          "x": 1320,
+          "y": 889.1875,
+          "width": 90,
+          "height": 42,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "",
+          "x": 442,
+          "y": 939.1875,
+          "width": 287.328125,
+          "height": 38.390625,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "",
+          "x": 737.328125,
+          "y": 939.1875,
+          "width": 574.671875,
+          "height": 38.390625,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "aiInstructionClear",
+          "x": 1320,
+          "y": 939.1875,
+          "width": 90,
+          "height": 38.390625,
+          "within": true,
+          "unobstructed": true
+        }
+      ],
+      "screenshot": "instruction-draft-desktop.png"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "controls": [
+        {
+          "id": "aiTask",
+          "x": 442,
+          "y": 789.1875,
+          "width": 234,
+          "height": 42,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "aiInstruction",
+          "x": 684,
+          "y": 789.1875,
+          "width": 468,
+          "height": 42,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "aiGenerate",
+          "x": 1160,
+          "y": 789.1875,
+          "width": 90,
+          "height": 42,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "",
+          "x": 442,
+          "y": 839.1875,
+          "width": 234,
+          "height": 38.390625,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "",
+          "x": 684,
+          "y": 839.1875,
+          "width": 468,
+          "height": 38.390625,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "id": "aiInstructionClear",
+          "x": 1160,
+          "y": 839.1875,
+          "width": 90,
+          "height": 38.390625,
+          "within": true,
+          "unobstructed": true
+        }
+      ],
+      "screenshot": "instruction-draft-desktop-1280x900.png"
+    }
+  ],
+  "local_mock_model_requests": 1,
+  "branch_identity_test": "Synthetic frontend branch identity; no branch-management UI claim.",
+  "source_unchanged": true
+}

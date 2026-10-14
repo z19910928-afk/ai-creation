@@ -1,0 +1,42 @@
+{
+  "scope": "GitHub Actions for the reference-settings waiting fix only; portable ZIP restoration is not included in this commit.",
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "branch": "codex/full-function-audit",
+  "head_sha": "94e2ade9f8a50fdbf722f18f877c6550e423308d",
+  "run_id": 38636187806,
+  "url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/38636187806",
+  "event": "push",
+  "status": "completed",
+  "conclusion": "success",
+  "created_at": "2026-10-14T20:55:51Z",
+  "updated_at": "2026-10-14T21:06:42Z",
+  "job": {
+    "name": "checks",
+    "started_at": "2026-10-14T20:55:54Z",
+    "completed_at": "2026-10-14T21:06:40Z",
+    "conclusion": "success",
+    "verified_steps": [
+      "Syntax checks",
+      "Contract fixtures",
+      "Evaluation fixtures",
+      "Editor merge regressions",
+      "Install browser regression runtime",
+      "Real browser regressions",
+      "Search browser regressions",
+      "Planning browser regressions",
+      "Model settings browser regressions",
+      "Five chapter author flow",
+      "Instruction draft browser regressions",
+      "Reference passage browser regressions",
+      "Author lifecycle browser regressions",
+      "Export override browser regressions",
+      "Material dependency browser regressions",
+      "Analysis guidance browser regressions"
+    ]
+  },
+  "source": "Fresh gh run view JSON including all jobs and steps, with headSha checked against the pushed commit.",
+  "previous_failures_preserved": true,
+  "proves_actual_local_service_updated": false,
+  "proves_portable_backup_release_passed": false,
+  "proves_literary_leadership": false
+}

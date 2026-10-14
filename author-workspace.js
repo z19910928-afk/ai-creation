@@ -22,6 +22,14 @@ let authorBackups=[];
 let authorReferences=[];
 let authorLoadToken=0;
 let authorReferenceDialogSeq=0;
+let authorPortableSeq=0;
+let authorPortableDialog=null;
+let authorPortableObservedScope=null;
+const authorPortablePendingKey=KEY+':portable-restore-pending';
+const authorPortableUnconfirmedKey=KEY+':portable-restore-unconfirmed';
+const authorPortableUnconfirmedMemory=new Map();
+const authorPortableCanceling=new Map();
+let authorPortableReleasePromise=null;
 let authorEditorBlueprintRequest=null;
 let authorSwitchChain=Promise.resolve();
 const editorUndo=new Map();
@@ -183,9 +191,10 @@ views.blueprint=()=>`${authorPageHead('创作规划','<button class="ghost-btn" 
  <div id="blueprintHost"><div class="empty">正在读取规划…</div></div>`;
 views.settings=()=>`${authorPageHead('模型与风格')}
  <div id="settingsHost"><div class="empty">正在读取设置…</div></div>`;
-views.backups=()=>`${authorPageHead('备份中心','<button class="primary-btn" data-action="createBackup">＋ 完整备份</button>')}
+views.backups=()=>`${authorPageHead('备份中心','<button class="ghost-btn" data-action="importBackup">从电脑恢复 ZIP</button><button class="primary-btn" data-action="createBackup">＋ 完整备份</button>')}
  <div class="backup-scope"><strong>完整作品备份</strong><p>包含正文、历史版本、设定、记忆证据、人物关系、时间线、任务和审计记录。</p>
  <button class="ghost-btn" data-action="exportManuscript">导出稿件 JSON</button><button class="ghost-btn" data-action="importManuscript">导入稿件 JSON</button></div>
+ <div id="portableRestorePending"></div>
  <div id="backupList"><div class="empty">正在读取备份…</div></div>`;
 views.references=()=>`${authorPageHead('旧书与参考库','<button class="primary-btn" data-action="importBook">导入 TXT / MD / EPUB</button>')}
  <div id="referenceList"><div class="empty">正在读取参考来源…</div></div>`;
@@ -301,6 +310,7 @@ async function authorPerformProjectSwitch(id){
  if(authorBlueprintDirty&&!await authorSaveBlueprint())return false;
  cacheDraft();persistCandidates();clearTimeout(syncTimer);++authorLoadToken;
  invalidateReferenceScope();
+  authorInvalidatePortablePreview();
  for(const controller of streamReaders.values())controller.abort();
  streamReaders.clear();jobSources.clear();clearTimeout(queueTimer);
  backendOnline=false;requestedProject=id;storage.set(CURRENT_PROJECT_KEY,id);
@@ -766,6 +776,273 @@ function authorRestoreBackup(id){
   }
   toast('恢复副本已打开，原作品继续保留');
  },'建立恢复副本');
+}
+function authorPortableScope(){
+ return {project_id:requestedProject||state.project?.id||'default-project',
+  branch_id:state.branch_id||state.project?.branch_id||'main'};
+}
+function authorPortableScopeKey(scope=authorPortableScope()){
+ return JSON.stringify([scope.project_id,scope.branch_id]);
+}
+function authorPortableHeaders(scope){
+ return {'X-Moyu-Project':scope.project_id,'X-Moyu-Branch':scope.branch_id};
+}
+function authorPortableUnconfirmed(){
+ let stored=[];try{stored=JSON.parse(storage.get(authorPortableUnconfirmedKey)||'[]')}catch{}
+ const entries=new Map();
+ for(const entry of [...(Array.isArray(stored)?stored:[]),...authorPortableUnconfirmedMemory.values()]){
+  if(typeof entry?.preview_id==='string'&&/^restore_preview_[a-f0-9]{32}$/.test(entry.preview_id)&&
+   typeof entry.scope?.project_id==='string'&&typeof entry.scope?.branch_id==='string')
+   entries.set(entry.preview_id,{preview_id:entry.preview_id,scope:{project_id:entry.scope.project_id,
+    branch_id:entry.scope.branch_id},expires_at:typeof entry.expires_at==='string'?entry.expires_at:null});
+ }
+ return [...entries.values()];
+}
+function authorWritePortableUnconfirmed(entries){
+ if(!storage.set(authorPortableUnconfirmedKey,JSON.stringify(entries)))
+  throw new Error('浏览器暂时无法保留备份校验身份，请稍后重试，ZIP 仍保留在电脑上。');
+}
+function authorRememberPortableUnconfirmed(preview,scope){
+ const entry={preview_id:preview.preview_id,scope:{...scope},expires_at:preview.expires_at||null};
+ authorPortableUnconfirmedMemory.set(entry.preview_id,entry);
+ authorWritePortableUnconfirmed(authorPortableUnconfirmed());
+ authorPortableUnconfirmedMemory.delete(entry.preview_id);
+}
+function authorForgetPortableUnconfirmed(token){
+ authorPortableUnconfirmedMemory.delete(token);
+ authorWritePortableUnconfirmed(authorPortableUnconfirmed().filter(entry=>entry.preview_id!==token));
+}
+function authorCancelPortable(preview,scope){
+ if(!preview?.preview_id)return Promise.resolve();
+ const token=preview.preview_id;
+ if(authorPortableCanceling.has(token))return authorPortableCanceling.get(token);
+ try{authorRememberPortableUnconfirmed(preview,scope)}catch{}
+ const cancel=authorJSON('/api/backups/import/cancel',{method:'POST',headers:authorPortableHeaders(scope),
+  body:JSON.stringify({preview_id:token})}).then(()=>{
+   authorForgetPortableUnconfirmed(token);authorRenderPortablePending();
+  }).finally(()=>authorPortableCanceling.delete(token));
+ authorPortableCanceling.set(token,cancel);return cancel;
+}
+function authorAbandonedPortablePreviews(){
+ const pending=authorPortablePending()?.request.preview_id;
+ const active=authorPortableDialog?.preview?.preview_id;
+ return authorPortableUnconfirmed().filter(entry=>entry.preview_id!==pending&&entry.preview_id!==active);
+}
+function authorReleasePortablePreviews(){
+ if(authorPortableReleasePromise)return authorPortableReleasePromise;
+ const release=(async()=>{
+  while(true){
+   const entries=authorAbandonedPortablePreviews();if(!entries.length)return;
+   for(const entry of entries)await authorCancelPortable(entry,entry.scope);
+  }
+ })();
+ authorPortableReleasePromise=release.finally(()=>{authorPortableReleasePromise=null});
+ return authorPortableReleasePromise;
+}
+function authorInvalidatePortablePreview(){
+ ++authorPortableSeq;
+ const dialog=authorPortableDialog;authorPortableDialog=null;
+ if(dialog){
+  if(!dialog.request)authorCancelPortable(dialog.preview,dialog.scope).catch(()=>authorRenderPortablePending());
+  dialog.wrap.remove();
+ }
+}
+function authorSyncPortableScope(){
+ const key=authorPortableScopeKey();
+ if(authorPortableObservedScope!==key){
+  authorPortableObservedScope=key;authorInvalidatePortablePreview();
+ }
+}
+function authorPortablePending(){
+ try{
+  const pending=JSON.parse(storage.get(authorPortablePendingKey)||'null');
+  if(pending?.scope&&pending?.request?.preview_id&&pending.request.archive_sha256&&
+   typeof pending.request.title==='string')return pending;
+ }catch{}
+ return null;
+}
+function authorSavePortablePending(dialog){
+ const pending={scope:dialog.receiptScope||dialog.scope,request:dialog.request,filename:dialog.filename,project:dialog.project||null};
+ if(!storage.set(authorPortablePendingKey,JSON.stringify(pending)))
+  throw new Error('浏览器暂时无法保存恢复身份，请稍后重试，文件仍保留在电脑上。');
+}
+function authorRenderPortablePending(){
+ const host=document.querySelector('#portableRestorePending');if(!host)return;
+ const pending=authorPortablePending();
+ if(!pending){
+  if(!authorAbandonedPortablePreviews().length){host.innerHTML='';return}
+  host.innerHTML='<section class="portable-recovery"><strong>上次校验的备份预览仍保留</strong><p>释放旧预览后，可以重新选择完整备份。原作品继续保留。</p><p class="form-error" role="alert"></p><button type="button" class="ghost-btn" data-portable-release>释放旧预览</button></section>';
+  const button=host.querySelector('[data-portable-release]');
+  button.onclick=async()=>{
+   button.disabled=true;
+   try{await authorReleasePortablePreviews();authorRenderPortablePending()}
+   catch(error){
+    if(button.isConnected){host.querySelector('.form-error').textContent=error.message;button.disabled=false}
+   }
+  };
+  return;
+ }
+ const same=Boolean(pending.project)||authorPortableScopeKey(pending.scope)===authorPortableScopeKey();
+ host.innerHTML=`<section class="portable-recovery"><strong>${pending.project?'恢复副本已建立':'上次恢复的保存结果尚待确认'}</strong>
+  <p>${esc(pending.request.title)}</p><button type="button" class="ghost-btn" data-portable-resume>
+  ${same?(pending.project?'重新打开副本':'确认上次恢复结果'):'回到原作品确认恢复'}</button></section>`;
+ host.querySelector('[data-portable-resume]').onclick=async()=>{
+  if(!same){
+   if(!await authorSwitchProject(pending.scope.project_id))return;
+   if(authorPortableScopeKey(pending.scope)!==authorPortableScopeKey())return toast('请回到原作品的相同版本确认恢复');
+  }
+  authorPortablePreview(pending.filename,null,pending);
+ };
+}
+actions.importBackup=async()=>{
+ const pending=authorPortablePending();
+ if(pending)return authorPortablePreview(pending.filename,null,pending);
+ authorInvalidatePortablePreview();
+ try{
+  await authorReleasePortablePreviews();
+  authorWritePortableUnconfirmed(authorPortableUnconfirmed());
+  document.querySelector('#backupFileInput').click();
+ }catch(error){authorRenderPortablePending();toast(`旧预览尚未释放：${error.message}`)}
+};
+document.querySelector('#backupFileInput').onchange=async event=>{
+ const file=event.target.files?.[0];event.target.value='';if(!file)return;
+ const pending=authorPortablePending();
+ if(pending)return authorPortablePreview(pending.filename,null,pending);
+ authorSyncPortableScope();authorInvalidatePortablePreview();
+ const sequence=authorPortableSeq,scope=authorPortableScope();
+ const current=()=>sequence===authorPortableSeq&&authorPortableScopeKey(scope)===authorPortableScopeKey();
+ const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.portablePreview='1';
+ wrap.innerHTML='<div class="modal portable-restore-modal"><h3>校验完整备份</h3><p class="modal-help portable-filename"></p><p role="status">正在读取并校验 ZIP…</p><p class="form-error" role="alert"></p><div class="modal-actions"><button type="button" class="ghost-btn" data-close>关闭</button></div></div>';
+ wrap.querySelector('.portable-filename').textContent=file.name;document.body.append(wrap);
+ authorPortableDialog={wrap,scope,filename:file.name};
+ wrap.querySelector('[data-close]').onclick=authorInvalidatePortablePreview;
+ let preview,requestPreview;
+ try{
+  if(!backendOnline)throw new Error('请先恢复连接，再校验完整备份');
+  if(file.size>32*1024*1024)throw new Error('完整备份 ZIP 超过支持大小，最多 32 MiB');
+  await authorReleasePortablePreviews();if(!current())return;
+  authorWritePortableUnconfirmed(authorPortableUnconfirmed());
+  const data_base64=bytesToBase64(new Uint8Array(await file.arrayBuffer()));if(!current())return;
+  requestPreview={preview_id:'restore_preview_'+crypto.randomUUID().replace(/-/g,''),
+   expires_at:new Date(Date.now()+30*60*1000).toISOString()};
+  authorRememberPortableUnconfirmed(requestPreview,scope);
+  authorPortableDialog.preview=requestPreview;
+  preview=await authorJSON('/api/backups/import/preview',{method:'POST',headers:authorPortableHeaders(scope),
+   body:JSON.stringify({filename:file.name,data_base64,preview_id:requestPreview.preview_id})});
+  authorRememberPortableUnconfirmed(preview,scope);
+  if(!current()||!wrap.isConnected){await authorCancelPortable(preview,scope);return}
+  authorPortableDialog.preview=preview;wrap.remove();authorPortableDialog=null;
+  authorPortablePreview(file.name,preview);
+ }catch(error){
+  if(requestPreview||preview)authorCancelPortable(requestPreview||preview,scope).catch(()=>authorRenderPortablePending());
+  if(current()&&wrap.isConnected){
+   wrap.querySelector('[role="status"]').textContent='完整备份尚未恢复';
+   wrap.querySelector('.form-error').textContent=error.message;
+  }
+ }
+};
+function authorPortablePreview(filename,preview,pending=null){
+ authorSyncPortableScope();authorInvalidatePortablePreview();
+ const sequence=authorPortableSeq,receiptScope=pending?.scope||authorPortableScope();
+ const scope=pending?.project?authorPortableScope():receiptScope;
+ if(authorPortableScopeKey(scope)!==authorPortableScopeKey()){
+  toast('请回到发起恢复的作品和版本，在备份中心确认结果');authorRenderPortablePending();return;
+ }
+ const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.portablePreview='1';
+ const dialog={wrap,scope,receiptScope,preview,filename,request:pending?.request||null,project:pending?.project||null};
+ authorPortableDialog=dialog;
+ const current=()=>authorPortableDialog===dialog&&wrap.isConnected&&sequence===authorPortableSeq&&
+  authorPortableScopeKey(scope)===authorPortableScopeKey();
+ const counts=preview?.counts||{},labels={branches:'分支',chapters:'章节',revisions:'正文版本',
+  reference_documents:'参考书',jobs:'历史任务',planning_workflows:'创作规划'};
+ const defaults=preview?.compatibility?.absent_known_additive_tables||[];
+ wrap.innerHTML=`<form class="modal portable-restore-modal"><h3>从完整备份恢复作品</h3>
+  <p class="modal-help portable-filename">${esc(filename||'完整备份 ZIP')}</p>
+  ${preview?`<dl class="portable-summary"><dt>原作品</dt><dd>${esc(preview.source?.title||'')}</dd>
+   <dt>备份时间</dt><dd>${esc(preview.source?.created_at||'')}</dd></dl>
+   <dl class="portable-counts">${Object.entries(labels).map(([key,label])=>`<div><dt>${label}</dt><dd>${Number(counts[key]||0).toLocaleString()}</dd></div>`).join('')}</dl>
+   ${defaults.length?'<p class="modal-help">这份旧备份缺少后来新增的空资料表，恢复时会建立空表。</p>':''}`:
+   '<p class="modal-help">继续确认上次保存的结果，同一次确认只会建立一份副本。</p>'}
+  <label>恢复后的作品名<input id="portableRestoreTitle" maxlength="400" value="${esc(pending?.request.title||preview?.restore_title||'')}" ${pending?'readonly':''} required></label>
+  <p class="modal-help">正文、历史和资料会恢复为独立作品。旧任务和规划只供阅读；密钥需要重新配置。</p>
+  <label class="confirmation-check"><input id="portableRestoreConfirm" type="checkbox" ${pending?'checked disabled':''}>我确认建立独立作品</label>
+  <p class="form-error" role="alert"></p><div class="modal-actions"><button type="button" class="ghost-btn" data-close>关闭</button>
+  <button type="button" class="ghost-btn" data-reselect ${dialog.project?'hidden':''}>重新选择 ZIP</button>
+  <button type="submit" class="primary-btn">${dialog.project?'重新打开副本':pending?'确认保存结果':'建立独立作品'}</button></div></form>`;
+ document.body.append(wrap);
+ wrap.querySelector('[data-close]').onclick=()=>{
+  authorInvalidatePortablePreview();authorRenderPortablePending();
+ };
+ wrap.querySelector('[data-reselect]').onclick=async()=>{
+  const reselect=wrap.querySelector('[data-reselect]');reselect.disabled=true;
+  try{
+   const token=dialog.request?.preview_id||preview?.preview_id;
+   if(token)await authorCancelPortable({preview_id:token},receiptScope);
+   if(dialog.request){
+    const result=await authorJSON('/api/backups/import/status',{method:'POST',headers:authorPortableHeaders(receiptScope),
+     body:JSON.stringify(dialog.request)});
+    if(result.saved){
+     dialog.project=authorRememberProject(result.result.project);authorSavePortablePending(dialog);
+     if(current())authorPortablePreview(filename,null,{scope:receiptScope,request:dialog.request,project:dialog.project});
+     return;
+    }
+   }
+   if(!current())return;
+   if(authorPortablePending()?.request.preview_id===token)storage.remove(authorPortablePendingKey);
+   authorInvalidatePortablePreview();authorRenderPortablePending();document.querySelector('#backupFileInput').click();
+  }catch(error){if(current())wrap.querySelector('.form-error').textContent=error.message}
+  finally{if(current())reselect.disabled=false}
+ };
+ const form=wrap.querySelector('form'),button=form.querySelector('[type="submit"]');
+ form.onsubmit=async event=>{
+  event.preventDefault();if(button.disabled||!current())return;
+  const errorBox=wrap.querySelector('.form-error');errorBox.textContent='';
+  button.disabled=true;
+  try{
+   if(!dialog.request){
+    const title=wrap.querySelector('#portableRestoreTitle').value.trim();
+    if(!title||Array.from(title).length>200)throw new Error('作品名需要 1 到 200 字');
+    if(!wrap.querySelector('#portableRestoreConfirm').checked)throw new Error('请先确认建立独立作品');
+    dialog.request={preview_id:preview.preview_id,archive_sha256:preview.archive_sha256,title,confirm:true};
+    try{authorSavePortablePending(dialog)}catch(error){dialog.request=null;throw error}
+    try{authorForgetPortableUnconfirmed(preview.preview_id)}catch{}
+    wrap.querySelector('#portableRestoreTitle').readOnly=true;
+    wrap.querySelector('#portableRestoreConfirm').disabled=true;
+    button.textContent='正在建立副本…';
+    const committed=result=>{
+     if(!result.project?.id)throw new Error('恢复结果缺少保存身份，请重新确认结果');
+     dialog.project=authorRememberProject(result.project);authorSavePortablePending(dialog);
+    };
+    try{await durableOperation('/api/backups/import/apply','POST',dialog.request,current,committed)}
+    catch(error){if(!dialog.project)throw error}
+   }else if(!dialog.project){
+    button.textContent='正在确认保存结果…';
+    try{
+     await durableOperation('/api/backups/import/apply','POST',dialog.request,current,result=>{
+      if(!result.project?.id)throw new Error('恢复结果缺少保存身份，请在作品书架查找副本');
+      dialog.project=authorRememberProject(result.project);authorSavePortablePending(dialog);
+     });
+    }catch(error){if(!dialog.project)throw error}
+   }
+   if(!current())return;
+   authorRememberProject(dialog.project);
+   if(!backendOnline&&requestedProject===dialog.project.id&&dialog.project.branch_id&&
+    state.branch_id!==dialog.project.branch_id)state.branch_id=dialog.project.branch_id;
+   button.textContent='正在打开副本…';
+   if(!await authorSwitchProject(dialog.project.id)){
+    authorPortablePreview(filename,null,{scope:receiptScope,request:dialog.request,project:dialog.project});
+    const retry=authorPortableDialog;
+    if(retry)retry.wrap.querySelector('.form-error').textContent='副本已经建立，暂时无法打开；请重新打开副本';
+    return;
+   }
+   storage.remove(authorPortablePendingKey);wrap.remove();toast('完整备份已恢复为独立作品');
+  }catch(error){
+   if(current()){
+    errorBox.textContent=error.message;
+    button.textContent=dialog.project?'重新打开副本':dialog.request?'确认保存结果':'建立独立作品';
+   }
+  }finally{if(current())button.disabled=false}
+ };
 }
 actions.exportManuscript=()=>{downloadText(exportFilename('json'),JSON.stringify(state,null,2),'application/json;charset=utf-8');toast('稿件 JSON 已导出，不包含完整历史与任务')};
 actions.importManuscript=()=>document.querySelector('#fileInput').click();
@@ -1423,6 +1700,12 @@ document.querySelector('#fileInput').onchange=async event=>{
 };
 
 function authorBind(){
+ authorSyncPortableScope();
+ if(view==='backups'){
+  authorRenderPortablePending();
+  if(!authorPortableDialog&&!authorPortablePending()&&authorAbandonedPortablePreviews().length)
+   authorReleasePortablePreviews().then(authorRenderPortablePending).catch(()=>authorRenderPortablePending());
+ }
  if(view==='assistant')authorBindAssistant();
  if(view==='editor'){
   const body=document.querySelector('#chapterBody');

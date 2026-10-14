@@ -59,9 +59,9 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .dashboard-grid{grid-template-columns:minmax(0,1.2fr) minmax(0,.8fr);gap:24px}
 .dashboard-grid .record-card{min-height:0}
 .editor-layout{grid-template-columns:170px minmax(0,1fr);gap:20px}
-.chapter-sidebar{display:block}
+.chapter-sidebar{display:block;min-width:0}
 .chapter-group{display:grid;gap:6px;margin-bottom:20px}
-.chapter-group h3{margin:3px 0 7px;font-size:12px;color:var(--muted)}
+.chapter-group h3{margin:3px 0 7px;font-size:12px;color:var(--muted);min-width:0;overflow-wrap:anywhere}
 .chapter-select{min-width:0;width:100%;overflow-wrap:anywhere}
 .editor-card{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
 .editor-toolbar{padding:0 0 10px;gap:4px;flex-wrap:wrap;border-bottom:0}
@@ -154,6 +154,16 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .backup-scope p{color:var(--muted);font-size:12px;line-height:1.8}
 .backup-scope button{margin-right:6px}
 .backup-row small{font-size:11px;color:var(--muted)}
+.portable-restore-modal{width:min(680px,calc(100vw - 48px));max-height:calc(100vh - 48px);overflow:auto}
+.portable-filename{overflow-wrap:anywhere}
+.portable-summary{display:grid;grid-template-columns:100px minmax(0,1fr);gap:8px 16px;font-size:13px}
+.portable-summary dt,.portable-counts dt{color:var(--muted)}
+.portable-summary dd{margin:0;overflow-wrap:anywhere}
+.portable-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0;border-block:1px solid var(--line);padding:14px 0;font-size:12px}
+.portable-counts dd{font-size:18px;margin:6px 0 0}
+.portable-recovery{padding:16px 0;border-bottom:1px solid var(--line);font-size:13px}
+.portable-recovery p{overflow-wrap:anywhere;color:var(--muted)}
+.portable-restore-modal .modal-actions{position:sticky;bottom:-1px;padding-top:14px;background:var(--paper,#fff)}
 .confirmation-check{display:flex!important;align-items:center;color:var(--ink)!important}
 .settings-fields,.blueprint-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
 .settings-fields label,.blueprint-fields label{font-size:12px;color:var(--muted)}

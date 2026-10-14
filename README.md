@@ -16,7 +16,7 @@
 
 本轮已接通作者手选参考原句：从参考库选择一段，明确放入本次续写或润色的材料，最多900个完整字符。服务端重读原句、核对作品及分支、范围和三份内容指纹，预览与任务使用同一份材料；参考只供学习写作技法，不写成本书事实或章后记忆。必保原句超出容量时先拒绝，已消费来源改变或冻结记录损坏时，发送、重试、整理与采纳均阻断。独立完整性专项13个测试方法、15个实际场景通过，3次免费本机调用、收费0；真实电脑参考专项15场景通过。首次[参考包整轮](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-reference-passages-integrity-release-20261015.json)89项中87通过、2失败，分别为旧稿整理错误码顺序和浏览器结果/截图归档不完整；98份源码前后相同，原失败保留。
 
-修正后[参考包完整复验](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-reference-passages-integrity-refined-release-20261015.json)于上海2026-10-15 03:57:31至04:05:50完成，89项检查全部通过，11套真实浏览器共140个电脑场景；98份来源前后相同，14份JSON和36张截图共50份附件逐份指纹一致。正式参考HTTP36方法、独立完整性13方法/15叶场景及电脑参考15场景均纳入这次冻结版本，只有临时数据和免费本机提供方，没有新增收费请求。该结果覆盖参考包的本机工程验收，新提交的GitHub检查和实际服务更新仍待各自核验，文学及第一梯队仍未证明。
+修正后[参考包完整复验](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-reference-passages-integrity-refined-release-20261015.json)于上海2026-10-15 03:57:31至04:05:50完成，89项检查全部通过，11套真实浏览器共140个电脑场景；98份来源前后相同，14份JSON和36张截图共50份附件逐份指纹一致。正式参考HTTP36方法、独立完整性13方法/15叶场景及电脑参考15场景均纳入这次冻结版本，只有临时数据和免费本机提供方，没有新增收费请求。该结果覆盖该阶段参考包的本机工程验收；之后的表单等待修正与参考提交GitHub结果另列于下文，实际服务更新、文学及第一梯队仍须分别验收。
 
 [实际本地服务验收](docs/audits/2026-10-14/comprehensive/evidence/local-service-reconciled-20261015.md)对应提交 `3a369807252e5dcda9ce5bda039d169744fedee5`。首次更新因新增空表被严格数量检查拒绝，失败原件保留；随后独立核对确认64张既有表全部内容及结构、原稿和历史版本不变，仅新增预期空表。搜索修复只刷新7张搜索衍生表，状态恢复healthy/current、滞后0；两种电脑尺寸的8个只读页面场景通过，未调用模型。该服务证据不代表后续参考片段版本已经加载。
 
@@ -46,7 +46,15 @@
 
 后续提交 `3a369807252e5dcda9ce5bda039d169744fedee5` 的GitHub运行 `38620315120` 已核实为failure：创作要求的10个行为场景通过，但1280×900下控件底部超出视口0.359375像素，布局检查失败；其后4项浏览器检查跳过。参考包提交 `032a89f43fb9b0130c637218009e270410bd243c` 的[运行38630792129](docs/audits/2026-10-14/comprehensive/evidence/github-reference-passages-032a89f-failure-20261015.json)也为failure：模型设置第9个场景等待超时，后7套浏览器步骤跳过。两份失败均保留，不能用历史成功覆盖。
 
-本次修正模型设置测试的等待顺序：真实提交表单后，等待保存处理与页面重绘全部结束；迟到保存及排队保存也追踪原处理过程，保留全部原断言。两种本机浏览器各14场景通过后，[新整轮复验](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-reference-settings-await-release-20261015.json)于上海2026-10-15 04:42:55至04:51:13通过89项检查、11套浏览器140个电脑场景；98份源码不变，14份JSON及36张截图共50份附件指纹一致。该结果仅覆盖本机工程，新提交自己的GitHub结果与实际服务更新继续独立核验，新增收费请求0。
+本次修正模型设置测试的等待顺序：真实提交表单后，等待保存处理与页面重绘全部结束；迟到保存及排队保存也追踪原处理过程，保留全部原断言。两种本机浏览器各14场景通过后，[新整轮复验](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-reference-settings-await-release-20261015.json)于上海2026-10-15 04:42:55至04:51:13通过89项检查、11套浏览器140个电脑场景；98份源码不变，14份JSON及36张截图共50份附件指纹一致。提交 `94e2ade9f8a50fdbf722f18f877c6550e423308d` 的[GitHub检查38636187806](docs/audits/2026-10-14/comprehensive/evidence/github-reference-settings-94e2ade-success-20261015.json)随后全部成功；完成于上海2026-10-15 05:06:42。该结果覆盖参考包，不包含之后的完整ZIP恢复或实际服务更新，新增收费请求0。
+
+电脑完整ZIP恢复已实现文件选择、校验预览、确认建立独立作品、取消未保存预览和只读找回保存结果。完整包可在新数据目录、空备份登记和空凭据目录恢复；原作品保持，恢复历史候选和规划只供阅读，不自动重放任务。回复丢失、重复确认和服务重启后通过已保存回执找到同一副本，不再创建另一份。完整相同的旧记忆保存保留作者、审批时间和原资料；当前有效原句按正文版本重锚，旧失效引用不自动恢复。
+
+[上一轮ZIP冻结检查](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-portable-complete-backup-release-20261015.json)于上海2026-10-15 05:16:33至05:25:48通过94项检查，103份来源前后不变，12套电脑浏览器共161个登记场景，18份JSON与44张截图共62份附件指纹匹配。随后旧删除账本遗留事实的只读窄修取得同29方法、133次真实本机HTTP通过；进一步独立复现未来章资料经人物状态或别名冲突进入早章提示，故[中间整轮已停止](docs/audits/2026-10-14/comprehensive/evidence/portable-legacy-evidence-release-20261015-interruption.json)，原报告未完成且`passed=false`。
+
+扩展同45方法的修前、修后对照现已通过，覆盖人物及冲突的实际原句来源、早晚章节、多原句顺序和恢复映射。再增4个非章节来源场景时，原严格材料检查已以400拦住预览，并未发送越界提示；本次补齐只读派生过期及来源章节完整匹配后，同49方法、257次真实本机HTTP、65次预览全部通过。49次读取与7次初始化均保持65张表及结构，原审核历史不改，该专项模型、后台执行及收费均0。
+
+[新版完整整轮](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-portable-evidence-scope-release-20261015.json)于上海2026-10-15 06:17:11至06:26:55完成，95项检查全部通过，104份来源在运行前后及当前复核时指纹一致；12套真实电脑浏览器共161个登记场景，19份JSON与44张截图共63份附件逐份指纹匹配。最新49方法及ZIP辅助、恢复HTTP、新删章和Chrome恢复均纳入本轮，原94项和中间中断报告保持。本轮使用临时数据与免费本机提供方，没有新增收费请求；该版GitHub检查和实际4173服务更新仍待验。阶段统计与指纹见[验证索引](docs/audits/2026-10-14/comprehensive/evidence/README.md#电脑完整zip恢复与删章边界)，协议及阶段原件见[完整ZIP恢复记录](docs/audits/2026-10-14/comprehensive/portable-complete-backup.md)。[能力矩阵](docs/audits/2026-10-14/comprehensive/capability-matrix.md)现保留十类待实施或量测差距，第一梯队仍未证明。
 
 ## 运行
 
@@ -56,7 +64,7 @@
 python3 server.py
 ```
 
-然后在电脑浏览器打开 `http://127.0.0.1:4173`。本次交付已实际启动本机服务，健康检查正常，并查看了真实编辑页面；保持服务运行即可使用。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
+启动后在电脑浏览器打开 `http://127.0.0.1:4173`。此前实际服务的验收仅对应上文登记的历史提交，不能说明本次ZIP新版已经加载；新版服务更新及健康、页面和数据核对仍待验。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
 
 服务首次启动会在项目目录创建 `moyu.sqlite3`，按顺序应用 `docs/schema-v1.sql` 和
 `docs/schema-v1.1-migration.sql`（`PRAGMA user_version=11`），再安装工作台扩展表。可以用环境变量指定数据库或端口：
@@ -111,6 +119,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - `GET /api/assertions`、`GET /api/assertions/:id`、`POST /api/assertions/:id/review`、`GET /api/memory/:id/evidence`：审查正典事实、冲突、依赖和失效证据
 - `GET /api/chapters/:id/revisions`、`POST /api/chapters/:id/restore-revision`、`GET /api/chapters/:id/commits`、`POST /api/chapters/:id/commit`：查看差异、恢复为新 revision，并执行章节提交阶段
 - `GET/POST /api/backups`、`GET /api/backups/:id/download`、`POST /api/backups/:id/restore`：完整作品备份、下载、校验后恢复为独立作品
+- `POST /api/backups/import/preview|apply|cancel|status`：从电脑上传完整ZIP，校验预览、确认建立独立作品、释放未保存预览及只读查找保存回执；迟到预览不能重新占用已取消身份，保存中的预览不能被取消
 - `POST /api/import/preview`、`POST /api/import/apply`、`GET /api/references`、`GET /api/references/:id`、`GET /api/references/:id/search?q=...`：TXT/MD/EPUB 分章预览、导入独立稿件或参考库、来源检索；导入不自动发送收费分析
 - `POST /api/assistant/query`、`POST /api/assistant/confirm`：有限任务的只读预览与作者确认后创建候选；正文仍需另行采纳
 - `GET /api/export/markdown`、`GET /api/export/epub`、`GET /api/export/manifest`：导出当前稿件及范围/损失清单；内嵌原稿与指纹，墨屿可精确回读正文；直连也受终稿门保护，作者覆盖需带 `X-Moyu-Export-Override`
@@ -137,7 +146,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - 全文搜索
 - 普通正文的章后摘要、交接、事件、人物状态、关系与伏笔候选，原句预览和作者确认
 - 故事审稿及作者处理记录，正文或材料变更使旧结果过期
-- JSON 稿件导入/导出、完整作品 ZIP 备份、校验和独立恢复
+- JSON 稿件导入/导出、完整作品 ZIP 备份、从电脑选择ZIP预览并独立恢复、取消预览和找回同一已保存副本
 - TXT/MD/EPUB 导入预览、拆分/合并/改名、原始来源留存和参考库搜索
 - 手选一段参考原句用于本次续写或润色、原句回看和撤回；参考与本书事实分开，超容量或来源变化先阻断
 - Markdown/EPUB 终稿导出、原稿指纹、正文回读及损失清单
@@ -163,6 +172,8 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 ## 长篇记忆
 
 “记忆中枢”的“提取当前章记忆”直接分析普通正文，不要求作者插入标签。返回摘要、下一章交接和有原句范围的事件、状态、关系、伏笔等候选；作者可修改候选说明并逐项确认或拒绝。确认后的有效事实进入后续章节材料，同一正文版本重复提取和确认不重复建立事实。正文改变、来源删除或旧任务迟到会让相关材料失效，不能继续作为正典使用；作者手写的交接不会被过期自动摘要覆盖。
+
+新发生的删章已统一处理专用删除和整份作品保存时遗漏章节两种入口：撤回该章所有旧版本原句支持的记忆与正式事实，保留正文版本和人物状态历史，其他章有效资料及作者手写状态保持。新95项整轮重新通过5方法真实HTTP控制，包含删除后提示不再使用旧事实、处理中途失败全库回滚，以及无变化历史保存逐行保真。旧删除账本遗留状态采用只读派生可用性；人物状态及别名冲突按全部实际原句的最晚章节限制使用，不能把未来章资料提前放进早章提示。来源无法完整对应活动章节时，衍生材料标为过期并排除，原审核断言与历史不改；人工状态及合法混合备注保留。同49方法、257次真实HTTP专项已纳入新完整整轮通过，远程和实际服务另验。
 
 原有 `【人物】`、`【物品】`、`【地点】`、`【伏笔】` 标记仍可使用。章后提取和故事审稿都需要作者复核，空报告、失败或过期不算通过。
 
@@ -242,13 +253,21 @@ node tests/planning_browser_regressions.cjs
 node tests/desktop_author_flow_regressions.cjs
 ```
 
-浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。参考片段的HTTP与完整性测试为 `tests/reference_passages_http_fixtures.py`、`tests/reference_passages_integrity_http_fixtures.py`，真实电脑页面测试为 `tests/reference_passages_browser_regressions.cjs`。检查配置存在和本机通过不能替代实际远程执行；`e96e00c` 的[历史GitHub成功](docs/audits/2026-10-13/evidence/github-actions-e96e00c-success.json)和 `3a369807` 的[后续失败](docs/audits/2026-10-14/comprehensive/evidence/local-service-reconciled-20261015.md)分别保留，新参考包须核对自己的结果。
+浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。参考片段的HTTP与完整性测试为 `tests/reference_passages_http_fixtures.py`、`tests/reference_passages_integrity_http_fixtures.py`，真实电脑页面测试为 `tests/reference_passages_browser_regressions.cjs`。电脑ZIP恢复的逐表和真实HTTP验证分别为 `tests/portable_backup_fixtures.py`、`tests/portable_backup_http_fixtures.py`，电脑页面验证为 `tests/portable_backup_browser_regressions.cjs`；新删章与旧遗留资料分别由 `tests/chapter_deletion_dependency_http_fixtures.py`、`tests/legacy_deleted_dependency_http_fixtures.py`覆盖。专项边界见[完整ZIP恢复记录](docs/audits/2026-10-14/comprehensive/portable-complete-backup.md)。检查配置存在和本机通过不能替代实际远程执行；`e96e00c` 的[历史GitHub成功](docs/audits/2026-10-13/evidence/github-actions-e96e00c-success.json)、`3a369807` 的[后续失败](docs/audits/2026-10-14/comprehensive/evidence/local-service-reconciled-20261015.md)与 `94e2ade` 的[参考包成功](docs/audits/2026-10-14/comprehensive/evidence/github-reference-settings-94e2ade-success-20261015.json)分别保留，ZIP新版仍需自己的完整及远程验收。
 
 ## 备份、恢复与导入
 
 作者在“备份中心”点击“完整备份”，可查看清单、下载 ZIP，恢复时建立独立作品并保留原稿。完整备份包括正文、版本、设定、规划、人物状态、关系、时间线、伏笔、原句证据、任务、审计及参考来源；通过一致数据库快照、内容指纹、行数和外键检查后恢复。运行中或待执行的外部模型任务会标为失败或执行未知，不自动再次收费。**当前没有定时自动备份**。
 
-恢复或复制产生的独立作品保留历史候选、父子整理关系、原请求指纹和用量。副本中的历史候选只供阅读，不能继续采纳、整理或重试，也不会自动调用模型；继续创作须按副本当前稿件生成新候选。原请求和父候选全文不因身份映射而改写。
+要从电脑恢复完整备份，打开“备份中心”，点击“从电脑恢复 ZIP”，选择以前下载的完整作品 ZIP。先核对原作品、备份时间及章节和历史数量，再填写恢复后的作品名，勾选“我确认建立独立作品”，点击“建立独立作品”。会创建新作品并保留原稿；文件最多32 MiB，预览30分钟内有效。密钥需要在新作品中重新配置。
+
+保存结果不明确时，回到备份中心点击“确认上次恢复结果”；已经建立但暂时打不开时，点击“重新打开副本”，会继续打开同一份作品。未确认的旧预览可点击“释放旧预览”后重新选择文件；网络恢复前先保留电脑上的ZIP。
+
+选择另一文件、关闭预览、切作品或分支及刷新页面时，会请求释放尚未保存的预览；服务收到取消后，即使预览回应尚未到达也会保留取消记录，迟到回应不能重新占用同一身份。确认正在保存时先等待结果，不能通过取消打断已经开始的保存。查找结果只读取回执，不建立新作品。预览仅在本机服务内存保留，未保存的文件不会写进真实数据库；坏包拒绝时原作品不改。
+
+首次打开作品失败时，未编辑的占位内容不能成为该作品的草稿；合法的本机离线稿和已确认副本分别保留。切换作品后的迟到回应不能污染当前作品，保存后打不开时仍保留已保存身份供只读重开。
+
+恢复或复制产生的独立作品保留历史候选、父子整理关系、原请求指纹和用量。副本中的历史候选只供阅读，不能继续采纳、整理、重试或修改历史决定，也不会自动调用模型；继续创作须按副本当前稿件生成新候选。原请求和父候选全文不因身份映射而改写。
 
 规划恢复保留冻结候选、已采用历史、原蓝图与结果版本及作品身份映射；原始规划候选与其内容指纹不改写。恢复副本里的历史规划只供阅读，不继续确认未采用候选或再次调用模型；排队、运行中或执行未知的规划请求均保留为未知。要在副本中继续模型规划，需重新创建规划，历史采用结果不会再次写入正文。
 

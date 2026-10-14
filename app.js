@@ -16,6 +16,7 @@ const storage={
  remove(key){try{localStorage.removeItem(key)}catch{}}
 };
 let requestedProject=storage.get(CURRENT_PROJECT_KEY)||'';
+let draftHasContent=false;
 const nativeFetch=globalThis.fetch?.bind(globalThis);
 const fetch=(input,options={})=>{
  if(!nativeFetch)return Promise.reject(new Error('当前浏览器无法连接本地服务'));
@@ -646,10 +647,23 @@ function candidateSource(task,c){
  return {project_id:requestedProject,branch_id:state.branch_id||state.project?.branch_id||'main',
   chapter_id:c.id,source_revision_id:c.revision_id,range:{start,end,quote:chars.slice(start,end).join('')},mode};
 }
-function load(){try{return normalizeState(JSON.parse(storage.get(cacheKey())||(!requestedProject||requestedProject==='default-project'?storage.get(KEY):null)))||MoyuSync.copy(starter)}catch{return MoyuSync.copy(starter)}}
+function load(){
+ draftHasContent=false;
+ const cachedValues=[storage.get(cacheKey())||(!requestedProject||requestedProject==='default-project'?storage.get(KEY):null),
+  storage.get(cacheKey(':base'))];
+ for(const [index,raw] of cachedValues.entries())try{
+  const cached=normalizeState(JSON.parse(raw));
+  if(cached&&(index===0||!requestedProject||cached.project.id===requestedProject)){
+   draftHasContent=true;return cached;
+  }
+ }catch{}
+ return MoyuSync.copy(starter);
+}
 function loadConfirmed(){try{return normalizeState(JSON.parse(storage.get(cacheKey(':base'))))}catch{return null}}
 function isDirty(){return !confirmedState||!MoyuSync.equal(state,confirmedState)}
 function cacheDraft(){
+ // A failed first read leaves a placeholder, not an offline draft for this book.
+ if(!draftHasContent)return true;
  const ok=storage.set(cacheKey(),JSON.stringify(state));
  if(confirmedState)storage.set(cacheKey(':base'),JSON.stringify(confirmedState));
  if(isDirty())storage.set(cacheKey(':dirty'),'1');else storage.remove(cacheKey(':dirty'));
@@ -745,7 +759,7 @@ function receiveState(remote,base=confirmedState){
  const before=MoyuSync.copy(state);
  const result=base?MoyuSync.merge(base,state,remote):{value:remote,conflicts:[]};
  confirmedState=MoyuSync.copy(remote);
- state=result.value;
+ state=result.value;draftHasContent=true;
  syncReferenceScope();
  const current=chapter();
  if(current)for(const [id,key] of Object.entries({chapterBody:'body',chapterTitle:'title',...CHAPTER_PLAN_FIELDS})){
@@ -765,13 +779,13 @@ async function hydrate(){
   const remote=await readServerState(owner,branch);if(!current())return false;
   backendOnline=true;saveError='';
   if(!requestedProject){owner=requestedProject=remote.project.id;storage.set(CURRENT_PROJECT_KEY,requestedProject)}
-  const dirty=storage.get(cacheKey(':dirty'))==='1'||requestedProject==='default-project'&&storage.get(DIRTY_KEY)==='1';
+  const dirty=draftHasContent&&(storage.get(cacheKey(':dirty'))==='1'||requestedProject==='default-project'&&storage.get(DIRTY_KEY)==='1');
   if(dirty&&confirmedState)receiveState(remote);
   else if(dirty&&!confirmedState&&state.version===remote.version){
    confirmedState=MoyuSync.copy(remote);state.version=remote.version;state.head_revision=remote.head_revision;cacheDraft();
   }else if(dirty&&!confirmedState){
    mergePending={base:null,remote:MoyuSync.copy(remote),conflicts:[{path:'作品草稿',local:MoyuSync.copy(state),remote:MoyuSync.copy(remote)}]};
-  }else{state=remote;confirmedState=MoyuSync.copy(remote);cacheDraft()}
+  }else{state=remote;draftHasContent=true;confirmedState=MoyuSync.copy(remote);cacheDraft()}
   if(!state.chapters.some(c=>c.id===activeChapter))activeChapter=state.chapters[0]?.id;
   render();saveIndicator();if(mergePending)showMergeConflict();else if(isDirty())await syncBackend();
   return current();
@@ -1191,7 +1205,13 @@ function renderTaskList(){
  });
 }
 function captureMemories(){let added=false;const seen=new Set(state.memory.map(m=>m.key)); state.chapters.forEach(c=>{const tags=[...c.body.matchAll(/(?:【|\[)(人物|物品|地点|伏笔|剧情)(?:】|\])\s*([^\n，。]+)/g)]; tags.forEach(t=>{const key=t[1]+':'+t[2].trim(); if(!seen.has(key)){const start=Array.from(c.body.slice(0,t.index??0)).length;const end=start+Array.from(t[0]).length;state.memory.push({id:crypto.randomUUID(),key,type:t[1],name:t[2].trim(),source:c.title,source_chapter_id:c.id,source_quote:t[0],source_start:start,source_end:end,status:'待确认',confidence:'候选',note:'由章节标记自动捕获，确认后才进入正式记忆。'}); seen.add(key);added=true}})});return added}
-function save(){mutationSeq++;saveError='';cacheDraft();clearTimeout(syncTimer);if(backendOnline&&!mergePending&&!independentWrite)syncTimer=setTimeout(syncBackend,180);saveIndicator()}
+function save(){
+ if(!draftHasContent&&MoyuSync.equal({...state,branch_id:null},{...starter,branch_id:null})){
+  saveIndicator();return;
+ }
+ draftHasContent=true;mutationSeq++;saveError='';cacheDraft();clearTimeout(syncTimer);
+ if(backendOnline&&!mergePending&&!independentWrite)syncTimer=setTimeout(syncBackend,180);saveIndicator();
+}
 function esc(s=''){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function safeId(v){const s=String(v??'');return /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(s)?s:''}
 function localSearchResults(query){

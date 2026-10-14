@@ -102,6 +102,9 @@ const requiredScreenshots = {
   instruction_draft_browser_regressions: ['instruction-draft-desktop.png', 'instruction-draft-desktop-1280x900.png'],
   reference_passages_browser_regressions: ['reference-passages-1440x1000.png', 'reference-passages-1280x900.png',
     'reference-passages-original-1440x1000.png', 'reference-passages-original-1280x900.png'],
+  portable_backup_browser_regressions: ['portable-preview-1440x1000.png', 'portable-editor-1440x1000.png',
+    'portable-preview-1280x900.png', 'portable-editor-1280x900.png', 'portable-long-title-1280x800.png',
+    'portable-saved-reopen.png', 'portable-pending-reloaded.png', 'portable-status-saved.png'],
   author_workspace_lifecycle_browser_regressions: ['planned-next-chapter.png',
     'planned-next-chapter-1280x900.png', 'stale-review-author-explanation.png'],
   export_override_browser_regressions: ['export-override-desktop.png'],
@@ -112,8 +115,21 @@ const optionalScreenshots = {
   planning_browser_regressions: ['planning-browser-failure.png'],
   desktop_author_flow_regressions: ['desktop-author-flow-failure.png'],
   reference_passages_browser_regressions: ['reference-passages-failure.png'],
+  portable_backup_browser_regressions: ['portable-browser-failure.png'],
 };
 const fixtureReports = {
+  'tests/portable_backup_fixtures.py': {
+    environment: 'MOYU_PORTABLE_BACKUP_REPORT', name: 'portable-backup-helpers',
+  },
+  'tests/portable_backup_http_fixtures.py': {
+    environment: 'MOYU_PORTABLE_HTTP_REPORT', name: 'portable-backup-http',
+  },
+  'tests/chapter_deletion_dependency_http_fixtures.py': {
+    environment: 'MOYU_CHAPTER_DELETION_REPORT', name: 'chapter-deletion-dependencies-http',
+  },
+  'tests/legacy_deleted_dependency_http_fixtures.py': {
+    environment: 'MOYU_LEGACY_DELETED_DEPENDENCY_REPORT', name: 'legacy-deleted-dependencies-http',
+  },
   'tests/reference_passages_http_fixtures.py': {
     environment: 'MOYU_REFERENCE_PASSAGES_REPORT', name: 'reference-passages-http',
   },
@@ -135,7 +151,7 @@ async function runFixture(script) {
   } else {
     const value = JSON.parse(fs.readFileSync(localReport, 'utf8'));
     saveStructuredEvidence(evidenceType.name, evidenceType.name + '-' + suffix + '.json', value);
-    check.fixture_count = value.checks;
+    check.fixture_count = value.checks ?? value.tests ?? value.methods;
     if (value.passed !== true || value.source_unchanged !== true) {
       check.passed = false;
       check.structured_fixture_result_failed = true;
@@ -158,10 +174,29 @@ function structuredBrowserResult(text) {
 
 async function runBrowser(script) {
   const name = path.basename(script, '.cjs');
-  const browser = await run('Browser: ' + name, process.execPath, [script], 300000);
+  const portableDirectory = name === 'portable_backup_browser_regressions' ? path.join(logs, name) : null;
+  const portableReport = portableDirectory && path.join(portableDirectory, 'results.json');
+  const overrides = portableDirectory ? {
+    MOYU_PORTABLE_BROWSER_REPORT: portableReport,
+    MOYU_PORTABLE_BROWSER_SCREENSHOT_DIR: portableDirectory,
+  } : {};
+  const browser = await run('Browser: ' + name, process.execPath, [script], 300000, overrides);
   const browserResult = structuredBrowserResult(browser.text);
+  if (portableReport) {
+    const check = report.checks.at(-1);
+    if (!fs.existsSync(portableReport)) {
+      check.passed = false;
+      check.missing_structured_browser_report = true;
+    } else {
+      const savedResult = JSON.parse(fs.readFileSync(portableReport, 'utf8'));
+      if (!browserResult || JSON.stringify(savedResult) !== JSON.stringify(browserResult)) {
+        check.passed = false;
+        check.structured_browser_output_mismatch = true;
+      }
+    }
+  }
   if (browserResult) {
-    const localArtifacts = browserResult.artifacts;
+    const localArtifacts = portableDirectory || browserResult.artifacts;
     browserResult.artifacts = 'Private temporary DB and logs retained locally; screenshots are listed in this report.';
     saveStructuredEvidence(name, name + '-' + suffix + '.json', browserResult);
     report.checks.at(-1).scenario_count = Array.isArray(browserResult.cases) ? browserResult.cases.length : 0;

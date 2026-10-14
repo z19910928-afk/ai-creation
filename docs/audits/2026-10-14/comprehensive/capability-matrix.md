@@ -4,7 +4,11 @@
 
 历史[指南与确认完整性整轮](evidence/compatibility-python311-node24-guidance-candidate-integrity-release.json)于上海2026-10-15 02:39:43至02:46:58完成，85项检查全部通过；95份冻结来源不变，10组真实电脑浏览器125个场景，11份JSON及32张截图共43份附件SHA匹配。包含下述指南、部分来源、复用、人物身份和旧测试前提纠正，原文件不改；不能覆盖之后参考片段源码，也不扩成真实文学、GitHub检查或真实服务结论。
 
-新增参考原句已实现，独立13方法、15场景专项通过，3次免费调用、收费0；真实电脑参考15场景通过。首次[参考包整轮](evidence/compatibility-python311-node24-reference-passages-integrity-release-20261015.json)89项中87通过、2失败，98源码前后相同，原失败保留。校验顺序与浏览器归档修正后，[新完整复验](evidence/compatibility-python311-node24-reference-passages-integrity-refined-release-20261015.json)于上海2026-10-15 04:05:50结束，89项全部通过、11套浏览器140个电脑场景、98份来源不变，14份JSON和36张截图共50份附件指纹一致，收费0。[本地服务独立验收](evidence/local-service-reconciled-20261015.md)只对应 `3a369807252e5dcda9ce5bda039d169744fedee5`，首次更新失败保留，后续核对/搜索衍生修复/8场景只读成功。该提交GitHub运行 `38620315120` 仍为failure，新参考包远程检查和实际服务更新尚待核验。
+新增参考原句已实现，独立13方法、15场景专项通过，3次免费调用、收费0；真实电脑参考15场景通过。首次[参考包整轮](evidence/compatibility-python311-node24-reference-passages-integrity-release-20261015.json)89项中87通过、2失败，98源码前后相同，原失败保留。校验顺序与浏览器归档修正后，[该阶段完整复验](evidence/compatibility-python311-node24-reference-passages-integrity-refined-release-20261015.json)于上海2026-10-15 04:05:50结束，89项全部通过、11套浏览器140个电脑场景、98份来源不变，14份JSON和36张截图共50份附件指纹一致，收费0。[本地服务独立验收](evidence/local-service-reconciled-20261015.md)只对应 `3a369807252e5dcda9ce5bda039d169744fedee5`，首次更新失败保留，后续核对/搜索衍生修复/8场景只读成功。该旧提交GitHub运行 `38620315120` 的failure原件继续保留。
+
+修正真实模型设置表单等待后，[参考包新完整整轮](evidence/compatibility-python311-node24-reference-settings-await-release-20261015.json)于上海2026-10-15 04:42:55至04:51:13完成，89项全部通过、140个电脑场景、98份来源不变，50份附件指纹匹配。提交 `94e2ade9f8a50fdbf722f18f877c6550e423308d` 的[GitHub运行38636187806](evidence/github-reference-settings-94e2ade-success-20261015.json)于上海2026-10-15 05:06:42全部成功；它仅证明该参考包的远程检查，不能代替之后ZIP包及实际服务验收。
+
+A2电脑完整ZIP恢复入口已经实现。[上一轮冻结发布检查](evidence/compatibility-python311-node24-portable-complete-backup-release-20261015.json)于上海2026-10-15 05:16:33至05:25:48通过94项检查，103份来源前后一致，12套电脑浏览器共161个登记场景，18份JSON和44张截图共62份附件指纹匹配。随后修复旧删除账本遗留、未来章人物状态和别名冲突、非章节来源三类材料边界。最新同49方法专项全部通过，257次真实HTTP、读取前后65表与结构不变、模型及后台执行均0；多引用依最晚真实章节决定可用时点，非章节来源只在材料层排除，原审核和历史保留。[中间整轮已停止](evidence/portable-legacy-evidence-release-20261015-interruption.json)并保留。[新版完整整轮](evidence/compatibility-python311-node24-portable-evidence-scope-release-20261015.json)于上海2026-10-15 06:17:11至06:26:55完成，95项检查全部通过，104份来源前后及独立核对时一致，12组电脑浏览器161个场景；19份JSON与44张截图共63份附件逐份指纹匹配。独立复核同时核对本地原件及命令输出，收费0；GitHub及实际服务仍须各自验收。完整协议、历史专项和证据边界见[完整ZIP恢复记录](portable-complete-backup.md)。
 
 ## 本轮已经实施的修复
 
@@ -15,6 +19,7 @@
 | 审稿决定进入归档和出版 | 作者认领需修问题后仍可基础通过、三阶段归档和无理由出版；[webnovel](projects/webnovel-writer.md)实际HTTP复现；保存决定后缺局部修订目标；材料保护接入后纯章节状态让刚保存理由失效；缺指南旧审稿及说明未随蓝图失效 | 有效待办进入共同门；过期问题可免费按当前来源及指南解释/忽略并留理由；正文/资料/计划变化使理由失效，专用作者凭据仅排除章状态且不授权模型任务；缺指南不授权认领/修订/迟到保存；保存决定后重读完整报告，失败保留窗口并只读重开 | [11项隔离HTTP结果](evidence/webnovel-semantic-publication-final.json)，真实页面免费解释及MD/EPUB下载；[53项基础浏览器中间快照](evidence/frontend_browser_regressions-python311-node24-comprehensive-workflow-refined-final.json)含决定后局部修订和读取失败1次提交/0额外模型；[作者说明归档9项](evidence/author-resolution-material-after-fix.json)、[审稿指南11项首修后](evidence/review-guidance-after-fix.json) |
 | 沿规划继续下一章 | 归档始终新建空章并跳过既有后续章；[MuMu](projects/mumu-ai-novel.md)组件复现，[storyforge](projects/storyforge.md)独立源码确认 | 沿已有未完成章，保留正文、目标、视角、场景及卷身份；交接独立显示，无后续才创建；失败重试复用已建身份 | [生命周期浏览器](../../../../tests/author_workspace_lifecycle_browser_regressions.cjs)：现有五章、跨卷、重复/双击、失败重试 |
 | 已保存但暂时打不开 | 导入成功后GET失败仍关窗报成功；[storyforge](projects/storyforge.md)组件复现，新建/复制同类源码链 | 记住已经保存的作品/参考身份，保留窗口并只读重开，真正打开后才提示成功 | 新建/复制/导入各测原作、目标、双方回读失败，POST恰好1次；参考库重开 |
+| A2：从电脑完整ZIP恢复独立作品 | SF04；[storyforge](projects/storyforge.md)修前仅可恢复本机登记备份，下载到电脑的完整ZIP缺文件选择入口 | 电脑文件选择、完整包校验、预览与确认建立独立作品；预生成身份支持提前取消，持久回执支持回复丢失及重启后找回同一副本；全部捕获表及身份关系恢复，原作品保持，旧任务只读且不重放；遗留删章派生失效，多引用人物状态及冲突依实际最晚章限用，异常非章节来源排除 | 新版95项完整整轮包含辅助31方法、恢复HTTP40方法、新删章HTTP5方法、遗留与范围49方法及Chrome恢复21场景；104来源一致、161电脑场景和63附件逐份核对。坏包、回滚、取消、并发、失联、草稿、旧任务与分阶段反例见[专项记录](portable-complete-backup.md)；ZIP包远程检查和实际服务仍待验 |
 | 创作要求跨页保留 | 去设定库再回来会从润色变续写、丢补充要求；[91Writing](projects/91writing.md)真实浏览器复现 | 按作品/分支/章节缓存任务与要求，提供明确清空，迟到事件不串书；存储失败提示并同页回退 | [11项草稿浏览器](../../../../tests/instruction_draft_browser_regressions.cjs)，包括刷新、隔离、旧任务冻结及两种电脑尺寸 |
 | 完整字符名称与导航 | 备份恢复超长名称；导入emoji按双单位截断；长标题挤压导航；[Ai-Novel](projects/ai-novel.md)、[storyforge](projects/storyforge.md)确认 | 作品200/章节500按完整字符校验，恢复默认后缀保留完整字符；导航允许换行，短电脑窗口可操作 | 基础浏览器备份/恢复/重开及长标题1440/1280/短高度；生命周期导入200/500边界 |
 | 中文出版例外理由 | 中文不能直接作为浏览器HTTP头；前后端字数口径不一致 | 浏览器UTF-8编码，服务端严格解码再按完整字符校验；理由原样写入清单与事件，改稿后重新校验 | [真实下载浏览器](../../../../tests/export_override_browser_regressions.cjs)，中文/百分号/emoji、短理由及改稿失效 |
@@ -31,11 +36,10 @@
 
 ## 仍需继续实施或量测
 
-P1表示下一批优先解决作者正常流程；P2表示随后改善效率。相同缺口合并成一项，不重复计数。
+P1表示下一批优先解决作者正常流程；P2表示随后改善效率。相同缺口合并成一项，不重复计数。A2完整ZIP恢复已转入上方实施表，余项保留原顺序编号；A2遗留边界的新版验收仍需完成。
 
 | 顺序 | 合并缺口与作者收益 | 来源编号 | 当前状态及进入完成的条件 |
 | --- | --- | --- | --- |
-| 2 / P1 | 从下载到电脑的完整ZIP恢复独立作品 | SF04 | 本机已登记备份可恢复，外部文件选择入口未接；需新数据目录仅凭ZIP恢复所有表、坏包零写入、旧任务只读且不自动收费 |
 | 3 / P1 | 正文/规划/审稿各自保存用途参数 | NF03、SF07、Ai-Novel用途专项 | 用途模型已有，一套参数仍共享；需温度0、删除回默认、作品隔离、真实请求冻结及旧请求不改 |
 | 4 / P2 | 有版本的可复用作者写法 | NF04、MM05、SF08、91Writing顺序1 | 作品风格与一次要求已有，命名/变量/版本库未实现；需缺变量先阻断、特殊符号按字面量、回退追加版本、完整备份及历史可追溯 |
 | 5 / P2 | 安全查找替换与联动改名 | SF05、91Writing顺序2 | 跨资料搜索和稳定实体改名已有，正文替换链未实现；先当前章命中预览/逐项选择/一个修订/一次撤销，再全书原子处理与并发全拒绝 |

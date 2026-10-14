@@ -47,6 +47,7 @@ import moyu_planning as planning
 import moyu_revision
 import moyu_records as records_store
 import moyu_materials
+import moyu_portable as portable_backups
 
 
 ROOT = Path(__file__).resolve().parent
@@ -1828,9 +1829,13 @@ def record_ai_decision(conn: sqlite3.Connection, run_id: str, decision: str, rea
     run_id = checked_id(run_id, "AI run id")
     if decision not in {"accepted", "rejected", "edited", "undone"}:
         raise ValueError("invalid AI decision")
-    row = conn.execute("SELECT id,status,output_hash FROM ai_run WHERE id=? AND project_id=? AND branch_id=?", (run_id, project_id(), branch_id())).fetchone()
+    row = conn.execute("SELECT id,status,output_hash,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?", (run_id, project_id(), branch_id())).fetchone()
     if row is None:
         raise ValueError("AI run not found")
+    job = conn.execute("SELECT context_json FROM app_ai_job WHERE ai_run_id=?", (run_id,)).fetchone()
+    if (_json_object(row["consent_json"], {}).get("restored_read_only")
+            or (job and _json_object(job["context_json"], {}).get("_restored_read_only"))):
+        raise ValueError("恢复的历史候选只供阅读，原来的作者决定继续保留。")
     if row["status"] != "success":
         raise ValueError("only successful AI runs can receive an author decision")
     reason = bounded_text(reason, 2_000, "decision reason")
@@ -1894,14 +1899,21 @@ def review_fingerprint(conn: sqlite3.Connection, chapter_id: str) -> str:
 def invalidate_chapter_dependencies(conn: sqlite3.Connection, chapter_id: str,
                                     revision_id: str, body: str, reanchor: bool = True):
     """Re-anchor unchanged unique quotes; quarantine ambiguous or removed facts."""
+    deleted = bool(conn.execute(
+        "SELECT 1 FROM app_deleted_node WHERE chapter_id=?", (chapter_id,)
+    ).fetchone())
     spans = conn.execute(
-        "SELECT * FROM source_span WHERE document_node_id=? AND project_id=? AND revision_id<>? AND status='valid'",
-        (chapter_id, project_id(), revision_id),
+        "SELECT * FROM source_span WHERE document_node_id=? AND project_id=? "
+        "AND (? OR (revision_id<>? AND status='valid'))",
+        (chapter_id, project_id(), deleted, revision_id),
     ).fetchall()
-    conn.execute("UPDATE source_span SET status='stale' WHERE document_node_id=? AND revision_id<>? AND status='valid'",
-                 (chapter_id, revision_id))
+    conn.execute(
+        "UPDATE source_span SET status='stale' WHERE document_node_id=? "
+        "AND project_id=? AND status='valid' AND (? OR revision_id<>?)",
+        (chapter_id, project_id(), deleted, revision_id),
+    )
     for span in spans:
-        matches = list(re.finditer(re.escape(span["quote"]), body)) if reanchor and span["quote"] else []
+        matches = list(re.finditer(re.escape(span["quote"]), body)) if reanchor and not deleted and span["quote"] else []
         new_span = None
         if len(matches) == 1:
             new_span = source_span_for_memory(conn, {
@@ -2318,13 +2330,20 @@ def story_evidence(conn, raw):
         return {"evidence": {}, "epistemic_mode": "author_plan",
                 "is_plan": True, "stale": False, "evidence_status": "unverified"}
     span = conn.execute("""SELECT s.*,r.id current_revision_id FROM source_span s
+        JOIN document_node n ON n.id=s.document_node_id
         LEFT JOIN document_revision r ON r.id=(SELECT rr.id FROM document_revision rr
-          WHERE rr.document_node_id=s.document_node_id ORDER BY rr.rowid DESC LIMIT 1)
-        WHERE s.id=? AND s.project_id=?""", (evidence.get("source_span_id"), project_id())).fetchone()
+          WHERE rr.document_node_id=s.document_node_id AND rr.branch_id=?
+          ORDER BY rr.rowid DESC LIMIT 1)
+        WHERE s.id=? AND s.project_id=? AND n.project_id=? AND n.branch_id=?""",
+        (branch_id(), evidence.get("source_span_id"), project_id(), project_id(), branch_id())).fetchone()
+    source_chapter_id = span["document_node_id"] if span else evidence.get("source_chapter_id")
+    declared_chapter_id = evidence.get("source_chapter_id")
     stale = (not span or span["status"] != "valid" or span["revision_id"] != span["current_revision_id"] or
-             bool(conn.execute("SELECT 1 FROM app_deleted_node WHERE chapter_id=?",
-                               (evidence.get("source_chapter_id"),)).fetchone()))
-    return {**evidence, "evidence": evidence, "stale": stale, "is_plan": False,
+             bool(declared_chapter_id and declared_chapter_id != source_chapter_id) or
+             bool(conn.execute("SELECT 1 FROM app_deleted_node WHERE chapter_id IN (?,?)",
+                               (declared_chapter_id, source_chapter_id)).fetchone()))
+    return {**evidence, "source_chapter_id": source_chapter_id,
+            "evidence": evidence, "stale": stale, "is_plan": False,
             "evidence_status": "stale" if stale else "valid",
             "source_span_status": "stale" if stale else "valid",
             "epistemic_mode": evidence.get("epistemic_mode", "world_truth")}
@@ -2368,7 +2387,9 @@ def story_map(conn: sqlite3.Connection) -> dict[str, Any]:
             payload, mp = {}, {}
         if payload.get("name") and mp.get("name") and payload.get("name") == mp.get("name"):
             continue
-        conflicts.append({"id": row["id"], "entity_id": row["subject_entity_id"], "assertion": payload, "memory": mp, "memory_id": row["memory_id"], "status": row["memory_status"]})
+        conflicts.append({"id": row["id"], "entity_id": row["subject_entity_id"], "assertion": payload,
+                          "memory": mp, "memory_id": row["memory_id"], "status": row["memory_status"],
+                          **assertion_material_evidence(conn, row["id"])})
     return {
         "relationships": rels,
         "timeline": timeline,
@@ -2430,6 +2451,8 @@ def character_state_rows(conn: sqlite3.Connection, entity_id: str | None = None)
             "knowledge_scope": _decode_json_value(row["knowledge_scope_json"], {}),
             "source_assertion_id": row["source_assertion_id"],
             "source_assertion_state": row["source_assertion_state"],
+            **(assertion_material_evidence(conn, row["source_assertion_id"])
+               if row["source_assertion_id"] else {"stale": False}),
         })
     return result
 
@@ -3522,6 +3545,40 @@ def assertion_detail(conn: sqlite3.Connection, assertion_id: str, *, include_con
     }
 
 
+def assertion_material_evidence(conn: sqlite3.Connection, assertion_id: str) -> dict[str, Any]:
+    """Derive material validity and its latest real chapter without changing history."""
+    detail = assertion_detail(conn, assertion_id, include_conflicts=False)
+    if detail is None or detail["state"] != "canon":
+        return {"stale": True}
+    reference_fields = ("candidate_memory_id", "source_span_id")
+    references = [item for item in detail["evidence"]
+                  if any(key in item for key in reference_fields)]
+    if not references:
+        return {"stale": detail["stale"]}
+    result = {"stale": any(
+        item["stale"] or any(key in item and not item[key] for key in reference_fields)
+        for item in references)}
+    chapter_ids = sorted({item["source_span"]["document_node_id"]
+                          for item in references
+                          if item.get("source_span") and item["source_span"]["current"]})
+    if chapter_ids:
+        # Match chapter_rows ordering without entering review_fingerprint/story_map.
+        sources = conn.execute(
+            """SELECT n.id FROM document_node n
+                WHERE n.project_id=? AND n.branch_id=? AND n.kind='chapter'
+                  AND n.id IN (SELECT value FROM json_each(?))
+                  AND NOT EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=n.id)
+                  AND EXISTS (SELECT 1 FROM document_revision r WHERE r.document_node_id=n.id)
+                ORDER BY n.ordinal DESC,n.id DESC""",
+            (project_id(), branch_id(), json_text(chapter_ids)),
+        ).fetchall()
+        if len(sources) != len(chapter_ids):
+            result["stale"] = True
+        if sources:
+            result["source_chapter_id"] = sources[0]["id"]
+    return result
+
+
 def assertion_rows(conn: sqlite3.Connection, state: str | None = None, entity_id: str | None = None,
                    memory_id: str | None = None, stale_only: bool = False) -> list[dict[str, Any]]:
     """Return compact assertion cards while retaining computed stale state."""
@@ -3737,28 +3794,7 @@ def chapter_rows(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     return result
 
 
-def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
-    p = conn.execute("SELECT id,name FROM project WHERE id=?", (project_id(),)).fetchone()
-    branch = conn.execute("SELECT id,head_revision,status FROM branch WHERE id=? AND project_id=?", (branch_id(), project_id())).fetchone()
-    meta = conn.execute("SELECT summary,genre,goal,book_status FROM app_project_meta WHERE project_id=?", (project_id(),)).fetchone()
-    records = []
-    for row in conn.execute(
-        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description,e.aliases_json,s.scope_json "
-        "FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id "
-        "LEFT JOIN app_entity_scope s ON s.entity_id=e.id WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid",
-        (project_id(),),
-    ):
-        desc = row["description"]
-        if not desc:
-            try:
-                aliases = json.loads(row["aliases_json"] or "[]")
-                if isinstance(aliases, dict):
-                    desc = aliases.get("description", "")
-            except Exception:
-                pass
-        records.append({"id": row["id"], "type": row["kind"], "name": row["canonical_name"], "description": desc,
-                        "aliases": _json_object(row["aliases_json"], []), "project_id": project_id(),
-                        **records_store.decode_scope(row["scope_json"])})
+def memory_rows(conn: sqlite3.Connection) -> list[dict[str, Any]]:
     memory = []
     for row in conn.execute(
         "SELECT cm.id,cm.kind,cm.payload_json,cm.status,cm.confidence,cm.created_at,cm.reviewed_at,cm.reviewed_by,cm.created_by,cm.source_span_id,"
@@ -3805,6 +3841,32 @@ def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
                 "created_at": row["created_at"],
             }
         )
+    return memory
+
+
+def state_from_db(conn: sqlite3.Connection) -> dict[str, Any]:
+    p = conn.execute("SELECT id,name FROM project WHERE id=?", (project_id(),)).fetchone()
+    branch = conn.execute("SELECT id,head_revision,status FROM branch WHERE id=? AND project_id=?", (branch_id(), project_id())).fetchone()
+    meta = conn.execute("SELECT summary,genre,goal,book_status FROM app_project_meta WHERE project_id=?", (project_id(),)).fetchone()
+    records = []
+    for row in conn.execute(
+        "SELECT e.id,e.kind,e.canonical_name,COALESCE(m.description,'') description,e.aliases_json,s.scope_json "
+        "FROM entity e LEFT JOIN app_entity_meta m ON m.entity_id=e.id "
+        "LEFT JOIN app_entity_scope s ON s.entity_id=e.id WHERE e.project_id=? AND e.status<>'archived' ORDER BY e.rowid",
+        (project_id(),),
+    ):
+        desc = row["description"]
+        if not desc:
+            try:
+                aliases = json.loads(row["aliases_json"] or "[]")
+                if isinstance(aliases, dict):
+                    desc = aliases.get("description", "")
+            except Exception:
+                pass
+        records.append({"id": row["id"], "type": row["kind"], "name": row["canonical_name"], "description": desc,
+                        "aliases": _json_object(row["aliases_json"], []), "project_id": project_id(),
+                        **records_store.decode_scope(row["scope_json"])})
+    memory = memory_rows(conn)
     plot = {"setup": [], "develop": [], "payoff": []}
     for row in conn.execute(
         "SELECT id,stage,text FROM app_plot_item WHERE project_id=? AND branch_id=? AND archived=0 ORDER BY rowid",
@@ -4086,6 +4148,9 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
             ids.append(checked_id(item.get("id"), f"{group} id"))
         if len(set(ids)) != len(ids):
             raise ValueError(f"duplicate {group} id")
+    current_memory = {item["id"]: item for item in memory_rows(conn)}
+    unchanged_memory = {item["id"] for item in state["memory"]
+                        if current_memory.get(item["id"]) == item}
     project = state.get("project") or {}
     title = bounded_text(project.get("title") or "未命名长篇", 200, "project title")
     summary = bounded_text(project.get("summary") or "", 50_000, "project summary")
@@ -4118,6 +4183,7 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
             revision = conn.execute("SELECT id FROM document_revision WHERE document_node_id=? ORDER BY rowid DESC LIMIT 1", (old["id"],)).fetchone()
             conn.execute("INSERT INTO deletion_event(id,project_id,branch_id,aggregate_id,revision_id,reason,scope,created_at,actor_id) VALUES(?,?,?,?,?,?,?,?,?)", (uid("del_"), project_id(), branch_id(), old["id"], revision["id"] if revision else None, "omitted by full state sync", "document", now(), actor_id()))
             conn.execute("INSERT INTO app_deleted_node(chapter_id,deleted_at,reason) VALUES(?,?,?)", (old["id"], now(), "omitted by full state sync"))
+            invalidate_chapter_dependencies(conn, old["id"], "", "", reanchor=False)
             append_event(conn, old["id"], "chapter.deleted", {"reason": "omitted by full state sync"}, conn.execute("SELECT head_revision FROM branch WHERE id=?", (branch_id(),)).fetchone()[0])
     existing = {r["id"] for r in existing_rows}
     for chapter in incoming_chapters:
@@ -4175,6 +4241,18 @@ def sync_state(conn: sqlite3.Connection, state: dict[str, Any]) -> None:
             append_event(conn, old["id"], "memory.rejected", {"reason": "omitted by full state sync"})
     for memory in incoming_memory:
         mid = checked_id(memory.get("id") or uid("mem_"), "memory id")
+        if mid in unchanged_memory:
+            existing = conn.execute(
+                "SELECT cm.status,cm.kind,e.status entity_status,e.kind entity_kind "
+                "FROM candidate_memory cm LEFT JOIN entity e ON e.id=cm.entity_id "
+                "AND e.project_id=cm.project_id WHERE cm.id=? AND cm.project_id=? AND cm.branch_id=?",
+                (mid, project_id(), branch_id()),
+            ).fetchone()
+            # Unchanged history is not a new author confirmation. Chapter writes
+            # already invalidate moved or deleted evidence before this loop.
+            if existing and (existing["status"] != "accepted" or (
+                    existing["entity_status"] == "active" and existing["entity_kind"] == existing["kind"])):
+                continue
         payload = {"key": bounded_text(memory.get("key", mid), 500, "memory key"), "name": bounded_text(memory.get("name", ""), 500, "memory name"), "source": bounded_text(memory.get("source", ""), 500, "memory source"), "note": bounded_text(memory.get("note", ""), 20_000, "memory note")}
         for field, limit in (("source_chapter_id", 200), ("source_quote", 2_000), ("source_start", 30), ("source_end", 30), ("source_hash", 128)):
             if memory.get(field) not in (None, ""):
@@ -4915,6 +4993,21 @@ def apply_candidate(conn, run_id, data):
     return {"applied": True, "idempotent": False, "chapter": revised, "state": state_from_db(conn)}
 
 
+def portable_restore_response(conn, result):
+    scope = workspace.resolve_scope(conn, result["project_id"], result["branch_id"])
+    with workspace.use_scope(*scope):
+        state = state_from_db(conn)
+    project = next(item for item in workspace.project_rows(conn) if item["id"] == result["project_id"])
+    return {**result, "project": project, "state": state}
+
+
+def record_portable_restore(conn, key, receipt):
+    result = receipt["result"]
+    scope = workspace.resolve_scope(conn, result["project_id"], result["branch_id"])
+    with workspace.use_scope(*scope):
+        append_event(conn, project_id(), "project.portable_restored", receipt, idempotency_key=key)
+
+
 class Handler(SimpleHTTPRequestHandler):
     server_version = "MoyuSQLite/1.0"
     STATIC_FILES = {"/", "/index.html", "/app.js", "/editor-sync.js", "/author-workspace.js", "/styles.css"}
@@ -4979,11 +5072,15 @@ class Handler(SimpleHTTPRequestHandler):
 
     def read_json(self) -> dict[str, Any]:
         length = int(self.headers.get("Content-Length", "0"))
-        limit = 48 * 1024 * 1024 if urlparse(self.path).path in {"/api/import/preview", "/api/import/apply"} else 8 * 1024 * 1024
+        route = urlparse(self.path).path
+        limit = 48 * 1024 * 1024 if route in {
+            "/api/import/preview", "/api/import/apply", "/api/backups/import/preview",
+        } else 8 * 1024 * 1024
         if length < 0 or length > limit:
             raise ValueError("request body too large")
         raw = self.rfile.read(length) if length else b"{}"
-        value = json.loads(raw.decode("utf-8"))
+        value = (portable_backups.read_request(raw) if route.startswith("/api/backups/import/")
+                 else json.loads(raw.decode("utf-8")))
         if not isinstance(value, dict):
             raise ValueError("JSON object required")
         return value
@@ -5540,6 +5637,22 @@ class Handler(SimpleHTTPRequestHandler):
             data = self.read_json()
             with connect() as conn:
                 self._transaction_conn = conn
+                if parsed.path in {"/api/backups/import/preview", "/api/backups/import/apply",
+                                   "/api/backups/import/cancel", "/api/backups/import/status"}:
+                    scope = {"project_id": project_id(), "branch_id": branch_id()}
+                    workspace.resolve_scope(conn, project_id(), branch_id())
+                    if parsed.path.endswith("/preview"):
+                        return self.send_json(200, portable_backups.preview(conn, data, scope))
+                    if parsed.path.endswith("/cancel"):
+                        return self.send_json(200, portable_backups.cancel(conn, data, scope))
+                    if parsed.path.endswith("/status"):
+                        return self.send_json(200, portable_backups.status(conn, data, scope, {
+                            "response": portable_restore_response,
+                        }))
+                    status, result = portable_backups.apply(conn, data, scope, {
+                        "record": record_portable_restore, "response": portable_restore_response,
+                    })
+                    return self.send_json(status, result)
                 ensure_seed(conn)
                 if parsed.path == "/api/projects":
                     return self.send_json(201, new_project(conn, data))
@@ -6673,6 +6786,7 @@ class Handler(SimpleHTTPRequestHandler):
                     "INSERT INTO app_deleted_node(chapter_id,deleted_at,reason) VALUES(?,?,?)",
                     (cid, now(), reason),
                 )
+                invalidate_chapter_dependencies(conn, cid, "", "", reanchor=False)
                 append_event(conn, cid, "chapter.deleted", {"reason": reason}, conn.execute("SELECT head_revision FROM branch WHERE id=?", (branch_id(),)).fetchone()[0])
                 return self.send_json(200, {"deleted": cid})
         except sqlite3.IntegrityError as exc:

@@ -1,0 +1,404 @@
+{
+  "passed": true,
+  "methods": 5,
+  "failures": [],
+  "errors": [],
+  "started_at": "2026-10-14T22:18:33.620642+00:00",
+  "finished_at": "2026-10-14T22:18:36.469056+00:00",
+  "source_files_sha256_before": {
+    "server.py": "574d8bd998ba0a69516dbd881f7f66bea705d881ee0522dbbae195e5cc97785a",
+    "moyu_context.py": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "tests/chapter_deletion_dependency_http_fixtures.py": "4def7a7a2c5caf8775651a33022d6374673429f6005b6f6d8271caf6fd119227"
+  },
+  "source_files_sha256_after": {
+    "server.py": "574d8bd998ba0a69516dbd881f7f66bea705d881ee0522dbbae195e5cc97785a",
+    "moyu_context.py": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "tests/chapter_deletion_dependency_http_fixtures.py": "4def7a7a2c5caf8775651a33022d6374673429f6005b6f6d8271caf6fd119227"
+  },
+  "source_unchanged": true,
+  "paid_provider_calls": 0,
+  "scope": "temporary synthetic SQLite; real loopback HTTP; no provider",
+  "claim_limit": "deletion dependency integrity; no literary-quality claim",
+  "observations": [
+    {
+      "test": "test_delete_api_withdraws_facts_and_keeps_other_material",
+      "route": "delete",
+      "before": {
+        "memory": [
+          {
+            "id": "memory-delete-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          },
+          {
+            "id": "memory-retained-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          }
+        ],
+        "assertions": [
+          {
+            "id": "asrt_24ae6165282545ac90892353a6796d0e",
+            "state": "canon"
+          },
+          {
+            "id": "asrt_9ab31a52a9c945dd85266890e2965609",
+            "state": "canon"
+          }
+        ],
+        "public_memory": [
+          {
+            "id": "memory-delete-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          },
+          {
+            "id": "memory-retained-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          }
+        ]
+      },
+      "delete_http_status": 200,
+      "delete_error": null,
+      "after": {
+        "memory": [
+          {
+            "id": "memory-delete-review",
+            "memory_status": "stale",
+            "span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          }
+        ],
+        "assertions": [
+          {
+            "id": "asrt_24ae6165282545ac90892353a6796d0e",
+            "state": "canon"
+          },
+          {
+            "id": "asrt_9ab31a52a9c945dd85266890e2965609",
+            "state": "candidate"
+          }
+        ],
+        "public_memory": [
+          {
+            "id": "memory-delete-review",
+            "status": "stale",
+            "stale": true,
+            "source_span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          }
+        ]
+      },
+      "preview_http_status": 200,
+      "preview_error": null,
+      "deleted_fact_in_prompt": false
+    },
+    {
+      "test": "test_deleted_old_revision_and_already_stale_span_are_withdrawn",
+      "route": "delete",
+      "before": {
+        "memory": [
+          {
+            "id": "memory-delete-review",
+            "memory_status": "accepted",
+            "span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          }
+        ],
+        "assertions": [
+          {
+            "id": "asrt_223a417e342541dfa5ab9ddd279fa907",
+            "state": "canon"
+          },
+          {
+            "id": "asrt_b860c495c6034452ab110e7473fae5da",
+            "state": "canon"
+          }
+        ],
+        "public_memory": [
+          {
+            "id": "memory-delete-review",
+            "status": "已确认",
+            "stale": true,
+            "source_span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          }
+        ]
+      },
+      "delete_http_status": 200,
+      "delete_error": null,
+      "after": {
+        "memory": [
+          {
+            "id": "memory-delete-review",
+            "memory_status": "stale",
+            "span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          }
+        ],
+        "assertions": [
+          {
+            "id": "asrt_223a417e342541dfa5ab9ddd279fa907",
+            "state": "candidate"
+          },
+          {
+            "id": "asrt_b860c495c6034452ab110e7473fae5da",
+            "state": "canon"
+          }
+        ],
+        "public_memory": [
+          {
+            "id": "memory-delete-review",
+            "status": "stale",
+            "stale": true,
+            "source_span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          }
+        ]
+      },
+      "preview_http_status": 200,
+      "preview_error": null,
+      "deleted_fact_in_prompt": false
+    },
+    {
+      "test": "test_full_state_omission_withdraws_facts_and_keeps_other_material",
+      "route": "full_state",
+      "before": {
+        "memory": [
+          {
+            "id": "memory-delete-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          },
+          {
+            "id": "memory-retained-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          }
+        ],
+        "assertions": [
+          {
+            "id": "asrt_586ec540114c4f0dae802d20314c09ba",
+            "state": "canon"
+          },
+          {
+            "id": "asrt_b781d091f3df41e18fe1581eee1812b4",
+            "state": "canon"
+          }
+        ],
+        "public_memory": [
+          {
+            "id": "memory-delete-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          },
+          {
+            "id": "memory-retained-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          }
+        ]
+      },
+      "delete_http_status": 200,
+      "delete_error": null,
+      "after": {
+        "memory": [
+          {
+            "id": "memory-delete-review",
+            "memory_status": "stale",
+            "span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "memory_status": "accepted",
+            "span_status": "valid"
+          }
+        ],
+        "assertions": [
+          {
+            "id": "asrt_586ec540114c4f0dae802d20314c09ba",
+            "state": "canon"
+          },
+          {
+            "id": "asrt_b781d091f3df41e18fe1581eee1812b4",
+            "state": "candidate"
+          }
+        ],
+        "public_memory": [
+          {
+            "id": "memory-delete-review",
+            "status": "stale",
+            "stale": true,
+            "source_span_status": "stale"
+          },
+          {
+            "id": "memory-retained-review",
+            "status": "已确认",
+            "stale": false,
+            "source_span_status": "valid"
+          }
+        ]
+      },
+      "preview_http_status": 200,
+      "preview_error": null,
+      "deleted_fact_in_prompt": false
+    },
+    {
+      "test": "test_mid_invalidation_failure_rolls_back_both_deletion_routes",
+      "route": "full_state",
+      "status": 409,
+      "error": "synthetic invalidation failure",
+      "database_unchanged": true
+    },
+    {
+      "test": "test_mid_invalidation_failure_rolls_back_both_deletion_routes",
+      "route": "delete",
+      "status": 409,
+      "error": "synthetic invalidation failure",
+      "database_unchanged": true
+    }
+  ],
+  "http": [
+    {
+      "test": "test_delete_api_withdraws_facts_and_keeps_other_material",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_delete_api_withdraws_facts_and_keeps_other_material",
+      "method": "DELETE",
+      "path": "/api/chapters/ch_b5a30c8c99c94e02b6e973c244751275",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_delete_api_withdraws_facts_and_keeps_other_material",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_deleted_old_revision_and_already_stale_span_are_withdrawn",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_deleted_old_revision_and_already_stale_span_are_withdrawn",
+      "method": "DELETE",
+      "path": "/api/chapters/ch_eba958a22b034252b6b54d211ba6b1f6",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_deleted_old_revision_and_already_stale_span_are_withdrawn",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_full_state_omission_withdraws_facts_and_keeps_other_material",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_full_state_omission_withdraws_facts_and_keeps_other_material",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_full_state_omission_withdraws_facts_and_keeps_other_material",
+      "method": "PUT",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_full_state_omission_withdraws_facts_and_keeps_other_material",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mid_invalidation_failure_rolls_back_both_deletion_routes",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mid_invalidation_failure_rolls_back_both_deletion_routes",
+      "method": "PUT",
+      "path": "/api/state",
+      "status": 409,
+      "error": "synthetic invalidation failure"
+    },
+    {
+      "test": "test_mid_invalidation_failure_rolls_back_both_deletion_routes",
+      "method": "DELETE",
+      "path": "/api/chapters/ch_7ed4e86a33814f9286d61f641ff7adfe",
+      "status": 409,
+      "error": "synthetic invalidation failure"
+    },
+    {
+      "test": "test_unmodified_historical_accepted_memory_is_preserved",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_unmodified_historical_accepted_memory_is_preserved",
+      "method": "PUT",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "attempted_provider_calls": 0,
+  "attempted_worker_calls": 0
+}
