@@ -23,7 +23,10 @@ from scripts import literary_evaluation as evaluation
 class EvaluationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(prefix="moyu-literary-fixture-")
+        self.history_temporary = tempfile.TemporaryDirectory(prefix="moyu-literary-history-")
         self.out = Path(self.temporary.name)
+        self._global_reservation_path = evaluation.GLOBAL_RESERVATION_PATH
+        evaluation.GLOBAL_RESERVATION_PATH = self.out / "global-reservations.json"
         self.plan = evaluation.default_plan()
         self.config = {"base_url": "http://127.0.0.1:9/v1", "model": "writer-fixture",
                        "api_key": "fixture-literary-private-credential"}
@@ -32,7 +35,28 @@ class EvaluationTests(unittest.TestCase):
         self.calls = []
 
     def tearDown(self) -> None:
+        evaluation.GLOBAL_RESERVATION_PATH = self._global_reservation_path
+        self.history_temporary.cleanup()
         self.temporary.cleanup()
+
+    def historical_row(self, request_id: str, request_hash: str,
+                       usage: dict | None = None) -> dict:
+        return {
+            "request_id": request_id,
+            "kind": "writer",
+            "status": "complete" if usage else "unknown",
+            "billing_state": "usage_reported" if usage else "unknown",
+            "usage": usage,
+            "request_audit": {
+                "request_id": request_id,
+                "request_sha256": request_hash,
+            },
+        }
+
+    def history_dir(self, name: str, rows: list[dict]) -> Path:
+        path = Path(self.history_temporary.name) / name
+        evaluation.write_json(path / "request-ledger.json", rows)
+        return path
 
     def fixture_text(self, task: str) -> str:
         if task == "continue":
@@ -1243,6 +1267,189 @@ class EvaluationTests(unittest.TestCase):
         self.assertEqual(row["usage_accounting"]["reported_tokens_lower_bound"], 14)
         with self.assertRaisesRegex(ValueError, "用量的停止阈值"):
             ledger.reserve("must-not-dispatch", "writer", "writer-fixture")
+
+    def test_historical_budget_empty_and_multiple_directories_are_explicit(self) -> None:
+        empty = self.out / "empty-history"
+        empty.mkdir()
+        snapshot = evaluation.capture_historical_budget(self.out, [empty])
+        self.assertEqual(snapshot["requests_reserved"], 0)
+        self.assertEqual(snapshot["reported_tokens_lower_bound"], 0)
+        self.assertEqual(snapshot["sources"][0]["path"], str(empty.resolve()))
+
+        first = self.history_dir("first", [
+            self.historical_row("history-one", "1" * 64,
+                                {"prompt_tokens": 7, "completion_tokens": 3, "total_tokens": 10}),
+        ])
+        second = self.history_dir("second", [
+            self.historical_row("history-two", "2" * 64,
+                                {"prompt_tokens": 5, "completion_tokens": 4, "total_tokens": 9}),
+        ])
+        merged = evaluation.capture_historical_budget(self.out, [first, second])
+        self.assertEqual(merged["requests_reserved"], 2)
+        self.assertEqual(merged["reported_tokens_lower_bound"], 19)
+        self.assertEqual({item["path"] for item in merged["sources"]},
+                         {str(first.resolve()), str(second.resolve())})
+
+    def test_historical_budget_merges_repeated_request_identity_and_deduplicates_paths(self) -> None:
+        request_hash = "a" * 64
+        first = self.history_dir("duplicate-one", [
+            self.historical_row("same-request", request_hash, None),
+        ])
+        second = self.history_dir("duplicate-two", [
+            self.historical_row("same-request", request_hash,
+                                {"prompt_tokens": 8, "completion_tokens": 4, "total_tokens": 12}),
+        ])
+        snapshot = evaluation.capture_historical_budget(
+            self.out, [first, second, first, second])
+        self.assertEqual(snapshot["requests_reserved"], 1)
+        self.assertEqual(snapshot["reported_tokens_lower_bound"], 12)
+        self.assertEqual(snapshot["requests_without_complete_usage"], 0)
+        self.assertEqual(snapshot["requests_with_partial_usage"], 0)
+
+    def test_historical_budget_conflicting_complete_duplicate_stops(self) -> None:
+        request_hash = "b" * 64
+        first = self.history_dir("conflict-one", [
+            self.historical_row("conflicting-request", request_hash,
+                                {"prompt_tokens": 8, "completion_tokens": 4, "total_tokens": 12}),
+            self.historical_row("conflicting-request", request_hash,
+                                {"prompt_tokens": 8, "completion_tokens": 5, "total_tokens": 13}),
+        ])
+        with self.assertRaisesRegex(ValueError, "重复请求身份对应的历史完整用量"):
+            evaluation.capture_historical_budget(self.out, [first])
+
+    def test_historical_budget_excludes_current_output_tree(self) -> None:
+        root = Path(self.history_temporary.name) / "nested-history"
+        old = root / "old-run"
+        current = root / "current-run"
+        evaluation.write_json(old / "request-ledger.json", [
+            self.historical_row("old-request", "c" * 64,
+                                {"prompt_tokens": 4, "completion_tokens": 6, "total_tokens": 10}),
+        ])
+        evaluation.write_json(current / "request-ledger.json", [
+            self.historical_row("current-request", "d" * 64,
+                                {"prompt_tokens": 50, "completion_tokens": 50, "total_tokens": 100}),
+        ])
+        snapshot = evaluation.capture_historical_budget(current, [root])
+        self.assertEqual(snapshot["requests_reserved"], 1)
+        self.assertEqual(snapshot["reported_tokens_lower_bound"], 10)
+
+    def test_frozen_historical_budget_stops_when_ledger_changes_without_mutating_file(self) -> None:
+        history = self.history_dir("frozen-history", [
+            self.historical_row("frozen-request", "e" * 64,
+                                {"prompt_tokens": 3, "completion_tokens": 7, "total_tokens": 10}),
+        ])
+        snapshot = evaluation.capture_historical_budget(self.out, [history])
+        plan = copy.deepcopy(self.plan)
+        plan["historical_budget"] = snapshot
+        before = (history / "request-ledger.json").read_bytes()
+        evaluation.write_json(history / "request-ledger.json", [
+            self.historical_row("frozen-request", "e" * 64,
+                                {"prompt_tokens": 3, "completion_tokens": 8, "total_tokens": 11}),
+        ])
+        changed = (history / "request-ledger.json").read_bytes()
+        self.assertNotEqual(before, changed)
+        with self.assertRaisesRegex(ValueError, "历史账本发生变化"):
+            evaluation.Ledger(self.out / "frozen-run", plan,
+                              historical_budget=snapshot, history_dirs=[history])
+        self.assertEqual((history / "request-ledger.json").read_bytes(), changed)
+
+    def test_historical_request_cap_blocks_before_provider_call(self) -> None:
+        rows = [
+            self.historical_row(f"full-history-{index}", f"{index + 1:064x}",
+                                {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2})
+            for index in range(evaluation.GLOBAL_REQUEST_CAP)
+        ]
+        history = self.history_dir("request-cap-history", rows)
+        snapshot = evaluation.capture_historical_budget(self.out, [history])
+        plan = copy.deepcopy(self.plan)
+        plan["historical_budget"] = snapshot
+        evaluation.write_json(self.plan_path, plan)
+        with patch.object(evaluation, "provider_config", side_effect=self.config_for), \
+                patch.object(evaluation, "call_chat_completion") as transport, \
+                contextlib.redirect_stdout(io.StringIO()), \
+                self.assertRaisesRegex(ValueError, "请求次数上限"):
+            evaluation.generate(plan, self.plan_path, self.out / "request-cap-run",
+                                "writer-fixture", history_dirs=[history])
+        transport.assert_not_called()
+
+    def test_historical_token_threshold_blocks_before_provider_call(self) -> None:
+        history = self.history_dir("token-cap-history", [
+            self.historical_row("token-cap-request", "f" * 64, {
+                "prompt_tokens": evaluation.GLOBAL_REPORTED_TOKEN_THRESHOLD,
+                "completion_tokens": 0,
+                "total_tokens": evaluation.GLOBAL_REPORTED_TOKEN_THRESHOLD,
+            }),
+        ])
+        snapshot = evaluation.capture_historical_budget(self.out, [history])
+        plan = copy.deepcopy(self.plan)
+        plan["historical_budget"] = snapshot
+        evaluation.write_json(self.plan_path, plan)
+        with patch.object(evaluation, "provider_config", side_effect=self.config_for), \
+                patch.object(evaluation, "call_chat_completion") as transport, \
+                contextlib.redirect_stdout(io.StringIO()), \
+                self.assertRaisesRegex(ValueError, "用量的停止阈值"):
+            evaluation.generate(plan, self.plan_path, self.out / "token-cap-run",
+                                "writer-fixture", history_dirs=[history])
+        transport.assert_not_called()
+
+    def test_global_reservation_lock_blocks_second_run_before_provider_call(self) -> None:
+        snapshot = evaluation.capture_historical_budget(self.out, [])
+        plan = copy.deepcopy(self.plan)
+        plan["historical_budget"] = snapshot
+        ledger = evaluation.Ledger(
+            self.out / "locked-run", plan, historical_budget=snapshot, history_dirs=[])
+        with evaluation._global_budget_lock():
+            with self.assertRaisesRegex(ValueError, "另一轮文学评测正在预留请求"):
+                ledger.reserve("lock-blocked-request", "writer", "writer-fixture")
+
+    def test_global_reservation_under_history_root_counts_as_another_new_run(self) -> None:
+        history_root = Path(self.history_temporary.name) / "audits"
+        history_root.mkdir()
+        snapshot = evaluation.capture_historical_budget(self.out, [history_root])
+        snapshot["request_cap"] = 1
+        snapshot["reported_tokens_stop_threshold"] = 100
+        plan = copy.deepcopy(self.plan)
+        plan["historical_budget"] = snapshot
+        other_run = history_root / "new-run"
+        evaluation.write_json(evaluation.GLOBAL_RESERVATION_PATH, [{
+            "run_dir": str(other_run),
+            "request_id": "other-new-request",
+            "usage": None,
+            "usage_accounting": {
+                "state": "unknown", "total_tokens": None,
+                "reported_tokens_lower_bound": 0, "source": "unknown",
+            },
+        }])
+        ledger = evaluation.Ledger(
+            self.out / "current-run", plan, historical_budget=snapshot,
+            history_dirs=[history_root])
+        with self.assertRaisesRegex(ValueError, "请求次数上限"):
+            ledger.reserve("current-request", "writer", "writer-fixture")
+
+    def test_global_reservation_already_in_frozen_history_is_not_counted_twice(self) -> None:
+        history_root = Path(self.history_temporary.name) / "audits-with-complete-run"
+        other_run = history_root / "new-run"
+        history_row = self.historical_row(
+            "historical-request", "1" * 64,
+            {"prompt_tokens": 4, "completion_tokens": 6, "total_tokens": 10})
+        evaluation.write_json(other_run / "request-ledger.json", [history_row])
+        snapshot = evaluation.capture_historical_budget(self.out, [history_root])
+        snapshot["request_cap"] = 2
+        plan = copy.deepcopy(self.plan)
+        plan["historical_budget"] = snapshot
+        evaluation.write_json(evaluation.GLOBAL_RESERVATION_PATH, [{
+            "run_dir": str(other_run),
+            "request_id": "historical-request",
+            "usage": history_row["usage"],
+            "usage_accounting": history_row.get("usage_accounting"),
+        }])
+        ledger = evaluation.Ledger(
+            self.out / "current-run", plan, historical_budget=snapshot,
+            history_dirs=[history_root])
+        # The historical row consumes one of two global request slots.  Its
+        # matching global registry row must not consume the same slot again.
+        index = ledger.reserve("current-request", "writer", "writer-fixture")
+        self.assertEqual(index, 0)
 
     def test_blinding_is_deterministic_and_does_not_expose_arm_or_model_ids(self) -> None:
         self.generated()

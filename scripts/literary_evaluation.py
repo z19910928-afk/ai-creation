@@ -8,6 +8,7 @@ It does not stand in for running the seven competing applications.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import hashlib
 import json
 import math
@@ -24,6 +25,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator, Sequence
 
+try:
+    import fcntl
+except ImportError:  # pragma: no cover - Windows fallback
+    fcntl = None
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from moyu_output import (
@@ -38,6 +44,11 @@ from moyu_provider import (
 
 PLAN_VERSION = "moyu-literary-v1"
 HUMAN_RATINGS_VERSION = "moyu-literary-human-ratings-v1"
+HISTORICAL_BUDGET_VERSION = "moyu-literary-historical-budget-v1"
+GLOBAL_REQUEST_CAP = 60
+GLOBAL_REPORTED_TOKEN_THRESHOLD = 180_000
+WORKSPACE_AUDIT_SOURCE = "workspace-docs-audits"
+GLOBAL_RESERVATION_PATH = ROOT / ".audit-cache" / "literary-budget-reservations.json"
 CRITERIA = ("continuity", "character_motivation", "causality", "style", "task_fit")
 TASK_INSTRUCTIONS = {
     "continue": "续写当前场景，保持人物、因果和视角。只输出候选正文。",
@@ -66,6 +77,331 @@ def write_json(path: Path, value: Any) -> None:
         handle.write(encoded(value) + "\n")
         temporary = Path(handle.name)
     temporary.replace(path)
+
+
+def _historical_roots(history_dirs: Sequence[Path] | None = None, *,
+                      source_ids: set[str] | None = None,
+                      include_workspace: bool = False) -> list[tuple[str, Path]]:
+    """Resolve only explicitly selected roots and, optionally, the workspace audit tree."""
+    roots: dict[Path, str] = {}
+    default = (ROOT / "docs" / "audits").resolve()
+    if include_workspace or (source_ids is not None and WORKSPACE_AUDIT_SOURCE in source_ids):
+        if default.is_dir():
+            roots[default] = WORKSPACE_AUDIT_SOURCE
+        elif source_ids is not None:
+            raise ValueError("冻结的历史评测目录已不存在，不能继续付费评测。")
+    for supplied in history_dirs or ():
+        path = Path(supplied).expanduser().resolve()
+        if not path.is_dir():
+            raise ValueError("指定的历史评测目录不存在或不是文件夹。")
+        if path in roots:
+            continue
+        source_id = (
+            WORKSPACE_AUDIT_SOURCE if path == default
+            else "external-" + hashlib.sha256(os.fsencode(path)).hexdigest()[:16]
+        )
+        if source_ids is not None and source_id not in source_ids:
+            raise ValueError("历史评测目录与冻结的预算快照不一致，不能继续付费评测。")
+        roots[path] = source_id
+    if source_ids is not None and {source for source in roots.values()} != source_ids:
+        raise ValueError("必须提供冻结预算快照中的全部历史评测目录，不能减少累计范围。")
+    return sorted(((source, path) for path, source in roots.items()), key=lambda item: item[0])
+
+
+def _is_within(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
+def _historical_entries(root: Path, out: Path) -> list[tuple[str, Path, Any]]:
+    entries: list[tuple[str, Path, Any]] = []
+    paths = list(root.rglob("request-ledger.json"))
+    for path in sorted(set(paths)):
+        resolved = path.resolve()
+        if _is_within(resolved, out):
+            continue
+        try:
+            value = read_json(path)
+        except (OSError, json.JSONDecodeError, UnicodeDecodeError) as error:
+            raise ValueError("历史预算证据无法读取；已停止，不会发送请求。") from error
+        if path.name == "request-ledger.json":
+            if not isinstance(value, list) or any(not isinstance(row, dict) for row in value):
+                raise ValueError("历史请求账本格式无效；已停止，不会发送请求。")
+            entries.extend(("ledger", path, row) for row in value)
+    return entries
+
+
+def _merge_historical_accounting(previous: dict[str, Any],
+                                 current: dict[str, Any]) -> dict[str, Any]:
+    """Merge repeated evidence for one provider request conservatively."""
+    previous_state = previous["state"]
+    current_state = current["state"]
+    previous_total = previous.get("total_tokens")
+    current_total = current.get("total_tokens")
+    if previous_state == "reported" and current_state == "reported":
+        if previous_total != current_total:
+            raise ValueError("重复请求身份对应的历史完整用量互相矛盾；已停止，不会发送请求。")
+        return current
+    if previous_state == "reported":
+        if current["reported_tokens_lower_bound"] > previous_total:
+            raise ValueError("重复请求身份对应的历史用量互相矛盾；已停止，不会发送请求。")
+        return previous
+    if current_state == "reported":
+        if previous["reported_tokens_lower_bound"] > current_total:
+            raise ValueError("重复请求身份对应的历史用量互相矛盾；已停止，不会发送请求。")
+        return current
+    state_rank = {"unknown": 0, "partial": 1, "inconsistent": 2}
+    if (current["reported_tokens_lower_bound"] > previous["reported_tokens_lower_bound"]
+            or (current["reported_tokens_lower_bound"]
+                == previous["reported_tokens_lower_bound"]
+                and state_rank.get(current_state, 0) > state_rank.get(previous_state, 0))):
+        return current
+    return previous
+
+
+def capture_historical_budget(out: Path, history_dirs: Sequence[Path] | None = None, *,
+                              include_workspace: bool = False) -> dict[str, Any]:
+    """Read literary request-ledger metadata without counting protocol diagnostics.
+
+    Every historical ledger row is a reservation unless the same provider
+    request fingerprint appears again in a copied or reconciled directory.
+    Repeated directory arguments are de-duplicated by ``_historical_roots``;
+    identical ``request_id + request_sha256`` evidence is merged, while
+    records without that pair remain conservatively separate.
+    """
+    roots = _historical_roots(
+        history_dirs, source_ids=None, include_workspace=include_workspace)
+    sources = []
+    summaries_by_identity: dict[tuple[str, ...], dict[str, Any]] = {}
+    for source_id, root in roots:
+        file_rows: dict[str, str] = {}
+        for entry_index, (kind, path, row) in enumerate(_historical_entries(root, out.resolve())):
+            relative = path.resolve().relative_to(root).as_posix()
+            file_rows[relative] = hashlib.sha256(path.read_bytes()).hexdigest()
+            if kind == "ledger":
+                audit = row.get("request_audit")
+                audit = audit if isinstance(audit, dict) else {}
+                usage = row.get("usage")
+                saved_accounting = row.get("usage_accounting")
+                request_id = audit.get("request_id")
+                request_hash = audit.get("request_sha256")
+            accounting = usage_accounting(usage, saved_accounting)
+            if (isinstance(request_id, str) and request_id
+                    and isinstance(request_hash, str)
+                    and re.fullmatch(r"[0-9a-f]{64}", request_hash)):
+                identity = ("request", request_id, request_hash)
+            else:
+                identity = ("record", source_id, relative, str(entry_index))
+            previous = summaries_by_identity.get(identity)
+            summaries_by_identity[identity] = (
+                accounting if previous is None
+                else _merge_historical_accounting(previous, accounting)
+            )
+        sources.append({"id": source_id, "path": str(root),
+                        "files": [{"path": path, "sha256": digest}
+                                  for path, digest in sorted(file_rows.items())]})
+
+    summaries = list(summaries_by_identity.values())
+    snapshot_basis = [{"id": source["id"], "files": source["files"]} for source in sources]
+    return {
+        "protocol": HISTORICAL_BUDGET_VERSION,
+        "captured_at": now(),
+        "request_cap": GLOBAL_REQUEST_CAP,
+        "reported_tokens_stop_threshold": GLOBAL_REPORTED_TOKEN_THRESHOLD,
+        "requests_reserved": len(summaries),
+        "reported_tokens_lower_bound": sum(
+            item["reported_tokens_lower_bound"] for item in summaries),
+        "requests_without_complete_usage": sum(item["state"] != "reported" for item in summaries),
+        "requests_with_partial_usage": sum(item["state"] == "partial" for item in summaries),
+        "requests_with_inconsistent_usage": sum(item["state"] == "inconsistent" for item in summaries),
+        "remaining_requests_at_capture": max(0, GLOBAL_REQUEST_CAP - len(summaries)),
+        "remaining_known_tokens_at_capture": max(
+            0, GLOBAL_REPORTED_TOKEN_THRESHOLD -
+            sum(item["reported_tokens_lower_bound"] for item in summaries)),
+        "cost_state": "unknown",
+        "sources": sources,
+        "snapshot_sha256": sha(snapshot_basis),
+        "scope": "只读取指定目录中的request-ledger.json；不读取候选正文或独立协议诊断。",
+    }
+
+
+def verify_historical_budget(plan: dict[str, Any], out: Path,
+                            history_dirs: Sequence[Path] | None = None,
+                            frozen_budget: dict[str, Any] | None = None) -> dict[str, Any]:
+    frozen = frozen_budget if frozen_budget is not None else plan.get("historical_budget")
+    if not isinstance(frozen, dict) or frozen.get("protocol") != HISTORICAL_BUDGET_VERSION:
+        # Existing frozen runs predate this metadata. Reconstruct conservatively without
+        # changing their artifacts, excluding only the current run directory.
+        return capture_historical_budget(out, history_dirs)
+    frozen_sources = [item for item in frozen.get("sources", [])
+                      if isinstance(item, dict) and isinstance(item.get("id"), str)]
+    source_ids = {item["id"] for item in frozen_sources}
+    if history_dirs is None:
+        history_dirs = [
+            Path(item["path"]) for item in frozen_sources
+            if item["id"] != WORKSPACE_AUDIT_SOURCE
+            and isinstance(item.get("path"), str)
+        ]
+    roots = _historical_roots(
+        history_dirs, source_ids=source_ids,
+        include_workspace=WORKSPACE_AUDIT_SOURCE in source_ids)
+    current = capture_historical_budget(
+        out, [path for _source_id, path in roots],
+        include_workspace=WORKSPACE_AUDIT_SOURCE in source_ids,
+    )
+    if current.get("snapshot_sha256") != frozen.get("snapshot_sha256"):
+        raise ValueError("冻结后的历史账本发生变化；已停止，不会发送请求。")
+    return frozen
+
+
+@contextlib.contextmanager
+def _global_budget_lock() -> Iterator[None]:
+    """Serialize request reservations across separate evaluation directories."""
+    path = ROOT / ".audit-cache" / "literary-budget.lock"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a+b") as handle:
+        if fcntl is not None:
+            try:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            except BlockingIOError:
+                raise ValueError("另一轮文学评测正在预留请求；本轮已停止。") from None
+            try:
+                yield
+            finally:
+                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+        else:  # pragma: no cover - Windows fallback
+            import msvcrt
+            try:
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            except OSError:
+                raise ValueError("另一轮文学评测正在预留请求；本轮已停止。") from None
+            try:
+                yield
+            finally:
+                handle.seek(0)
+                msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+
+
+def _read_global_reservations() -> list[dict[str, Any]]:
+    if not GLOBAL_RESERVATION_PATH.exists():
+        return []
+    try:
+        value = read_json(GLOBAL_RESERVATION_PATH)
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError) as error:
+        raise ValueError("跨目录预算登记损坏；已停止，不会发送请求。") from error
+    if not isinstance(value, list) or any(not isinstance(item, dict) for item in value):
+        raise ValueError("跨目录预算登记格式无效；已停止，不会发送请求。")
+    return value
+
+
+def _write_global_reservations(rows: list[dict[str, Any]]) -> None:
+    write_json(GLOBAL_RESERVATION_PATH, rows)
+
+
+def _frozen_historical_ledger_files(
+        historical_budget: dict[str, Any] | None) -> dict[Path, str]:
+    """Return ledger files already represented by a frozen historical snapshot."""
+    files: dict[Path, str] = {}
+    if not isinstance(historical_budget, dict):
+        return files
+    for source in historical_budget.get("sources", []):
+        if not isinstance(source, dict) or not isinstance(source.get("path"), str):
+            continue
+        root = Path(source["path"]).resolve()
+        for item in source.get("files", []):
+            if not isinstance(item, dict):
+                continue
+            relative = item.get("path")
+            digest = item.get("sha256")
+            if (isinstance(relative, str) and relative.endswith("request-ledger.json")
+                    and isinstance(digest, str)
+                    and re.fullmatch(r"[0-9a-f]{64}", digest)):
+                files[(root / relative).resolve()] = digest
+    return files
+
+
+def _global_reservation_totals(
+        out: Path, historical_budget: dict[str, Any] | None = None) -> tuple[int, int]:
+    """Count reservations from other runs not already in the frozen snapshot."""
+    rows = _read_global_reservations()
+    current = out.resolve()
+    frozen_files = _frozen_historical_ledger_files(historical_budget)
+    requests = 0
+    tokens = 0
+    seen: set[tuple[str, str]] = set()
+    for row in rows:
+        run_dir = row.get("run_dir")
+        request_id = row.get("request_id")
+        if not isinstance(run_dir, str) or not isinstance(request_id, str):
+            continue
+        path = Path(run_dir).resolve()
+        # Historical ledger rows are counted from the frozen snapshot.  Global
+        # entries are only for runs created by this implementation, so count
+        # every other run regardless of its parent directory; excluding a
+        # whole history root would let two new runs under docs/audits race
+        # past the shared cap.
+        if path == current:
+            continue
+        ledger_path = (path / "request-ledger.json").resolve()
+        frozen_digest = frozen_files.get(ledger_path)
+        if frozen_digest is not None:
+            try:
+                if hashlib.sha256(ledger_path.read_bytes()).hexdigest() == frozen_digest:
+                    # This run is already included in the immutable historical
+                    # snapshot.  Counting its global rows again would double
+                    # charge the same reservation.
+                    continue
+            except OSError:
+                # A missing or unreadable ledger is not evidence that the
+                # reservation is historical; count it conservatively.
+                pass
+        identity = (str(path), request_id)
+        if identity in seen:
+            continue
+        seen.add(identity)
+        requests += 1
+        accounting = row.get("usage_accounting")
+        if isinstance(accounting, dict):
+            tokens += usage_accounting(row.get("usage"), accounting)[
+                "reported_tokens_lower_bound"]
+    return requests, tokens
+
+
+def _record_global_reservation(out: Path, row: dict[str, Any]) -> None:
+    rows = _read_global_reservations()
+    key = (str(out.resolve()), row["request_id"])
+    if any((item.get("run_dir"), item.get("request_id")) == key for item in rows):
+        return
+    rows.append({
+        "run_dir": str(out.resolve()),
+        "request_id": row["request_id"],
+        "kind": row.get("kind"),
+        "model": row.get("model"),
+        "created_at": row.get("created_at"),
+        "usage": row.get("usage"),
+        "usage_accounting": row.get("usage_accounting"),
+    })
+    _write_global_reservations(rows)
+
+
+def _update_global_reservation(out: Path, row: dict[str, Any]) -> None:
+    rows = _read_global_reservations()
+    key = (str(out.resolve()), row["request_id"])
+    found = False
+    for item in rows:
+        if (item.get("run_dir"), item.get("request_id")) == key:
+            item.update({
+                "usage": row.get("usage"),
+                "usage_accounting": row.get("usage_accounting"),
+            })
+            found = True
+            break
+    if found:
+        _write_global_reservations(rows)
 
 
 def now() -> str:
@@ -347,6 +683,10 @@ def default_plan() -> dict[str, Any]:
             if contract[key] is not None}
     return {
         "protocol": PLAN_VERSION, "created_at": now(), "seed": 20261013,
+        # The CLI fills this with a read-only historical budget snapshot when
+        # a plan is created. Direct library callers may leave it as None,
+        # which keeps offline fixtures independent from repository archives.
+        "historical_budget": None,
         "scope": "固定材料下的提示与候选试评；不替代真实检索、作者效率或七竞品全流程对照。",
         "arms": [{"id": "baseline", "label": "通用固定材料基线", "source": "plain-context"},
                  {"id": "moyu", "label": "墨屿实际提示", "source": "moyu-prompt"}],
@@ -379,6 +719,11 @@ def validate_plan(plan: dict[str, Any]) -> None:
         raise ValueError("评测方案版本无效。")
     if not isinstance(plan.get("cases"), list) or not plan["cases"]:
         raise ValueError("评测方案必须包含故事题目。")
+    historical_budget = plan.get("historical_budget")
+    if historical_budget is not None and (
+            not isinstance(historical_budget, dict)
+            or historical_budget.get("protocol") != HISTORICAL_BUDGET_VERSION):
+        raise ValueError("历史预算快照格式无效；请重新创建独立评测方案。")
     arm_ids = [arm.get("id") for arm in plan.get("arms", [])]
     safe_id = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,100}$")
     if any(not isinstance(item, str) or not safe_id.fullmatch(item) for item in arm_ids):
@@ -483,12 +828,29 @@ def provider_config(model: str) -> dict[str, Any]:
 
 
 class Ledger:
-    def __init__(self, out: Path, plan: dict[str, Any]) -> None:
+    def __init__(self, out: Path, plan: dict[str, Any], *,
+                 historical_budget: dict[str, Any] | None = None,
+                 history_dirs: Sequence[Path] | None = None,
+                 include_workspace: bool = False) -> None:
         self.out = out
         self.path = out / "request-ledger.json"
         self.plan = plan
+        self.historical_budget = historical_budget
+        self.history_dirs = tuple(history_dirs or ())
+        self.include_workspace = include_workspace
+        self.enforce_global = isinstance(historical_budget, dict)
         self.rows = read_json(self.path) if self.path.exists() else []
+        if self.historical_budget is not None:
+            self.verify_historical_budget()
         self.reconcile_reserved()
+
+    def verify_historical_budget(self) -> dict[str, Any] | None:
+        if self.historical_budget is None:
+            return None
+        self.historical_budget = verify_historical_budget(
+            self.plan, self.out, self.history_dirs,
+            frozen_budget=self.historical_budget)
+        return self.historical_budget
 
     def reconcile_reserved(self) -> None:
         changed = False
@@ -566,20 +928,57 @@ class Ledger:
     def reserve(self, request_id: str, kind: str, model: str) -> int:
         if any(row["request_id"] == request_id for row in self.rows):
             raise ValueError("同一评测请求已经预留，禁止自动重复可能已收费的请求。")
-        self.check_unknown_failures()
-        if len(self.rows) >= self.plan["budget"]["max_requests"]:
-            raise ValueError("达到预先设定的请求次数上限。")
-        known_tokens = sum(
-            usage_accounting(row.get("usage"), row.get("usage_accounting"))["reported_tokens_lower_bound"]
-            for row in self.rows)
-        threshold = self.plan["budget"].get("reported_tokens_stop_threshold")
-        if threshold and known_tokens >= threshold:
-            raise ValueError("已达到已报告用量的停止阈值。")
-        self.rows.append({"request_id": request_id, "kind": kind, "model": model,
-                          "status": "reserved", "created_at": now(), "usage": None,
-                          "billing_state": "unknown", "automatic_retry": False})
-        write_json(self.path, self.rows)
-        return len(self.rows) - 1
+        lock = _global_budget_lock() if self.enforce_global else contextlib.nullcontext()
+        with lock:
+            self.verify_historical_budget()
+            self.check_unknown_failures()
+            if not self.enforce_global:
+                request_cap = self.plan["budget"]["max_requests"]
+                token_threshold = self.plan["budget"].get("reported_tokens_stop_threshold")
+                if len(self.rows) >= request_cap:
+                    raise ValueError("达到预先设定的请求次数上限。")
+                known_tokens = sum(
+                    usage_accounting(row.get("usage"), row.get("usage_accounting"))[
+                        "reported_tokens_lower_bound"]
+                    for row in self.rows)
+                if token_threshold and known_tokens >= token_threshold:
+                    raise ValueError("已达到已报告用量的停止阈值。")
+            else:
+                current_requests = len(self.rows)
+                current_tokens = sum(
+                    usage_accounting(row.get("usage"), row.get("usage_accounting"))[
+                        "reported_tokens_lower_bound"]
+                    for row in self.rows)
+                current_request_cap = self.plan["budget"]["max_requests"]
+                current_token_threshold = self.plan["budget"].get(
+                    "reported_tokens_stop_threshold")
+                if current_requests >= current_request_cap:
+                    raise ValueError("本轮评测已达到方案设定的请求次数上限。")
+                if current_token_threshold and current_tokens >= current_token_threshold:
+                    raise ValueError("本轮评测已达到方案设定的已报告用量停止阈值。")
+                historical_requests = self.historical_budget.get("requests_reserved", 0)
+                historical_tokens = self.historical_budget.get(
+                    "reported_tokens_lower_bound", 0)
+                global_request_cap = GLOBAL_REQUEST_CAP
+                global_token_threshold = GLOBAL_REPORTED_TOKEN_THRESHOLD
+                global_request_cap = self.historical_budget.get(
+                    "request_cap", global_request_cap)
+                global_token_threshold = self.historical_budget.get(
+                    "reported_tokens_stop_threshold", global_token_threshold)
+                other_requests, other_tokens = _global_reservation_totals(
+                    self.out, self.historical_budget)
+                if historical_requests + other_requests + current_requests >= global_request_cap:
+                    raise ValueError("达到跨目录预先设定的请求次数上限。")
+                known_tokens = historical_tokens + other_tokens + current_tokens
+                if global_token_threshold and known_tokens >= global_token_threshold:
+                    raise ValueError("已达到跨目录已报告用量的停止阈值。")
+            self.rows.append({"request_id": request_id, "kind": kind, "model": model,
+                              "status": "reserved", "created_at": now(), "usage": None,
+                              "billing_state": "unknown", "automatic_retry": False})
+            write_json(self.path, self.rows)
+            if self.enforce_global:
+                _record_global_reservation(self.out, self.rows[-1])
+            return len(self.rows) - 1
 
     def check_unknown_failures(self) -> None:
         count = 0
@@ -607,11 +1006,21 @@ class Ledger:
                                  "usage_accounting": accounting, "billing_state": billing,
                                  "request_audit": result.get("request_audit")})
         write_json(self.path, self.rows)
+        if self.enforce_global:
+            try:
+                with _global_budget_lock():
+                    _update_global_reservation(self.out, self.rows[index])
+            except ValueError:
+                # A stale global entry is conservative: it still consumes the
+                # request slot and never turns unknown usage into zero.
+                pass
 
 
 def freeze_run(out: Path, plan: dict[str, Any], writer_model: str, *,
                plan_path: Path | None = None,
-               config: dict[str, Any] | None = None) -> dict[str, Any]:
+               config: dict[str, Any] | None = None,
+               history_dirs: Sequence[Path] | None = None,
+               include_workspace: bool = False) -> dict[str, Any]:
     path = out / "run.json"
     requests_path = out / "frozen-writer-requests.json"
     descriptor = {"protocol": PLAN_VERSION, "plan_sha256": sha(plan),
@@ -681,6 +1090,12 @@ def freeze_run(out: Path, plan: dict[str, Any], writer_model: str, *,
                        "source_files_sha256": files, "writer_requests_sha256": sha(requests),
                        "request_identity_policy": "对外请求身份由独立运行身份、请求用途和本地记录身份共同固定。",
                        "request_freeze_policy": "使用首次固定的实际请求；源码指纹只用于审计。"})
+    historical_budget = plan.get("historical_budget")
+    if historical_budget is None and (history_dirs or include_workspace):
+        historical_budget = capture_historical_budget(
+            out, history_dirs, include_workspace=include_workspace)
+    if historical_budget is not None:
+        descriptor["historical_budget"] = historical_budget
     write_json(requests_path, requests)
     write_json(path, descriptor)
     write_json(out / "frozen-plan.json", plan)
@@ -754,16 +1169,23 @@ def _record_interrupt(ledger: Ledger, index: int, path: Path, record: dict[str, 
 
 
 def generate(plan: dict[str, Any], plan_path: Path, out: Path, model: str, *,
-             max_new_requests: int | None = None) -> None:
+             max_new_requests: int | None = None,
+             history_dirs: Sequence[Path] | None = None,
+             include_workspace: bool = False) -> None:
     validate_plan(plan)
     if max_new_requests is not None and (
             isinstance(max_new_requests, bool) or not isinstance(max_new_requests, int)
             or max_new_requests < 1):
         raise ValueError("本次新增请求上限必须为正整数。")
     config = provider_config(model)
-    run = freeze_run(out, plan, model, plan_path=plan_path, config=config)
+    run = freeze_run(
+        out, plan, model, plan_path=plan_path, config=config,
+        history_dirs=history_dirs, include_workspace=include_workspace)
     frozen = read_json(out / "frozen-writer-requests.json")
-    ledger = Ledger(out, plan)
+    historical_budget = run.get("historical_budget")
+    ledger = Ledger(
+        out, plan, historical_budget=historical_budget,
+        history_dirs=history_dirs, include_workspace=include_workspace)
     dispatched = 0
     for case in plan["cases"]:
         for repetition in range(plan["repetitions"]):
@@ -1192,7 +1614,9 @@ def judge_schema(pair: dict[str, Any]) -> dict[str, Any]:
 
 
 def judge(plan: dict[str, Any], out: Path, models: list[str], *,
-          max_new_requests: int | None = None) -> None:
+          max_new_requests: int | None = None,
+          history_dirs: Sequence[Path] | None = None,
+          include_workspace: bool = False) -> None:
     validate_plan(plan)
     if max_new_requests is not None and (
             isinstance(max_new_requests, bool) or not isinstance(max_new_requests, int)
@@ -1202,6 +1626,10 @@ def judge(plan: dict[str, Any], out: Path, models: list[str], *,
         raise ValueError("文学盲评至少使用两种不同的评审模型；单模型自评不能作为结论。")
     run = read_json(out / "run.json")
     run_identity(run)
+    historical_budget = run.get("historical_budget")
+    if isinstance(historical_budget, dict):
+        historical_budget = verify_historical_budget(
+            plan, out, history_dirs, frozen_budget=historical_budget)
     if run["writer_model"] in models:
         raise ValueError("评审模型不能与本次写作模型相同。")
     pairs = read_json(out / "blind-pairs.json")
@@ -1219,7 +1647,9 @@ def judge(plan: dict[str, Any], out: Path, models: list[str], *,
             raise ValueError("匿名候选重复，不能继续评审。")
         validated_blind_pair(plan, pair, keys.get(pair.get("id")), records)
         seen_pairs.add(pair["id"])
-    ledger = Ledger(out, plan)
+    ledger = Ledger(
+        out, plan, historical_budget=historical_budget,
+        history_dirs=history_dirs, include_workspace=include_workspace)
     dispatched = 0
     for model in sorted(set(models)):
         config = provider_config(model)
@@ -1673,16 +2103,22 @@ def main(argv: Sequence[str] | None = None) -> int:
                         help="record-human 使用的桌面端作者评分 JSON；不触发模型请求")
     parser.add_argument("--max-new-requests", type=int,
                         help="pause this invocation after this many new reservations; never retry an old request")
+    parser.add_argument("--history-dir", type=Path, action="append", default=[],
+                        help="可重复指定历史评测目录；未指定时只读取项目内 docs/audits")
     parser.add_argument("--execute-paid", action="store_true",
                         help="the caller has authorized and coordinated paid calls")
     args = parser.parse_args(argv)
     out = args.output_dir.resolve()
+    history_dirs = [path.resolve() for path in args.history_dir]
+    include_workspace = not history_dirs
     if args.command == "plan":
         ensure_fresh_evaluation_directory(out)
         target = args.plan or out / "plan.json"
         if target.exists():
             raise ValueError("方案文件已存在，不会覆盖已固定的题目。")
         plan = default_plan()
+        plan["historical_budget"] = capture_historical_budget(
+            out, history_dirs, include_workspace=include_workspace)
         validate_plan(plan)
         write_json(target, plan)
         print(str(target))
@@ -1694,11 +2130,17 @@ def main(argv: Sequence[str] | None = None) -> int:
         raise ValueError("真实模型调用需显式执行已获授权的付费评测。")
     with execution_lock(out):
         if args.command == "generate":
-            generate(plan, plan_path, out, args.model, max_new_requests=args.max_new_requests)
+            generate(
+                plan, plan_path, out, args.model,
+                max_new_requests=args.max_new_requests,
+                history_dirs=history_dirs, include_workspace=include_workspace)
         elif args.command == "blind":
             blind_pairs(plan, out)
         elif args.command == "judge":
-            judge(plan, out, args.judge_model, max_new_requests=args.max_new_requests)
+            judge(
+                plan, out, args.judge_model,
+                max_new_requests=args.max_new_requests,
+                history_dirs=history_dirs, include_workspace=include_workspace)
         elif args.command == "record-human":
             if args.ratings is None:
                 raise ValueError("record-human 需要 --ratings 指定桌面端作者评分 JSON。")

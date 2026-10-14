@@ -75,7 +75,7 @@ let aiBusy=false;let aiDraft=null;let aiRunId=null;let aiStatus={mode:'offline',
 let storyMap={relationships:[],timeline:[],foreshadowing:[],conflicts:[],character_states:[],knowledge_scope:{}};
 let storyLoaded=false;let storyLoadedChapter=null;
 let candidateStore=loadCandidates();let queueJobs=[];let queueTimer=null;let queueLoading=false;
-const streamReaders=new Map();const jobSources=new Map();let savedSelection=null;let adopting=false;
+const streamReaders=new Map();const jobSources=new Map();let savedSelection=null;let adopting=false;let searchRequestSeq=0;
 const revisionInFlight=new Set();const revisionOpening=new Set();let revisionControlSeq=0;
 const editorInputBindings=new WeakMap();
 function loadCandidates(){try{const rows=JSON.parse(storage.get(cacheKey(':candidates'))||'[]');return new Map(Array.isArray(rows)?rows.map(row=>[row.ai_run_id,row]):[])}catch{return new Map()}}
@@ -945,6 +945,77 @@ function captureMemories(){let added=false;const seen=new Set(state.memory.map(m
 function save(){mutationSeq++;saveError='';cacheDraft();clearTimeout(syncTimer);if(backendOnline&&!mergePending&&!independentWrite)syncTimer=setTimeout(syncBackend,180);saveIndicator()}
 function esc(s=''){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
 function safeId(v){const s=String(v??'');return /^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$/.test(s)?s:''}
+function localSearchResults(query){
+ const needle=String(query||'').trim().toLowerCase();
+ if(!needle)return [];
+ const chapters=state.chapters.map(c=>({type:'chapter',id:c.id,title:c.title,text:c.body,
+  source_chapter_id:c.id,source_chapter_title:c.title,searchText:[c.title,c.body,c.chapter_goal,c.recap,c.hook].join(' ')}));
+ const settings=state.records.map(r=>({type:'setting',id:r.id,title:`${r.type} · ${r.name}`,text:r.description,
+  searchText:[r.type,r.name,r.description,Array.isArray(r.aliases)?r.aliases.join(' '):''].join(' ')}));
+ return [...chapters,...settings].filter(item=>
+  `${item.title||''} ${item.text||''} ${item.searchText||''}`.toLowerCase().includes(needle));
+}
+function searchResultEvidence(item){
+ const evidence=item?.source_evidence&&typeof item.source_evidence==='object'?item.source_evidence:{};
+ const range=Array.isArray(evidence.source_ranges)&&evidence.source_ranges[0]&&typeof evidence.source_ranges[0]==='object'
+  ?evidence.source_ranges[0]:null;
+ const quote=String(evidence.source_quote||range?.quote||'');
+ const start=Number.isInteger(range?.start)?range.start:null;
+ const end=Number.isInteger(range?.end)?range.end:null;
+ const chapterId=String(evidence.source_chapter_id||item?.source_chapter_id||'');
+ return {evidence,range,quote,start,end,chapterId};
+}
+function searchResultMarkup(item){
+ const {evidence,range,quote,start,end,chapterId}=searchResultEvidence(item);
+ const canJump=item?.type==='chapter'&&safeId(chapterId)&&quote&&start!==null&&end!==null&&
+  !!evidence.source_revision_id&&!!evidence.source_body_hash;
+ const evidenceLine=quote?`<div class="search-evidence"><span>原文证据：</span><q>${esc(quote)}</q>${start!==null&&end!==null?`<small>字符 ${start}–${end}</small>`:''}${canJump?`<button class="ghost-btn search-jump" type="button" data-search-jump="${safeId(chapterId)}" data-search-start="${start}" data-search-end="${end}" data-search-quote="${esc(quote)}" data-search-revision="${esc(evidence.source_revision_id)}" data-search-body-hash="${esc(evidence.source_body_hash)}">查看原文</button>`:''}</div>`:'';
+ const sourceLine=item.source_chapter_title?`<small>来源章节：${esc(item.source_chapter_title)}</small>`:'';
+ const statusLine=item.status?`<small> · ${esc(item.status)}</small>`:'';
+ const evidenceState=evidence.status&&evidence.status!=='valid'?`<small class="search-evidence-state"> · 证据${esc(evidence.status)}</small>`:'';
+ return `<article class="result" data-search-result-id="${safeId(item.id)}" data-search-result-type="${esc(item.type||'')}"><strong>${esc(item.title)}</strong><span class="record-tag">${esc(item.type||'结果')}</span><p>${esc(item.text||'')}</p>${sourceLine}${statusLine}${evidenceState}${evidenceLine}</article>`;
+}
+function searchResultsMarkup(results,query){
+ return results.length?results.map(searchResultMarkup).join(''):`<div class="empty">没有找到“${esc(query)}”</div>`;
+}
+async function openSearchEvidence(button){
+ const chapterId=button?.dataset.searchJump,c=chapter(chapterId);
+ const owner=requestedProject,branch=state.branch_id||state.project?.branch_id||'main',body=c?.body;
+ const start=Number(button?.dataset.searchStart),end=Number(button?.dataset.searchEnd),quote=button?.dataset.searchQuote||'';
+ if(!c||!Number.isInteger(start)||!Number.isInteger(end)||start<0||end<=start||end>Array.from(body).length||
+  Array.from(body).slice(start,end).join('')!==quote||c.revision_id!==button.dataset.searchRevision||
+  await sha256(body)!==button.dataset.searchBodyHash||owner!==requestedProject||
+  branch!==(state.branch_id||state.project?.branch_id||'main')||chapter(chapterId)!==c||c.body!==body)
+  return toast('原文已经变化，请重新搜索后再定位');
+ activeChapter=c.id;storage.set(cacheKey(':active'),c.id);view='editor';aiDraft=null;render();
+ const input=document.querySelector('#chapterBody');if(!input)return;
+ input.focus();input.setSelectionRange(MoyuSync.utf16Offset(c.body,start),MoyuSync.utf16Offset(c.body,end));
+ input.scrollTop=Math.max(0,Math.floor(start/40)*26-100);captureSelection();input.scrollIntoView({block:'center'});
+}
+async function runSearch(){
+ const q=document.querySelector('#searchInput')?.value.trim(),box=document.querySelector('#searchResults');
+ const sequence=++searchRequestSeq,owner=requestedProject,branch=state.branch_id||state.project?.branch_id||'main';
+ if(!q){if(box)box.innerHTML='<div class="empty">输入关键词，开始检索。</div>';return}
+ let results=[],failure=null;
+ if(backendOnline){
+  try{
+   const response=await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}&limit=100`,{headers:{Accept:'application/json'}});
+   const data=await response.json().catch(error=>{
+    if(!response.ok)return {};
+    throw new Error(`搜索响应格式无效：${error.message}`);
+   });
+   if(!response.ok)throw new Error(data.error||`HTTP ${response.status}`);
+   if(!data||typeof data!=='object'||!Array.isArray(data.results))
+    throw new Error('搜索响应格式无效');
+   results=data.results;
+  }catch(error){failure=error;results=localSearchResults(q)}
+ }else results=localSearchResults(q);
+ if(sequence!==searchRequestSeq||owner!==requestedProject||branch!==(state.branch_id||state.project?.branch_id||'main')||
+  view!=='search'||document.querySelector('#searchResults')!==box||
+  document.querySelector('#searchInput')?.value.trim()!==q)return;
+ if(failure)toast(`后端搜索失败，已使用本地草稿：${failure.message}`);
+ if(box)box.innerHTML=searchResultsMarkup(results,q);
+}
 function headingText(v){return String(v??'').replace(/[\r\n]+/g,' ').trim()||'未命名'}
 function commentText(v){return headingText(v).replace(/-->/g,'—>')}
 function yamlString(v){return JSON.stringify(String(v??''))}
@@ -1176,19 +1247,10 @@ function bind(){
 document.addEventListener('click',e=>{const button=e.target.closest?.('[data-chapter]');if(button?.dataset.chapter)localStorage.setItem(ACTIVE_KEY,button.dataset.chapter)});
 document.addEventListener('click',e=>{const assertion=e.target.closest?.('[data-assertion-review]');if(!assertion)return;e.preventDefault();e.stopPropagation();reviewAssertion(assertion.dataset.assertionReview,assertion.dataset.assertionState,assertion.dataset.memoryId)},true);
 document.addEventListener('click',e=>{const reject=e.target.closest?.('[data-memory-reject]');const review=e.target.closest?.('[data-memory-review]');const accept=e.target.closest?.('[data-memory]');const id=reject?.dataset.memoryReject||review?.dataset.memoryReview||accept?.dataset.memory;if(!id)return;e.preventDefault();e.stopPropagation();if(reject){const reason=prompt('可选：为什么拒绝这条记忆？','')??'';decideMemory(id,'rejected',reason).catch(error=>toast(`记忆拒绝失败：${error.message}`))}else if(review)decideMemory(id,'candidate').catch(error=>toast(`记忆重新审查失败：${error.message}`));else decideMemory(id,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`))},true);
-const actions={refreshStory:async(silent=false)=>{if(!backendOnline){if(!silent)toast('启动 SQLite 服务后才能读取故事结构');return}try{const r=await fetch('/api/story-map',{headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const structure=await r.json();structure.knowledge_scope={};try{const context=await fetch(`/api/context?chapter_id=${encodeURIComponent(activeChapter||'')}&retrieval_profile=${profileQuery()}`,{headers:{Accept:'application/json'}});if(context.ok){const contextData=await context.json();structure.knowledge_scope=contextData.budget?.knowledge_scope||{}}}catch{}storyMap={...structure,character_states:Array.isArray(structure.character_states)?structure.character_states:[],knowledge_scope:structure.knowledge_scope||{}};storyLoaded=true;storyLoadedChapter=activeChapter;render();if(!silent)toast('故事结构已刷新')}catch(e){if(!silent)toast(`读取故事结构失败：${e.message}`)}},addRelationship:()=>relationshipModal(),addTimeline:()=>timelineModal(),addForeshadow:()=>foreshadowModal(),editRelationship:button=>relationshipModal(storyMap.relationships.find(x=>x.id===button?.dataset.storyId)),editTimeline:button=>timelineModal(storyMap.timeline.find(x=>x.id===button?.dataset.storyId)),editForeshadow:button=>foreshadowModal(storyMap.foreshadowing.find(x=>x.id===button?.dataset.storyId)),deleteRelationship:button=>deleteStoryItem('relationship',button?.dataset.storyId),deleteTimeline:button=>deleteStoryItem('timeline',button?.dataset.storyId),deleteForeshadow:button=>deleteStoryItem('foreshadow',button?.dataset.storyId),refreshMemory:()=>{captureMemories();save();render();toast('已刷新记忆候选')},newChapter:()=>{if(state.project.book_status==='complete')return toast('全书已完稿，请先在终稿检查中恢复写作');const c={id:crypto.randomUUID(),title:`第 ${state.chapters.length+1} 章`,body:'',status:'草稿',updated:Date.now()};state.chapters.push(c);activeChapter=c.id;localStorage.setItem(ACTIVE_KEY,c.id);view='editor';save();render()},newRecord:()=>editRecord(),newPlot:()=>modal('新增伏笔',`<label>伏笔内容</label><textarea id="plotText" placeholder="例如：第一章出现的旧钥匙……"></textarea>`,w=>{const v=w.querySelector('#plotText').value.trim();if(v)state.plot.setup.push(v)}),search:async()=>{const q=document.querySelector('#searchInput')?.value.trim();const box=document.querySelector('#searchResults');if(!q){box.innerHTML='<div class="empty">输入关键词，开始检索。</div>';return}let results=[];if(backendOnline){try{const response=await fetch(`${API_BASE}/search?q=${encodeURIComponent(q)}&limit=100`,{headers:{Accept:'application/json'}});if(!response.ok)throw new Error(`HTTP ${response.status}`);const data=await response.json();results=data.results||[]}catch(error){toast(`后端搜索失败，已使用本地搜索：${error.message}`)}}if(!results.length&&!backendOnline){results=[...state.chapters.map(c=>({type:'chapter',id:c.id,title:c.title,text:c.body,source_chapter_id:c.id,source_chapter_title:c.title})),...state.records.map(r=>({type:'setting',id:r.id,title:`${r.type} · ${r.name}`,text:r.description}))].filter(x=>(x.title+x.text).toLowerCase().includes(q.toLowerCase()))}box.innerHTML=results.length?results.map(x=>`<article class="result"><strong>${esc(x.title)}</strong><span class="record-tag">${esc(x.type||'结果')}</span><p>${esc(x.text||'')}</p>${x.source_chapter_title?`<small>来源章节：${esc(x.source_chapter_title)}</small>`:''}${x.status?`<small> · ${esc(x.status)}</small>`:''}</article>`).join(''):`<div class="empty">没有找到“${esc(q)}”</div>`}};
+document.addEventListener('click',event=>{const button=event.target.closest?.('[data-search-jump]');if(!button)return;event.preventDefault();openSearchEvidence(button).catch(error=>toast(`原文定位失败：${error.message}`))});
+const actions={refreshStory:async(silent=false)=>{if(!backendOnline){if(!silent)toast('启动 SQLite 服务后才能读取故事结构');return}try{const r=await fetch('/api/story-map',{headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const structure=await r.json();structure.knowledge_scope={};try{const context=await fetch(`/api/context?chapter_id=${encodeURIComponent(activeChapter||'')}&retrieval_profile=${profileQuery()}`,{headers:{Accept:'application/json'}});if(context.ok){const contextData=await context.json();structure.knowledge_scope=contextData.budget?.knowledge_scope||{}}}catch{}storyMap={...structure,character_states:Array.isArray(structure.character_states)?structure.character_states:[],knowledge_scope:structure.knowledge_scope||{}};storyLoaded=true;storyLoadedChapter=activeChapter;render();if(!silent)toast('故事结构已刷新')}catch(e){if(!silent)toast(`读取故事结构失败：${e.message}`)}},addRelationship:()=>relationshipModal(),addTimeline:()=>timelineModal(),addForeshadow:()=>foreshadowModal(),editRelationship:button=>relationshipModal(storyMap.relationships.find(x=>x.id===button?.dataset.storyId)),editTimeline:button=>timelineModal(storyMap.timeline.find(x=>x.id===button?.dataset.storyId)),editForeshadow:button=>foreshadowModal(storyMap.foreshadowing.find(x=>x.id===button?.dataset.storyId)),deleteRelationship:button=>deleteStoryItem('relationship',button?.dataset.storyId),deleteTimeline:button=>deleteStoryItem('timeline',button?.dataset.storyId),deleteForeshadow:button=>deleteStoryItem('foreshadow',button?.dataset.storyId),refreshMemory:()=>{captureMemories();save();render();toast('已刷新记忆候选')},newChapter:()=>{if(state.project.book_status==='complete')return toast('全书已完稿，请先在终稿检查中恢复写作');const c={id:crypto.randomUUID(),title:`第 ${state.chapters.length+1} 章`,body:'',status:'草稿',updated:Date.now()};state.chapters.push(c);activeChapter=c.id;localStorage.setItem(ACTIVE_KEY,c.id);view='editor';save();render()},newRecord:()=>editRecord(),newPlot:()=>modal('新增伏笔',`<label>伏笔内容</label><textarea id="plotText" placeholder="例如：第一章出现的旧钥匙……"></textarea>`,w=>{const v=w.querySelector('#plotText').value.trim();if(v)state.plot.setup.push(v)})};
 actions.finalCheck=()=>showFinalizationCheck();
-const searchWithoutAliases=actions.search;
-actions.search=async(...args)=>{
- const q=document.querySelector('#searchInput')?.value.trim();
- if(q&&!backendOnline){
-  const query=q.toLowerCase(),box=document.querySelector('#searchResults');
-  const results=[...state.chapters.map(c=>({type:'chapter',id:c.id,title:c.title,text:c.body,source_chapter_id:c.id,source_chapter_title:c.title})),...state.records.map(r=>({type:'setting',id:r.id,title:`${r.type} · ${r.name}`,text:r.description,searchText:Array.isArray(r.aliases)?r.aliases.join(' '):''}))].filter(x=>(x.title+x.text+(x.searchText||'')).toLowerCase().includes(query));
-  if(box)box.innerHTML=results.length?results.map(x=>`<article class="result"><strong>${esc(x.title)}</strong><span class="record-tag">${esc(x.type||'结果')}</span><p>${esc(x.text||'')}</p>${x.source_chapter_title?`<small>来源章节：${esc(x.source_chapter_title)}</small>`:''}${x.status?`<small> · ${esc(x.status)}</small>`:''}</article>`).join(''):`<div class="empty">没有找到“${esc(q)}”</div>`;
-  return;
- }
- return searchWithoutAliases(...args);
-};
+actions.search=runSearch;
 actions.contextPreview=async()=>{
  const c=chapter();if(!c)return toast('请先选择章节');
  const profile=retrievalProfile();let pack;

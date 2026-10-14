@@ -45,6 +45,11 @@ jobs:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
           MOYU_TEST_PYTHON: python
         run: node tests/frontend_browser_regressions.cjs
+      - name: Search browser regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/search_browser_regressions.cjs
       - name: Planning browser regressions
         env:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
