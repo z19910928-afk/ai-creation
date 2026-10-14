@@ -4,7 +4,7 @@
 
 最新工程入口为[候选整理电脑端完整复验](compatibility-python311-node24-candidate-revision-final.json)，实际运行于上海时间2026-10-14 02:03:08至02:06:19：51个执行项、36份Python测试与55个真实电脑浏览器场景通过，66份源码前后相同，13份附件指纹核验，详细范围列在末尾。历史[电脑端交付复验](compatibility-python311-node24-desktop-release-final.json)于00:11:10至00:13:55通过50项/49场景、64份源码不变，仅证明当时版本；本次中间失败与新成功分别保留，旧通过不覆盖本次代码。
 
-工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`，[增强检查运行38434003558](github-actions-desktop-release-success.json)和候选整理提交的[运行38447803077](github-actions-candidate-revision-ci-fix-success.json)均成功；当前提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 的[最新运行38487730352](github-actions-current-success.json)也已完成且成功。详细范围见三份远程记录。工程通过不代表文学、第一梯队或公网部署通过。
+工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`，[增强检查运行38434003558](github-actions-desktop-release-success.json)、候选整理提交的[运行38447803077](github-actions-candidate-revision-ci-fix-success.json)和前一版提交的[运行38487730352](github-actions-current-success.json)均成功；代码提交 `e96e00c0e7bcebe9e045623a90cf970041bcc1bb` 的[最新运行38491492838](github-actions-e96e00c-success.json)也已完成且成功。详细范围见四份远程记录。工程通过不代表文学、第一梯队或公网部署通过。
 
 ## 墨屿直接验证
 
@@ -138,9 +138,9 @@ python3 scripts/evaluation_runner.py \
 
 该历史工程复验只使用临时数据库、独立浏览器状态和免费本机提供方，未增加收费请求、未使用真实作品。对应工程提交的增强GitHub成功证据另列下节，文件名中的 `release` 本身不代表发布结论。真实[第十二轮](../literary-pilot-v12/report.md)首对942/868字均超600至850字、输出0/6、有效评审0/12、题材3/1/0/0；截至该轮，含独立协议诊断累计31条请求预留、49642个可信完整tokens与已知下界，10条缺完整用量、实际金额未知。原始请求、账本和候选保持不变；新增整理诊断与当前累计另列末尾。
 
-## 当前GitHub检查与本机启动
+## 代码提交GitHub检查与本机启动
 
-[当前公开远程成功记录](github-actions-current-success.json)绑定提交 `3e64501b759092cac6fe39805330f71a5f86f8e6`、分支 `codex/full-function-audit`、运行 `38487730352`。运行于 UTC `2026-10-14T00:01:24Z` 至 `2026-10-14T00:06:35Z`，`checks` 作业和语法、契约/固定评测、编辑器合并、基础/规划/模型设置/五章电脑回归步骤均为 `completed` / `success`。这份记录覆盖当前提交；它使用离线 fixture 与免费本机模拟提供方，不证明文学质量、第一梯队、费用或公网部署。运行无可下载 artifact，作业和步骤结论来自 GitHub 远程结果。
+[代码提交远程成功记录](github-actions-e96e00c-success.json)绑定提交 `e96e00c0e7bcebe9e045623a90cf970041bcc1bb`、分支 `codex/full-function-audit`、运行 `38491492838`。运行于 UTC `2026-10-14T00:40:24Z` 至 `2026-10-14T00:45:25Z`，`checks` 作业和语法、契约/固定评测、编辑器合并、基础/规划/模型设置/五章电脑回归步骤均为 `completed` / `success`。这份记录覆盖代码提交；它使用离线 fixture 与免费本机模拟提供方，不证明文学质量、第一梯队、费用或公网部署。运行无可下载 artifact，作业和步骤结论来自 GitHub 远程结果。
 
 [历史GitHub增强检查记录](github-actions-desktop-release-success.json)仍绑定工程修复提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886`、运行 `38434003558`；候选整理提交的[历史运行38447803077](github-actions-candidate-revision-ci-fix-success.json)也保留。它们用于说明前后版本，不替代当前运行。
 
@@ -148,7 +148,7 @@ python3 scripts/evaluation_runner.py \
 
 本机交付另外实际启动服务，`/api/health` 返回 `ok=true`、数据库版本11，真实电脑编辑页面正常打开。电脑入口为 `http://127.0.0.1:4173`，作品保存于被Git忽略的本机 `moyu.sqlite3`，连接凭据保存于本机 `~/.moyu/credentials/` 私有文件；数据库、凭据和本机页面状态均不随源码上传。此启动检查不额外发送模型请求。
 
-当前远程成功属于提交 `3e64501`；后续文档或源码提交需分别记录对应检查。本分支尚未合并main，尚无公网部署验收，不能据工程检查宣称第一梯队或文学达标。
+代码提交远程成功属于 `e96e00c`；本次后续仅更新远程证据索引的文档提交仍需按自身运行记录说明。本分支尚未合并main，尚无公网部署验收，不能据工程检查宣称第一梯队或文学达标。
 
 ## 原候选整理与真实失败
 

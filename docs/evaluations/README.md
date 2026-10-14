@@ -35,7 +35,7 @@
 
 最新[候选整理电脑端完整复验](../audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-final.json)于上海时间2026-10-14 02:03:08至02:06:19通过51个执行项、36份Python测试、8项JavaScript语法与55个电脑浏览器场景，66份源码前后相同，13附件指纹核验；整理19项、正文HTTP15项、20轮连续写作和五章10次专用候选检查实际执行。提供方为免费本机模拟，验证机械字数与工作流，不计入真实文学候选、评审或费用账本。
 
-工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886`、候选整理提交 `89ab69d4fd62f3561831b747da2c7b111f829132` 的远程运行均已成功；当前提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 也已通过[最新运行38487730352](../audits/2026-10-13/evidence/github-actions-current-success.json)，`checks` 作业所有步骤成功，覆盖语法、契约/固定评测、编辑器合并及电脑端基础、规划、模型设置和五章作者回归。历史[整理中间检查](../audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)失败原件仍保留；远程工程成功不等于文学通过。分支未合并main、公网未部署，文学仍未达标。
+工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886`、候选整理提交 `89ab69d4fd62f3561831b747da2c7b111f829132` 和前一版提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 的远程运行均已成功；代码提交 `e96e00c0e7bcebe9e045623a90cf970041bcc1bb` 也已通过[运行38491492838](../audits/2026-10-13/evidence/github-actions-e96e00c-success.json)，`checks` 作业所有步骤成功，覆盖语法、契约/固定评测、编辑器合并及电脑端基础、规划、模型设置和五章作者回归。历史[整理中间检查](../audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)失败原件仍保留；远程工程成功不等于文学通过。分支未合并main、公网未部署，文学仍未达标。
 
 ## 模型调用证据
 

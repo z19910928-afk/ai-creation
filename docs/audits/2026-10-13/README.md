@@ -6,7 +6,7 @@
 
 历史工程完整快照为[电脑端交付复验](evidence/compatibility-python311-node24-desktop-release-final.json)：上海时间2026-10-14 00:11:10至00:13:55，50个执行项、35份Python测试、8项JavaScript语法和49个真实浏览器场景通过，64份源码前后指纹相同；连续20轮写作、五章10次专用候选检查也在该轮实际执行。三份浏览器结果、固定评测和八张截图均以 `desktop-release-final` 原路径登记，详见[证据说明](evidence/README.md)。该快照不覆盖之后新增的候选整理代码；下文基线问题仍是历史触发条件，当前实现与缺口以[路线图](roadmap.md)为准。
 
-历史工程修复提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 和候选整理提交 `89ab69d4fd62f3561831b747da2c7b111f829132` 的GitHub检查均成功；当前提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 的[运行38487730352](evidence/github-actions-current-success.json)也已完成并成功，覆盖语法、契约/固定评测、编辑器和电脑端基础、规划、模型设置、五章作者检查。[整理中间检查](evidence/compatibility-python311-node24-candidate-revision-release.json)的51项中48项通过、三组浏览器启动失败且源码前后变化，整体仍未通过；之后独立完整复验和当前远程检查均已保留。分支尚未合并 `main`；历史本机健康检查与编辑页面启动正常，电脑入口 `http://127.0.0.1:4173`，作品在本机 `moyu.sqlite3`，凭据在本机私有文件。这不授予文学、第一梯队或公网部署结论。
+历史工程修复提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886`、候选整理提交 `89ab69d4fd62f3561831b747da2c7b111f829132` 和前一版提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 的GitHub检查均成功；代码提交 `e96e00c0e7bcebe9e045623a90cf970041bcc1bb` 的[运行38491492838](evidence/github-actions-e96e00c-success.json)也已完成并成功，覆盖语法、契约/固定评测、编辑器和电脑端基础、规划、模型设置、五章作者检查。[整理中间检查](evidence/compatibility-python311-node24-candidate-revision-release.json)的51项中48项通过、三组浏览器启动失败且源码前后变化，整体仍未通过；之后独立完整复验和代码提交远程检查均已保留。分支尚未合并 `main`；历史本机健康检查与编辑页面启动正常，电脑入口 `http://127.0.0.1:4173`，作品在本机 `moyu.sqlite3`，凭据在本机私有文件。这不授予文学、第一梯队或公网部署结论。
 
 ## 核心结论
 

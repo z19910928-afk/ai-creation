@@ -24,7 +24,7 @@
 
 随后[相邻用户消息合并诊断](docs/audits/2026-10-13/literary-message-shape-v1/report.md)只把同一固定输入的两条相邻 `user` 消息合并为两个换行，实际执行第一阶段非流式请求一次。接口仍返回正文“铁”1字，并在关闭思考时返回非空 `reasoning_content`（计数1次、字符数5621）；HTTP 200、模型名、`stop` 和用量4747 tokens完整，但字数与思考一致性闸门失败，第二阶段未执行、没有重试或盲评。累计35条请求预留、68623个可信完整tokens及已知下界，仍有10条缺完整用量，费用未知；消息边界变化未消除异常，文学质量、事实安全、作者效率和第一梯队仍未证明。
 
-工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`。历史增强版运行 `38434003558` 和候选整理提交运行 `38447803077` 均成功；最新提交 `3e64501b759092cac6fe39805330f71a5f86f8e6` 也已上传同一分支，GitHub Actions（GitHub自动运行的检查）运行 `38487730352` 于 UTC 2026-10-14 00:01:24 至 00:06:35 完成并成功，`checks` 作业的语法、契约与固定评测、编辑器合并、基础/规划/模型设置/五章电脑端回归步骤全部成功，见[当前远程成功记录](docs/audits/2026-10-13/evidence/github-actions-current-success.json)。这项远程工程结果仍只证明当前提交的自动检查，不证明文学质量、第一梯队、费用或公网部署；历史基线和中间失败原件继续保留。分支尚未合并至 `main`，没有公网部署验收结论。修复和剩余验收见[路线图](docs/audits/2026-10-13/roadmap.md)，原始失败与当前入口见[审查报告](docs/audits/2026-10-13/README.md)。
+工程修复历史提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传GitHub分支 `codex/full-function-audit`。历史增强版运行 `38434003558`、候选整理提交运行 `38447803077` 和前一版运行 `38487730352` 均成功；代码提交 `e96e00c0e7bcebe9e045623a90cf970041bcc1bb` 的 GitHub Actions（GitHub自动运行的检查）运行 `38491492838` 于 UTC 2026-10-14 00:40:24 至 00:45:25 完成并成功，`checks` 作业的语法、契约与固定评测、编辑器合并、基础/规划/模型设置/五章电脑端回归步骤全部成功，见[代码提交远程成功记录](docs/audits/2026-10-13/evidence/github-actions-e96e00c-success.json)。这项远程工程结果仍只证明代码提交的自动检查，不证明文学质量、第一梯队、费用或公网部署；历史基线和中间失败原件继续保留。分支尚未合并至 `main`，没有公网部署验收结论。修复和剩余验收见[路线图](docs/audits/2026-10-13/roadmap.md)，原始失败与当前入口见[审查报告](docs/audits/2026-10-13/README.md)。
 
 ## 运行
 
@@ -214,7 +214,7 @@ node tests/planning_browser_regressions.cjs
 node tests/desktop_author_flow_regressions.cjs
 ```
 
-浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。检查配置存在和本机通过不能替代实际远程执行；当前提交的[GitHub成功记录](docs/audits/2026-10-13/evidence/github-actions-current-success.json)已核对，后续源码变动仍应重新运行。
+浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。检查配置存在和本机通过不能替代实际远程执行；代码提交 `e96e00c` 的[GitHub成功记录](docs/audits/2026-10-13/evidence/github-actions-e96e00c-success.json)已核对，后续源码变动仍应重新运行。
 
 ## 备份、恢复与导入
 
