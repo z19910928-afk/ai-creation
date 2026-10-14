@@ -1,0 +1,30 @@
+{
+  "scope": "Exact GitHub Actions result for the first selected-reference release commit.",
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "commit": "032a89f43fb9b0130c637218009e270410bd243c",
+  "run_id": 38630792129,
+  "status": "completed",
+  "conclusion": "failure",
+  "run_url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/38630792129",
+  "failed_step": "Model settings browser regressions",
+  "failure": {
+    "test": "Same-project delayed old save must not overwrite current settings or later saves.",
+    "message": "page.waitForFunction: Timeout 30000ms exceeded.",
+    "file": "tests/model_settings_browser_regressions.cjs",
+    "line": 216,
+    "passed_prior_cases": 8
+  },
+  "skipped_browser_steps": [
+    "Five chapter author flow",
+    "Instruction draft browser regressions",
+    "Reference passage browser regressions",
+    "Author lifecycle browser regressions",
+    "Export override browser regressions",
+    "Material dependency browser regressions",
+    "Analysis guidance browser regressions"
+  ],
+  "local_service_updated_for_this_commit": false,
+  "original_failure_preserved": true,
+  "following_test_change": "Track the actual asynchronous submit handler; requestSubmit() itself returns no completion promise.",
+  "replacement_full_release_and_exact_commit_ci": "pending"
+}

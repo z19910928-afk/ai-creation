@@ -36,6 +36,16 @@ async function test(name,fn){
 async function settingsPage(){
  await page.locator('[data-view="settings"]').click();await page.locator('#modelSettings').waitFor();
 }
+async function submitTracked(key){
+ await page.evaluate(key=>{
+  const form=document.querySelector('#modelSettings'),submit=form.onsubmit;
+  form.onsubmit=event=>{
+   form.onsubmit=submit;window[key]=submit.call(form,event);
+  };
+  form.requestSubmit();
+  if(!(window[key] instanceof Promise))throw new Error('设置表单未发起可追踪的保存');
+ },key);
+}
 async function probe(){
  lastProbe=null;await page.locator('#modelProbe').click();
  await page.waitForFunction(()=>!document.querySelector('#modelProbe')?.disabled,null,{timeout:15000});
@@ -88,13 +98,15 @@ async function main(){
   await page.locator('#modelBaseUrl').fill(`http://127.0.0.1:${providerPort}/v1`);
   await page.locator('#modelDefault').fill('requested-fixture');
   await page.locator('#modelReasoning').selectOption('deepseek_disabled');
-  await page.locator('#modelSettings [type="submit"]').click();
+  await submitTracked('pendingInitialSave');
+  await page.evaluate(()=>window.pendingInitialSave);
   await page.waitForFunction(()=>authorSettings?.model==='requested-fixture'&&authorSettings.parameters?.thinking?.type==='disabled');
   assert.equal(calls.length,0);assert.match(await page.locator('#modelProbeStatus').textContent(),/尚未验证/);
   for(const width of [1440,1280]){
    await page.setViewportSize({width,height:1000});
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
-   const box=await page.locator('#modelSettings').boundingBox();assert.ok(box.x>=0&&box.x+box.width<=width);
+   const box=await page.locator('#modelSettings').boundingBox();
+   assert.ok(box,'保存后的设置表单应该可见');assert.ok(box.x>=0&&box.x+box.width<=width);
   }
   await page.setViewportSize({width:1440,height:1000});
  });
@@ -178,7 +190,8 @@ async function main(){
   assert.match(await page.locator('#modelProbeStatus').textContent(),/尚未验证/);
   assert.doesNotMatch(await page.locator('#modelProbeStatus').textContent(),/实测成功|请求 requested-fixture/);
   const count=calls.length;
-  await page.locator('#modelSettings [type="submit"]').click();
+  await submitTracked('pendingCurrentProbeSave');
+  await page.evaluate(()=>window.pendingCurrentProbeSave);
   await page.waitForFunction(()=>authorSettings?.model==='new-same-project-fixture'&&
    !document.querySelector('#modelSettings [type="submit"]')?.disabled);
   const saved=await api('/api/ai/settings','GET',undefined,'default-project');
@@ -199,7 +212,7 @@ async function main(){
    await new Promise(resolve=>{resume=resolve});await route.fulfill({response});
   });
   await page.locator('#modelDefault').fill('stale-save-A-fixture');
-  await page.evaluate(()=>{window.pendingStaleSave=document.querySelector('#modelSettings').requestSubmit()});
+  await submitTracked('pendingStaleSave');
   await held;
   await api('/api/ai/settings','PUT',{model:'stale-save-B-fixture'},'default-project');
   await page.locator('[data-view="editor"]').click();await page.locator('[data-view="settings"]').click();
@@ -212,7 +225,8 @@ async function main(){
   assert.deepEqual(await page.evaluate(()=>({model:authorSettings.model,status:aiStatus.model,input:document.querySelector('#modelDefault').value})),
    {model:'stale-save-B-fixture',status:'stale-save-B-fixture',input:'stale-save-B-fixture'});
   const count=calls.length;
-  await page.locator('#modelSettings [type="submit"]').click();
+  await submitTracked('pendingCurrentSettingsSave');
+  await page.evaluate(()=>window.pendingCurrentSettingsSave);
   await page.waitForFunction(()=>authorSettings?.model==='stale-save-B-fixture'&&
    !document.querySelector('#modelSettings [type="submit"]')?.disabled);
   const saved=await api('/api/ai/settings','GET',undefined,'default-project');
@@ -320,7 +334,7 @@ async function main(){
   });
   await blockerHeld;
   await page.locator('#modelDefault').fill('queued-stale-A-fixture');
-  await page.evaluate(()=>{window.pendingQueuedSettings=document.querySelector('#modelSettings').requestSubmit()});
+  await submitTracked('pendingQueuedSettings');
   await page.waitForFunction(()=>document.querySelector('#modelSettings [type="submit"]')?.disabled===true);
   const staleSequence=await page.evaluate(()=>authorSettingsSeq);
   await page.evaluate(sequence=>{

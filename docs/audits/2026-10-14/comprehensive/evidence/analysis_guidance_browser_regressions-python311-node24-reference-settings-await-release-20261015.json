@@ -1,0 +1,199 @@
+{
+  "passed": true,
+  "started_at": "2026-10-14T20:48:34.007Z",
+  "scope": "真实电脑浏览器、临时合成作品、隔离SQLite与免费本机提供方；章后分析创作设定绑定",
+  "claim_limit": "验证设定变化后的只读保护和当前分析分步确认，不证明文学质量或第一梯队地位",
+  "synthetic_only": true,
+  "cases": [
+    {
+      "name": "1440电脑窗口只改蓝图前提，旧章后分析只读且强制确认409无写入",
+      "passed": true
+    },
+    {
+      "name": "1280乘900电脑窗口只改创作约定，旧分析禁用保存并允许重新提取",
+      "passed": true
+    },
+    {
+      "name": "当前分析通过实际页面依次确认回顾交接和记忆，自身保存不使报告过期",
+      "passed": true
+    }
+  ],
+  "observations": [
+    {
+      "scenario": "blueprint_only_stale_analysis",
+      "field": "premise",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "actual_saved_job_and_run": true,
+      "extra_materialize_calls": 0,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "controls": {
+        "save_disabled": true,
+        "reextract_enabled": true,
+        "readonly_message": true,
+        "summary_preserved": true,
+        "handoff_preserved": true
+      },
+      "widths": {
+        "viewport": 1440,
+        "document": 1440,
+        "modal": 560
+      },
+      "forced_confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "scenario": "blueprint_only_stale_analysis",
+      "field": "contract",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "actual_saved_job_and_run": true,
+      "extra_materialize_calls": 0,
+      "chapter_body_revision_and_plan_unchanged": true,
+      "history_materials_read_only": true,
+      "analysis_status": "stale",
+      "analysis_stale": true,
+      "controls": {
+        "save_disabled": true,
+        "reextract_enabled": true,
+        "readonly_message": true,
+        "summary_preserved": true,
+        "handoff_preserved": true
+      },
+      "widths": {
+        "viewport": 1280,
+        "document": 1280,
+        "modal": 560
+      },
+      "forced_confirm_http_status": 409,
+      "state_unchanged": true,
+      "database_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "scenario": "current_analysis_sequential_page_confirmations",
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "outcomes": [
+        {
+          "step": "summary",
+          "confirm_http_status": 200,
+          "analysis_status": "pending",
+          "stale": false,
+          "summary_status": "accepted",
+          "handoff_status": "pending"
+        },
+        {
+          "step": "handoff",
+          "confirm_http_status": 200,
+          "analysis_status": "pending",
+          "stale": false,
+          "summary_status": "accepted",
+          "handoff_status": "accepted"
+        },
+        {
+          "step": "candidate",
+          "confirm_http_status": 200,
+          "analysis_status": "reviewed",
+          "stale": false,
+          "summary_status": "accepted",
+          "handoff_status": "accepted"
+        }
+      ],
+      "final_status": "reviewed",
+      "summary_saved": true,
+      "handoff_saved": true,
+      "new_confirmed_memories": 1,
+      "original_body_unchanged": true,
+      "original_revision_unchanged": true,
+      "extra_provider_calls": 0
+    }
+  ],
+  "screenshots": [
+    "analysis-guidance-stale-desktop.png",
+    "analysis-guidance-stale-1280x900.png"
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "app.js": "07c569ab7ff7d9e784c3db29d22a0cd7ff2a097a3614a33f76e15a0b1990753d",
+    "author-workspace.js": "144b8f6f89c0d2fb9e339c986e303e853f13bdc861d39c451f22546b6d5b257f",
+    "server.py": "3f7851c78ec93c7bb2d2efabc9b46d98539d0e06a987765cab6f7ba7c6133755",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_context.py": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "styles.css": "5fd9e962f5aa7fa9d85feec5efe48c441d182ca1526988ba5378c421d512726a",
+    "tests/analysis_guidance_browser_regressions.cjs": "a0d7ea66457bb77060e2c990a428d7af1931df8fc603918bf63e8171b677db62"
+  },
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "07c569ab7ff7d9e784c3db29d22a0cd7ff2a097a3614a33f76e15a0b1990753d"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "144b8f6f89c0d2fb9e339c986e303e853f13bdc861d39c451f22546b6d5b257f"
+    },
+    {
+      "path": "server.py",
+      "sha256": "3f7851c78ec93c7bb2d2efabc9b46d98539d0e06a987765cab6f7ba7c6133755"
+    },
+    {
+      "path": "moyu_analysis.py",
+      "sha256": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330"
+    },
+    {
+      "path": "moyu_context.py",
+      "sha256": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543"
+    },
+    {
+      "path": "moyu_workspace.py",
+      "sha256": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3"
+    },
+    {
+      "path": "moyu_materials.py",
+      "sha256": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d"
+    },
+    {
+      "path": "moyu_records.py",
+      "sha256": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "5fd9e962f5aa7fa9d85feec5efe48c441d182ca1526988ba5378c421d512726a"
+    },
+    {
+      "path": "tests/analysis_guidance_browser_regressions.cjs",
+      "sha256": "a0d7ea66457bb77060e2c990a428d7af1931df8fc603918bf63e8171b677db62"
+    }
+  ],
+  "source_files_sha256_after": {
+    "app.js": "07c569ab7ff7d9e784c3db29d22a0cd7ff2a097a3614a33f76e15a0b1990753d",
+    "author-workspace.js": "144b8f6f89c0d2fb9e339c986e303e853f13bdc861d39c451f22546b6d5b257f",
+    "server.py": "3f7851c78ec93c7bb2d2efabc9b46d98539d0e06a987765cab6f7ba7c6133755",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_context.py": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "styles.css": "5fd9e962f5aa7fa9d85feec5efe48c441d182ca1526988ba5378c421d512726a",
+    "tests/analysis_guidance_browser_regressions.cjs": "a0d7ea66457bb77060e2c990a428d7af1931df8fc603918bf63e8171b677db62"
+  },
+  "source_unchanged": true,
+  "free_provider_calls": 3,
+  "provider_calls": 3,
+  "finished_at": "2026-10-14T20:48:36.473Z"
+}
