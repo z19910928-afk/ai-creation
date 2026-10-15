@@ -1,0 +1,321 @@
+{
+  "passed": true,
+  "started_at": "2026-10-15T17:12:07.924Z",
+  "synthetic_only": true,
+  "scope": "真实电脑Chrome、临时合成作品、隔离SQLite与免费本机模拟提供方；手选参考片段全流程",
+  "claim_limit": "验证来源、交互和错误保护，不证明文学效果或第一梯队地位",
+  "paid_provider_calls": 0,
+  "cases": [
+    {
+      "name": "选择和两种预览只读取参考原句且不写持久存储或数据库",
+      "passed": true
+    },
+    {
+      "name": "单段替换撤回保持完整原句900字符表情边界可选且901字符合成响应禁选",
+      "passed": true
+    },
+    {
+      "name": "刷新与换作品分支章节清空同章重绘保留且没有跨书引用",
+      "passed": true
+    },
+    {
+      "name": "参考库搜索结果可直接选用并返回原写作章",
+      "passed": true
+    },
+    {
+      "name": "旧搜索迟到不能覆盖新查询关闭弹窗或切走再返回不能复活",
+      "passed": true
+    },
+    {
+      "name": "参考预览失效不会落到离线材料或发送模型任务并保留选择",
+      "passed": true
+    },
+    {
+      "name": "旧完整预览迟到不能覆盖后来新选择或重新弹出旧材料",
+      "passed": true
+    },
+    {
+      "name": "不支持的写作任务阻止引用提交网络失败保留本次引用",
+      "passed": true
+    },
+    {
+      "name": "续写预览与模型完整参考一致202成功清本次引用原稿仅确认后增加",
+      "passed": true
+    },
+    {
+      "name": "先选正文再选参考返回仍保留润色选区三个入口一致且仅替换选区",
+      "passed": true
+    },
+    {
+      "name": "长整章润色材料预览避免请求地址超限且完整提示保留全部原稿和参考",
+      "passed": true
+    },
+    {
+      "name": "202后状态读取失败仍清当次参考并恢复已保存候选",
+      "passed": true
+    },
+    {
+      "name": "迟到202仅消费发送快照而不清后来新选参考",
+      "passed": true
+    },
+    {
+      "name": "切章再返回后迟到202不会重开旧候选或消费新参考",
+      "passed": true
+    },
+    {
+      "name": "两种电脑尺寸引用工具和原生成清空控件完整可见互不遮挡",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "reference-passages-1440x1000.png",
+      "sha256": "d3a60b35a189f2bcc18c748e17b8153b5ad84c72cc685ac6d1ba5adb6d471e8c"
+    },
+    {
+      "file": "reference-passages-original-1440x1000.png",
+      "sha256": "f4e1126e7c3ba68464637a3f003bae206ba62a3afae0e36b9682248368cbbcc5"
+    },
+    {
+      "file": "reference-passages-1280x900.png",
+      "sha256": "657cabe5cad8dce32974cdc1991438677078a6fb451990733ea84da8644ba745"
+    },
+    {
+      "file": "reference-passages-original-1280x900.png",
+      "sha256": "05ff4d0483380635c30757d1e03007e936acd10d42f4b1391ce6f9aa3bd74f58"
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "source_files_sha256_before": {
+    "app.js": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+    "author-workspace.js": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    "server.py": "118c5b757842aca27e24be3be28249fad845d3c47729d067a3ba1c4d5ae58442",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_context.py": "bdd96e3e9adcf65c21f3dc0411c52e12d99e3ce42bebe36c02cb233e34041b90",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "tests/reference_passages_browser_regressions.cjs": "cd228addd05bc02bfbe727a3d75572a2ea739d07408be600fb3b1f54d3253bda"
+  },
+  "overlong_ui_response": "Synthetic complete 901-codepoint response; natural search uses bounded source ranges.",
+  "long_manuscript_preview": {
+    "codepoints": 7500,
+    "get_request_line_bytes": 1298,
+    "full_quote_in_post": true,
+    "model_requests": 0
+  },
+  "desktop_viewports": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "selector": ".ai-controls",
+      "controls": [
+        {
+          "label": "aiTask",
+          "x": 1127,
+          "y": 283,
+          "width": 297,
+          "height": 34,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "aiInstruction",
+          "x": 1127,
+          "y": 324,
+          "width": 297,
+          "height": 34,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "aiGenerate",
+          "x": 1127,
+          "y": 365,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "上下文预览",
+          "x": 1127,
+          "y": 404,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "任务契约",
+          "x": 1127,
+          "y": 443,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "aiInstructionClear",
+          "x": 1127,
+          "y": 482,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "selector": "#aiReferenceTools",
+      "controls": [
+        {
+          "label": "选择参考片段",
+          "x": 1127,
+          "y": 558,
+          "width": 74,
+          "height": 28,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "查看原句",
+          "x": 1208,
+          "y": 558,
+          "width": 54,
+          "height": 28,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "撤回",
+          "x": 1269,
+          "y": 558,
+          "width": 34,
+          "height": 28,
+          "within": true,
+          "unobstructed": true
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "selector": ".ai-controls",
+      "controls": [
+        {
+          "label": "aiTask",
+          "x": 967,
+          "y": 283,
+          "width": 297,
+          "height": 34,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "aiInstruction",
+          "x": 967,
+          "y": 324,
+          "width": 297,
+          "height": 34,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "aiGenerate",
+          "x": 967,
+          "y": 365,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "上下文预览",
+          "x": 967,
+          "y": 404,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "任务契约",
+          "x": 967,
+          "y": 443,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "aiInstructionClear",
+          "x": 967,
+          "y": 482,
+          "width": 297,
+          "height": 32,
+          "within": true,
+          "unobstructed": true
+        }
+      ]
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "selector": "#aiReferenceTools",
+      "controls": [
+        {
+          "label": "选择参考片段",
+          "x": 967,
+          "y": 558,
+          "width": 74,
+          "height": 28,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "查看原句",
+          "x": 1048,
+          "y": 558,
+          "width": 54,
+          "height": 28,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "label": "撤回",
+          "x": 1109,
+          "y": 558,
+          "width": 34,
+          "height": 28,
+          "within": true,
+          "unobstructed": true
+        }
+      ]
+    }
+  ],
+  "local_mock_model_requests": 5,
+  "queue_request_count": 6,
+  "preview_request_count": 8,
+  "source_files_sha256_after": {
+    "app.js": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+    "author-workspace.js": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    "server.py": "118c5b757842aca27e24be3be28249fad845d3c47729d067a3ba1c4d5ae58442",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_context.py": "bdd96e3e9adcf65c21f3dc0411c52e12d99e3ce42bebe36c02cb233e34041b90",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "tests/reference_passages_browser_regressions.cjs": "cd228addd05bc02bfbe727a3d75572a2ea739d07408be600fb3b1f54d3253bda"
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-10-15T17:12:17.352Z"
+}

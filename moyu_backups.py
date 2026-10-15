@@ -24,13 +24,14 @@ SKIP_TABLES = {"migration_ledger", "app_backup_artifact", "app_search_document",
                "app_search_index_state", "app_search_fts", "index_checkpoint"}
 PLANNING_TABLES = {"app_planning_workflow", "app_planning_attempt",
                    "app_planning_event", "app_planning_application"}
+AGENT_TABLES = {"app_agent_session", "app_agent_checkpoint", "app_agent_write"}
 PLANNING_RESTORE_REASON = "从备份恢复的规划仅供阅读，请重新开始规划；旧模型请求不会自动再次执行。"
 PROJECT_TITLE_LIMIT = 200
 RESTORE_TITLE_SUFFIX = " · 恢复副本"
 MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
 MAX_EXPANDED_BYTES = 256_000_000
 SCHEMA_VERSION = 11
-KNOWN_ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"}
+KNOWN_ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"} | AGENT_TABLES
 # The first complete v1 archive already included all of these tables.
 REQUIRED_TABLES = set("""
 project branch document_node document_revision event_log deletion_event source_span
@@ -67,6 +68,12 @@ EXTRA_REFERENCES = {
     "app_planning_attempt": {"job_id": "app_ai_job"},
     "app_planning_event": {"attempt_id": "app_planning_attempt"},
     "app_planning_application": {"project_id": "project", "branch_id": "branch"},
+    "app_agent_session": {"project_id": "project", "branch_id": "branch",
+                          "chapter_id": "document_node"},
+    "app_agent_checkpoint": {"project_id": "project", "branch_id": "branch",
+                             "session_id": "app_agent_session"},
+    "app_agent_write": {"project_id": "project", "branch_id": "branch",
+                        "session_id": "app_agent_session"},
 }
 PROVENANCE_TYPES = {
     "entity": "entity", "document_node": "document_node", "revision": "document_revision",
@@ -645,6 +652,17 @@ def _check_graph(data, schema, project, *, full):
                     or declaration.get("attempt_id") != row["id"]
                     or declaration.get("stage") != row["stage"]):
                 raise ValueError("备份中的规划任务与原规划不一致")
+    agent_checkpoints = {
+        (row["session_id"], row["checkpoint_ns"], row["checkpoint_key"]): row
+        for row in data.get("app_agent_checkpoint", [])
+    }
+    for row in data.get("app_agent_checkpoint", []):
+        if row["parent_key"] is not None and (
+                row["session_id"], row["checkpoint_ns"], row["parent_key"]) not in agent_checkpoints:
+            raise ValueError("备份中的写作任务检查点缺少同一会话的前序记录")
+    for row in data.get("app_agent_write", []):
+        if (row["session_id"], row["checkpoint_ns"], row["checkpoint_key"]) not in agent_checkpoints:
+            raise ValueError("备份中的写作任务写入不属于同一会话的检查点")
     for row in data.get("app_timeline_event", []):
         declared = _strict_json(row["entity_ids_json"])
         if (not isinstance(declared, list)
@@ -652,7 +670,7 @@ def _check_graph(data, schema, project, *, full):
                        for identity in declared)):
             raise ValueError("备份中的时间线人物引用不属于当前作品")
     for table, rows in data.items():
-        if table in PLANNING_TABLES:
+        if table in PLANNING_TABLES or table in AGENT_TABLES:
             continue
         for row in rows:
             for field, raw in row.items():
@@ -819,6 +837,23 @@ def _check_content(data, indexes):
                     cursor = end
     for row in data.get("app_entity_scope", []):
         decode_scope(row["scope_json"])
+    for row in data.get("app_agent_session", []):
+        plan = _strict_json(row["plan_json"])
+        if (not isinstance(plan, dict) or not isinstance(plan.get("summary", {}), dict)
+                or not isinstance(plan.get("steps", {}), dict)
+                or any(not isinstance(step, dict) for step in plan.get("steps", {}).values())):
+            raise ValueError("备份中的写作任务历史摘要格式无效")
+        if ("mode" in plan and (not isinstance(plan["mode"], str)
+                                or plan["mode"] not in {"continue", "polish", "inspect", "plan"})):
+            raise ValueError("备份中的写作任务历史摘要格式无效")
+        summary = plan.get("summary", {})
+        if any(field in summary and not isinstance(summary[field], str) for field in
+               ("stage", "status", "error", "current_job_id", "current_ai_run_id")):
+            raise ValueError("备份中的写作任务历史摘要格式无效")
+        for field, minimum in (("calls_used", 0), ("max_calls", 1)):
+            if field in summary and (type(summary[field]) is not int
+                                     or not minimum <= summary[field] <= 4):
+                raise ValueError("备份中的写作任务历史摘要格式无效")
     for row in data.get("app_model_settings", []):
         _portable_model_settings(row["settings_json"])
     for row in data.get("app_ai_job", []):
@@ -1039,7 +1074,7 @@ def transplant(conn, payload, new_project, title=None):
                 row["settings_json"] = _portable_model_settings(row["settings_json"])
             for key, value in list(row.items()):
                 if key.endswith("_json") and isinstance(value, str):
-                    if table in PLANNING_TABLES or table == "app_model_settings":
+                    if table in PLANNING_TABLES or table in AGENT_TABLES or table == "app_model_settings":
                         continue
                     if table == "event_log" and row["event_type"] == "project.portable_restored":
                         continue
@@ -1083,6 +1118,8 @@ def transplant(conn, payload, new_project, title=None):
                 row["version"] = int(row["version"]) + 1
             if table == "app_planning_attempt" and row["status"] in {"queued", "running", "unknown"}:
                 row.update(status="unknown", error="备份中的规划模型请求费用与执行状态未知，未重复执行。")
+            if table == "app_agent_session":
+                row.update(status="restored", restored_read_only=1)
     order = _table_order(data, schema)
     branches = data.get("branch") or []
     branch = next((row["id"] for row in branches if row["status"] == "active"), None)

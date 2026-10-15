@@ -1,0 +1,149 @@
+{
+  "passed": true,
+  "scope": "Existing database copy, preview process restart and read-only desktop checks",
+  "preview_port": 4174,
+  "original_service_port": 4173,
+  "original_service_retained": true,
+  "database_tables": 68,
+  "database_dump_sha256_before": "6b389886d4be18dd524106c969c8ab835e06f18e6cc7bed5d23231950bca6446",
+  "database_dump_sha256_after": "6b389886d4be18dd524106c969c8ab835e06f18e6cc7bed5d23231950bca6446",
+  "database_rows_and_schema_unchanged": true,
+  "database_integrity": "ok",
+  "database_user_version": 11,
+  "model_configured": false,
+  "served_assets": {
+    "app.js": {
+      "expected_sha256": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+      "served_sha256": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+      "matched": true
+    },
+    "author-workspace.js": {
+      "expected_sha256": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+      "served_sha256": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+      "matched": true
+    },
+    "styles.css": {
+      "expected_sha256": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+      "served_sha256": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+      "matched": true
+    },
+    "index.html": {
+      "expected_sha256": "fa6beda8e711e391ff1cbbc1177ed64e0a15a1485a8af0aaba107becea257453",
+      "served_sha256": "fa6beda8e711e391ff1cbbc1177ed64e0a15a1485a8af0aaba107becea257453",
+      "matched": true
+    }
+  },
+  "desktop_cases": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "passed": true,
+      "geometry": {
+        "panes": [
+          {
+            "left": 66,
+            "right": 272,
+            "top": 112,
+            "bottom": 900,
+            "width": 206
+          },
+          {
+            "left": 272,
+            "right": 950,
+            "top": 112,
+            "bottom": 900,
+            "width": 678
+          },
+          {
+            "left": 950,
+            "right": 1280,
+            "top": 112,
+            "bottom": 900,
+            "width": 330
+          }
+        ],
+        "width": 1280,
+        "height": 900,
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "passed": true,
+      "geometry": {
+        "panes": [
+          {
+            "left": 66,
+            "right": 272,
+            "top": 112,
+            "bottom": 1000,
+            "width": 206
+          },
+          {
+            "left": 272,
+            "right": 1110,
+            "top": 112,
+            "bottom": 1000,
+            "width": 838
+          },
+          {
+            "left": 1110,
+            "right": 1440,
+            "top": 112,
+            "bottom": 1000,
+            "width": 330
+          }
+        ],
+        "width": 1440,
+        "height": 1000,
+        "scrollWidth": 1440
+      }
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "passed": true,
+      "geometry": {
+        "panes": [
+          {
+            "left": 66,
+            "right": 294,
+            "top": 112,
+            "bottom": 1080,
+            "width": 228
+          },
+          {
+            "left": 294,
+            "right": 1550,
+            "top": 112,
+            "bottom": 1080,
+            "width": 1256
+          },
+          {
+            "left": 1550,
+            "right": 1920,
+            "top": 112,
+            "bottom": 1080,
+            "width": 370
+          }
+        ],
+        "width": 1920,
+        "height": 1080,
+        "scrollWidth": 1920
+      }
+    }
+  ],
+  "page_errors": [],
+  "writes": [],
+  "model_requests": [],
+  "external_requests": [],
+  "private_evidence": "Database, private screenshots, and row counts remain local.",
+  "limitations": "This verifies a local copy; no model generation, literary evaluation or production deployment."
+}

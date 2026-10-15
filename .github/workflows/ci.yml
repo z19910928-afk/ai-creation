@@ -19,6 +19,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '24'
+      - name: Install Python runtime
+        run: python -m pip install -r requirements.txt
       - name: Syntax checks
         run: |
           python -m py_compile *.py scripts/*.py tests/*.py
@@ -65,6 +67,16 @@ jobs:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
           MOYU_TEST_PYTHON: python
         run: node tests/desktop_author_flow_regressions.cjs
+      - name: Writing agent browser regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/writing_agent_browser_regressions.cjs
+      - name: Workbench scope browser regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/workbench_scope_browser_regressions.cjs
       - name: Instruction draft browser regressions
         env:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright

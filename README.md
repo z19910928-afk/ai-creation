@@ -4,9 +4,13 @@
 
 ## 当前状态
 
-完整备份恢复版本 `1552104` 已正常推送，[GitHub检查](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)全部成功，并已[更新到本机](docs/audits/2026-10-14/comprehensive/evidence/local-service-portable-1552104-20261015.md)。更新前后65张表完整内容和结构保持，两个电脑尺寸共8个只读页面检查通过，没有模型调用或新增收费。
+2026-10-16 的[电脑创作工作台与写作总管](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)已经接通目录/知识库、正文和任务三栏。总管基于 LangGraph（负责保存多步骤任务并在中断后接续的框架），协调续写、整章修订、章节检查和四阶段全书规划；正文采纳、规划确认和正式事实继续由作者决定。[05完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)已通过103个执行项、199个电脑场景，115份来源前后相同、78附件逐份匹配；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-workbench-release-independent-review-20261016.json)及九张截图目视检查通过。本次提交的GitHub检查和实际本机服务另行登记，工程结果不作为文学第一梯队成绩。
 
-之后的[B1分用途参数](docs/audits/2026-10-14/comprehensive/task-parameters.md)已完成[新源码整轮](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-task-parameters-release-20261015.json)：上海2026-10-15 06:50:27至07:00:30，96项全部通过，105份源码前后不变，12套浏览器167个电脑场景、20份JSON和47张截图共67附件逐份匹配。[独立复核](docs/audits/2026-10-14/comprehensive/evidence/task-parameters-release-independent-review-20261015.json)通过；9种用途可分别保存温度、输出上限和思考程度，旧队列、原请求重试及ZIP往返保持原值。本轮仅用隔离数据和免费本机提供方，新增收费0；B1自己的GitHub检查和本机服务更新仍须分别完成，不能借用A2成功。
+本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。数据库、原稿、私有截图和密钥不随源码上传；完整 Obsidian 双向同步尚未实现。
+
+历史完整备份恢复版本 `1552104` 已正常推送，[GitHub检查](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)全部成功，并已[更新到本机](docs/audits/2026-10-14/comprehensive/evidence/local-service-portable-1552104-20261015.md)。更新前后65张表完整内容和结构保持，两个电脑尺寸共8个只读页面检查通过，没有模型调用或新增收费。
+
+之后的[B1分用途参数](docs/audits/2026-10-14/comprehensive/task-parameters.md)已完成[新源码整轮](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-task-parameters-release-20261015.json)：上海2026-10-15 06:50:27至07:00:30，96项全部通过，105份源码前后不变，12套浏览器167个电脑场景、20份JSON和47张截图共67附件逐份匹配。[独立复核](docs/audits/2026-10-14/comprehensive/evidence/task-parameters-release-independent-review-20261015.json)通过；9种用途可分别保存温度、输出上限和思考程度，旧队列、原请求重试及ZIP往返保持原值。本轮仅用隔离数据和免费本机提供方，新增收费0。B1提交 `c83f897` 的[GitHub运行38712478084](docs/audits/2026-10-14/comprehensive/evidence/github-task-parameters-c83f897-success-20261015.json)已独立核对全部成功；该历史提交的实际本机更新未另作验收，不能借用A2或本轮工作台结果。
 
 2026-10-13 的审查已进入产品修复，最新全面复核延续至上海时间 2026-10-15。本轮及后续产品验收只以电脑端为范围，手机端不在当前目标内。保存冲突、候选身份、证据失效、任务分片、普通正文章后记忆、四阶段规划、作品备份和导入导出均有实现与指定快照的本机回归证据。最新[七项目全面复核](docs/audits/2026-10-14/comprehensive/README.md)逐项区分官方源码、限定组件运行、墨屿工程验证和真实文学效果，**第一梯队是持续目标，尚未证明达到**。
 
@@ -58,17 +62,22 @@
 
 扩展同45方法的修前、修后对照现已通过，覆盖人物及冲突的实际原句来源、早晚章节、多原句顺序和恢复映射。再增4个非章节来源场景时，原严格材料检查已以400拦住预览，并未发送越界提示；本次补齐只读派生过期及来源章节完整匹配后，同49方法、257次真实本机HTTP、65次预览全部通过。49次读取与7次初始化均保持65张表及结构，原审核历史不改，该专项模型、后台执行及收费均0。
 
-[新版完整整轮](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-portable-evidence-scope-release-20261015.json)于上海2026-10-15 06:17:11至06:26:55完成，95项检查全部通过，104份来源在运行前后及当前复核时指纹一致；12套真实电脑浏览器共161个登记场景，19份JSON与44张截图共63份附件逐份指纹匹配。最新49方法及ZIP辅助、恢复HTTP、新删章和Chrome恢复均纳入本轮，原94项和中间中断报告保持。本轮使用临时数据与免费本机提供方，没有新增收费请求；该版GitHub检查和实际4173服务更新仍待验。阶段统计与指纹见[验证索引](docs/audits/2026-10-14/comprehensive/evidence/README.md#电脑完整zip恢复与删章边界)，协议及阶段原件见[完整ZIP恢复记录](docs/audits/2026-10-14/comprehensive/portable-complete-backup.md)。[能力矩阵](docs/audits/2026-10-14/comprehensive/capability-matrix.md)现保留十类待实施或量测差距，第一梯队仍未证明。
+[新版完整整轮](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-portable-evidence-scope-release-20261015.json)于上海2026-10-15 06:17:11至06:26:55完成，95项检查全部通过，104份来源在运行前后及当时独立复核时指纹一致；12套真实电脑浏览器共161个登记场景，19份JSON与44张截图共63份附件逐份指纹匹配。最新49方法及ZIP辅助、恢复HTTP、新删章和Chrome恢复均纳入本轮，原94项和中间中断报告保持。本轮使用临时数据与免费本机提供方，没有新增收费请求；当时尚待GitHub检查和实际4173服务更新，后续已由上文 `1552104` 独立完成交付。阶段统计与指纹见[验证索引](docs/audits/2026-10-14/comprehensive/evidence/README.md#电脑完整zip恢复与删章边界)，协议及阶段原件见[完整ZIP恢复记录](docs/audits/2026-10-14/comprehensive/portable-complete-backup.md)。[能力矩阵](docs/audits/2026-10-14/comprehensive/capability-matrix.md)现保留十类待实施或量测差距，第一梯队仍未证明。
 
 ## 运行
 
-推荐使用已验证的 Python 3.11 启动本地服务。应用运行只用 Python 标准库，无需安装第三方运行依赖：
+运行需要 Python 3.10 或更新版本，推荐 Python 3.11。写作总管采用 LangGraph（用于保存并恢复多步骤任务的成熟执行框架），运行版本固定在 `requirements.txt`。首次使用时在独立环境中安装依赖，再启动服务：
 
 ```bash
-python3 server.py
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python server.py
 ```
 
-启动后在电脑浏览器打开 `http://127.0.0.1:4173`。本机服务已按上文更新到完整恢复提交1552104，之后分用途参数的实际服务更新另行验收。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
+自行启动时默认在电脑浏览器打开 `http://127.0.0.1:4173`；本次已启动的新版使用 `http://127.0.0.1:4174`，实际验收见[本轮专项](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
+
+以后进入项目目录后执行 `source .venv/bin/activate`、`python server.py` 即可。下文的开发检查命令也应在同一环境中运行；浏览器检查可通过 `MOYU_TEST_PYTHON="$PWD/.venv/bin/python"` 使用已安装依赖的解释器。
 
 服务首次启动会在项目目录创建 `moyu.sqlite3`，按顺序应用 `docs/schema-v1.sql` 和
 `docs/schema-v1.1-migration.sql`（`PRAGMA user_version=11`），再安装工作台扩展表。可以用环境变量指定数据库或端口：
@@ -126,6 +135,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - `POST /api/backups/import/preview|apply|cancel|status`：从电脑上传完整ZIP，校验预览、确认建立独立作品、释放未保存预览及只读查找保存回执；迟到预览不能重新占用已取消身份，保存中的预览不能被取消
 - `POST /api/import/preview`、`POST /api/import/apply`、`GET /api/references`、`GET /api/references/:id`、`GET /api/references/:id/search?q=...`：TXT/MD/EPUB 分章预览、导入独立稿件或参考库、来源检索；导入不自动发送收费分析
 - `POST /api/assistant/query`、`POST /api/assistant/confirm`：有限任务的只读预览与作者确认后创建候选；正文仍需另行采纳
+- `GET/POST /api/writing-agent`、`POST /api/writing-agent/:id/resume`：写作总管的保存计划、授权、自动接续、停止与历史回看；重复提交不会重复建立任务
 - `GET /api/export/markdown`、`GET /api/export/epub`、`GET /api/export/manifest`：导出当前稿件及范围/损失清单；内嵌原稿与指纹，墨屿可精确回读正文；直连也受终稿门保护，作者覆盖需带 `X-Moyu-Export-Override`
 
 伏笔投影的 `DELETE /api/plot/:id` 会归档条目并记录事件；章节和设定使用上面的专用 restore 路径恢复。
@@ -137,6 +147,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 ## 当前功能
 
+- 电脑端三栏创作工作台：左侧目录与知识库、中间正文、右侧写作总管和依据；资料保存和结果回看保留当前稿件位置，专注模式可收起两侧
 - 多作品书架、新建、切换、复制、归档/恢复，作品总览、字数目标和章节进度
 - 蓝图、卷/章/场景规划、四阶段模型候选与逐阶段确认、自动保存、移动和按规划建立章节
 - 章节编辑器、草稿与已确认快照、自动保存、两窗口冲突合并、按作品/分支/章隔离的历史版本，以及保留另一窗口改稿的撤销和重做
@@ -162,6 +173,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - 模型与风格设置、9种用途的模型与独立参数、真实连接测试、私密凭据保存和每日生成次数限制
 - 模型原生 SSE 解析、带序号的输出账本、断点重放、结束原因检查和已完成运行取消保护
 - 有限自然语言项目助手：只读搜索与任务预览，确认后创建候选
+- 基于 LangGraph 的写作总管：协调规划、续写、整章修订、章后记忆与故事审稿，采纳正文、确认规划与确认事实继续由作者决定
 - 全书完稿状态：终稿检查后可标记完成，状态持久化并支持恢复写作
 - 本轮验收和继续开发只覆盖电脑端；手机端不在当前目标内
 
@@ -171,13 +183,13 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 一般全文搜索使用 SQLite CJK FTS/BM25 和多信号排序；实际 AI 材料由 `moyu_context.assemble_context` 使用本地段落检索统一组装，并检查作品、分支、故事时点、视角、事实与作者计划边界。两者不是同一持久化全文索引。片段保留版本、字符范围和指纹；固定材料超预算时阻断，不静默裁掉。
 
-目前没有向量检索、真实模型分词计数、外部多进程任务调度、定时自动备份、提示模板版本库、DOCX/PDF、团队权限或完整 EPUB 版式往返。四阶段蓝图与五章伏笔作者链已有指定快照的真实电脑端回归；真实模型规划质量和审稿准确率仍未正式量测。项目助手是有限任务预览，不是自主修改作品的开放式代理。
+目前没有向量检索、真实模型分词计数、外部多进程任务调度、定时自动备份、提示模板版本库、DOCX/PDF、团队权限或完整 EPUB 版式往返。四阶段蓝图与五章伏笔作者链已有指定快照的真实电脑端回归；真实模型规划质量和审稿准确率仍未正式量测。项目助手仍提供有限任务预览；写作总管通过固定流程协调现有功能，正文采纳和事实确认仍保留作者决定。
 
 ## 长篇记忆
 
 “记忆中枢”的“提取当前章记忆”直接分析普通正文，不要求作者插入标签。返回摘要、下一章交接和有原句范围的事件、状态、关系、伏笔等候选；作者可修改候选说明并逐项确认或拒绝。确认后的有效事实进入后续章节材料，同一正文版本重复提取和确认不重复建立事实。正文改变、来源删除或旧任务迟到会让相关材料失效，不能继续作为正典使用；作者手写的交接不会被过期自动摘要覆盖。
 
-新发生的删章已统一处理专用删除和整份作品保存时遗漏章节两种入口：撤回该章所有旧版本原句支持的记忆与正式事实，保留正文版本和人物状态历史，其他章有效资料及作者手写状态保持。新95项整轮重新通过5方法真实HTTP控制，包含删除后提示不再使用旧事实、处理中途失败全库回滚，以及无变化历史保存逐行保真。旧删除账本遗留状态采用只读派生可用性；人物状态及别名冲突按全部实际原句的最晚章节限制使用，不能把未来章资料提前放进早章提示。来源无法完整对应活动章节时，衍生材料标为过期并排除，原审核断言与历史不改；人工状态及合法混合备注保留。同49方法、257次真实HTTP专项已纳入新完整整轮通过，远程和实际服务另验。
+新发生的删章已统一处理专用删除和整份作品保存时遗漏章节两种入口：撤回该章所有旧版本原句支持的记忆与正式事实，保留正文版本和人物状态历史，其他章有效资料及作者手写状态保持。新95项整轮重新通过5方法真实HTTP控制，包含删除后提示不再使用旧事实、处理中途失败全库回滚，以及无变化历史保存逐行保真。旧删除账本遗留状态采用只读派生可用性；人物状态及别名冲突按全部实际原句的最晚章节限制使用，不能把未来章资料提前放进早章提示。来源无法完整对应活动章节时，衍生材料标为过期并排除，原审核断言与历史不改；人工状态及合法混合备注保留。同49方法、257次真实HTTP专项已纳入95项完整整轮通过；该历史版本的远程和实际服务交付见上文 `1552104`，不能覆盖之后的工作台源码。
 
 原有 `【人物】`、`【物品】`、`【地点】`、`【伏笔】` 标记仍可使用。章后提取和故事审稿都需要作者复核，空报告、失败或过期不算通过。
 
@@ -189,7 +201,13 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 ## AI 创作助手（可选）
 
-启动服务后，打开“章节 + AI 写作”即可使用候选式创作助手。它支持续写、场景卡、大纲、发散、润色、总结和连续性检查；生成结果先显示在候选区，只有点击“采纳”才会写入正文。未配置模型时也能使用离线写作卡，不会暗中联网。
+“写作总管”在正文工作台右侧管理创作流程。选择当前章并填写要求后，先保存计划；确认启动后，“续写”最多调用三次模型，依次生成正文候选、整理章后记忆、执行故事审稿。正文候选仍需作者比较并采纳，之后总管自动接续后两步。“整章修订”先提供整章修订候选，采纳后同样接续记忆与审稿，最多三次；整章超过12000字时先选段使用局部修订。12000字为整章修订硬上限，当前材料容量不足时也会在发送前拒绝，可选段修订或调整容量。“章节检查”只执行章后记忆和故事审稿，最多两次。
+
+“全书规划”复用四阶段规划：故事总纲、分卷、章节、场景；每阶段由作者确认后自动安排下一阶段，最多四次。四阶段确认完成后仍需“采用完整规划”才更新蓝图，已写正文保持。规划规模继承现有蓝图，空蓝图默认1卷、每卷3章、每章2场景；单次上限为3卷、每卷8章、每章4场景，实际规模在计划中显示。生成结果不符合范围、来源变化或费用未知时流程停止并保留已有候选。
+
+总管计划、进度检查点（用于中断后找回同一步的保存记录）和任务关联保存在同一份本机 SQLite 中。刷新、服务重启或重复确认会回读同一任务；执行或费用未知时停止，不能借恢复自动重发。章节任务检查原稿、实际材料和模型设置变化；全书规划检查蓝图和模型设置变化，单纯修改正文不会使规划失效。相应来源变化后需按新资料建立任务。完整 ZIP 包含总管历史，恢复副本中的旧总管仅供回看，不能继续执行封存检查点。工程测试通过只说明流程和数据保护有效，不代表模型已经达到目标文学质量或第一梯队。
+
+启动服务后，打开“创作工作台”即可使用候选式创作助手。它支持续写、场景卡、大纲、发散、润色、总结和连续性检查；生成结果先显示在候选区，只有点击“采纳”才会写入正文。未配置模型时也能使用离线写作卡，不会暗中联网。
 
 第一次使用从首页“开始创作”进入：填写一句话故事设定、类型、主角和眼前阻力，墨屿会建立第一章和初始设定。之后沿着“填写任务卡 → 写作 → 生成候选 → 人工采纳 → 确认记忆 → 审查本章 → 完成本章 → 自动准备下一章”的路径推进，首页会持续显示下一步行动。写完后从“终稿检查”标记全书完稿，作品会进入收尾入口；需要修改时可以恢复写作。
 
@@ -197,7 +215,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 规划输入会持续自动保存。保存失败时保留独立的本地规划草稿，刷新后可继续保存；另一个窗口同时改同一项时保留双方文字，由作者选择后保存。采用规划期间暂时锁定规划输入，切页返回仍保持锁定，回应结束后继续编辑；第二套规划建立章节只增加新章，保留旧章节的标题、正文和任务卡。
 
-具体操作：进入“章节 + AI 写作”，填写本章目标、视角、场景计划和章节出口；可用“上下文预览”检查材料。生成后先比较和编辑候选，再点“比较并采纳”。局部改稿先选中原文再润色，采纳会检查原稿版本和范围；生成期间改稿或切章后，旧结果不能写到错误位置。“生成任务”可查看进度、取消、续接和处理失败，任务结果只采纳一次。
+具体操作：进入“创作工作台”，填写本章目标、视角、场景计划和章节出口；可用“上下文预览”检查材料。生成后先比较和编辑候选，再点“比较并采纳”。局部改稿先选中原文再润色，采纳会检查原稿版本和范围；生成期间改稿或切章后，旧结果不能写到错误位置。“生成任务”可查看进度、取消、续接和处理失败，任务结果只采纳一次。
 
 需要借鉴旧书写法时，点击“选择参考片段”，选参考书并搜索原句，点击“用于本次写作”，返回写作后可查看完整原句或撤回。每次只选一段、最多900个完整字符；续写或润色的上下文和提示预览会显示同一段。参考选择属于当次操作，换作品、分支或章节以及刷新后须重新选择；生成请求成功进入队列后清除本次选择，已排队任务保留原冻结材料。参考书人物与情节不会自动进入本书事实，参考中的命令文字也不会成为系统要求。
 
@@ -248,7 +266,7 @@ python3 scripts/evaluation_runner.py \
 
 ## 验证
 
-仓库的[自动检查配置](.github/workflows/ci.yml)使用 Python 3.11 / Node 24，在推送和拉取请求时执行语法、全部 `tests/*_fixtures.py`、固定评测、编辑器合并、基础浏览器回归、规划保稿检查和五章作者流程。Node（执行页面自动检查所需的开发工具）只用于开发验证，不是运行产品的依赖。浏览器回归使用 Playwright 1.62.1（自动点击真实浏览器的测试工具），本机模拟提供方，不使用真实密钥。历史 Node 20 证据保留原运行版本，不能当作 Node 24 或增强版远程检查已经通过。
+仓库的[自动检查配置](.github/workflows/ci.yml)使用 Python 3.11 / Node 24，在推送和拉取请求时先安装 `requirements.txt`，再执行语法、全部 `tests/*_fixtures.py`、固定评测、编辑器合并、基础浏览器回归、规划保稿检查和五章作者流程。Node（执行页面自动检查所需的开发工具）只用于开发验证，不是运行产品的依赖。浏览器回归使用 Playwright 1.62.1（自动点击真实浏览器的测试工具），本机模拟提供方，不使用真实密钥。历史 Node 20 证据保留原运行版本，不能当作 Node 24 或增强版远程检查已经通过。
 
 ```bash
 python3 -m py_compile *.py scripts/*.py tests/*.py
@@ -259,7 +277,7 @@ node tests/planning_browser_regressions.cjs
 node tests/desktop_author_flow_regressions.cjs
 ```
 
-浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。参考片段的HTTP与完整性测试为 `tests/reference_passages_http_fixtures.py`、`tests/reference_passages_integrity_http_fixtures.py`，真实电脑页面测试为 `tests/reference_passages_browser_regressions.cjs`。电脑ZIP恢复的逐表和真实HTTP验证分别为 `tests/portable_backup_fixtures.py`、`tests/portable_backup_http_fixtures.py`，电脑页面验证为 `tests/portable_backup_browser_regressions.cjs`；新删章与旧遗留资料分别由 `tests/chapter_deletion_dependency_http_fixtures.py`、`tests/legacy_deleted_dependency_http_fixtures.py`覆盖。专项边界见[完整ZIP恢复记录](docs/audits/2026-10-14/comprehensive/portable-complete-backup.md)。检查配置存在和本机通过不能替代实际远程执行；`e96e00c` 的[历史GitHub成功](docs/audits/2026-10-13/evidence/github-actions-e96e00c-success.json)、`3a369807` 的[后续失败](docs/audits/2026-10-14/comprehensive/evidence/local-service-reconciled-20261015.md)与 `94e2ade` 的[参考包成功](docs/audits/2026-10-14/comprehensive/evidence/github-reference-settings-94e2ade-success-20261015.json)分别保留，ZIP新版仍需自己的完整及远程验收。
+浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。参考片段的HTTP与完整性测试为 `tests/reference_passages_http_fixtures.py`、`tests/reference_passages_integrity_http_fixtures.py`，真实电脑页面测试为 `tests/reference_passages_browser_regressions.cjs`。电脑ZIP恢复的逐表和真实HTTP验证分别为 `tests/portable_backup_fixtures.py`、`tests/portable_backup_http_fixtures.py`，电脑页面验证为 `tests/portable_backup_browser_regressions.cjs`；新删章与旧遗留资料分别由 `tests/chapter_deletion_dependency_http_fixtures.py`、`tests/legacy_deleted_dependency_http_fixtures.py`覆盖。专项边界见[完整ZIP恢复记录](docs/audits/2026-10-14/comprehensive/portable-complete-backup.md)。检查配置存在和本机通过不能替代实际远程执行；`e96e00c` 的[历史GitHub成功](docs/audits/2026-10-13/evidence/github-actions-e96e00c-success.json)、`3a369807` 的[后续失败](docs/audits/2026-10-14/comprehensive/evidence/local-service-reconciled-20261015.md)、`94e2ade` 的[参考包成功](docs/audits/2026-10-14/comprehensive/evidence/github-reference-settings-94e2ade-success-20261015.json)及 `1552104` 的[完整恢复交付](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)分别保留。本轮写作总管和工作台新增源码已通过05本机完整验收，本次提交的远程结果在[本轮专项](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)独立登记。
 
 ## 备份、恢复与导入
 

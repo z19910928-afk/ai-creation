@@ -4,7 +4,7 @@
 The browser UI remains usable without this process (it falls back to
 localStorage), but when served by this module all writes are persisted to the
 SQLite schema in ``docs/schema-v1.sql`` plus the v1.1 migration.  The service
-uses only Python's standard library so a fresh checkout needs no npm install.
+uses LangGraph for durable writing workflows; install requirements.txt first.
 
 Run::
 
@@ -48,6 +48,7 @@ import moyu_revision
 import moyu_records as records_store
 import moyu_materials
 import moyu_portable as portable_backups
+import moyu_agent_service as writing_agent
 
 
 ROOT = Path(__file__).resolve().parent
@@ -1803,6 +1804,7 @@ def start_ai_worker(job_id: str) -> bool:
     def completed(_future) -> None:
         with _AI_RUNTIME_LOCK:
             _AI_FUTURES.pop(job_id, None)
+        scope.run(writing_agent.advance_ready, sys.modules[__name__], job_id=job_id)
     future.add_done_callback(completed)
     return True
 
@@ -2026,8 +2028,8 @@ def review_chapter(conn: sqlite3.Connection, chapter_id: str, persist: bool = Tr
     return result
 
 
-def connect() -> sqlite3.Connection:
-    conn = sqlite3.connect(DB_PATH, timeout=30)
+def connect(*, check_same_thread=True) -> sqlite3.Connection:
+    conn = sqlite3.connect(DB_PATH, timeout=30, check_same_thread=check_same_thread)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys=ON")
     conn.execute("PRAGMA busy_timeout=30000")
@@ -2253,6 +2255,8 @@ def init_db() -> None:
         moyu_import.ensure_reference_tables(conn)
         complete_backups.install_schema(conn)
         planning.install_schema(conn)
+        from moyu_agent_checkpoint import install_schema as install_agent_schema
+        install_agent_schema(conn)
         conn.execute("""CREATE TABLE IF NOT EXISTS app_planning_application(
             id TEXT PRIMARY KEY,
             workflow_id TEXT NOT NULL UNIQUE REFERENCES app_planning_workflow(id),
@@ -5170,6 +5174,10 @@ class Handler(SimpleHTTPRequestHandler):
                 ensure_seed(conn)
                 if parsed.path == "/api/projects":
                     return self.send_json(200, {"projects": workspace.project_rows(conn)})
+                if parsed.path == "/api/writing-agent":
+                    rows = conn.execute("SELECT * FROM app_agent_session WHERE project_id=? AND branch_id=? ORDER BY rowid DESC LIMIT 50",
+                                        (project_id(), branch_id())).fetchall()
+                    return self.send_json(200, {"sessions": [writing_agent.public_session(sys.modules[__name__], conn, row) for row in rows]})
                 if parsed.path == "/api/references":
                     import moyu_import
                     return self.send_json(200, {"references": moyu_import.list_references(conn, {"project_id": project_id(), "branch_id": branch_id()})})
@@ -5658,6 +5666,10 @@ class Handler(SimpleHTTPRequestHandler):
                 ensure_seed(conn)
                 if parsed.path == "/api/projects":
                     return self.send_json(201, new_project(conn, data))
+                if parsed.path == "/api/writing-agent" or (parsed.path.startswith("/api/writing-agent/") and parsed.path.endswith("/resume")):
+                    conn.commit()
+                    session_id = None if parsed.path == "/api/writing-agent" else parsed.path.split("/")[-2]
+                    return self.send_json(200, writing_agent.request(sys.modules[__name__], data, session_id))
                 if parsed.path == "/api/assistant/query":
                     import moyu_assistant
                     query = data.get("query")
@@ -5835,7 +5847,11 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json(201, {**result, "project": next(p for p in workspace.project_rows(conn) if p["id"] == result["project_id"]), "state": state})
                 if parsed.path.startswith("/api/ai/runs/") and parsed.path.endswith("/apply"):
                     conn.commit()
-                    return self.send_json(200, apply_candidate(conn, parsed.path.split("/")[-2], data))
+                    run_id = parsed.path.split("/")[-2]
+                    result = apply_candidate(conn, run_id, data)
+                    conn.commit()
+                    writing_agent.advance_ready(sys.modules[__name__], run_id=run_id)
+                    return self.send_json(200, result)
                 if parsed.path.startswith("/api/chapter-analysis/") and parsed.path.endswith("/confirm"):
                     import moyu_analysis
                     scope = {"project_id": project_id(), "branch_id": branch_id(), "actor_id": actor_id(),
@@ -6813,6 +6829,7 @@ def main() -> None:
         with workspace.use_scope(*scope):
             for queued_job_id in recover_ai_jobs():
                 start_ai_worker(queued_job_id)
+            writing_agent.advance_ready(sys.modules[__name__])
     server = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"墨屿 SQLite service listening on http://{HOST}:{PORT}")
     print(f"database: {DB_PATH}")

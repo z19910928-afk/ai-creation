@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "verified_at": "2026-10-15T17:17:20Z",
+  "tag": "agent-workbench-release-20261016-05",
+  "passed": true,
+  "scope": "独立复核本机隔离工程验收的来源、结果、日志、附件及九张界面截图；本复核未重跑产品、浏览器或模型。",
+  "release_report": "compatibility-python311-node24-agent-workbench-release-20261016-05.json",
+  "release_report_sha256": "dbcdd39f93503f11475657b29678c64302980defc60f3b6eeca9d8c5d4487685",
+  "reviewers": [
+    "eval_security_audit",
+    "workbench_frontend",
+    "root"
+  ],
+  "counts": {
+    "checks": 103,
+    "python_fixtures": 65,
+    "javascript_syntax_checks": 20,
+    "python_version_and_syntax_checks": 2,
+    "fixed_evaluation_and_editor_checks": 2,
+    "sources": 115,
+    "browser_suites": 14,
+    "browser_scenarios": 199,
+    "json_artifacts": 22,
+    "png_artifacts": 56,
+    "artifacts": 78,
+    "visually_reviewed_pngs": 9
+  },
+  "integrity": {
+    "all_checks_exit_zero": true,
+    "timeouts_or_signals": 0,
+    "duplicate_checks": 0,
+    "source_inventory_before_after_current_index_match": true,
+    "all_manifest_artifacts_sha256_and_format_match": true,
+    "all_103_sanitized_log_tails_match": true,
+    "paired_source_fingerprints_in_12_subreports_match": true,
+    "all_22_json_artifacts_passed": true,
+    "fixed_evaluation_fixtures_passed": 6,
+    "desktop_scenario_sum_matches": true
+  },
+  "browser_scenarios": {
+    "analysis_guidance": 3,
+    "author_workspace_lifecycle": 17,
+    "desktop_author_flow": 7,
+    "export_override": 5,
+    "frontend": 53,
+    "instruction_draft": 11,
+    "material_dependency": 5,
+    "model_settings": 20,
+    "planning": 5,
+    "portable_backup": 21,
+    "reference_passages": 15,
+    "search": 5,
+    "workbench_scope": 13,
+    "writing_agent": 19
+  },
+  "visual_review": {
+    "method": "workbench_frontend使用view_image(detail=original)逐张查看；未编辑文件或补拍。",
+    "p2_or_higher_visual_findings": 0,
+    "items": [
+      {
+        "file": "agent-workbench-release-20261016-05-writing-workbench-1440x1000.png",
+        "observation": "资料、正文、总管三栏清楚，四种模式与准备计划按钮完整，无横向溢出；右栏下部可继续滚动。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-workbench-1280x900.png",
+        "observation": "正文四段、候选、操作及依据清楚；右栏停在滚动中段，顶部文字部分在视野外，未见排版横溢。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-agent-plan-1440x1000.png",
+        "observation": "三阶段待启动计划、调用上限与费用说明清楚，启动及停止按钮完整，无相互遮挡。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-agent-complete-1440x1000.png",
+        "observation": "三阶段完成、3/3次数及结果入口清楚；这是高度超过1000的整页截图，不能当作首屏全可见。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-agent-1280x900.png",
+        "observation": "长要求换行，等待、失败、停止、就绪及候选警告可辨，无横向溢出；长整页图不代表900高首屏全部可见。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-agent-polish-compare-1280x900.png",
+        "observation": "比较弹窗在屏内，原稿四段、候选两段、两栏标题及继续比较和确认采纳按钮完整可辨。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-agent-polish-1280x900.png",
+        "observation": "采纳后两段正文、结果与停止入口可辨，保存提示未挡核心按钮；右栏位于滚动中段，顶部部分文字在视野外。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-agent-overview-confirm-1280x900.png",
+        "observation": "四阶段3+1布局、1/4次数和总纲字段清楚，确认本阶段及停止按钮完整。"
+      },
+      {
+        "file": "agent-workbench-release-20261016-05-writing-agent-full-plan-1280x900.png",
+        "observation": "四阶段确认、4/4次数和待采用状态清楚，采用及停止按钮完整；内部滚动区只展示总纲与卷规划标题，不能据此声称卷、章、场景明细均已目视核对。"
+      }
+    ],
+    "limitation": "九图目视复核只覆盖实际可见区域。完整规划后续明细由现有功能断言验证，没有滚动补拍扩展目视证据。"
+  },
+  "historical_b1_record": {
+    "file": "github-task-parameters-c83f897-success-20261015.json",
+    "sha256": "ef6dbdf61e3a0fce1b55757ca2a63011d3470f3987bab358c0f604a4701c9a99",
+    "head_sha": "c83f897ab924b1e697ae89a2032787381d03fddb",
+    "branch": "codex/full-function-audit",
+    "run_id": 38712478084,
+    "status": "completed",
+    "conclusion": "success",
+    "verified_steps": 25,
+    "verification": "root本轮已重新查询GitHub；独立专责另核对已保存记录身份及Git提交对象。此记录仅证明历史B1提交，不能替代本次新提交检查或实际服务验收。"
+  },
+  "paid_model_requests_in_release": 0,
+  "private_author_data_used_in_release": false,
+  "supersedes_failed_rounds": false,
+  "proves_current_commit_github_checks": false,
+  "proves_actual_local_service_updated": false,
+  "proves_literary_leadership": false,
+  "limitations": [
+    "01至04轮失败及来源变化说明保留；05使用新标签独立执行，没有改写旧结论。",
+    "源码和附件指纹对应05冻结版本，不覆盖此后产品改动。",
+    "本机真实服务、当前提交GitHub、文学效果与Obsidian双向同步各自另验。"
+  ]
+}

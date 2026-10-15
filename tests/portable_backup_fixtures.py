@@ -54,7 +54,8 @@ BASE_TABLES = {
     "app_reference_document", "app_reference_section", "app_planning_workflow",
     "app_planning_attempt", "app_planning_event", "app_planning_application",
 }
-ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"}
+AGENT_TABLES = {"app_agent_session", "app_agent_checkpoint", "app_agent_write"}
+ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"} | AGENT_TABLES
 ALL_TABLES = BASE_TABLES | ADDITIVE_TABLES
 SOURCE_PROJECT = "portable-source-book"
 SOURCE_BRANCH = "portable-main"
@@ -182,7 +183,7 @@ def corrupted_crc(raw: bytes) -> bytes:
 
 
 def seed_source(conn: sqlite3.Connection) -> dict:
-    """Build a real schema with nonempty rows in all 54 captured tables."""
+    """Build a real schema with nonempty rows in every captured table."""
     chapter = server.chapter_rows(conn)[0]
     chapter_id = chapter["id"]
     first_body = "\ufeff林岚在雨里握住罗盘。\r\n𠀀与🙂保留原字节。\r\n" + chapter_id
@@ -611,6 +612,27 @@ def seed_source(conn: sqlite3.Connection) -> dict:
         (json_text(planning_consent), text_hash(json_text(planning_context)),
          audit["request_sha256"]),
     )
+    insert(conn, "app_agent_session", id="portable-agent-session",
+           project_id=SOURCE_PROJECT, branch_id=SOURCE_BRANCH, chapter_id=chapter_id,
+           request_id="portable-agent-request", query=chapter_id,
+           plan_json=json_text({"project_id": SOURCE_PROJECT, "chapter_id": chapter_id,
+                                "historical_text": chapter_id}), status="running",
+           created_at=STAMP, updated_at=STAMP, restored_read_only=0)
+    for key, parent, raw in (
+            ("portable-agent-input", None, b"\x80\x04opaque-input\x00\xff"),
+            ("portable-agent-latest", "portable-agent-input", b"\x80\x04opaque-latest\x00\xfe")):
+        insert(conn, "app_agent_checkpoint", id=key + "-row",
+               project_id=SOURCE_PROJECT, branch_id=SOURCE_BRANCH,
+               session_id="portable-agent-session", checkpoint_key=key,
+               checkpoint_ns="", parent_key=parent, type="sealed-test-bytes",
+               checkpoint=raw,
+               metadata=json_text({"chapter_id": chapter_id, "source": SOURCE_PROJECT}))
+    insert(conn, "app_agent_write", id="portable-agent-write",
+           project_id=SOURCE_PROJECT, branch_id=SOURCE_BRANCH,
+           session_id="portable-agent-session", checkpoint_key="portable-agent-latest",
+           checkpoint_ns="", task_id="portable-agent-task", task_path="prepare",
+           idx=0, channel="sealed-history", type="sealed-test-bytes",
+           value=b"\x80\x04opaque-write\x00\xfd")
     conn.commit()
     return {"chapter_id": chapter_id, "revision_id": revision,
             "latest_revision_id": latest_revision, "body": latest_body,
@@ -684,7 +706,7 @@ def map_binding(binding, mapping):
 
 
 def expected_json(table, column, raw, mapping):
-    if table in backups.PLANNING_TABLES:
+    if table in backups.PLANNING_TABLES or table in AGENT_TABLES:
         return raw
     value = json.loads(raw)
     if column == "evidence_json" or (table == "candidate_memory" and column == "payload_json"):
@@ -817,7 +839,7 @@ class PortableBackupTests(unittest.TestCase):
                     raise AssertionError("synthetic source fixture has a broken FK")
         cls.source_file_hash = digest(cls.source_path.read_bytes())
         if set(cls.payload["tables"]) != ALL_TABLES:
-            raise AssertionError("complete fixture must capture all 54 documented tables")
+            raise AssertionError("complete fixture must capture every documented table")
         empty = [name for name, rows in cls.payload["tables"].items() if not rows]
         if empty:
             raise AssertionError("complete fixture has untested empty tables: " + repr(empty))
@@ -914,6 +936,8 @@ class PortableBackupTests(unittest.TestCase):
         if table == "app_planning_attempt" and source_row["status"] in {"queued", "running", "unknown"}:
             expected.update(status="unknown",
                             error="备份中的规划模型请求费用与执行状态未知，未重复执行。")
+        if table == "app_agent_session":
+            expected.update(status="restored", restored_read_only=1)
         return expected
 
     def assert_all_rows(self, payload, result):
@@ -938,7 +962,7 @@ class PortableBackupTests(unittest.TestCase):
                     actual = {field: decoded(value) for field, value in actual_row.items()}
                     for field, value in list(actual.items()):
                         if field.endswith("_json") and isinstance(value, str):
-                            if table in backups.PLANNING_TABLES:
+                            if table in backups.PLANNING_TABLES or table in AGENT_TABLES:
                                 continue
                             actual[field] = json.loads(value)
                     self.assertEqual(actual, expected, (table, source_row.get("id")))
@@ -958,7 +982,7 @@ class PortableBackupTests(unittest.TestCase):
             path.write_bytes(raw)
             self.assertEqual(backups.read(path, SOURCE_PROJECT), loaded)
 
-    def test_complete_round_trip_preserves_all_54_tables_and_target_records(self):
+    def test_complete_round_trip_preserves_all_tables_and_target_records(self):
         original_target = snapshot(self.conn)
         result = self.restore()
         mapping = result["identity_map"]
@@ -1107,6 +1131,8 @@ class PortableBackupTests(unittest.TestCase):
         legacy = copy.deepcopy(self.payload)
         legacy["tables"].pop("app_entity_scope")
         legacy["tables"].pop("app_candidate_revision")
+        for table in AGENT_TABLES:
+            legacy["tables"].pop(table)
         # A genuine pre-candidate package has no parent/child candidate bind.
         for row in legacy["tables"]["app_ai_job"]:
             context = json.loads(row["context_json"])
@@ -1125,6 +1151,11 @@ class PortableBackupTests(unittest.TestCase):
             "SELECT COUNT(*) FROM app_candidate_revision WHERE project_id=?",
             (result["project_id"],),
         ).fetchone()[0], 0)
+        for table in AGENT_TABLES:
+            self.assertEqual(self.conn.execute(
+                'SELECT COUNT(*) FROM "' + table + '" WHERE project_id=?',
+                (result["project_id"],),
+            ).fetchone()[0], 0)
         malformed = copy.deepcopy(self.payload)
         malformed["tables"].pop("app_candidate_revision")
         self.assert_invalid_payload(malformed)
@@ -1168,6 +1199,9 @@ class PortableBackupTests(unittest.TestCase):
             ("prov_entity", "entity_ref", "missing-revision"),
             ("prov_edge", "object_id", "missing-provenance"),
             ("app_planning_event", "attempt_id", "missing-attempt"),
+            ("app_agent_session", "chapter_id", "missing-chapter"),
+            ("app_agent_checkpoint", "session_id", "missing-agent-session"),
+            ("app_agent_write", "session_id", "missing-agent-session"),
         )
         for table, field, value in cases:
             with self.subTest(table=table, field=field):
@@ -1188,12 +1222,223 @@ class PortableBackupTests(unittest.TestCase):
             ("app_candidate_revision", "branch_id", ALTERNATE_BRANCH),
             ("app_planning_application", "branch_id", ALTERNATE_BRANCH),
             ("character_state", "branch_id", ALTERNATE_BRANCH),
+            ("app_agent_session", "branch_id", ALTERNATE_BRANCH),
+            ("app_agent_checkpoint", "branch_id", ALTERNATE_BRANCH),
+            ("app_agent_write", "branch_id", ALTERNATE_BRANCH),
+            ("app_agent_session", "project_id", "foreign-project"),
+            ("app_agent_checkpoint", "project_id", "foreign-project"),
+            ("app_agent_write", "project_id", "foreign-project"),
         )
         for table, field, value in cases:
             with self.subTest(table=table, field=field):
                 payload = copy.deepcopy(self.payload)
                 payload["tables"][table][0][field] = value
                 self.assert_invalid_payload(payload)
+
+    def test_agent_checkpoints_and_writes_require_the_same_session_and_namespace(self):
+        for table, row_index, field, value in (
+                ("app_agent_checkpoint", 1, "parent_key", "missing-checkpoint"),
+                ("app_agent_checkpoint", 1, "checkpoint_ns", "foreign-namespace"),
+                ("app_agent_write", 0, "checkpoint_key", "missing-checkpoint"),
+                ("app_agent_write", 0, "checkpoint_ns", "foreign-namespace")):
+            with self.subTest(table=table, field=field):
+                payload = copy.deepcopy(self.payload)
+                payload["tables"][table][row_index][field] = value
+                self.assert_invalid_payload(payload)
+        for table, row_index in (("app_agent_checkpoint", 1), ("app_agent_write", 0)):
+            with self.subTest(table=table, field="session_id"):
+                payload = copy.deepcopy(self.payload)
+                other = copy.deepcopy(payload["tables"]["app_agent_session"][0])
+                other.update(id="portable-agent-other", request_id="portable-agent-other-request")
+                payload["tables"]["app_agent_session"].append(other)
+                payload["tables"][table][row_index]["session_id"] = other["id"]
+                self.assert_invalid_payload(payload)
+        for missing_table in AGENT_TABLES:
+            with self.subTest(missing_table=missing_table):
+                payload = copy.deepcopy(self.payload)
+                payload["tables"].pop(missing_table)
+                if missing_table == "app_agent_write":
+                    backups.validate_payload(self.conn, payload)
+                else:
+                    self.assert_invalid_payload(payload)
+
+    def test_agent_checkpoint_binary_contract_rejects_malformed_archives(self):
+        for table, field in (("app_agent_checkpoint", "checkpoint"),
+                             ("app_agent_write", "value")):
+            for value in (None, "opaque", {"$blob": "@@@"},
+                          {"$blob": "YQ==", "unexpected": 1}, {"$blob": 10}):
+                with self.subTest(table=table, value=value):
+                    payload = copy.deepcopy(self.payload)
+                    payload["tables"][table][0][field] = value
+                    self.assert_invalid_payload(payload)
+        for plan in ([], None, "history", {"summary": []}, {"steps": []},
+                     {"steps": {"continue": "invalid"}}):
+            with self.subTest(plan=plan):
+                payload = copy.deepcopy(self.payload)
+                payload["tables"]["app_agent_session"][0]["plan_json"] = json_text(plan)
+                self.assert_invalid_payload(payload)
+
+    def test_agent_history_rejects_invalid_modes_without_target_changes(self):
+        for mode in ([], {}, ["inspect"], None, True, False, 0, 1, "", "unknown", "Inspect"):
+            with self.subTest(mode=mode):
+                payload = copy.deepcopy(self.payload)
+                row = payload["tables"]["app_agent_session"][0]
+                plan = json.loads(row["plan_json"])
+                plan["mode"] = mode
+                row["plan_json"] = json_text(plan)
+                before = snapshot(self.conn)
+                loaded = backups.read_bytes(archive_bytes(payload))
+                self.assert_invalid_payload(loaded["payload"])
+                self.assertEqual(snapshot(self.conn), before)
+
+    def test_agent_history_rejects_nontext_summary_fields_without_target_changes(self):
+        for field in ("stage", "status", "error", "current_job_id", "current_ai_run_id"):
+            for value in (None, [], {}, True, 0, 1.5):
+                with self.subTest(field=field, value=value):
+                    payload = copy.deepcopy(self.payload)
+                    row = payload["tables"]["app_agent_session"][0]
+                    plan = json.loads(row["plan_json"])
+                    plan["summary"] = {field: value}
+                    row["plan_json"] = json_text(plan)
+                    before = snapshot(self.conn)
+                    loaded = backups.read_bytes(archive_bytes(payload))
+                    self.assert_invalid_payload(loaded["payload"])
+                    self.assertEqual(snapshot(self.conn), before)
+
+    def test_agent_history_rejects_invalid_call_counts_without_target_changes(self):
+        for field, invalid in (
+                ("calls_used", (None, [], {}, True, False, "0", 0.0, 1.5, -1, 5, 2 ** 64)),
+                ("max_calls", (None, [], {}, True, False, "1", 1.0, 1.5, -1, 0, 5, 2 ** 64))):
+            for value in invalid:
+                with self.subTest(field=field, value=value):
+                    payload = copy.deepcopy(self.payload)
+                    row = payload["tables"]["app_agent_session"][0]
+                    plan = json.loads(row["plan_json"])
+                    plan["summary"] = {field: value}
+                    row["plan_json"] = json_text(plan)
+                    before = snapshot(self.conn)
+                    loaded = backups.read_bytes(archive_bytes(payload))
+                    self.assert_invalid_payload(loaded["payload"])
+                    self.assertEqual(snapshot(self.conn), before)
+
+    def test_valid_agent_history_modes_and_legacy_defaults_remain_readable(self):
+        for case, mode in enumerate(("continue", "polish", "inspect", "plan", None)):
+            with self.subTest(mode=mode):
+                payload = copy.deepcopy(self.payload)
+                row = payload["tables"]["app_agent_session"][0]
+                plan = json.loads(row["plan_json"])
+                if mode is not None:
+                    plan.update(mode=mode, summary={
+                        "stage": "", "status": "review_ready", "error": "",
+                        "current_job_id": "", "current_ai_run_id": "",
+                        "calls_used": 4 if mode == "plan" else 0,
+                        "max_calls": 4 if mode == "plan" else 1,
+                    }, steps={})
+                row["plan_json"] = json_text(plan)
+                result = self.restore(payload, "portable-valid-agent-history-" + str(case))
+                restored = self.conn.execute(
+                    "SELECT * FROM app_agent_session WHERE project_id=?",
+                    (result["project_id"],),
+                ).fetchone()
+                self.assertEqual(restored["plan_json"], row["plan_json"])
+                before = snapshot(self.conn)
+                with patch.object(server, "project_id", return_value=result["project_id"]), \
+                        patch.object(server, "branch_id", return_value=restored["branch_id"]):
+                    sessions = [server.writing_agent.public_session(server, self.conn, restored)]
+                self.assertEqual(sessions[0]["mode"], mode or "inspect")
+                self.assertTrue(sessions[0]["restored_read_only"])
+                self.assertEqual(sessions[0]["calls_used"], 4 if mode == "plan" else 0)
+                self.assertEqual(snapshot(self.conn), before)
+
+    def test_restored_agent_history_preserves_bytes_and_cannot_deserialize(self):
+        from moyu_agent_checkpoint import ScopedCheckpointSaver
+
+        first = self.restore()
+        first_payload = self.assert_all_rows(self.payload_copy, first)
+        second = self.restore(first_payload, "portable-agent-second-copy")
+        for result in (first, second):
+            session = self.conn.execute(
+                "SELECT * FROM app_agent_session WHERE project_id=?",
+                (result["project_id"],),
+            ).fetchone()
+            self.assertEqual((session["status"], session["restored_read_only"]), ("restored", 1))
+            self.assertEqual(session["plan_json"],
+                             self.payload["tables"]["app_agent_session"][0]["plan_json"])
+            for table, field in (("app_agent_checkpoint", "checkpoint"),
+                                 ("app_agent_write", "value")):
+                restored = self.conn.execute(
+                    'SELECT * FROM "' + table + '" WHERE project_id=? ORDER BY rowid',
+                    (result["project_id"],),
+                ).fetchall()
+                source = self.payload["tables"][table]
+                self.assertEqual([row[field] for row in restored],
+                                 [decoded(row[field]) for row in source])
+                self.assertTrue(all(row["session_id"] == session["id"] for row in restored))
+                self.assertEqual([row["checkpoint_key"] for row in restored],
+                                 [row["checkpoint_key"] for row in source])
+            scope = {"project_id": result["project_id"], "branch_id": session["branch_id"]}
+            saver = ScopedCheckpointSaver(self.conn, scope, session["id"])
+            config = {"configurable": {"thread_id": saver.thread_id, "checkpoint_ns": ""}}
+            before = snapshot(self.conn)
+            with patch.object(saver.serde, "loads_typed", side_effect=AssertionError("sealed history decoded")) as load:
+                for operation in (
+                        lambda: saver.get_tuple(config),
+                        lambda: list(saver.list(config)),
+                        lambda: saver.put(config, {}, {}, {}),
+                        lambda: saver.put_writes(config, [("x", {})], "blocked-task")):
+                    with self.assertRaisesRegex(ValueError, "仅供回看"):
+                        operation()
+                load.assert_not_called()
+            self.assertEqual(snapshot(self.conn), before)
+
+    def test_real_langgraph_checkpoints_restore_as_sealed_history(self):
+        from moyu_agent_checkpoint import ScopedCheckpointSaver
+        import moyu_writing_agent as agent
+
+        conn = server.connect(check_same_thread=False)
+        self.local.callback(conn.close)
+        chapter = server.chapter_rows(conn)[0]
+        scope = {"project_id": "portable-target-book", "branch_id": "portable-target-main"}
+        session_id = "portable-live-agent-history"
+        insert(conn, "app_agent_session", id=session_id, **scope, chapter_id=chapter["id"],
+               request_id="portable-live-agent-request", query="synthetic inspection",
+               plan_json="{}", status="planned", created_at=STAMP, updated_at=STAMP,
+               restored_read_only=0)
+        calls = []
+
+        def enqueue(state, task, step):
+            calls.append(step)
+            return {"id": "synthetic-job", "ai_run_id": "synthetic-run"}
+
+        callbacks = agent.WritingAgentCallbacks(
+            prepare=lambda state: {"status": "ready", "source_revision_id": "synthetic-revision",
+                                   "source_hash": "synthetic-hash"},
+            enqueue=enqueue,
+            get_job=lambda state, job: {"id": job, "status": "queued"},
+            verify_adoption=lambda state, answer: {"applied": False},
+        )
+        saver = ScopedCheckpointSaver(conn, scope, session_id)
+        graph = agent.build_graph(callbacks, saver)
+        state = agent.initial_state(session_id, scope["project_id"], scope["branch_id"],
+                                    chapter["id"], "inspect", max_calls=2)
+        self.assertIn("__interrupt__", agent.invoke_start(graph, state, thread_id=saver.thread_id))
+        graph = agent.build_graph(callbacks, ScopedCheckpointSaver(conn, scope, session_id))
+        result = agent.invoke_resume(graph, session_id, {"action": "authorize"}, thread_id=saver.thread_id)
+        self.assertEqual(result["status"], "awaiting_job")
+        self.assertEqual(len(calls), 1)
+        conn.commit()
+        payload = backups.capture(conn, scope["project_id"])
+        backups.validate_payload(conn, payload)
+        result = backups.transplant(conn, payload, "portable-live-agent-restored")
+        conn.commit()
+        restored = backups.capture(conn, result["project_id"])
+        backups.validate_payload(conn, restored)
+        session = restored["tables"]["app_agent_session"][0]
+        self.assertEqual((session["status"], session["restored_read_only"]), ("restored", 1))
+        for table, field in (("app_agent_checkpoint", "checkpoint"), ("app_agent_write", "value")):
+            self.assertTrue(payload["tables"][table])
+            self.assertEqual([row[field] for row in restored["tables"][table]],
+                             [row[field] for row in payload["tables"][table]])
 
     def test_timeline_entities_must_exist_inside_this_archive(self):
         foreign_entity = self.conn.execute("SELECT id FROM entity ORDER BY rowid").fetchone()[0]
@@ -1861,6 +2106,7 @@ def main() -> int:
         raise RuntimeError("Evidence exists; use a new portable backup report path")
     files = (
         "moyu_backups.py", "server.py", "moyu_workspace.py", "moyu_planning.py",
+        "moyu_agent_checkpoint.py", "moyu_agent_service.py", "moyu_writing_agent.py", "requirements.txt",
         "moyu_settings.py", "moyu_records.py", "moyu_import.py", "moyu_analysis.py",
         "docs/schema-v1.sql", "docs/schema-v1.1-migration.sql",
         "tests/portable_backup_fixtures.py", "tests/manuscript_import_fixtures.py",

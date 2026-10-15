@@ -21,10 +21,12 @@ if (fs.existsSync(reportPath)) throw new Error('Evidence exists; choose a new re
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const pendingKey = 'mo-yu-novel-v1:portable-restore-pending';
+const capturedTableCount = 57;
 const sourceFiles = [
   'app.js', 'author-workspace.js', 'styles.css', 'index.html', 'server.py',
   'moyu_portable.py', 'moyu_backups.py', 'moyu_workspace.py', 'moyu_import.py',
   'moyu_planning.py', 'moyu_revision.py', 'moyu_records.py',
+  'moyu_agent_checkpoint.py', 'moyu_agent_service.py', 'moyu_writing_agent.py', 'requirements.txt',
   'tests/portable_backup_fixtures.py', 'tests/portable_backup_browser_regressions.cjs',
 ];
 const fingerprints = () => Object.fromEntries(sourceFiles.map(file =>
@@ -447,43 +449,89 @@ async function visibleControls(page, viewport, label) {
   results.desktop_layouts.push({viewport, label, controls, modal: layout});
 }
 
-async function editorLayout(page, viewport) {
+async function editorLayout(page, viewport, expectedDirectory) {
+  assert.ok(expectedDirectory.volumes.some(volume => /[A-Za-z0-9_]{25,}/.test(volume.title)),
+    'the real restored blueprint must contain the synthetic long volume title');
+  await page.waitForFunction(expected => {
+    const sidebar = document.querySelector('.chapter-sidebar.workbench-library');
+    const headings = [...document.querySelectorAll('#authorChapterTree h3')]
+      .map(node => node.textContent);
+    return backendOnline && view === 'editor' && requestedProject === expected.project_id &&
+      state.project.id === expected.project_id && (state.branch_id || 'main') === expected.branch_id &&
+      sidebar?.dataset.projectId === expected.project_id &&
+      sidebar?.dataset.branchId === expected.branch_id && !authorEditorBlueprintRequest &&
+      authorBlueprintVersion === expected.version && expected.volumes.every(volume =>
+        authorBlueprint?.volumes?.some(item => item.id === volume.id && item.title === volume.title) &&
+        headings.includes(volume.title));
+  }, expectedDirectory, {timeout: 15000});
   const layout = await page.locator('.editor-layout').evaluate(element => {
-    const sidebar = element.querySelector('.chapter-sidebar');
+    const sidebar = element.querySelector('.chapter-sidebar.workbench-library');
     const editor = element.querySelector('.editor-card');
+    const chapters = sidebar.querySelector('#workbenchChapters');
+    const knowledge = sidebar.querySelector('#workbenchKnowledge');
+    const visible = node => {
+      const rect = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      return rect.width > 0 && rect.height > 0 &&
+        style.display !== 'none' && style.visibility !== 'hidden';
+    };
     const rectangle = node => {
       const rect = node.getBoundingClientRect();
-      return {x: rect.x, width: rect.width, right: rect.right,
+      return {x: rect.x, width: rect.width, height: rect.height, right: rect.right,
         horizontal_overflow: node.scrollWidth > node.clientWidth + 1};
     };
+    const directoryNodes = [...chapters.querySelectorAll('.chapter-group,h3,.chapter-select')]
+      .filter(visible);
     return {
       sidebar: rectangle(sidebar), editor: rectangle(editor),
       sidebar_track: Number.parseFloat(getComputedStyle(element).gridTemplateColumns.split(' ')[0]),
-      sidebar_children: [...sidebar.querySelectorAll('.chapter-group,h3,.chapter-select')]
-        .map(node => ({tag: node.tagName, ...rectangle(node)})),
+      sidebar_controls: [
+        '.workbench-library-head', '.workbench-library-tabs', '#workbenchChaptersTab',
+        '#workbenchKnowledgeTab', '#workbenchFilter', '#workbenchChapters', '#authorChapterTree',
+      ].map(selector => {
+        const node = sidebar.querySelector(selector);
+        return {selector, visible: !!node && visible(node), ...(node ? rectangle(node) : {})};
+      }),
+      chapters_selected: sidebar.querySelector('#workbenchChaptersTab')
+        .getAttribute('aria-selected') === 'true',
+      knowledge_hidden: knowledge.hidden && !visible(knowledge),
+      visible_directory_groups: directoryNodes.filter(node => node.matches('.chapter-group')).length,
+      visible_directory_headings: directoryNodes.filter(node => node.matches('h3')).length,
+      visible_chapter_buttons: directoryNodes.filter(node => node.matches('.chapter-select')).length,
+      sidebar_children: directoryNodes.map(node => ({tag: node.tagName, ...rectangle(node)})),
       editor_children: [...editor.querySelectorAll('.editor-toolbar,#chapterTitle,#chapterBody')]
-        .map(node => ({tag: node.tagName, ...rectangle(node)})),
-      long_ascii_heading: [...sidebar.querySelectorAll('h3')]
+        .map(node => ({tag: node.tagName, visible: visible(node), ...rectangle(node)})),
+      long_ascii_heading: directoryNodes.filter(node => node.matches('h3'))
         .some(node => /[A-Za-z0-9_]{25,}/.test(node.textContent)),
       document_horizontal_overflow: document.documentElement.scrollWidth > innerWidth + 1,
     };
   });
+  assert.equal(layout.chapters_selected, true, JSON.stringify(layout));
+  assert.equal(layout.knowledge_hidden, true, JSON.stringify(layout));
+  assert.ok(layout.visible_directory_groups > 0, JSON.stringify(layout));
+  assert.ok(layout.visible_directory_headings > 0, JSON.stringify(layout));
+  assert.ok(layout.visible_chapter_buttons > 0, JSON.stringify(layout));
   assert.equal(layout.long_ascii_heading, true, 'retain the synthetic long volume title');
   assert.equal(layout.document_horizontal_overflow, false, JSON.stringify(layout));
   assert.equal(layout.sidebar.horizontal_overflow, false, JSON.stringify(layout));
+  assert.ok(layout.sidebar.width > 0 && layout.sidebar.height > 0, JSON.stringify(layout));
+  assert.ok(layout.editor.width > 0 && layout.editor.height > 0, JSON.stringify(layout));
   assert.ok(layout.sidebar.width <= layout.sidebar_track + 1, JSON.stringify(layout));
   assert.ok(layout.sidebar.right <= layout.editor.x, JSON.stringify(layout));
-  for (const child of layout.sidebar_children) {
+  for (const child of [...layout.sidebar_controls, ...layout.sidebar_children]) {
+    if ('visible' in child) assert.equal(child.visible, true, JSON.stringify(child));
     assert.ok(child.x >= layout.sidebar.x - 1 && child.right <= layout.sidebar.right + 1,
       JSON.stringify({child, sidebar: layout.sidebar}));
     assert.equal(child.horizontal_overflow, false, JSON.stringify(child));
   }
+  assert.equal(layout.editor_children.length, 3, JSON.stringify(layout));
   for (const child of layout.editor_children) {
+    assert.equal(child.visible, true, JSON.stringify(child));
     assert.ok(child.x >= layout.editor.x - 1 && child.right <= layout.editor.right + 1,
       JSON.stringify({child, editor: layout.editor}));
   }
   results.desktop_editor_layouts ||= [];
-  results.desktop_editor_layouts.push({viewport, ...layout});
+  results.desktop_editor_layouts.push({viewport, expected_directory: expectedDirectory, ...layout});
 }
 
 async function test(name, action) {
@@ -552,12 +600,12 @@ async function main() {
     args: ['--disable-background-networking', '--disable-component-update',
       '--disable-default-apps', '--no-first-run'],
   });
-  await test('54表合成源服务真实下载完整ZIP后关闭，目标目录启动前为空', async () => {
+  await test('57表合成源服务真实下载完整ZIP后关闭，目标目录启动前为空', async () => {
     const sourceDirectory = path.join(temporary, 'source');
     sourceService = await launchService('source', sourceDirectory);
     assert.equal(sourceService.initiallyAbsent, true);
     sourcePayload = await control(sourceService, 'capture', {project_id: 'portable-source-book'});
-    assert.equal(Object.keys(sourcePayload.tables).length, 54);
+    assert.equal(Object.keys(sourcePayload.tables).length, capturedTableCount);
     assert.ok(Object.values(sourcePayload.tables).every(rows => rows.length > 0));
     sourceState = await control(sourceService, 'state', {project_id: 'portable-source-book'});
     base = sourceService.base;
@@ -573,7 +621,7 @@ async function main() {
     assert.ok(archiveRaw.length > 1000);
     assert.equal(archiveRaw.subarray(0, 2).toString(), 'PK');
     results.source_download = {bytes: archiveRaw.length, sha256: hash(archiveRaw),
-      captured_tables: 54, every_captured_table_nonempty: true,
+      captured_tables: capturedTableCount, every_captured_table_nonempty: true,
       real_browser_download: true};
     await context.close();
     await stopService(sourceService);
@@ -601,7 +649,7 @@ async function main() {
         assert.equal(selected.counts.reference_documents, 2);
         assert.equal(selected.counts.jobs, 7);
         assert.equal(selected.counts.planning_workflows, 3);
-        assert.equal(Object.keys(selected.row_counts).length, 54);
+        assert.equal(Object.keys(selected.row_counts).length, capturedTableCount);
         for (const [table, rows] of Object.entries(sourcePayload.tables)) {
           assert.equal(selected.row_counts[table], rows.length, table);
         }
@@ -627,13 +675,59 @@ async function main() {
           `\n电脑${viewport.width}恢复后继续写作，原字节𠀀🙂仍在。`;
         await page.locator('#chapterBody').fill(body);
         await waitSaved(page);
-        await page.reload();
-        await page.waitForFunction(id => backendOnline && requestedProject === id, restoredId);
-        await page.locator('[data-view="editor"]').click();
-        await page.locator(`[data-chapter="${first.id}"]`).click();
-        assert.equal(await page.locator('#chapterBody').inputValue(), body);
-        assert.equal((await api('/api/state', 'GET', undefined, restoredId)).chapters[0].body, body);
-        await editorLayout(page, viewport);
+        const restoredBranch = restored.branch_id || 'main';
+        let heldBlueprint, releaseBlueprint;
+        const blueprintGate = new Promise(resolve => {releaseBlueprint = resolve;});
+        const blueprintPattern = '**/api/blueprint';
+        const holdBlueprint = async route => {
+          const headers = route.request().headers();
+          if (headers['x-moyu-project'] !== restoredId ||
+              headers['x-moyu-branch'] !== restoredBranch) return route.continue();
+          const response = await route.fetch();
+          assert.equal(response.ok(), true, 'read the real restored blueprint before releasing it');
+          heldBlueprint = await response.json();
+          await blueprintGate;
+          await route.fulfill({response}).catch(() => {});
+        };
+        await page.route(blueprintPattern, holdBlueprint);
+        try {
+          await page.reload();
+          await page.waitForFunction(id => backendOnline && requestedProject === id, restoredId);
+          await page.locator('[data-view="editor"]').click();
+          await page.locator(`[data-chapter="${first.id}"]`).click();
+          assert.equal(await page.locator('#chapterBody').inputValue(), body);
+          assert.equal((await api('/api/state', 'GET', undefined, restoredId)).chapters[0].body, body);
+          await waitFor(() => heldBlueprint, 'restored blueprint response held before directory sampling');
+          const beforeRelease = await page.evaluate(() => ({
+            project_id: requestedProject, branch_id: state.branch_id || 'main',
+            blueprint_loaded: !!authorBlueprint,
+            pending_project: authorEditorBlueprintRequest?.owner,
+            pending_branch: authorEditorBlueprintRequest?.branch,
+            directory_headings: [...document.querySelectorAll('#authorChapterTree h3')]
+              .map(node => node.textContent),
+          }));
+          assert.equal(beforeRelease.project_id, restoredId);
+          assert.equal(beforeRelease.branch_id, restoredBranch);
+          assert.equal(beforeRelease.blueprint_loaded, false);
+          assert.equal(beforeRelease.pending_project, restoredId);
+          assert.equal(beforeRelease.pending_branch, restoredBranch);
+          assert.ok(beforeRelease.directory_headings.length > 0);
+          assert.equal(beforeRelease.directory_headings.some(title => /[A-Za-z0-9_]{25,}/.test(title)),
+            false, 'the old immediate sample must reproduce the missing long volume title');
+          const expectedDirectory = {project_id: restoredId, branch_id: restoredBranch,
+            version: heldBlueprint.version,
+            volumes: heldBlueprint.blueprint.volumes
+              .filter(volume => restored.chapters.some(chapter => chapter.volume_id === volume.id))
+              .map(({id, title}) => ({id, title}))};
+          releaseBlueprint();
+          await editorLayout(page, viewport, expectedDirectory);
+          results.delayed_editor_blueprints ||= [];
+          results.delayed_editor_blueprints.push({viewport, before_release: beforeRelease,
+            expected_directory: expectedDirectory, directory_ready_after_release: true});
+        } finally {
+          releaseBlueprint();
+          await page.unroute(blueprintPattern, holdBlueprint);
+        }
         await screenshot(page, `portable-editor-${viewport.width}x${viewport.height}.png`);
         await backupsPage(page);
         await page.locator('[data-action="createBackup"]').click();
@@ -652,12 +746,21 @@ async function main() {
         assert.deepEqual((await api('/api/state')).chapters, original.chapters);
         assert.equal(postsSince(start).length, 2);
         const captured = await control(targetService, 'capture', {project_id: secondId});
-        assert.equal(Object.keys(captured.tables).length, 54);
+        assert.equal(Object.keys(captured.tables).length, capturedTableCount);
         assert.equal(captured.tables.app_reference_document.length, 2);
         assert.ok(captured.tables.app_ai_job.every(job =>
           !['queued', 'running'].includes(job.status) &&
           JSON.parse(job.context_json)._restored_read_only === true));
         assert.ok(captured.tables.app_planning_workflow.every(row => row.status === 'canceled'));
+        const sessions = captured.tables.app_agent_session;
+        assert.equal(sessions.length, 1);
+        assert.ok(sessions.every(row => row.status === 'restored' && row.restored_read_only === 1));
+        assert.equal(sessions[0].plan_json, sourcePayload.tables.app_agent_session[0].plan_json);
+        for (const [table, field] of [['app_agent_checkpoint', 'checkpoint'], ['app_agent_write', 'value']]) {
+          assert.deepEqual(captured.tables[table].map(row => row[field]),
+            sourcePayload.tables[table].map(row => row[field]));
+          assert.ok(captured.tables[table].every(row => row.session_id === sessions[0].id));
+        }
         results.restored_edits ||= [];
         results.restored_edits.push({viewport, first_project: restoredId, second_project: secondId,
           body_sha256: hash(body), two_real_downloads: true});

@@ -1,0 +1,106 @@
+{
+  "passed": true,
+  "scope": "电脑端模型设置、隔离SQLite、免费本机模拟提供方",
+  "started_at": "2026-10-15T17:11:22.520Z",
+  "cases": [
+    {
+      "name": "只保存设置不调用模型，电脑两种宽度表单均无横向遮挡",
+      "passed": true
+    },
+    {
+      "name": "合格默认模型检测即刻更新设置和助手状态，刷新保留同次结果",
+      "passed": true
+    },
+    {
+      "name": "最近失败替换旧成功，跨页和刷新均显示失败且不重发模型",
+      "passed": true
+    },
+    {
+      "name": "回传模型不一致保留双方名称，不能显示所选模型检测成功",
+      "passed": true
+    },
+    {
+      "name": "只有一字的完整stop回复保留完成证据，但页面持续显示不合格",
+      "passed": true
+    },
+    {
+      "name": "关闭思考仍返回思考字段时不通过，页面和记录不展示思考内容",
+      "passed": true
+    },
+    {
+      "name": "另一窗口修改设置使旧检测失效，页面回读当前模型且不报成功",
+      "passed": true
+    },
+    {
+      "name": "同一作品保存新设置后，迟到旧检测不能覆盖页面内存或后续保存",
+      "passed": true
+    },
+    {
+      "name": "同一作品迟到旧保存响应不能覆盖新读取，后续保存不回写旧模型或调用模型",
+      "passed": true
+    },
+    {
+      "name": "设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置",
+      "passed": true
+    },
+    {
+      "name": "已发出的旧保存响应在离开设置页后不写回全局设置或状态",
+      "passed": true
+    },
+    {
+      "name": "设置PUT和检测在队列等待期间变旧时不发送旧操作",
+      "passed": true
+    },
+    {
+      "name": "保存后的状态读取等待期间切换作品，不向另一作品发送检测",
+      "passed": true
+    },
+    {
+      "name": "检测完成后的状态读取迟到，不向另一作品页面回写旧成功",
+      "passed": true
+    },
+    {
+      "name": "九种用途模型与原始参数逐项保存，两种电脑尺寸全部控件互不遮挡",
+      "passed": true
+    },
+    {
+      "name": "用途温度零保留，空白删除数值覆盖，刷新后隐藏支持参数保持",
+      "passed": true
+    },
+    {
+      "name": "回顾与检查按整对象供分析审稿继承，显式子用途只覆盖全局且空白不制造对象",
+      "passed": true
+    },
+    {
+      "name": "单用途恢复图标清除整个参数对象，模型及其余八用途保留且刷新不复活隐藏字段",
+      "passed": true
+    },
+    {
+      "name": "用途思考开关与强度互换仅保存一种形式，空白继承且其他参数不改",
+      "passed": true
+    },
+    {
+      "name": "用途数值不合格时表单拒绝发送，任意有效小数温度可以保存",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "source_files_sha256_before": {
+    "app.js": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+    "author-workspace.js": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "server.py": "118c5b757842aca27e24be3be28249fad845d3c47729d067a3ba1c4d5ae58442"
+  },
+  "other_project": "book_9876d469df3b49508d3d858c45d6ff16",
+  "provider_requests": 8,
+  "source_files_sha256_after": {
+    "app.js": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+    "author-workspace.js": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "server.py": "118c5b757842aca27e24be3be28249fad845d3c47729d067a3ba1c4d5ae58442"
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-10-15T17:11:35.054Z"
+}

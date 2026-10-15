@@ -176,7 +176,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         })
         with self.subTest(check="legacy_initialization_preserves_history"):
-            self.assertEqual(len(before["tables"]), 65)
+            self.assertEqual(len(before["tables"]), 68)
             self.assertEqual(before, after)
 
     def restore_zip(self):
@@ -339,8 +339,8 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         }
         REPORT["observations"].append(observation)
-        with self.subTest(check="all_65_tables_and_schema_are_read_only"):
-            self.assertEqual(len(before["tables"]), 65)
+        with self.subTest(check="all_68_tables_and_schema_are_read_only"):
+            self.assertEqual(len(before["tables"]), 68)
             self.assertEqual(before, after)
             self.assertIn("app_search_fts_data", before["tables"])
             self.assertIn("app_search_fts_idx", before["tables"])
@@ -494,7 +494,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
         }
         REPORT["observations"].append(observation)
         with self.subTest(check="span_story_read_preserves_every_table_and_schema"):
-            self.assertEqual(len(before["tables"]), 65)
+            self.assertEqual(len(before["tables"]), 68)
             self.assertEqual(before, after)
             self.assertIn("app_search_fts_data", before["tables"])
             self.assertIn("app_search_fts_idx", before["tables"])
@@ -762,7 +762,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         })
         with self.subTest(check="assertion_scope_preserves_all_tables_and_history"):
-            self.assertEqual(len(before["tables"]), 65)
+            self.assertEqual(len(before["tables"]), 68)
             self.assertEqual(before, after)
             self.assertEqual(
                 self.assertion_scope_physical(project, branch, memory_key), physical)
@@ -887,7 +887,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         })
         with self.subTest(check="nonchapter_history_and_tables_are_read_only"):
-            self.assertEqual(len(before["tables"]), 65)
+            self.assertEqual(len(before["tables"]), 68)
             self.assertEqual(before, after)
             self.assertEqual(
                 self.assertion_scope_physical(seed.PROJECT, seed.BRANCH, memory_key),

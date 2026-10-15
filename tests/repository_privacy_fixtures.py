@@ -203,8 +203,25 @@ def _assert_synthetic_contract() -> None:
     ]
 
 
+def _assert_environment_ignore_contract() -> None:
+    """Local environment variants stay ignored; public templates stay addable."""
+    ignored = {".env", ".env.local", ".env.production", "config/.env.development"}
+    templates = {".env.example", ".env.template", "config/.env.example"}
+    result = subprocess.run(
+        ["git", "check-ignore", "--no-index", "--stdin", "-z"],
+        cwd=ROOT,
+        input=b"\0".join(path.encode() for path in sorted(ignored | templates)) + b"\0",
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    actual = {os_fsdecode(path) for path in result.stdout.split(b"\0") if path}
+    assert actual == ignored, "Local environment ignore rules must protect variants, not templates."
+
+
 def main() -> int:
     _assert_synthetic_contract()
+    _assert_environment_ignore_contract()
     findings = scan_index()
     if findings:
         # Do not print matched content or local secret material.

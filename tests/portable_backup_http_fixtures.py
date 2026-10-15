@@ -39,7 +39,7 @@ import moyu_portable as portable  # noqa: E402
 import moyu_workspace as workspace  # noqa: E402
 import server  # noqa: E402
 from portable_backup_fixtures import (  # noqa: E402
-    ALTERNATE_BRANCH, ALL_TABLES, SOURCE_ACTOR, SOURCE_BRANCH, SOURCE_PROJECT,
+    AGENT_TABLES, ALTERNATE_BRANCH, ALL_TABLES, SOURCE_ACTOR, SOURCE_BRANCH, SOURCE_PROJECT,
     seed_source,
 )
 
@@ -53,6 +53,7 @@ SOURCES = (
     "moyu_analysis.py", "moyu_context.py", "moyu_materials.py", "moyu_import.py",
     "moyu_planning.py", "moyu_settings.py", "moyu_records.py", "moyu_revision.py",
     "moyu_provider.py", "scripts/sqlite_backup.py",
+    "moyu_agent_checkpoint.py", "moyu_agent_service.py", "moyu_writing_agent.py", "requirements.txt",
     "docs/schema-v1.sql", "docs/schema-v1.1-migration.sql",
     "tests/portable_backup_fixtures.py", "tests/portable_backup_http_fixtures.py",
 )
@@ -250,8 +251,9 @@ def _serve_fixture(connection, path, project, branch, actor, credentials):
                     raise sqlite3.OperationalError("synthetic commit failure")
             return super().commit()
 
-    def connect():
-        conn = sqlite3.connect(server.DB_PATH, timeout=30, factory=FixtureConnection)
+    def connect(*, check_same_thread=True):
+        conn = sqlite3.connect(server.DB_PATH, timeout=30, factory=FixtureConnection,
+                               check_same_thread=check_same_thread)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA foreign_keys=ON")
         conn.execute("PRAGMA busy_timeout=30000")
@@ -578,10 +580,10 @@ class PortableBackupHTTP(unittest.TestCase):
             if status != 200:
                 raise AssertionError((status, cls.archive))
             cls.payload, cls.manifest, cls.project_raw = decode_zip(cls.archive)
-            if set(cls.payload["tables"]) != ALL_TABLES or len(ALL_TABLES) != 54:
-                raise AssertionError("source download must contain all 54 captured tables")
+            if set(cls.payload["tables"]) != ALL_TABLES:
+                raise AssertionError("source download must contain every captured table")
             if any(not rows for rows in cls.payload["tables"].values()):
-                raise AssertionError("all 54 captured tables must have synthetic rows")
+                raise AssertionError("every captured table must have synthetic rows")
         finally:
             source.stop()
         cls.source_snapshot = freeze_database(cls.source_path)
@@ -803,6 +805,8 @@ class PortableBackupHTTP(unittest.TestCase):
                         expected.update(
                             status="unknown",
                             error="备份中的规划模型请求费用与执行状态未知，未重复执行。")
+                    if table == "app_agent_session":
+                        expected.update(status="restored", restored_read_only=1)
                     where = " AND ".join('"' + key + '"=?' for key in keys)
                     row = conn.execute('SELECT rowid,* FROM "' + table + '" WHERE ' + where,
                                        [expected[key] for key in keys]).fetchone()
@@ -813,7 +817,7 @@ class PortableBackupHTTP(unittest.TestCase):
                     for name, value in expected.items():
                         with self.subTest(table=table, column=name, row=source.get("id")):
                             if name.endswith("_json") and isinstance(value, str):
-                                if (table in PLANNING_TABLES or (
+                                if (table in PLANNING_TABLES or table in AGENT_TABLES or (
                                         table == "event_log" and name == "payload_json"
                                         and source["event_type"] == "project.portable_restored")):
                                     self.assertEqual(actual[name], source[name])
@@ -843,7 +847,7 @@ class PortableBackupHTTP(unittest.TestCase):
                 self.assertEqual(new, [mapping[item] for item in old])
         self.assert_existing_unchanged()
 
-    def test_complete_fifty_four_tables_restore_from_closed_source(self):
+    def test_complete_all_tables_restore_from_closed_source(self):
         before = freeze_database(self.path)
         preview = self.preview()
         self.assert_zero_write(before)
@@ -869,7 +873,7 @@ class PortableBackupHTTP(unittest.TestCase):
             self.assertEqual(state["chapters"][0]["body"], self.identities["body"])
         self.assert_zero_write(after)
         REPORT["observations"].append({
-            "test": self._testMethodName, "all_tables": 54,
+            "test": self._testMethodName, "all_tables": len(ALL_TABLES),
             "source_closed": True, "empty_backups_and_credentials": True,
             "row_fields_and_history_order_verified": True,
             "restored_project_id": result["project_id"],
@@ -1507,6 +1511,12 @@ class PortableBackupHTTP(unittest.TestCase):
                 ("app_reference_section", "document_id", "missing-reference"),
                 ("entity", "project_id", self.other_project),
                 ("app_ai_job", "branch_id", ALTERNATE_BRANCH),
+                ("app_agent_session", "chapter_id", "missing-chapter"),
+                ("app_agent_checkpoint", "session_id", "missing-session"),
+                ("app_agent_write", "session_id", "missing-session"),
+                ("app_agent_checkpoint", "branch_id", ALTERNATE_BRANCH),
+                ("app_agent_write", "checkpoint_key", "missing-checkpoint"),
+                ("app_agent_write", "checkpoint_ns", "another-namespace"),
                 ("ai_run", "project_id", self.other_project)):
             payload = copy.deepcopy(self.payload)
             payload["tables"][table][0][field] = value
@@ -1546,6 +1556,8 @@ class PortableBackupHTTP(unittest.TestCase):
         payload = copy.deepcopy(self.payload)
         payload["tables"].pop("app_entity_scope")
         payload["tables"].pop("app_candidate_revision")
+        for table in AGENT_TABLES:
+            payload["tables"].pop(table)
         self.assert_bad_preview(make_zip(payload))
         for row in payload["tables"]["app_ai_job"]:
             for field in ("context_json", "result_json"):
@@ -1560,13 +1572,36 @@ class PortableBackupHTTP(unittest.TestCase):
             row["consent_json"] = encode(value).decode("utf-8")
         preview = self.preview(make_zip(payload))
         self.assertEqual(preview["compatibility"]["absent_known_additive_tables"],
-                         ["app_candidate_revision", "app_entity_scope"])
+                         sorted(AGENT_TABLES | {"app_candidate_revision", "app_entity_scope"}))
         status, restored = self.call(
             "POST", "/api/backups/import/apply", self.confirmation(preview))
         self.assertEqual(status, 201, restored)
         self.assertEqual(len(restored["row_counts"]), 52)
         self.assert_complete_restore(restored, preview, payload=payload)
         self.assert_existing_unchanged()
+
+    def test_restored_agent_http_is_readable_but_cannot_resume(self):
+        restored, unused = self.restore()
+        project, branch = restored["project_id"], restored["branch_id"]
+        mapped = restored["identity_map"]["portable-agent-session"]
+        before = freeze_database(self.path)
+        status, response = self.call("GET", "/api/writing-agent", project=project, branch=branch)
+        self.assertEqual(status, 200, response)
+        session = next(item for item in response["sessions"] if item["id"] == mapped)
+        self.assertEqual(session["status"], "restored")
+        self.assertTrue(session["restored_read_only"])
+        self.assertEqual(session["checkpoint_id"], "")
+        self.assertIsNone(session["current_job"])
+        self.assert_zero_write(before)
+        for action in ("authorize", "advance", "applied", "cancel"):
+            with self.subTest(action=action):
+                status, response = self.call(
+                    "POST", "/api/writing-agent/" + mapped + "/resume",
+                    {"action": action, "checkpoint_id": "portable-agent-latest"},
+                    project=project, branch=branch)
+                self.assertEqual(status, 400, response)
+                self.assertIn("仅供回看", response["error"])
+                self.assert_zero_write(before)
 
     def test_restored_old_model_interfaces_are_read_only_zero_calls(self):
         restored, unused = self.restore()

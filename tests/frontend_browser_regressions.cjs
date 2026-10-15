@@ -1610,7 +1610,7 @@ async function main(){
     return {title:title.textContent,full_title:title.title,title_height:title.getBoundingClientRect().height,
      title_line_height:parseFloat(getComputedStyle(title).lineHeight),header:rect('.topbar'),sidebar:rect('.sidebar'),
      main:rect('#main'),page_scroll:scrollY,nav_scroll:nav.scrollTop,nav_height:nav.clientHeight,nav_content_height:nav.scrollHeight,
-     library_visible:hit('[data-view="library"]'),editor_visible:hit('[data-view="editor"]'),edit_visible:hit('#editProjectBtn'),
+     library_visible:hit('[data-view="library"]'),editor_visible:hit('[data-view="editor"]'),edit_visible:hit('[data-workbench-project]'),
      horizontal_overflow:document.documentElement.scrollWidth>innerWidth};
    });
    assert.equal(layout.title,title);assert.equal(layout.full_title,title);
@@ -1638,9 +1638,12 @@ async function main(){
    await page.evaluate(async()=>{
     window.scrollTo(0,220);await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
    });
-   const scrolled=await page.evaluate(()=>({page_scroll:scrollY,sidebar_top:document.querySelector('.sidebar').getBoundingClientRect().top,
-    header_top:document.querySelector('.topbar').getBoundingClientRect().top}));
-   assert.ok(scrolled.page_scroll>0);assert.equal(scrolled.sidebar_top,64);assert.equal(scrolled.header_top,0);
+   const scrolled=await page.evaluate(()=>{
+    const editor=document.querySelector('.workbench-manuscript');editor.scrollTop=220;
+    return {page_scroll:scrollY,editor_scroll:editor.scrollTop,sidebar_top:document.querySelector('.sidebar').getBoundingClientRect().top,
+     header_top:document.querySelector('.topbar').getBoundingClientRect().top};
+   });
+   assert.equal(scrolled.page_scroll,0);assert.ok(scrolled.editor_scroll>0);assert.equal(scrolled.sidebar_top,64);assert.equal(scrolled.header_top,0);
    measurements.push({viewport,layout,last,scrolled});
    await page.evaluate(async()=>{
     window.scrollTo(0,0);document.querySelector('.nav-list').scrollTop=0;

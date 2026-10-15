@@ -1,0 +1,293 @@
+{
+  "completed": true,
+  "started_at": "2026-10-15T16:40:34.838Z",
+  "scope": "Directory-only follow-up: 1000 synthetic chapters of 1500 characters; desktop 1440x1000.",
+  "limitations": [
+    "No typing or performance measurement; no real manuscript or model invocation.",
+    "Synthetic local verification is not a literary quality or competitive ranking claim."
+  ],
+  "trajectory": [
+    500,
+    1000,
+    1,
+    999,
+    2,
+    333
+  ],
+  "script_sha256": "c4a8980538a3b2e85af7828db3f8c2c21716dd45dcd6fa098989b9eb21d4ea10",
+  "original_geometry_script": {
+    "file": "long-workbench-baseline-20261016-v1/long-workbench-baseline-20261016.cjs",
+    "sha256": "21e02b4481d5465696f823d5b35988a60828d00e08171092eac64dee6936bd62"
+  },
+  "source_files_sha256_before": {
+    "app.js": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+    "author-workspace.js": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "index.html": "fa6beda8e711e391ff1cbbc1177ed64e0a15a1485a8af0aaba107becea257453",
+    "moyu_agent_checkpoint.py": "c7f5c9b693cab1808f495c610390c79b72a939fa7466ffa33fbe2ff80eeb0d14",
+    "moyu_agent_planning.py": "06894409fd21565ec118d273c742994f6bd32083bb88cd20854a3bd2d704ea54",
+    "moyu_agent_service.py": "d5e7bba7500e1d5cd6b439509de8ee3111cc4610dd410f1ebc27a8c788156749",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "34f57743ebcf9d009a9a954ceecb26a1d5f0513087269f6a26413dc7c1715882",
+    "moyu_context.py": "bdd96e3e9adcf65c21f3dc0411c52e12d99e3ce42bebe36c02cb233e34041b90",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_writing_agent.py": "dc14204e8059077471cf0796d70d5a99c2ac4869170daee355a93c627e52cd27",
+    "requirements.txt": "cfdc1c5a6c68f7b6736219d00ff4d84b12ae6829754717591b537c838a24bfd7",
+    "server.py": "118c5b757842aca27e24be3be28249fad845d3c47729d067a3ba1c4d5ae58442",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add"
+  },
+  "environment": {
+    "platform": "darwin",
+    "release": "25.6.0",
+    "arch": "arm64",
+    "cpu_model": "Apple M3 Max",
+    "cpus": 14,
+    "total_memory": 38654705664,
+    "node": "v24.19.0",
+    "viewport": {
+      "width": 1440,
+      "height": 1000
+    },
+    "headless": true,
+    "chrome": "155.0.8059.40"
+  },
+  "page_errors": [],
+  "external_requests": [],
+  "switches": [
+    {
+      "chapter": 500,
+      "scroll_top": 31599,
+      "scroll_height": 64041,
+      "selected_visible_in_sidebar": true,
+      "selected_top": 525.640625,
+      "selected_bottom": 586.4375,
+      "sidebar_top": 112,
+      "sidebar_bottom": 1000,
+      "active_chapter": "synthetic_chapter_500",
+      "selected_chapter": "synthetic_chapter_500",
+      "title_matches": true,
+      "body_matches": true,
+      "body_characters": 1500,
+      "directory_buttons": 1000,
+      "horizontal_overflow": false
+    },
+    {
+      "chapter": 1000,
+      "scroll_top": 63153,
+      "scroll_height": 64041,
+      "selected_visible_in_sidebar": true,
+      "selected_top": 870.078125,
+      "selected_bottom": 930.875,
+      "sidebar_top": 112,
+      "sidebar_bottom": 1000,
+      "active_chapter": "synthetic_chapter_1000",
+      "selected_chapter": "synthetic_chapter_1000",
+      "title_matches": true,
+      "body_matches": true,
+      "body_characters": 1500,
+      "directory_buttons": 1000,
+      "horizontal_overflow": false
+    },
+    {
+      "chapter": 1,
+      "scroll_top": 0,
+      "scroll_height": 64041,
+      "selected_visible_in_sidebar": true,
+      "selected_top": 290,
+      "selected_bottom": 350.796875,
+      "sidebar_top": 112,
+      "sidebar_bottom": 1000,
+      "active_chapter": "synthetic_chapter_1",
+      "selected_chapter": "synthetic_chapter_1",
+      "title_matches": true,
+      "body_matches": true,
+      "body_characters": 1500,
+      "directory_buttons": 1000,
+      "horizontal_overflow": false
+    },
+    {
+      "chapter": 999,
+      "scroll_top": 63153,
+      "scroll_height": 64041,
+      "selected_visible_in_sidebar": true,
+      "selected_top": 806.28125,
+      "selected_bottom": 867.078125,
+      "sidebar_top": 112,
+      "sidebar_bottom": 1000,
+      "active_chapter": "synthetic_chapter_999",
+      "selected_chapter": "synthetic_chapter_999",
+      "title_matches": true,
+      "body_matches": true,
+      "body_characters": 1500,
+      "directory_buttons": 1000,
+      "horizontal_overflow": false
+    },
+    {
+      "chapter": 2,
+      "scroll_top": 0,
+      "scroll_height": 64041,
+      "selected_visible_in_sidebar": true,
+      "selected_top": 353.796875,
+      "selected_bottom": 414.59375,
+      "sidebar_top": 112,
+      "sidebar_bottom": 1000,
+      "active_chapter": "synthetic_chapter_2",
+      "selected_chapter": "synthetic_chapter_2",
+      "title_matches": true,
+      "body_matches": true,
+      "body_characters": 1500,
+      "directory_buttons": 1000,
+      "horizontal_overflow": false
+    },
+    {
+      "chapter": 333,
+      "scroll_top": 20945,
+      "scroll_height": 64041,
+      "selected_visible_in_sidebar": true,
+      "selected_top": 525.5625,
+      "selected_bottom": 586.359375,
+      "sidebar_top": 112,
+      "sidebar_bottom": 1000,
+      "active_chapter": "synthetic_chapter_333",
+      "selected_chapter": "synthetic_chapter_333",
+      "title_matches": true,
+      "body_matches": true,
+      "body_characters": 1500,
+      "directory_buttons": 1000,
+      "horizontal_overflow": false
+    }
+  ],
+  "materials": {
+    "ready": true,
+    "chapters": 1000,
+    "body_characters": 1500000,
+    "han_characters": 1368107,
+    "python": "3.11.17",
+    "sqlite": "3.53.1",
+    "search_index": "bigram",
+    "provider_environment_blank": true
+  },
+  "initial_directory": {
+    "scroll_top": 0,
+    "scroll_height": 64041,
+    "selected_visible_in_sidebar": true,
+    "selected_top": 290,
+    "selected_bottom": 350.796875,
+    "sidebar_top": 112,
+    "sidebar_bottom": 1000,
+    "active_chapter": "synthetic_chapter_1",
+    "selected_chapter": "synthetic_chapter_1",
+    "title_matches": true,
+    "body_matches": true,
+    "body_characters": 1500,
+    "directory_buttons": 1000,
+    "horizontal_overflow": false
+  },
+  "server": {
+    "calls": {
+      "provider": 0,
+      "worker": 0,
+      "outbound": 0
+    },
+    "events": [
+      {
+        "method": "GET",
+        "path": "/",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/styles.css",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/editor-sync.js",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/app.js",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/author-workspace.js",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/ai/status",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/state",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/context",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/writing-agent",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/writing-agent",
+        "status": 200
+      },
+      {
+        "method": "GET",
+        "path": "/api/context",
+        "status": 200
+      }
+    ],
+    "thread_stopped": true
+  },
+  "visibility_passed": true,
+  "source_files_sha256_after": {
+    "app.js": "94efb431f624b5a9530491de1624796634e948a017623c687eb1a739fb5938d6",
+    "author-workspace.js": "a448e9d33c58c39429a434c03e71e7685d627ce57c73280d19e2dc3d296649fc",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "index.html": "fa6beda8e711e391ff1cbbc1177ed64e0a15a1485a8af0aaba107becea257453",
+    "moyu_agent_checkpoint.py": "c7f5c9b693cab1808f495c610390c79b72a939fa7466ffa33fbe2ff80eeb0d14",
+    "moyu_agent_planning.py": "06894409fd21565ec118d273c742994f6bd32083bb88cd20854a3bd2d704ea54",
+    "moyu_agent_service.py": "d5e7bba7500e1d5cd6b439509de8ee3111cc4610dd410f1ebc27a8c788156749",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "34f57743ebcf9d009a9a954ceecb26a1d5f0513087269f6a26413dc7c1715882",
+    "moyu_context.py": "bdd96e3e9adcf65c21f3dc0411c52e12d99e3ce42bebe36c02cb233e34041b90",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_writing_agent.py": "dc14204e8059077471cf0796d70d5a99c2ac4869170daee355a93c627e52cd27",
+    "requirements.txt": "cfdc1c5a6c68f7b6736219d00ff4d84b12ae6829754717591b537c838a24bfd7",
+    "server.py": "118c5b757842aca27e24be3be28249fad845d3c47729d067a3ba1c4d5ae58442",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add"
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-10-15T16:40:36.798Z"
+}

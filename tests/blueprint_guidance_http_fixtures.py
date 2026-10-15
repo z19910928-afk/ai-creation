@@ -218,7 +218,7 @@ def main():
                 assert call("PUT", "/api/blueprint", {"expected_version": latest["version"], "blueprint": huge})[0] == 200
                 status, rejected = call("POST", "/api/ai/prompt-preview", {
                     "task": "continue", "chapter_id": chapter_id, "retrieval_profile": {"max_tokens": 4000}})
-                assert status == 400 and "budget" in rejected["error"], rejected
+                assert status == 400 and "超出本次材料容量" in rejected["error"], rejected
                 assert len(Provider.calls) == old_calls
                 checks += 1
             finally:

@@ -412,7 +412,7 @@ class ContextPipelineTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "stale"):
             assemble_context(state, "long", selection={"range": {"start": 0, "end": 7}, "revision_id": "old"}, revisions={"long": "r1"})
         state["chapters"][0]["body"] *= 100
-        with self.assertRaisesRegex(ValueError, "conservative"):
+        with self.assertRaisesRegex(ValueError, "超出本次材料容量"):
             assemble_context(state, "long", task="polish")
 
     def test_paragraph_chunks_do_not_change_source(self):

@@ -513,7 +513,7 @@ def fit_budget(context: dict[str, Any], max_tokens: int, *, reserve_bytes: int =
         if not removed:
             if context.get("reference_passages"):
                 raise ValueError("当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。")
-            raise ValueError("current chapter or pinned material exceeds the conservative prompt budget; select a passage or increase the context budget")
+            raise ValueError("当前原稿或必保资料超出本次材料容量，请缩小正文选区、减少必保资料或增加材料容量。")
         truncation["applied"] = True
         truncation["removed"].append({"kind": removed[0], "id": removed[1].get("id"), "reason": "conservative_prompt_budget"})
     for key in ("retrieved_chapters", "previous_chapters", "confirmed_memory", "story_cards", "author_plans"):
@@ -531,7 +531,7 @@ def fit_budget(context: dict[str, Any], max_tokens: int, *, reserve_bytes: int =
         if old == (meta["estimated_chars"], meta["estimated_tokens"], meta["estimated_utf8_bytes"]):
             break
     if serialized_size() > allowance:
-        raise ValueError("material metadata exceeds the conservative prompt budget; reduce pinned materials")
+        raise ValueError("资料及来源说明超出本次材料容量，请减少必保资料或增加材料容量。")
     return context
 
 

@@ -39,7 +39,7 @@ const safeValue = value => {
 const fingerprints = () => {
   const currentFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/),
     ...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/),
-    '.github/workflows/ci.yml', 'index.html', 'styles.css'];
+    '.github/workflows/ci.yml', 'requirements.txt', 'index.html', 'styles.css'];
   return Object.fromEntries(currentFiles.map(file => [file, hash(fs.readFileSync(path.join(root, file)))]));
 };
 const report = {passed: false, scope: 'Python3.11/Node24 release; macOS arm64; isolated desktop tests and free local providers.',
@@ -88,6 +88,12 @@ function saveStructuredEvidence(name, filename, value) {
 }
 
 const requiredScreenshots = {
+  writing_agent_browser_regressions: ['writing-agent-plan-1440x1000.png',
+    'writing-agent-complete-1440x1000.png', 'writing-agent-1280x900.png',
+    'writing-workbench-1440x1000.png', 'writing-workbench-1280x900.png',
+    'writing-agent-polish-1280x900.png', 'writing-agent-polish-compare-1280x900.png',
+    'writing-agent-overview-confirm-1280x900.png',
+    'writing-agent-full-plan-1280x900.png'],
   analysis_guidance_browser_regressions: ['analysis-guidance-stale-desktop.png',
     'analysis-guidance-stale-1280x900.png'],
   frontend_browser_regressions: ['desktop-editor.png', 'compact-desktop-editor.png', 'desktop-planning.png',

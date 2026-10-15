@@ -74,6 +74,7 @@ let state=load();let view='dashboard';let activeChapter=storage.get(cacheKey(':a
 let backendOnline=false;let syncTimer=null;let syncInFlight=false;let syncQueued=false;let mutationSeq=0;
 let confirmedState=loadConfirmed();let saveError='';let mergePending=null;let syncPromise=null;let independentWrite=false;
 let operationChain=Promise.resolve();let hydrateSeq=0;let aiStatusSeq=0;
+let memoryEvidenceSequence=0;const memoryEvidenceScopes=new WeakMap();
 let aiBusy=false;let aiDraft=null;let aiRunId=null;let aiStatus={mode:'offline',model:'离线创作助手',configured:false};
 let storyMap={relationships:[],timeline:[],foreshadowing:[],conflicts:[],character_states:[],knowledge_scope:{}};
 let storyLoaded=false;let storyLoadedChapter=null;
@@ -862,28 +863,34 @@ function showMergeConflict(){
  };
 }
 function durableOperation(path,method='POST',body={},guard=null,onCommitted=null){
- const owner=requestedProject;
+ const scope={owner:requestedProject,branch:state.branch_id||state.project?.branch_id||'main'};
  const operation=operationChain.catch(()=>{}).then(()=>{
-  if(owner!==requestedProject)throw new Error('作品已切换，请回到原作品重新操作');
+  if(scope.owner!==requestedProject||scope.branch!==(state.branch_id||state.project?.branch_id||'main'))
+   throw new Error('作品或版本已切换，请回到原作品重新操作');
   if(guard&&!guard())throw new Error('操作已过期，请重新操作');
-  return performDurableOperation(path,method,body,guard,onCommitted);
+  return performDurableOperation(path,method,body,guard,onCommitted,scope);
  });
  operationChain=operation.catch(()=>{});return operation;
 }
-async function performDurableOperation(path,method='POST',body={},guard=null,onCommitted=null){
+async function performDurableOperation(path,method='POST',body={},guard=null,onCommitted=null,scope){
+ const current=()=>scope.owner===requestedProject&&scope.branch===(state.branch_id||state.project?.branch_id||'main');
  if(!backendOnline)throw new Error('需要恢复连接后完成此操作，当前草稿已保留');
  if(!await syncBackend())throw new Error('请先保存或合并当前草稿');
+ if(!current())throw new Error('作品或版本已切换，请回到原作品重新操作');
  if(guard&&!guard())throw new Error('操作已过期，请重新操作');
- const before=MoyuSync.copy(state);const owner=requestedProject;independentWrite=true;
+ const before=MoyuSync.copy(state);independentWrite=true;
  try{
-  const response=await fetch(path,{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  const response=await fetch(path,{method,headers:{'Content-Type':'application/json',
+   'X-Moyu-Project':scope.owner,'X-Moyu-Branch':scope.branch},body:JSON.stringify(body)});
   const data=await response.json().catch(()=>({}));
   if(!response.ok)throw new Error(data.error||`操作失败（${response.status}）`);
   if(onCommitted)onCommitted(data);
-  if(owner===requestedProject){
+  if(current()){
    const returned=normalizeState(data.state);
-   const remote=returned?.project?.id===owner?returned:await readServerState();
-   receiveState(remote,before);
+   const remote=returned?.project?.id===scope.owner&&
+    (returned.branch_id||returned.project.branch_id||'main')===scope.branch?returned:
+    await readServerState(scope.owner,scope.branch);
+   if(current())receiveState(remote,before);
   }
   return data;
  }finally{independentWrite=false;saveIndicator();if(isDirty()&&!mergePending)syncTimer=setTimeout(syncBackend,180)}
@@ -934,15 +941,59 @@ async function decideMemory(id,status,reason=''){
  await durableOperation(`${API_BASE}/memory/${encodeURIComponent(id)}`,'PATCH',payload);
  render();toast(`记忆已${status==='rejected'?'拒绝':status==='accepted'?'确认':'标记为待确认'}`)
 }
+function dismissMemoryEvidence(){
+ ++memoryEvidenceSequence;
+ document.querySelectorAll('[data-memory-evidence-dialog]').forEach(wrap=>wrap.remove());
+}
+function memoryEvidenceScope(){
+ return {owner:requestedProject,branch:state.branch_id||state.project?.branch_id||'main',
+  chapter:activeChapter,view,host:document.querySelector('#main')?.firstElementChild,sequence:memoryEvidenceSequence};
+}
+function memoryEvidenceCurrent(scope){
+ return scope&&scope.owner===requestedProject&&scope.branch===(state.branch_id||state.project?.branch_id||'main')&&
+  scope.chapter===activeChapter&&scope.view===view&&scope.host===document.querySelector('#main')?.firstElementChild&&
+  scope.sequence===memoryEvidenceSequence;
+}
 async function showMemoryEvidence(id){
  if(!backendOnline)return toast('启动 SQLite 服务后才能查看证据链');
- try{const r=await fetch(`${API_BASE}/memory/${encodeURIComponent(id)}`);const data=await r.json();if(!r.ok)throw new Error(data.error||`HTTP ${r.status}`);const m=data.memory||{};const rows=(data.evidence||[]).map(e=>{const s=e.source_span||{};const cm=e.candidate_memory||{};return `<article class="record-card"><strong>${esc(s.chapter_title||'来源章节未找到')}</strong><p class="modal-help">${esc(s.revision_id||'无 revision')} · 字符 ${s.start_codepoint??'?'}–${s.end_codepoint??'?'} · ${esc(s.status||'未知')} ${s.current===false?'· 不是当前版本':''}</p><blockquote>${esc(s.quote||'未保存原文摘录')}</blockquote>${e.stale?`<p class="check-bad">证据需要复核：${esc((e.stale_reasons||[]).join('、'))}</p>`:''}<p class="modal-help">候选记忆：${esc(cm.payload?.name||m.name||'')} · 状态 ${esc(cm.status||'未知')}</p></article>`}).join('');const assertions=(data.assertions||[]).map(a=>`<div class="assertion-review-row"><p class="modal-help">正典 assertion：<code>${esc(a.id)}</code> · ${esc(a.state)}${a.stale?' · 证据失效':''}</p><button class="ghost-btn" data-assertion-review="${safeId(a.id)}" data-assertion-state="${esc(a.state)}" data-memory-id="${safeId(id)}">审查状态</button></div>`).join('');const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.innerHTML=`<div class="modal"><h3>事实依赖与证据</h3><p class="modal-help"><strong>${esc(m.name||'未命名记忆')}</strong> · ${esc(m.type||'')} · ${esc(memoryStatusLabel(m.status,m.stale))}</p>${assertions||'<p class="modal-help">尚未生成正典 assertion。</p>'}<div class="revision-list">${rows||'<p class="modal-help">没有可定位的证据。</p>'}</div><div class="modal-actions"><button class="ghost-btn" data-close>关闭</button></div></div>`;document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove()}catch(e){toast(`证据读取失败：${e.message}`)}
+ dismissMemoryEvidence();const scope=memoryEvidenceScope();
+ try{
+  const r=await fetch(`${API_BASE}/memory/${encodeURIComponent(id)}`,{headers:{
+   Accept:'application/json','X-Moyu-Project':scope.owner,'X-Moyu-Branch':scope.branch}});
+  const data=await r.json();if(!memoryEvidenceCurrent(scope))return;
+  if(!r.ok)throw new Error(data.error||`HTTP ${r.status}`);
+  const m=data.memory||{};
+  const rows=(data.evidence||[]).map(e=>{
+   const s=e.source_span||{},cm=e.candidate_memory||{};
+   return `<article class="record-card"><strong>${esc(s.chapter_title||'来源章节未找到')}</strong>
+    <p class="modal-help">${esc(s.revision_id||'无 revision')} · 字符 ${s.start_codepoint??'?'}–${s.end_codepoint??'?'} · ${esc(s.status||'未知')} ${s.current===false?'· 不是当前版本':''}</p>
+    <blockquote>${esc(s.quote||'未保存原文摘录')}</blockquote>
+    ${e.stale?`<p class="check-bad">证据需要复核：${esc((e.stale_reasons||[]).join('、'))}</p>`:''}
+    <p class="modal-help">候选记忆：${esc(cm.payload?.name||m.name||'')} · 状态 ${esc(cm.status||'未知')}</p></article>`;
+  }).join('');
+  const assertions=(data.assertions||[]).map(a=>`<div class="assertion-review-row">
+   <p class="modal-help">正典 assertion：<code>${esc(a.id)}</code> · ${esc(a.state)}${a.stale?' · 证据失效':''}</p>
+   <button class="ghost-btn" data-assertion-review="${safeId(a.id)}" data-assertion-state="${esc(a.state)}" data-memory-id="${safeId(id)}">审查状态</button></div>`).join('');
+  const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.memoryEvidenceDialog='';
+  wrap.innerHTML=`<div class="modal"><h3>事实依赖与证据</h3><p class="modal-help"><strong>${esc(m.name||'未命名记忆')}</strong> · ${esc(m.type||'')} · ${esc(memoryStatusLabel(m.status,m.stale))}</p>
+   ${assertions||'<p class="modal-help">尚未生成正典 assertion。</p>'}
+   <div class="revision-list">${rows||'<p class="modal-help">没有可定位的证据。</p>'}</div>
+   <div class="modal-actions"><button class="ghost-btn" data-close>关闭</button></div></div>`;
+  memoryEvidenceScopes.set(wrap,scope);document.body.append(wrap);
+  wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
+ }catch(e){if(memoryEvidenceCurrent(scope))toast(`证据读取失败：${e.message}`)}
 }
-async function reviewAssertion(id,current,memoryId){
+async function reviewAssertion(id,current,memoryId,scope=memoryEvidenceScope(),wrap=null){
+ const stillCurrent=()=>memoryEvidenceCurrent(scope)&&(!wrap||wrap.isConnected);
+ if(!stillCurrent()){wrap?.remove();return}
  if(!backendOnline)return toast('启动 SQLite 服务后才能审查 assertion');
  const next=prompt('输入状态：canon / candidate / contradicted / superseded / retracted',String(current||'candidate'));if(next===null)return;
- const reason=prompt('填写审查理由（建议说明证据或冲突）','')??'';
- try{const data=await durableOperation(`${API_BASE}/assertions/${encodeURIComponent(id)}/review`,'POST',{state:next.trim(),reason});toast(`事实已更新为 ${data.state||next.trim()}`);showMemoryEvidence(memoryId)}catch(error){toast(`事实审查失败：${error.message}`)}
+ const reason=prompt('填写审查理由（建议说明证据或冲突）','');if(reason===null||!stillCurrent())return;
+ try{
+  const data=await durableOperation(`${API_BASE}/assertions/${encodeURIComponent(id)}/review`,'POST',{state:next.trim(),reason},stillCurrent);
+  if(!stillCurrent())return;
+  toast(`事实已更新为 ${data.state||next.trim()}`);showMemoryEvidence(memoryId);
+ }catch(error){if(stillCurrent())toast(`事实审查失败：${error.message}`)}
 }
 async function reanchorMemory(id){
  const memory=state.memory.find(item=>item.id===id);if(!backendOnline||!memory)return toast('启动 SQLite 服务后才能重新定位证据');
@@ -1369,7 +1420,7 @@ async function showFinalizationCheck(){
 }
 function words(){return state.chapters.reduce((n,c)=>n+c.body.replace(/\s/g,'').length,0)}
 function chapter(id=activeChapter){return state.chapters.find(c=>c.id===id)}
-function render(){cacheInstructionDraft();syncReferenceScope();const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
+function render(){dismissMemoryEvidence();cacheInstructionDraft();syncReferenceScope();const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
  document.querySelector('#projectTitle').textContent=state.project.title;document.querySelector('#projectTitle').title=state.project.title;document.querySelector('#projectMeta').textContent=`${state.chapters.length} 章 · ${words()} 字`;
  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
  document.querySelector('#main').innerHTML=(views[view]||views.dashboard)();bind();ensureFinishButton();saveIndicator();updateTaskCount();
@@ -1517,7 +1568,12 @@ function bind(){
 }
 window.addEventListener('beforeunload',()=>cacheInstructionDraft());
 document.addEventListener('click',e=>{const button=e.target.closest?.('[data-chapter]');if(button?.dataset.chapter)localStorage.setItem(ACTIVE_KEY,button.dataset.chapter)});
-document.addEventListener('click',e=>{const assertion=e.target.closest?.('[data-assertion-review]');if(!assertion)return;e.preventDefault();e.stopPropagation();reviewAssertion(assertion.dataset.assertionReview,assertion.dataset.assertionState,assertion.dataset.memoryId)},true);
+document.addEventListener('click',e=>{
+ const assertion=e.target.closest?.('[data-assertion-review]');if(!assertion)return;e.preventDefault();e.stopPropagation();
+ const wrap=assertion.closest('[data-memory-evidence-dialog]'),scope=memoryEvidenceScopes.get(wrap);
+ if(!memoryEvidenceCurrent(scope)){wrap?.remove();return}
+ reviewAssertion(assertion.dataset.assertionReview,assertion.dataset.assertionState,assertion.dataset.memoryId,scope,wrap);
+},true);
 document.addEventListener('click',e=>{const reject=e.target.closest?.('[data-memory-reject]');const review=e.target.closest?.('[data-memory-review]');const accept=e.target.closest?.('[data-memory]');const id=reject?.dataset.memoryReject||review?.dataset.memoryReview||accept?.dataset.memory;if(!id)return;e.preventDefault();e.stopPropagation();if(reject){const reason=prompt('可选：为什么拒绝这条记忆？','')??'';decideMemory(id,'rejected',reason).catch(error=>toast(`记忆拒绝失败：${error.message}`))}else if(review)decideMemory(id,'candidate').catch(error=>toast(`记忆重新审查失败：${error.message}`));else decideMemory(id,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`))},true);
 document.addEventListener('click',event=>{const button=event.target.closest?.('[data-search-jump]');if(!button)return;event.preventDefault();openSearchEvidence(button).catch(error=>toast(`原文定位失败：${error.message}`))});
 const actions={refreshStory:async(silent=false)=>{if(!backendOnline){if(!silent)toast('启动 SQLite 服务后才能读取故事结构');return}try{const r=await fetch('/api/story-map',{headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const structure=await r.json();structure.knowledge_scope={};try{const context=await fetch(`/api/context?chapter_id=${encodeURIComponent(activeChapter||'')}&retrieval_profile=${profileQuery()}`,{headers:{Accept:'application/json'}});if(context.ok){const contextData=await context.json();structure.knowledge_scope=contextData.budget?.knowledge_scope||{}}}catch{}storyMap={...structure,character_states:Array.isArray(structure.character_states)?structure.character_states:[],knowledge_scope:structure.knowledge_scope||{}};storyLoaded=true;storyLoadedChapter=activeChapter;render();if(!silent)toast('故事结构已刷新')}catch(e){if(!silent)toast(`读取故事结构失败：${e.message}`)}},addRelationship:()=>relationshipModal(),addTimeline:()=>timelineModal(),addForeshadow:()=>foreshadowModal(),editRelationship:button=>relationshipModal(storyMap.relationships.find(x=>x.id===button?.dataset.storyId)),editTimeline:button=>timelineModal(storyMap.timeline.find(x=>x.id===button?.dataset.storyId)),editForeshadow:button=>foreshadowModal(storyMap.foreshadowing.find(x=>x.id===button?.dataset.storyId)),deleteRelationship:button=>deleteStoryItem('relationship',button?.dataset.storyId),deleteTimeline:button=>deleteStoryItem('timeline',button?.dataset.storyId),deleteForeshadow:button=>deleteStoryItem('foreshadow',button?.dataset.storyId),refreshMemory:()=>{captureMemories();save();render();toast('已刷新记忆候选')},newChapter:()=>{if(state.project.book_status==='complete')return toast('全书已完稿，请先在终稿检查中恢复写作');const c={id:crypto.randomUUID(),title:`第 ${state.chapters.length+1} 章`,body:'',status:'草稿',updated:Date.now()};state.chapters.push(c);activeChapter=c.id;localStorage.setItem(ACTIVE_KEY,c.id);view='editor';save();render()},newRecord:()=>editRecord(),newPlot:()=>modal('新增伏笔',`<label>伏笔内容</label><textarea id="plotText" placeholder="例如：第一章出现的旧钥匙……"></textarea>`,w=>{const v=w.querySelector('#plotText').value.trim();if(v)state.plot.setup.push(v)})};
@@ -1640,7 +1696,8 @@ function recordScopeLabel(record){
 }
 function editRecord(id){
  const r=id?state.records.find(x=>x.id===id):{type:'人物',name:'',description:'',aliases:[]};if(!r)return;
- const owner=requestedProject,branch=state.branch_id||'main',scope=r.knowledge_scope||{},owners=recordKnowledgeOwners(r);
+ const owner=requestedProject,branch=state.branch_id||state.project?.branch_id||'main',scope=r.knowledge_scope||{},owners=recordKnowledgeOwners(r);
+ const current=()=>owner===requestedProject&&branch===(state.branch_id||state.project?.branch_id||'main');
  const start=chapterNumberFromScope(scope.available_from||r.available_from||r.valid_start||scope.valid_start)||'';
  const end=chapterNumberFromScope(r.valid_end||scope.valid_end)||'';
  const visibility=owners===null?'all':owners.length?'people':'author';
@@ -1655,7 +1712,7 @@ function editRecord(id){
  <label>知情人物<select id="recordKnown" multiple size="3">${storyEntityMultiOptions(owners||[])}</select></label>
  <div class="settings-fields"><label>第几章起可用<input id="recordAvailable" type="number" min="1" max="10000" value="${start}" placeholder="不限"></label>
  <label>到第几章有效<input id="recordUntil" type="number" min="1" max="10000" value="${end}" placeholder="不限"></label></div></fieldset>`,async w=>{
-  if(owner!==requestedProject||branch!==(state.branch_id||'main'))throw new Error('作品已经切换，请重新打开设定');
+  if(!current())throw new Error('作品已经切换，请重新打开设定');
   const aliases=normalizeAliases((w.querySelector('#recordAliases').value||'').split(/[、,，\n]/));
   if(!aliases)throw new Error('别名最多20个，每个不超过100字');
   const selected=w.querySelector('#recordVisibility').value;
@@ -1672,12 +1729,15 @@ function editRecord(id){
   if(!payload.name)throw new Error('请填写设定名称');
   if(Array.from(payload.name).length>500||Array.from(payload.type).length>100||Array.from(payload.description).length>20000)
    throw new Error('设定名称、类型或描述超过支持的字数');
-  if(backendOnline)await durableOperation(id?`/api/records/${encodeURIComponent(id)}`:'/api/records',id?'PATCH':'POST',payload);
+  if(backendOnline)await durableOperation(id?`/api/records/${encodeURIComponent(id)}`:'/api/records',id?'PATCH':'POST',payload,current);
   else{
    const target=id?state.records.find(item=>item.id===id):{id:crypto.randomUUID()};
    Object.assign(target,payload);if(!id)state.records.push(target);save();
   }
-  render();toast(backendOnline?'设定和可见范围已保存到本机':'设定和可见范围已保留为本页草稿');
+  if(!current())return;
+  if(typeof authorRefreshWorkbenchKnowledge==='function'&&authorRefreshWorkbenchKnowledge())authorLoadWorkbenchContext();
+  else render();
+  toast(backendOnline?'设定和可见范围已保存到本机':'设定和可见范围已保留为本页草稿');
  });
 }
 function toast(t){const x=document.querySelector('#toast');x.textContent=t;x.classList.add('show');setTimeout(()=>x.classList.remove('show'),1500)}
