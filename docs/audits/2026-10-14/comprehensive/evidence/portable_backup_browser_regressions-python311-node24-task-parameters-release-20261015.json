@@ -1,0 +1,1285 @@
+{
+  "passed": true,
+  "started_at": "2026-10-14T23:00:01.591Z",
+  "synthetic_only": true,
+  "scope": "电脑真实Chrome、临时源与全新目标SQLite、真实ZIP下载和文件选择；跨服务恢复、编辑保存及失败恢复",
+  "claim_limit": "仅验证电脑恢复交互与数据保护，不证明文学质量或第一梯队地位",
+  "cases": [
+    {
+      "name": "54表合成源服务真实下载完整ZIP后关闭，目标目录启动前为空",
+      "passed": true,
+      "elapsed_ms": 1196
+    },
+    {
+      "name": "1440×1000文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "passed": true,
+      "elapsed_ms": 1794
+    },
+    {
+      "name": "1280×900文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "passed": true,
+      "elapsed_ms": 1811
+    },
+    {
+      "name": "1280×800长文件名及200字作品名无横向溢出且确认控件可点击",
+      "passed": true,
+      "elapsed_ms": 542
+    },
+    {
+      "name": "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+      "passed": true,
+      "elapsed_ms": 503
+    },
+    {
+      "name": "取消和已知预览重新选择只释放服务器文件，不建立作品",
+      "passed": true,
+      "elapsed_ms": 431
+    },
+    {
+      "name": "迟到A预览不能替换B，A与B服务器文件最终都释放",
+      "passed": true,
+      "elapsed_ms": 419
+    },
+    {
+      "name": "预览响应迟到时close使窗口失效，不能应用原文件",
+      "passed": true,
+      "elapsed_ms": 382
+    },
+    {
+      "name": "预览响应迟到时project使窗口失效，不能应用原文件",
+      "passed": true,
+      "elapsed_ms": 649
+    },
+    {
+      "name": "预览响应迟到时branch使窗口失效，不能应用原文件",
+      "passed": true,
+      "elapsed_ms": 351
+    },
+    {
+      "name": "双击确认只发一次恢复，正在保存时不能修改标题或重复提交",
+      "passed": true,
+      "elapsed_ms": 516
+    },
+    {
+      "name": "保存响应丢失后同一身份重试只返回原副本，浏览器不保存ZIP内容",
+      "passed": true,
+      "elapsed_ms": 523
+    },
+    {
+      "name": "页面刷新且服务重启后重新选择先取消再读回执，只能打开已保存副本",
+      "passed": true,
+      "elapsed_ms": 1441
+    },
+    {
+      "name": "副本已保存后origin读取失败只重开同一身份且不再次建立",
+      "passed": true,
+      "elapsed_ms": 511
+    },
+    {
+      "name": "副本已保存后target读取失败只重开同一身份且不再次建立",
+      "passed": true,
+      "elapsed_ms": 519
+    },
+    {
+      "name": "副本已保存后both读取失败只重开同一身份且不再次建立",
+      "passed": true,
+      "elapsed_ms": 850
+    },
+    {
+      "name": "重新打开已保存副本时保留另一页真实编辑的离线草稿，不把旧稿写到新作品",
+      "passed": true,
+      "elapsed_ms": 1152
+    },
+    {
+      "name": "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+      "passed": true,
+      "elapsed_ms": 599
+    },
+    {
+      "name": "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+      "passed": true,
+      "elapsed_ms": 637
+    },
+    {
+      "name": "预览响应尚未到达时刷新仍释放上传前身份，迟到响应不能占用服务器槽",
+      "passed": true,
+      "elapsed_ms": 515
+    },
+    {
+      "name": "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择",
+      "passed": true,
+      "elapsed_ms": 586
+    }
+  ],
+  "screenshots": [
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-preview-1440x1000.png",
+      "sha256": "b0d31a948a4cbb73f6923a1e45c9304c63019ed1a13aa86ec90e71da57235502"
+    },
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-editor-1440x1000.png",
+      "sha256": "a81e98a20a0de1d3c81a12f59fe0615f62d047acf34fb48c5c9eae8626196e00"
+    },
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-preview-1280x900.png",
+      "sha256": "a26aed36a204b672abeb02cc0b71985883487ee34a7f81922ed47ec3cfefd100"
+    },
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-editor-1280x900.png",
+      "sha256": "373fa449144500313916759ad2acaf75b695e5916d92d24070b33ce293256d6e"
+    },
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-long-title-1280x800.png",
+      "sha256": "9dad5dfb6c450b820fd4fdb6b231a8eb85a2e61e606659d3cbec23697e656552"
+    },
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-pending-reloaded.png",
+      "sha256": "851f3d1e27357599ed10e4641872e297c38c0f0cfdf63f193a50ee29591ce2c2"
+    },
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-status-saved.png",
+      "sha256": "626383d28a77a1fe2f4fd69bf1f8265ddd62ebf93750c443c6b7ef449da79939"
+    },
+    {
+      "file": "artifacts/release-verification-task-parameters-release-20261015/portable_backup_browser_regressions/portable-saved-reopen.png",
+      "sha256": "8a0b6100cc09b0b58352d8f820d658d47f1bc776c49a4d233a33b1f8b0a7a9af"
+    }
+  ],
+  "page_errors": [],
+  "external_browser_requests": [],
+  "provider_calls": 0,
+  "worker_calls": 0,
+  "outbound_calls": 0,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "app.js": "25a2d3f4bdd3ece1e05071acc206de196ba49cb80f2590df0456bdffd29ccad6",
+    "author-workspace.js": "6f50866443ce51a160a80f301398c876ab5845c00c147237dbf121425e10e1ce",
+    "styles.css": "bf4747f751c99da376d6bab3a619aaf17718411be7049619b00f83b1e04fab4b",
+    "index.html": "42927e1320df95f53544f3a1ed1c561425f362526d9ebe1c988531d0ae0e265f",
+    "server.py": "369d910c530a00c57dd9507736cd99c825ddd5f51c9b0451470c150a2163fc14",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_backups.py": "0e4546501cef3d7ec22fe5534a8f934f256def173f24e738e26a0ec648ec1511",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/portable_backup_fixtures.py": "118ea9f7b0450af7acf03a9fa9b7b383f6eb4a387e90b629d1b7c35450524c4e",
+    "tests/portable_backup_browser_regressions.cjs": "3b587264252cd63a2e76f472f1ebfe7a30b03fb33319a5ccf1b8e9d043a9cfdb"
+  },
+  "source_download": {
+    "bytes": 10960,
+    "sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+    "captured_tables": 54,
+    "every_captured_table_nonempty": true,
+    "real_browser_download": true
+  },
+  "source_service_closed_before_target": true,
+  "desktop_layouts": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "label": "恢复确认",
+      "controls": [
+        {
+          "selector": "#portableRestoreTitle",
+          "width": 634,
+          "height": 41,
+          "x": 403,
+          "y": 572.296875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "#portableRestoreConfirm",
+          "width": 13,
+          "height": 16,
+          "x": 403,
+          "y": 654.1875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [data-close]",
+          "width": 56,
+          "height": 40.390625,
+          "x": 723.609375,
+          "y": 704.6875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [data-reselect]",
+          "width": 117.390625,
+          "height": 40.390625,
+          "x": 788.609375,
+          "y": 704.6875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [type=\"submit\"]",
+          "width": 122,
+          "height": 40.390625,
+          "x": 915,
+          "y": 704.6875,
+          "within": true,
+          "unobstructed": true
+        }
+      ],
+      "modal": {
+        "width": 680,
+        "height": 536.171875,
+        "horizontal_overflow": false,
+        "within": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "label": "恢复确认",
+      "controls": [
+        {
+          "selector": "#portableRestoreTitle",
+          "width": 634,
+          "height": 41,
+          "x": 323,
+          "y": 522.296875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "#portableRestoreConfirm",
+          "width": 13,
+          "height": 16,
+          "x": 323,
+          "y": 604.1875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [data-close]",
+          "width": 56,
+          "height": 40.390625,
+          "x": 643.609375,
+          "y": 654.6875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [data-reselect]",
+          "width": 117.390625,
+          "height": 40.390625,
+          "x": 708.609375,
+          "y": 654.6875,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [type=\"submit\"]",
+          "width": 122,
+          "height": 40.390625,
+          "x": 835,
+          "y": 654.6875,
+          "within": true,
+          "unobstructed": true
+        }
+      ],
+      "modal": {
+        "width": 680,
+        "height": 536.171875,
+        "horizontal_overflow": false,
+        "within": true
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "label": "长文件名和标题",
+      "controls": [
+        {
+          "selector": "#portableRestoreTitle",
+          "width": 634,
+          "height": 41,
+          "x": 323,
+          "y": 502.890625,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "#portableRestoreConfirm",
+          "width": 13,
+          "height": 16,
+          "x": 323,
+          "y": 584.78125,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [data-close]",
+          "width": 56,
+          "height": 40.390625,
+          "x": 643.609375,
+          "y": 635.28125,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [data-reselect]",
+          "width": 117.390625,
+          "height": 40.390625,
+          "x": 708.609375,
+          "y": 635.28125,
+          "within": true,
+          "unobstructed": true
+        },
+        {
+          "selector": "[data-portable-preview] [type=\"submit\"]",
+          "width": 122,
+          "height": 40.390625,
+          "x": 835,
+          "y": 635.28125,
+          "within": true,
+          "unobstructed": true
+        }
+      ],
+      "modal": {
+        "width": 680,
+        "height": 597.34375,
+        "horizontal_overflow": false,
+        "within": true
+      }
+    }
+  ],
+  "desktop_editor_layouts": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "sidebar": {
+        "x": 252,
+        "width": 170,
+        "right": 422,
+        "horizontal_overflow": false
+      },
+      "editor": {
+        "x": 442,
+        "width": 968,
+        "right": 1410,
+        "horizontal_overflow": false
+      },
+      "sidebar_track": 170,
+      "sidebar_children": [
+        {
+          "tag": "DIV",
+          "x": 252,
+          "width": 170,
+          "right": 422,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "H3",
+          "x": 252,
+          "width": 170,
+          "right": 422,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "BUTTON",
+          "x": 252,
+          "width": 170,
+          "right": 422,
+          "horizontal_overflow": false
+        }
+      ],
+      "editor_children": [
+        {
+          "tag": "DIV",
+          "x": 442,
+          "width": 968,
+          "right": 1410,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "INPUT",
+          "x": 442,
+          "width": 968,
+          "right": 1410,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "x": 442,
+          "width": 968,
+          "right": 1410,
+          "horizontal_overflow": false
+        }
+      ],
+      "long_ascii_heading": true,
+      "document_horizontal_overflow": false
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "sidebar": {
+        "x": 252,
+        "width": 170,
+        "right": 422,
+        "horizontal_overflow": false
+      },
+      "editor": {
+        "x": 442,
+        "width": 808,
+        "right": 1250,
+        "horizontal_overflow": false
+      },
+      "sidebar_track": 170,
+      "sidebar_children": [
+        {
+          "tag": "DIV",
+          "x": 252,
+          "width": 170,
+          "right": 422,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "H3",
+          "x": 252,
+          "width": 170,
+          "right": 422,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "BUTTON",
+          "x": 252,
+          "width": 170,
+          "right": 422,
+          "horizontal_overflow": false
+        }
+      ],
+      "editor_children": [
+        {
+          "tag": "DIV",
+          "x": 442,
+          "width": 808,
+          "right": 1250,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "INPUT",
+          "x": 442,
+          "width": 808,
+          "right": 1250,
+          "horizontal_overflow": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "x": 442,
+          "width": 808,
+          "right": 1250,
+          "horizontal_overflow": false
+        }
+      ],
+      "long_ascii_heading": true,
+      "document_horizontal_overflow": false
+    }
+  ],
+  "restored_edits": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "first_project": "book_46fed7b42d944e9b99dfc9805e1bfa2c",
+      "second_project": "book_6a7cefddcab740dab44fdc8e00f450a6",
+      "body_sha256": "94607fbccadd4284fbc88eff7f16daeca6a79ce0660de1f1b6103795aebecc1f",
+      "two_real_downloads": true
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "first_project": "book_7746a1c94e7a4737b668bf9ba81155d2",
+      "second_project": "book_70b2eb47e0594e59b4c09237a4feb998",
+      "body_sha256": "c0968b59d1132513d6dcb4243447e74821a3c574d98f9c22f1e193db1c3104a6",
+      "two_real_downloads": true
+    }
+  ],
+  "persisted_receipt_restart_verified": true,
+  "persisted_known_project_reload_verified": true,
+  "real_dirty_draft_preserved": true,
+  "synthetic_source_database_sha256_before": "d8e52b16ccab01e7ebfd613e62e23e3d265137239bd72a250e5e6833568069f4",
+  "synthetic_source_database_sha256_after": "d8e52b16ccab01e7ebfd613e62e23e3d265137239bd72a250e5e6833568069f4",
+  "synthetic_source_database_unchanged": true,
+  "final_project_count": 14,
+  "service_runs": [
+    {
+      "role": "source",
+      "initially_absent": true,
+      "stopped": true,
+      "calls": {
+        "provider": 0,
+        "worker": 0,
+        "outbound": 0
+      }
+    },
+    {
+      "role": "target",
+      "initially_absent": true,
+      "stopped": true,
+      "calls": {
+        "provider": 0,
+        "worker": 0,
+        "outbound": 0
+      }
+    },
+    {
+      "role": "target",
+      "initially_absent": false,
+      "stopped": true,
+      "calls": {
+        "provider": 0,
+        "worker": 0,
+        "outbound": 0
+      }
+    }
+  ],
+  "source_files_sha256_after": {
+    "app.js": "25a2d3f4bdd3ece1e05071acc206de196ba49cb80f2590df0456bdffd29ccad6",
+    "author-workspace.js": "6f50866443ce51a160a80f301398c876ab5845c00c147237dbf121425e10e1ce",
+    "styles.css": "bf4747f751c99da376d6bab3a619aaf17718411be7049619b00f83b1e04fab4b",
+    "index.html": "42927e1320df95f53544f3a1ed1c561425f362526d9ebe1c988531d0ae0e265f",
+    "server.py": "369d910c530a00c57dd9507736cd99c825ddd5f51c9b0451470c150a2163fc14",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_backups.py": "0e4546501cef3d7ec22fe5534a8f934f256def173f24e738e26a0ec648ec1511",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "tests/portable_backup_fixtures.py": "118ea9f7b0450af7acf03a9fa9b7b383f6eb4a387e90b629d1b7c35450524c4e",
+    "tests/portable_backup_browser_regressions.cjs": "3b587264252cd63a2e76f472f1ebfe7a30b03fb33319a5ccf1b8e9d043a9cfdb"
+  },
+  "source_unchanged": true,
+  "finished_at": "2026-10-14T23:00:18.224Z",
+  "request_log": [
+    {
+      "case": "1440×1000文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "downloaded-complete-source.zip",
+        "preview_id": "restore_preview_404f36b4797749828c1d7c3b7e4b536b",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "1440×1000文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_404f36b4797749828c1d7c3b7e4b536b",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "电脑恢复1440🙂",
+        "confirm": true
+      }
+    },
+    {
+      "case": "1440×1000文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "编辑后的完整备份1440.zip",
+        "preview_id": "restore_preview_ddcffb85210145d0aa0e34a52d9a28c1",
+        "data_base64_bytes": 21524,
+        "data_base64_sha256": "21fa735c123a062028bdce73e57402257166225f4b1a9161485be9d00435daee"
+      }
+    },
+    {
+      "case": "1440×1000文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_ddcffb85210145d0aa0e34a52d9a28c1",
+        "archive_sha256": "49e2735d19fd2b7d23d338cc13c830ee447ed77f852834bc09d5c6d142bf7390",
+        "title": "再次恢复1440",
+        "confirm": true
+      }
+    },
+    {
+      "case": "1280×900文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "downloaded-complete-source.zip",
+        "preview_id": "restore_preview_b4723994acc147a7ac2b812e48bef122",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "1280×900文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_b4723994acc147a7ac2b812e48bef122",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "电脑恢复1280🙂",
+        "confirm": true
+      }
+    },
+    {
+      "case": "1280×900文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "编辑后的完整备份1280.zip",
+        "preview_id": "restore_preview_094913e0cf3e444a8564354538180287",
+        "data_base64_bytes": 21540,
+        "data_base64_sha256": "e1ba0b6ce1f450216e674149d1fe6992f8b6f622358e0a611953399c894fa1ed"
+      }
+    },
+    {
+      "case": "1280×900文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_094913e0cf3e444a8564354538180287",
+        "archive_sha256": "2d82d013dc66320a92cda2951ab2e73dd0a669061c82778b02407b6599c72c89",
+        "title": "再次恢复1280",
+        "confirm": true
+      }
+    },
+    {
+      "case": "1280×800长文件名及200字作品名无横向溢出且确认控件可点击",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名长文件名🙂.zip",
+        "preview_id": "restore_preview_436e3f02d5e1447ba59c2162532130eb",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "1280×800长文件名及200字作品名无横向溢出且确认控件可点击",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_436e3f02d5e1447ba59c2162532130eb"
+      }
+    },
+    {
+      "case": "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "损坏完整备份.zip",
+        "preview_id": "restore_preview_3a8bb53d07b64212ad4c1896a38935c0",
+        "data_base64_bytes": 24,
+        "data_base64_sha256": "0a578113950af5f7d380c9e8e620586f859bd49c984ae109caaeb003055feda0"
+      }
+    },
+    {
+      "case": "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_3a8bb53d07b64212ad4c1896a38935c0"
+      }
+    },
+    {
+      "case": "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_3a8bb53d07b64212ad4c1896a38935c0"
+      }
+    },
+    {
+      "case": "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_16b627bcf83a4a72939b3fda4484ccdb",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_16b627bcf83a4a72939b3fda4484ccdb"
+      }
+    },
+    {
+      "case": "取消和已知预览重新选择只释放服务器文件，不建立作品",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "首次预览.zip",
+        "preview_id": "restore_preview_85f444cedeaa46d88cedf40627c78425",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "取消和已知预览重新选择只释放服务器文件，不建立作品",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_85f444cedeaa46d88cedf40627c78425"
+      }
+    },
+    {
+      "case": "取消和已知预览重新选择只释放服务器文件，不建立作品",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_85f444cedeaa46d88cedf40627c78425"
+      }
+    },
+    {
+      "case": "取消和已知预览重新选择只释放服务器文件，不建立作品",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "downloaded-complete-source.zip",
+        "preview_id": "restore_preview_51bed417ca6a4086894afb7b4fc816e4",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "取消和已知预览重新选择只释放服务器文件，不建立作品",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_51bed417ca6a4086894afb7b4fc816e4"
+      }
+    },
+    {
+      "case": "迟到A预览不能替换B，A与B服务器文件最终都释放",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "迟到A.zip",
+        "preview_id": "restore_preview_5b49d35ddb914af2adc49f04b44c5633",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "迟到A预览不能替换B，A与B服务器文件最终都释放",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_5b49d35ddb914af2adc49f04b44c5633"
+      }
+    },
+    {
+      "case": "迟到A预览不能替换B，A与B服务器文件最终都释放",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "当前B.zip",
+        "preview_id": "restore_preview_22007ba0c4b042bb9f7ebcf77a5f1ccc",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "迟到A预览不能替换B，A与B服务器文件最终都释放",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_5b49d35ddb914af2adc49f04b44c5633"
+      }
+    },
+    {
+      "case": "迟到A预览不能替换B，A与B服务器文件最终都释放",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_22007ba0c4b042bb9f7ebcf77a5f1ccc"
+      }
+    },
+    {
+      "case": "预览响应迟到时close使窗口失效，不能应用原文件",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "中断close.zip",
+        "preview_id": "restore_preview_8d21bb0be67548c59dc48cbaaa31d957",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "预览响应迟到时close使窗口失效，不能应用原文件",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_8d21bb0be67548c59dc48cbaaa31d957"
+      }
+    },
+    {
+      "case": "预览响应迟到时project使窗口失效，不能应用原文件",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "中断project.zip",
+        "preview_id": "restore_preview_d514781a05d643a2b2cba5e6fe74ac85",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "预览响应迟到时project使窗口失效，不能应用原文件",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_d514781a05d643a2b2cba5e6fe74ac85"
+      }
+    },
+    {
+      "case": "预览响应迟到时project使窗口失效，不能应用原文件",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_d514781a05d643a2b2cba5e6fe74ac85"
+      }
+    },
+    {
+      "case": "预览响应迟到时branch使窗口失效，不能应用原文件",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "中断branch.zip",
+        "preview_id": "restore_preview_06464013aeea47978c2c4332c44fdaba",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "预览响应迟到时branch使窗口失效，不能应用原文件",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_06464013aeea47978c2c4332c44fdaba"
+      }
+    },
+    {
+      "case": "双击确认只发一次恢复，正在保存时不能修改标题或重复提交",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_121ade09293345c1a2526c84afae8272",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "双击确认只发一次恢复，正在保存时不能修改标题或重复提交",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_121ade09293345c1a2526c84afae8272",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "双击只建立一个副本",
+        "confirm": true
+      }
+    },
+    {
+      "case": "保存响应丢失后同一身份重试只返回原副本，浏览器不保存ZIP内容",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_0b9ba85e56fd4ef6813c02e247bfe88b",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "保存响应丢失后同一身份重试只返回原副本，浏览器不保存ZIP内容",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_0b9ba85e56fd4ef6813c02e247bfe88b",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "丢响应后重试原副本",
+        "confirm": true
+      }
+    },
+    {
+      "case": "保存响应丢失后同一身份重试只返回原副本，浏览器不保存ZIP内容",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_0b9ba85e56fd4ef6813c02e247bfe88b",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "丢响应后重试原副本",
+        "confirm": true
+      }
+    },
+    {
+      "case": "页面刷新且服务重启后重新选择先取消再读回执，只能打开已保存副本",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_9f9848b0b4024a1b89a8a36dc1cdd740",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "页面刷新且服务重启后重新选择先取消再读回执，只能打开已保存副本",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_9f9848b0b4024a1b89a8a36dc1cdd740",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "重启后打开原保存身份",
+        "confirm": true
+      }
+    },
+    {
+      "case": "页面刷新且服务重启后重新选择先取消再读回执，只能打开已保存副本",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_9f9848b0b4024a1b89a8a36dc1cdd740"
+      }
+    },
+    {
+      "case": "页面刷新且服务重启后重新选择先取消再读回执，只能打开已保存副本",
+      "method": "POST",
+      "pathname": "/api/backups/import/status",
+      "body": {
+        "preview_id": "restore_preview_9f9848b0b4024a1b89a8a36dc1cdd740",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "重启后打开原保存身份",
+        "confirm": true
+      }
+    },
+    {
+      "case": "副本已保存后origin读取失败只重开同一身份且不再次建立",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_d53b32569f5249d09d97f8609b50956b",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "副本已保存后origin读取失败只重开同一身份且不再次建立",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_d53b32569f5249d09d97f8609b50956b",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "保存后读取失败-origin",
+        "confirm": true
+      }
+    },
+    {
+      "case": "副本已保存后target读取失败只重开同一身份且不再次建立",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_64602b6a11194258adb1dd0a2834f726",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "副本已保存后target读取失败只重开同一身份且不再次建立",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_64602b6a11194258adb1dd0a2834f726",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "保存后读取失败-target",
+        "confirm": true
+      }
+    },
+    {
+      "case": "副本已保存后both读取失败只重开同一身份且不再次建立",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_f62406ad74e3439ea4a57b0dec804102",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "副本已保存后both读取失败只重开同一身份且不再次建立",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_f62406ad74e3439ea4a57b0dec804102",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "保存后读取失败-both",
+        "confirm": true
+      }
+    },
+    {
+      "case": "重新打开已保存副本时保留另一页真实编辑的离线草稿，不把旧稿写到新作品",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_813638df4c3b4c7e87fefe907f1dc0f9",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "重新打开已保存副本时保留另一页真实编辑的离线草稿，不把旧稿写到新作品",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_813638df4c3b4c7e87fefe907f1dc0f9",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "保留真实离线草稿的恢复副本",
+        "confirm": true
+      }
+    },
+    {
+      "case": "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "合成完整作品.zip",
+        "preview_id": "restore_preview_93c0a35d6fc74b71adaeec45ea4eef2c",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_93c0a35d6fc74b71adaeec45ea4eef2c",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "预览过期后重新选择",
+        "confirm": true
+      }
+    },
+    {
+      "case": "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_93c0a35d6fc74b71adaeec45ea4eef2c"
+      }
+    },
+    {
+      "case": "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/status",
+      "body": {
+        "preview_id": "restore_preview_93c0a35d6fc74b71adaeec45ea4eef2c",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "预览过期后重新选择",
+        "confirm": true
+      }
+    },
+    {
+      "case": "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "downloaded-complete-source.zip",
+        "preview_id": "restore_preview_ef9e46420df04278b9c3b000ffb48669",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+      "method": "POST",
+      "pathname": "/api/backups/import/apply",
+      "body": {
+        "preview_id": "restore_preview_ef9e46420df04278b9c3b000ffb48669",
+        "archive_sha256": "cd668939f85582ad16453cbdf14c085ec220e3914b895cd63c873a6cd7666fea",
+        "title": "重新选择成功的独立副本",
+        "confirm": true
+      }
+    },
+    {
+      "case": "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "刷新前未确认0.zip",
+        "preview_id": "restore_preview_9b6cc11272fb4dc78d779d6efa22599e",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_9b6cc11272fb4dc78d779d6efa22599e"
+      }
+    },
+    {
+      "case": "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "刷新前未确认1.zip",
+        "preview_id": "restore_preview_a0dbb81d270a413ebf96f0a9095728dd",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_a0dbb81d270a413ebf96f0a9095728dd"
+      }
+    },
+    {
+      "case": "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "第三次仍可选择.zip",
+        "preview_id": "restore_preview_9efdec1b07054d1ab18d69a224f527d5",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_9efdec1b07054d1ab18d69a224f527d5"
+      }
+    },
+    {
+      "case": "预览响应尚未到达时刷新仍释放上传前身份，迟到响应不能占用服务器槽",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "未到响应前刷新.zip",
+        "preview_id": "restore_preview_439914f7024a4c95813cbd2ec3409f06",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "预览响应尚未到达时刷新仍释放上传前身份，迟到响应不能占用服务器槽",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_439914f7024a4c95813cbd2ec3409f06"
+      }
+    },
+    {
+      "case": "预览响应尚未到达时刷新仍释放上传前身份，迟到响应不能占用服务器槽",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "刷新后仍可校验.zip",
+        "preview_id": "restore_preview_c635ee12d2c1424fbef13e8cdfbafc26",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "预览响应尚未到达时刷新仍释放上传前身份，迟到响应不能占用服务器槽",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_c635ee12d2c1424fbef13e8cdfbafc26"
+      }
+    },
+    {
+      "case": "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "取消断网.zip",
+        "preview_id": "restore_preview_f476abc1b1e0436aa454431401139e7b",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_f476abc1b1e0436aa454431401139e7b"
+      }
+    },
+    {
+      "case": "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_f476abc1b1e0436aa454431401139e7b"
+      }
+    },
+    {
+      "case": "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_f476abc1b1e0436aa454431401139e7b"
+      }
+    },
+    {
+      "case": "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择",
+      "method": "POST",
+      "pathname": "/api/backups/import/preview",
+      "body": {
+        "filename": "网络恢复后重新选择.zip",
+        "preview_id": "restore_preview_556c5ae125664308a8eb32e32b07a3ce",
+        "data_base64_bytes": 14616,
+        "data_base64_sha256": "8d75117ad73d17424a50e439b70b0b8cd34995660cd34d2c4cc0f34f04aab50a"
+      }
+    },
+    {
+      "case": "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择",
+      "method": "POST",
+      "pathname": "/api/backups/import/cancel",
+      "body": {
+        "preview_id": "restore_preview_556c5ae125664308a8eb32e32b07a3ce"
+      }
+    }
+  ],
+  "case_count": 21,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report."
+}

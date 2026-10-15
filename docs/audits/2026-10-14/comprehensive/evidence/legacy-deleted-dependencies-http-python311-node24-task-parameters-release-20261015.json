@@ -1,0 +1,3530 @@
+{
+  "passed": true,
+  "methods": 49,
+  "failures": [],
+  "errors": [],
+  "started_at": "2026-10-14T22:52:24.874012+00:00",
+  "finished_at": "2026-10-14T22:52:53.639340+00:00",
+  "source_files_sha256_before": {
+    "server.py": "369d910c530a00c57dd9507736cd99c825ddd5f51c9b0451470c150a2163fc14",
+    "moyu_context.py": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_backups.py": "0e4546501cef3d7ec22fe5534a8f934f256def173f24e738e26a0ec648ec1511",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "tests/chapter_deletion_dependency_http_fixtures.py": "4def7a7a2c5caf8775651a33022d6374673429f6005b6f6d8271caf6fd119227",
+    "tests/legacy_deleted_dependency_http_fixtures.py": "77673ca0248f01b03f4b9d7ae53a27708461b8eae129146c48d69c1dde5e42b2"
+  },
+  "source_files_sha256_after": {
+    "server.py": "369d910c530a00c57dd9507736cd99c825ddd5f51c9b0451470c150a2163fc14",
+    "moyu_context.py": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_backups.py": "0e4546501cef3d7ec22fe5534a8f934f256def173f24e738e26a0ec648ec1511",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "tests/chapter_deletion_dependency_http_fixtures.py": "4def7a7a2c5caf8775651a33022d6374673429f6005b6f6d8271caf6fd119227",
+    "tests/legacy_deleted_dependency_http_fixtures.py": "77673ca0248f01b03f4b9d7ae53a27708461b8eae129146c48d69c1dde5e42b2"
+  },
+  "source_unchanged": true,
+  "paid_provider_calls": 0,
+  "production_database_accessed": false,
+  "credential_files_read": false,
+  "raw_database_values_saved": false,
+  "scope": "temporary synthetic SQLite; real loopback HTTP; no provider",
+  "claim_limit": "legacy evidence read integrity; no literary-quality claim",
+  "observations": [
+    {
+      "test": "test_declared_deleted_relation_with_valid_actual_source_is_excluded",
+      "scenario": "declared_deleted_actual_current_relation",
+      "collection": "relationships",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": true,
+      "public_stale": true,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "42090180960a6edf4d13d0f83a231f1c027c40ebb9a38feb8d030cdde63474e5",
+      "database_sha256_after": "42090180960a6edf4d13d0f83a231f1c027c40ebb9a38feb8d030cdde63474e5"
+    },
+    {
+      "test": "test_declared_earlier_relation_cannot_mask_actual_future_source",
+      "scenario": "declared_earlier_actual_future_relation",
+      "collection": "relationships",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": true,
+      "public_stale": true,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "6ab35cff9feaafb3df10dad7e0245ce4b50d5f2b2f3399602a4c9b9e6a092184",
+      "database_sha256_after": "6ab35cff9feaafb3df10dad7e0245ce4b50d5f2b2f3399602a4c9b9e6a092184"
+    },
+    {
+      "test": "test_declared_earlier_timeline_cannot_mask_actual_future_source",
+      "scenario": "declared_earlier_actual_future_timeline",
+      "collection": "timeline",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": true,
+      "public_stale": true,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "43b14fd222f340a89b0d11eccd64ddffa8cb3ab37c4fd1e3ab155235a11a59fc",
+      "database_sha256_after": "43b14fd222f340a89b0d11eccd64ddffa8cb3ab37c4fd1e3ab155235a11a59fc"
+    },
+    {
+      "test": "test_direct_legacy_deleted_alias_conflict_is_excluded",
+      "scenario": "direct_legacy_deleted_alias_conflict",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 1,
+        "confidence": 0.75,
+        "reviewed_at": "2026-10-14T22:52:26+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "historical-author-label",
+      "public_memory_stale": true,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": true,
+      "expected_memory_consumed": false,
+      "character_stale": null,
+      "conflict_present": true,
+      "conflict_stale": true,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "15873a529ba3e2290d5c877af34b9da0692e3e5d4f42e7c4438ae3e40afc40b6",
+      "database_sha256_after": "15873a529ba3e2290d5c877af34b9da0692e3e5d4f42e7c4438ae3e40afc40b6",
+      "memory_consumed": false,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_direct_legacy_deleted_character_is_excluded",
+      "scenario": "direct_legacy_deleted_character",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 1,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:27+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": true,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": true,
+      "expected_memory_consumed": false,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "140b87d75be1b660d116e9a8e91cb35bf33d341e578de4db8331fcef36ace315",
+      "database_sha256_after": "140b87d75be1b660d116e9a8e91cb35bf33d341e578de4db8331fcef36ace315",
+      "memory_consumed": false,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_earlier_assertion_character_remains_usable_in_both_chapters",
+      "scenario": "assertion_scope_character",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": true,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "086f54f89a14f38e9666e649bd1090185d8744ba6b9c6be2fe332baad2b1d3cc",
+      "database_sha256_after": "086f54f89a14f38e9666e649bd1090185d8744ba6b9c6be2fe332baad2b1d3cc"
+    },
+    {
+      "test": "test_earlier_assertion_conflict_remains_usable_in_both_chapters",
+      "scenario": "assertion_scope_conflict",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": true,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "c3991db31a8a73280993e2eec1ccbe20351d75f4f509a0978ea86051e79133e9",
+      "database_sha256_after": "c3991db31a8a73280993e2eec1ccbe20351d75f4f509a0978ea86051e79133e9"
+    },
+    {
+      "test": "test_explicit_empty_memory_with_valid_span_excludes_linked_state",
+      "scenario": "explicit_empty_memory_with_valid_span",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:29+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": false,
+      "expected_assertion_stale": false,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "35e370c0a1aee25de670fc9855ad1a80f496dabcf54f8744bc855b1b46fe705c",
+      "database_sha256_after": "35e370c0a1aee25de670fc9855ad1a80f496dabcf54f8744bc855b1b46fe705c",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_explicit_empty_span_reference_excludes_linked_state",
+      "scenario": "explicit_empty_span_reference",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:29+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "ef411b38e5b3f1de74190b3d9df56beefa95ebcc22d6caa19e14c609a8df2986",
+      "database_sha256_after": "ef411b38e5b3f1de74190b3d9df56beefa95ebcc22d6caa19e14c609a8df2986",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_alias_conflict",
+      "scenario": "alias_conflict_explicit_null_memory",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 0.75,
+        "reviewed_at": "2026-10-14T22:52:30+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "historical-author-label",
+      "public_memory_stale": false,
+      "assertion_stale": false,
+      "expected_assertion_stale": false,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": null,
+      "conflict_present": true,
+      "conflict_stale": true,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "3abfdc6e807e8dfd2bfcef507f1ffc30a6776c05b8b2e8cccd78f7c5362c4c95",
+      "database_sha256_after": "3abfdc6e807e8dfd2bfcef507f1ffc30a6776c05b8b2e8cccd78f7c5362c4c95",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_linked_state",
+      "scenario": "explicit_null_memory_with_valid_span",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:30+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": false,
+      "expected_assertion_stale": false,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "d2a4b864fc1cdf376a346b5e67035064b2a1b6da290bb8f52b612c3abe84ff45",
+      "database_sha256_after": "d2a4b864fc1cdf376a346b5e67035064b2a1b6da290bb8f52b612c3abe84ff45",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_explicit_null_span_reference_excludes_linked_state",
+      "scenario": "explicit_null_span_reference",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:31+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "cc890a10faaf8a038bcc0cb6908f6d2319904a4af0c131f681b8044f03132e30",
+      "database_sha256_after": "cc890a10faaf8a038bcc0cb6908f6d2319904a4af0c131f681b8044f03132e30",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_future_assertion_character_respects_early_and_late_chapters",
+      "scenario": "assertion_scope_character",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "99d049e19992236cdfbdb3c06f584a1cbc62e1bd743b53553388096929e98d27",
+      "database_sha256_after": "99d049e19992236cdfbdb3c06f584a1cbc62e1bd743b53553388096929e98d27"
+    },
+    {
+      "test": "test_future_assertion_character_with_notes_respects_scope",
+      "scenario": "assertion_scope_character",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": true,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": true,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "53dc0c7fef96e16c4ec318d02ffab50768ac27ce30bea34e166d4bb996fac89e",
+      "database_sha256_after": "53dc0c7fef96e16c4ec318d02ffab50768ac27ce30bea34e166d4bb996fac89e"
+    },
+    {
+      "test": "test_future_assertion_conflict_respects_early_and_late_chapters",
+      "scenario": "assertion_scope_conflict",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "c04cd0a8e7faa50bc400970b26b300538f90acc291f6fd4538e773fd05d49e84",
+      "database_sha256_after": "c04cd0a8e7faa50bc400970b26b300538f90acc291f6fd4538e773fd05d49e84"
+    },
+    {
+      "test": "test_future_assertion_conflict_with_notes_respects_scope",
+      "scenario": "assertion_scope_conflict",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": true,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": true,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "c620f995dc34c8453166b1c5356bdeebabda26c2e44980316be79eb10edf20f5",
+      "database_sha256_after": "c620f995dc34c8453166b1c5356bdeebabda26c2e44980316be79eb10edf20f5"
+    },
+    {
+      "test": "test_missing_memory_with_valid_span_excludes_linked_state",
+      "scenario": "missing_memory_with_valid_span",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:34+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "2d608529b18a64f7e3dd54cd562f40a089f4b54aae35efc3a0be3b046bcdb49a",
+      "database_sha256_after": "2d608529b18a64f7e3dd54cd562f40a089f4b54aae35efc3a0be3b046bcdb49a",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_missing_span_reference_excludes_alias_conflict",
+      "scenario": "alias_conflict_missing_span_reference",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 0.75,
+        "reviewed_at": "2026-10-14T22:52:34+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "historical-author-label",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": null,
+      "conflict_present": true,
+      "conflict_stale": true,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "0bb77bfa2add8aa67a2aab87096f1fbe55b38990b4ccda1167475ad235e7e993",
+      "database_sha256_after": "0bb77bfa2add8aa67a2aab87096f1fbe55b38990b4ccda1167475ad235e7e993",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_missing_span_reference_excludes_linked_state",
+      "scenario": "missing_span_reference",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:35+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "e5c38feaf65c5f5b41656f60c180c9ed3f77d6eaa4c89978724b135a2b4504a2",
+      "database_sha256_after": "e5c38feaf65c5f5b41656f60c180c9ed3f77d6eaa4c89978724b135a2b4504a2",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_mixed_nonchapter_source_character_is_derived_stale_and_excluded",
+      "scenario": "nonchapter_assertion_character",
+      "mixed_valid_chapter_source": true,
+      "public_material_stale": true,
+      "assertion_stale": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "bc4a12f0f99a46fd7413a6c39a752b7c55ebc85209653c0430f4a76694baceab",
+      "database_sha256_after": "bc4a12f0f99a46fd7413a6c39a752b7c55ebc85209653c0430f4a76694baceab"
+    },
+    {
+      "test": "test_mixed_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "scenario": "nonchapter_assertion_conflict",
+      "mixed_valid_chapter_source": true,
+      "public_material_stale": true,
+      "assertion_stale": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "0248d5da2bafd33070ae5ea6acc49d90dc6586c8aa0eaf5745363e8660322212",
+      "database_sha256_after": "0248d5da2bafd33070ae5ea6acc49d90dc6586c8aa0eaf5745363e8660322212"
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_forward_order",
+      "scenario": "assertion_scope_character",
+      "restored": false,
+      "mixed_spans": true,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "33047e635737f91d56dc238e00046c1c2a15b64238183cbc07fedaea10d8e59b",
+      "database_sha256_after": "33047e635737f91d56dc238e00046c1c2a15b64238183cbc07fedaea10d8e59b"
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_reverse_order",
+      "scenario": "assertion_scope_character",
+      "restored": false,
+      "mixed_spans": true,
+      "evidence_order_reversed": true,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "e72e10db74adabcf9cef2d6dbb6e77db5f9ead677069e9442f97e014f44876d5",
+      "database_sha256_after": "e72e10db74adabcf9cef2d6dbb6e77db5f9ead677069e9442f97e014f44876d5"
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_forward_order",
+      "scenario": "assertion_scope_conflict",
+      "restored": false,
+      "mixed_spans": true,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "8c5e684871b37a8b5eb98d63debc62c13c148e99c6bcfb518f109d0039949d4e",
+      "database_sha256_after": "8c5e684871b37a8b5eb98d63debc62c13c148e99c6bcfb518f109d0039949d4e"
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_reverse_order",
+      "scenario": "assertion_scope_conflict",
+      "restored": false,
+      "mixed_spans": true,
+      "evidence_order_reversed": true,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "316201d1398c3a9e5240f7eb15987660146ad2a90c89a5d76952ec4d7f70e44f",
+      "database_sha256_after": "316201d1398c3a9e5240f7eb15987660146ad2a90c89a5d76952ec4d7f70e44f"
+    },
+    {
+      "test": "test_nonchapter_source_character_is_derived_stale_and_excluded",
+      "scenario": "nonchapter_assertion_character",
+      "mixed_valid_chapter_source": false,
+      "public_material_stale": true,
+      "assertion_stale": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "3699b3cb98d4d3e76d0e27b232d847fb63896ad6d280efe6aa965a38a96eacd2",
+      "database_sha256_after": "3699b3cb98d4d3e76d0e27b232d847fb63896ad6d280efe6aa965a38a96eacd2"
+    },
+    {
+      "test": "test_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "scenario": "nonchapter_assertion_conflict",
+      "mixed_valid_chapter_source": false,
+      "public_material_stale": true,
+      "assertion_stale": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "4e825dc6683a1bf95ab8c656bbf34b8f2e1a8f0343364c7f78e01db80d6d5dd9",
+      "database_sha256_after": "4e825dc6683a1bf95ab8c656bbf34b8f2e1a8f0343364c7f78e01db80d6d5dd9"
+    },
+    {
+      "test": "test_older_revision_character_is_derived_stale",
+      "scenario": "older_revision_character",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:40+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": true,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": true,
+      "expected_memory_consumed": false,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "a101984c16bf42cd665c9915afb5c9aed8a6da4a01630f33c2d7e3d0db8ab858",
+      "database_sha256_after": "a101984c16bf42cd665c9915afb5c9aed8a6da4a01630f33c2d7e3d0db8ab858",
+      "memory_consumed": false,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "scenario": "assertion_scope_character",
+      "restored": true,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "9e3e4d76fe6ce96b58eb7dce0c42af0581dc2e80ccce07f85ac4b3927559279c",
+      "database_sha256_after": "9e3e4d76fe6ce96b58eb7dce0c42af0581dc2e80ccce07f85ac4b3927559279c"
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "scenario": "assertion_scope_conflict",
+      "restored": true,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": false,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "c22c24143c8567892a2981fa4bda5873d7a52cab3b51f85f23b9a410d027236b",
+      "database_sha256_after": "c22c24143c8567892a2981fa4bda5873d7a52cab3b51f85f23b9a410d027236b"
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "scenario": "restored_legacy_deleted_alias_conflict",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 1,
+        "confidence": 0.75,
+        "reviewed_at": "2026-10-14T22:52:42+00:00",
+        "reviewed_by": "actor_330ba6b190394131bd911845e0a07307"
+      },
+      "memory_name": "historical-author-label",
+      "public_memory_stale": true,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": true,
+      "expected_memory_consumed": false,
+      "character_stale": null,
+      "conflict_present": true,
+      "conflict_stale": true,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "fdb56274bbfd40a49ce9d9b7a493436699ffa1483b6e0a10cfa53eab0363d4f7",
+      "database_sha256_after": "fdb56274bbfd40a49ce9d9b7a493436699ffa1483b6e0a10cfa53eab0363d4f7",
+      "memory_consumed": false,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "scenario": "restored_legacy_deleted_character",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 1,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:43+00:00",
+        "reviewed_by": "actor_4742d461d6024a8388a6198b45de246e"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": true,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": true,
+      "expected_memory_consumed": false,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "dc294312c81b7aefed2104fd07bfa27c3c7823feca363e63d109fb9cb3d4eb79",
+      "database_sha256_after": "dc294312c81b7aefed2104fd07bfa27c3c7823feca363e63d109fb9cb3d4eb79",
+      "memory_consumed": false,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_same_ordinal_character_uses_public_chapter_identity_order",
+      "scenario": "assertion_scope_character",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": true,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "108fccedf27d4eb666fd7c493e5ca18ba0254900e5ec675bc38201ddfa212a4c",
+      "database_sha256_after": "108fccedf27d4eb666fd7c493e5ca18ba0254900e5ec675bc38201ddfa212a4c"
+    },
+    {
+      "test": "test_same_ordinal_conflict_uses_public_chapter_identity_order",
+      "scenario": "assertion_scope_conflict",
+      "restored": false,
+      "mixed_spans": false,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": true,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "fff1e5cae8a6962af552516ac2378229d50a382557717f0ca180a1d6306cb159",
+      "database_sha256_after": "fff1e5cae8a6962af552516ac2378229d50a382557717f0ca180a1d6306cb159"
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_character_uses_latest_identity_forward",
+      "scenario": "assertion_scope_character",
+      "restored": false,
+      "mixed_spans": true,
+      "evidence_order_reversed": false,
+      "mixed_notes": false,
+      "same_chapter_ordinal": true,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "e49a92ecdf1fc43fff459df0678d393bd285e84c17cb020812a098d48bf01b3f",
+      "database_sha256_after": "e49a92ecdf1fc43fff459df0678d393bd285e84c17cb020812a098d48bf01b3f"
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_conflict_uses_latest_identity_reverse",
+      "scenario": "assertion_scope_conflict",
+      "restored": false,
+      "mixed_spans": true,
+      "evidence_order_reversed": true,
+      "mixed_notes": false,
+      "same_chapter_ordinal": true,
+      "earlier_source_control": false,
+      "public_material_stale": false,
+      "public_source_chapter_matches_actual_latest": true,
+      "assertion_stale": false,
+      "previews": [
+        {
+          "chapter_position": "early",
+          "status": 200,
+          "error": null,
+          "expected_consumed": false,
+          "material_consumed": false,
+          "canary_in_prompt": false,
+          "confirmed_memory_empty": true
+        },
+        {
+          "chapter_position": "late",
+          "status": 200,
+          "error": null,
+          "expected_consumed": true,
+          "material_consumed": true,
+          "canary_in_prompt": true,
+          "confirmed_memory_empty": true
+        }
+      ],
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "bf701e9b876eae14485b2900971fa111e64b0d7c3f56c5c799ac8129566b9e1c",
+      "database_sha256_after": "bf701e9b876eae14485b2900971fa111e64b0d7c3f56c5c799ac8129566b9e1c"
+    },
+    {
+      "test": "test_span_only_deleted_relation_is_derived_stale_and_excluded",
+      "scenario": "span_only_deleted_relation",
+      "collection": "relationships",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": true,
+      "public_stale": true,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": true,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "0411b45d4f483a29cb18682a110f9bd0000b4012be0c45a23db94cdf0b9aac32",
+      "database_sha256_after": "0411b45d4f483a29cb18682a110f9bd0000b4012be0c45a23db94cdf0b9aac32"
+    },
+    {
+      "test": "test_span_only_deleted_timeline_is_derived_stale_and_excluded",
+      "scenario": "span_only_deleted_timeline",
+      "collection": "timeline",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": true,
+      "public_stale": true,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": true,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "ee3a591bf242c2ecbec8196c5166c500c7a1591020e13be1a4e5fea23762ea51",
+      "database_sha256_after": "ee3a591bf242c2ecbec8196c5166c500c7a1591020e13be1a4e5fea23762ea51"
+    },
+    {
+      "test": "test_span_only_earlier_relation_remains_usable",
+      "scenario": "span_only_earlier_relation",
+      "collection": "relationships",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": false,
+      "public_stale": false,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": true,
+      "material_consumed": true,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "42e143f88b92090e9ac2834ffcba9b263f5c366477998e435724a0e624bb4e7a",
+      "database_sha256_after": "42e143f88b92090e9ac2834ffcba9b263f5c366477998e435724a0e624bb4e7a"
+    },
+    {
+      "test": "test_span_only_earlier_timeline_remains_usable",
+      "scenario": "span_only_earlier_timeline",
+      "collection": "timeline",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": false,
+      "public_stale": false,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": true,
+      "material_consumed": true,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "a1d9e19924ff73dbfc501677b41d2f1ea0123f27297de8f8e91266faca08af6b",
+      "database_sha256_after": "a1d9e19924ff73dbfc501677b41d2f1ea0123f27297de8f8e91266faca08af6b"
+    },
+    {
+      "test": "test_span_only_future_relation_is_excluded_without_becoming_stale",
+      "scenario": "span_only_future_relation",
+      "collection": "relationships",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": false,
+      "public_stale": false,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "d179eb3d20fd0e67a3c7d6aad0ee72797e59edc8420b12b316dd7a66bb4c2980",
+      "database_sha256_after": "d179eb3d20fd0e67a3c7d6aad0ee72797e59edc8420b12b316dd7a66bb4c2980"
+    },
+    {
+      "test": "test_span_only_future_timeline_is_excluded_without_becoming_stale",
+      "scenario": "span_only_future_timeline",
+      "collection": "timeline",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": false,
+      "public_stale": false,
+      "public_is_plan": false,
+      "public_source_chapter_is_actual": true,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "a210bf6f37e39de1c6e3069ff79e84b37adf3cf52cad7e1974aab9902b4a8c84",
+      "database_sha256_after": "a210bf6f37e39de1c6e3069ff79e84b37adf3cf52cad7e1974aab9902b4a8c84"
+    },
+    {
+      "test": "test_stale_span_character_is_derived_stale",
+      "scenario": "stale_span_character",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "stale",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:49+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": true,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": true,
+      "expected_memory_consumed": false,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "d8a0a6ce88fb6d873f9dba5548f5036a304f02c0140ea279cb5f8651b27e94d0",
+      "database_sha256_after": "d8a0a6ce88fb6d873f9dba5548f5036a304f02c0140ea279cb5f8651b27e94d0",
+      "memory_consumed": false,
+      "character_consumed": false,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_unreferenced_manual_relation_preserves_author_plan_behavior",
+      "scenario": "manual_relation_without_reference",
+      "collection": "relationships",
+      "state_status": 200,
+      "story_map_status": 200,
+      "expected_stale": false,
+      "public_stale": false,
+      "public_is_plan": true,
+      "public_source_chapter_is_actual": false,
+      "public_raw_evidence_preserved": true,
+      "physical_span_status": "valid",
+      "source_chapter_deleted": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "expected_consumed": false,
+      "material_consumed": false,
+      "canary_in_prompt": false,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "05b23f7a5e3815f35d633f3f5e69a33bb177b1d93e6572b96cb86ad743008a88",
+      "database_sha256_after": "05b23f7a5e3815f35d633f3f5e69a33bb177b1d93e6572b96cb86ad743008a88"
+    },
+    {
+      "test": "test_valid_alias_conflict_preserves_historical_labels",
+      "scenario": "valid_alias_conflict",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 0.75,
+        "reviewed_at": "2026-10-14T22:52:50+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "historical-author-label",
+      "public_memory_stale": false,
+      "assertion_stale": false,
+      "expected_assertion_stale": false,
+      "expected_material_stale": false,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": null,
+      "conflict_present": true,
+      "conflict_stale": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "b80eff353b4254baa2e3b7d8b278fcbe17d634ff8a109c5cef26b5db96da08be",
+      "database_sha256_after": "b80eff353b4254baa2e3b7d8b278fcbe17d634ff8a109c5cef26b5db96da08be",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": true
+    },
+    {
+      "test": "test_valid_alias_conflict_with_mixed_notes_remains_usable",
+      "scenario": "valid_alias_conflict_mixed_notes",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 0.75,
+        "reviewed_at": "2026-10-14T22:52:51+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "historical-author-label",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": false,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": null,
+      "conflict_present": true,
+      "conflict_stale": false,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "054caae516fda1e0b531e2574aa0b2a5793f3f16875aea72c4e3fbd95b7bbdde",
+      "database_sha256_after": "054caae516fda1e0b531e2574aa0b2a5793f3f16875aea72c4e3fbd95b7bbdde",
+      "memory_consumed": true,
+      "character_consumed": false,
+      "conflict_consumed": true
+    },
+    {
+      "test": "test_valid_linked_and_unlinked_author_states_remain_usable",
+      "scenario": "valid_linked_and_unlinked_author_states",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:51+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": false,
+      "expected_assertion_stale": false,
+      "expected_material_stale": false,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": false,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "12c20ae910b84c7512a5d496fada0a2a6367df5b37ce48b50e91b1106f18c801",
+      "database_sha256_after": "12c20ae910b84c7512a5d496fada0a2a6367df5b37ce48b50e91b1106f18c801",
+      "memory_consumed": true,
+      "character_consumed": true,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_valid_linked_state_with_mixed_notes_remains_usable",
+      "scenario": "valid_character_mixed_notes",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "accepted",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:52+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": false,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": true,
+      "character_stale": false,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "4095af2f85dd739566942c5f346de73ff570162e23a8b75b14af1afb774c2a80",
+      "database_sha256_after": "4095af2f85dd739566942c5f346de73ff570162e23a8b75b14af1afb774c2a80",
+      "memory_consumed": true,
+      "character_consumed": true,
+      "conflict_consumed": false
+    },
+    {
+      "test": "test_withdrawn_memory_character_is_derived_stale",
+      "scenario": "withdrawn_memory_character",
+      "public_state_status": 200,
+      "character_states_status": 200,
+      "story_map_status": 200,
+      "assertions_status": 200,
+      "physical": {
+        "memory_status": "rejected",
+        "span_status": "valid",
+        "assertion_state": "canon",
+        "deleted": 0,
+        "confidence": 1,
+        "reviewed_at": "2026-10-14T22:52:53+00:00",
+        "reviewed_by": "synthetic-chapter-deletion-author"
+      },
+      "memory_name": "新人物",
+      "public_memory_stale": false,
+      "assertion_stale": true,
+      "expected_assertion_stale": true,
+      "expected_material_stale": true,
+      "expected_memory_stale": false,
+      "expected_memory_consumed": false,
+      "character_stale": true,
+      "conflict_present": false,
+      "conflict_stale": null,
+      "preview_status": 200,
+      "preview_error": null,
+      "canary_in_prompt": true,
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "b5d44146a8667fe0e463f26672df12258eaf392283c281da99a7ca7f0891477d",
+      "database_sha256_after": "b5d44146a8667fe0e463f26672df12258eaf392283c281da99a7ca7f0891477d",
+      "memory_consumed": false,
+      "character_consumed": false,
+      "conflict_consumed": false
+    }
+  ],
+  "http": [
+    {
+      "test": "test_declared_deleted_relation_with_valid_actual_source_is_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_deleted_relation_with_valid_actual_source_is_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_deleted_relation_with_valid_actual_source_is_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_earlier_relation_cannot_mask_actual_future_source",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_earlier_relation_cannot_mask_actual_future_source",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_earlier_relation_cannot_mask_actual_future_source",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_earlier_timeline_cannot_mask_actual_future_source",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_earlier_timeline_cannot_mask_actual_future_source",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_declared_earlier_timeline_cannot_mask_actual_future_source",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_alias_conflict_is_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_direct_legacy_deleted_character_is_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_character_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_character_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_character_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_character_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_character_remains_usable_in_both_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_character_remains_usable_in_both_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_conflict_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_conflict_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_conflict_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_conflict_remains_usable_in_both_chapters",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_conflict_remains_usable_in_both_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_earlier_assertion_conflict_remains_usable_in_both_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_memory_with_valid_span_excludes_linked_state",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_empty_span_reference_excludes_linked_state",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_alias_conflict",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_memory_with_valid_span_excludes_linked_state",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_explicit_null_span_reference_excludes_linked_state",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_respects_early_and_late_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_respects_early_and_late_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_with_notes_respects_scope",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_character_with_notes_respects_scope",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_respects_early_and_late_chapters",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_respects_early_and_late_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_respects_early_and_late_chapters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_with_notes_respects_scope",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_with_notes_respects_scope",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_future_assertion_conflict_with_notes_respects_scope",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_memory_with_valid_span_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_memory_with_valid_span_excludes_linked_state",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_alias_conflict",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_alias_conflict",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_linked_state",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_missing_span_reference_excludes_linked_state",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_forward_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_forward_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_reverse_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_character_uses_latest_source_in_reverse_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_forward_order",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_forward_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_forward_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_reverse_order",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_reverse_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_mixed_span_conflict_uses_latest_source_in_reverse_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_character_is_derived_stale_and_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_nonchapter_source_conflict_is_derived_stale_and_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_older_revision_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_older_revision_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_older_revision_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_older_revision_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_older_revision_character_is_derived_stale",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/backups",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/backups/backup_b6081fe46ef24b27ae6710ea0cb3bca1/download",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/backups/import/preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/backups/import/apply",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/backups",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/backups/backup_85248786334a40588a5f2013a0895c94/download",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/backups/import/preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/backups/import/apply",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "POST",
+      "path": "/api/backups",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/backups/backup_49af721a5de8410ab3081ef6b0a63079/download",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "POST",
+      "path": "/api/backups/import/preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "POST",
+      "path": "/api/backups/import/apply",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "POST",
+      "path": "/api/backups",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/backups/backup_883478eadf9746b5acb5b95aacf39d5a/download",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "POST",
+      "path": "/api/backups/import/preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "POST",
+      "path": "/api/backups/import/apply",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_character_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_character_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_character_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_character_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_character_uses_public_chapter_identity_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_character_uses_public_chapter_identity_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_conflict_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_conflict_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_conflict_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_conflict_uses_public_chapter_identity_order",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_conflict_uses_public_chapter_identity_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_conflict_uses_public_chapter_identity_order",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_character_uses_latest_identity_forward",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_character_uses_latest_identity_forward",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_character_uses_latest_identity_forward",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_character_uses_latest_identity_forward",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_character_uses_latest_identity_forward",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_character_uses_latest_identity_forward",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_conflict_uses_latest_identity_reverse",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_conflict_uses_latest_identity_reverse",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_conflict_uses_latest_identity_reverse",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_conflict_uses_latest_identity_reverse",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_conflict_uses_latest_identity_reverse",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_same_ordinal_mixed_span_conflict_uses_latest_identity_reverse",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_deleted_relation_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_deleted_relation_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_deleted_relation_is_derived_stale_and_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_deleted_timeline_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_deleted_timeline_is_derived_stale_and_excluded",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_deleted_timeline_is_derived_stale_and_excluded",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_earlier_relation_remains_usable",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_earlier_relation_remains_usable",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_earlier_relation_remains_usable",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_earlier_timeline_remains_usable",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_earlier_timeline_remains_usable",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_earlier_timeline_remains_usable",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_future_relation_is_excluded_without_becoming_stale",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_future_relation_is_excluded_without_becoming_stale",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_future_relation_is_excluded_without_becoming_stale",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_future_timeline_is_excluded_without_becoming_stale",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_future_timeline_is_excluded_without_becoming_stale",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_span_only_future_timeline_is_excluded_without_becoming_stale",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_stale_span_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_stale_span_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_stale_span_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_stale_span_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_stale_span_character_is_derived_stale",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_unreferenced_manual_relation_preserves_author_plan_behavior",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_unreferenced_manual_relation_preserves_author_plan_behavior",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_unreferenced_manual_relation_preserves_author_plan_behavior",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_preserves_historical_labels",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_preserves_historical_labels",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_preserves_historical_labels",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_preserves_historical_labels",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_preserves_historical_labels",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_alias_conflict_with_mixed_notes_remains_usable",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_and_unlinked_author_states_remain_usable",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_and_unlinked_author_states_remain_usable",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_and_unlinked_author_states_remain_usable",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_and_unlinked_author_states_remain_usable",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_and_unlinked_author_states_remain_usable",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_state_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_state_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_state_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_state_with_mixed_notes_remains_usable",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_valid_linked_state_with_mixed_notes_remains_usable",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_withdrawn_memory_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/state",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_withdrawn_memory_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/character-states",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_withdrawn_memory_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/story-map",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_withdrawn_memory_character_is_derived_stale",
+      "method": "GET",
+      "path": "/api/assertions?state=canon",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_withdrawn_memory_character_is_derived_stale",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "attempted_provider_calls": 0,
+  "attempted_worker_calls": 0,
+  "initialization_integrity": [
+    {
+      "test": "test_declared_deleted_relation_with_valid_actual_source_is_excluded",
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "42090180960a6edf4d13d0f83a231f1c027c40ebb9a38feb8d030cdde63474e5",
+      "database_sha256_after": "42090180960a6edf4d13d0f83a231f1c027c40ebb9a38feb8d030cdde63474e5"
+    },
+    {
+      "test": "test_direct_legacy_deleted_alias_conflict_is_excluded",
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "15873a529ba3e2290d5c877af34b9da0692e3e5d4f42e7c4438ae3e40afc40b6",
+      "database_sha256_after": "15873a529ba3e2290d5c877af34b9da0692e3e5d4f42e7c4438ae3e40afc40b6"
+    },
+    {
+      "test": "test_direct_legacy_deleted_character_is_excluded",
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "140b87d75be1b660d116e9a8e91cb35bf33d341e578de4db8331fcef36ace315",
+      "database_sha256_after": "140b87d75be1b660d116e9a8e91cb35bf33d341e578de4db8331fcef36ace315"
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "76da918ea6212ea29378105f53d40c16ee1e9cdcc5b988aa229fc86aac6e253c",
+      "database_sha256_after": "76da918ea6212ea29378105f53d40c16ee1e9cdcc5b988aa229fc86aac6e253c"
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "0efd159dc7d5b6088dda6e7e73968bcc68bebfb9cf31d5187fea874dbfa56117",
+      "database_sha256_after": "0efd159dc7d5b6088dda6e7e73968bcc68bebfb9cf31d5187fea874dbfa56117"
+    },
+    {
+      "test": "test_span_only_deleted_relation_is_derived_stale_and_excluded",
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "0411b45d4f483a29cb18682a110f9bd0000b4012be0c45a23db94cdf0b9aac32",
+      "database_sha256_after": "0411b45d4f483a29cb18682a110f9bd0000b4012be0c45a23db94cdf0b9aac32"
+    },
+    {
+      "test": "test_span_only_deleted_timeline_is_derived_stale_and_excluded",
+      "compared_tables": 65,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "ee3a591bf242c2ecbec8196c5166c500c7a1591020e13be1a4e5fea23762ea51",
+      "database_sha256_after": "ee3a591bf242c2ecbec8196c5166c500c7a1591020e13be1a4e5fea23762ea51"
+    }
+  ],
+  "restore_integrity": [
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "historical_status_confidence_review_and_actor_identity_preserved": true,
+      "historical_author_payload_preserved": true,
+      "review_authors_exist_in_restored_project": true,
+      "chapter_reference_remapped": true,
+      "source_and_restored_actor_ids_are_distinct": true
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "historical_status_confidence_review_and_actor_identity_preserved": true,
+      "historical_author_payload_preserved": true,
+      "review_authors_exist_in_restored_project": true,
+      "chapter_reference_remapped": true,
+      "source_and_restored_actor_ids_are_distinct": true
+    },
+    {
+      "test": "test_restored_legacy_deleted_alias_conflict_is_excluded",
+      "historical_status_confidence_review_and_actor_identity_preserved": true,
+      "historical_author_payload_preserved": true,
+      "review_authors_exist_in_restored_project": true,
+      "chapter_reference_remapped": true,
+      "source_and_restored_actor_ids_are_distinct": true
+    },
+    {
+      "test": "test_restored_legacy_deleted_character_is_excluded",
+      "historical_status_confidence_review_and_actor_identity_preserved": true,
+      "historical_author_payload_preserved": true,
+      "review_authors_exist_in_restored_project": true,
+      "chapter_reference_remapped": true,
+      "source_and_restored_actor_ids_are_distinct": true
+    }
+  ],
+  "scope_restore_integrity": [
+    {
+      "test": "test_restored_future_assertion_character_preserves_scope_and_history",
+      "target_author_history_and_actual_evidence_preserved": true,
+      "target_review_authors_remapped_to_restored_project": true,
+      "target_memory_identity_remapped": true,
+      "target_assertion_identity_remapped": true,
+      "target_actual_source_chapter_remapped": true
+    },
+    {
+      "test": "test_restored_future_assertion_conflict_preserves_scope_and_history",
+      "target_author_history_and_actual_evidence_preserved": true,
+      "target_review_authors_remapped_to_restored_project": true,
+      "target_memory_identity_remapped": true,
+      "target_assertion_identity_remapped": true,
+      "target_actual_source_chapter_remapped": true
+    }
+  ]
+}

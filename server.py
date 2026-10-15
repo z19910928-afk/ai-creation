@@ -274,11 +274,12 @@ def ai_settings(conn: sqlite3.Connection | None = None) -> dict[str, Any]:
         return provider_settings(settings_conn, project_id())
 
 
-def ai_output_limit(value: Any = _UNSET, config: dict[str, Any] | None = None) -> int:
-    """Use the saved output limit only when a request omits the field."""
+def ai_output_limit(value: Any = _UNSET, config: dict[str, Any] | None = None, *,
+                    task: str | None = None) -> int:
+    """Resolve explicit, purpose-specific, then shared output limits."""
     if value is _UNSET:
         config = config if config is not None else ai_settings()
-        value = config.get("max_tokens", 3000)
+        value = (config.get("task_max_tokens") or {}).get(task, config.get("max_tokens", 3000))
     if isinstance(value, bool) or not isinstance(value, int) or not 1 <= value <= 128_000:
         raise ValueError("输出上限必须为1至128000的整数。")
     return value
@@ -336,6 +337,7 @@ def prepare_frozen_ai_request(task: str, response_format: str, max_tokens: int,
     frozen_config = {
         **config, "base_url": config["base_url"] if configured else "http://127.0.0.1",
         "model": payload.get("model"), "task_models": {}, "parameters": {}, "task_parameters": {},
+        "task_max_tokens": {},
         "output_token_parameter": "max_completion_tokens" if "max_completion_tokens" in payload else "max_tokens",
         "include_usage": stream_options.get("include_usage", False),
     }
@@ -555,7 +557,7 @@ def ai_prompt_preview(task: str, context: dict[str, Any], instruction: str,
         material.pop("body", None)
     user = "<manuscript>\n" + json.dumps(material, ensure_ascii=False, separators=(",", ":")) + "\n</manuscript>\n作者补充要求：" + instruction
     messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
-    bounded_tokens = ai_output_limit(max_tokens, config)
+    bounded_tokens = ai_output_limit(max_tokens, config, task=task)
     preview_config = config if config.get("base_url") and config.get("model") else {**config, "base_url": "http://127.0.0.1", "model": "offline"}
     prepared = prepare_chat_request(preview_config, messages, task=task,
                                     response_format=contract["response_format"],
@@ -1354,7 +1356,7 @@ def create_ai_job(
     job_id = uid("aijob_")
     run_id = uid("airun_")
     config = provider_config if provider_config is not None else ai_settings(conn)
-    max_tokens = ai_output_limit(max_tokens, config)
+    max_tokens = ai_output_limit(max_tokens, config, task=task)
     if frozen_request is not None:
         prepared = prepare_frozen_ai_request(task, response_format, max_tokens,
                                              config, frozen_request, run_id)

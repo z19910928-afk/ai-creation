@@ -1,0 +1,188 @@
+{
+  "passed": false,
+  "methods": 12,
+  "failures": [
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters (__main__.TaskParameterHTTPTests.test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 210, in test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters\n    self.save(parameters={\"temperature\": 1.7, \"top_p\": 0.99, \"max_tokens\": 3000},\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults (__main__.TaskParameterHTTPTests.test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 230, in test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults\n    self.save(task_parameters={\"continue\": {\"temperature\": 0, \"seed\": 0, \"top_p\": 0,\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials (__main__.TaskParameterHTTPTests.test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 257, in test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials\n    self.save(task_parameters={\"continue\": {\"temperature\": 0, \"max_tokens\": 4100}})\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_04_task_reasoning_setting_replaces_inherited_alternative_representation (__main__.TaskParameterHTTPTests.test_04_task_reasoning_setting_replaces_inherited_alternative_representation)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 293, in test_04_task_reasoning_setting_replaces_inherited_alternative_representation\n    self.save(parameters={\"max_tokens\": 3000, \"temperature\": 0.7,\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback (__main__.TaskParameterHTTPTests.test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 309, in test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback\n    self.save(parameters=global_parameters, task_parameters=aliases)\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes (__main__.TaskParameterHTTPTests.test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 333, in test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes\n    self.save(parameters={\"temperature\": 1.1, \"max_tokens\": 3000},\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_07_deferred_queue_freezes_task_parameters_model_and_output_limit (__main__.TaskParameterHTTPTests.test_07_deferred_queue_freezes_task_parameters_model_and_output_limit)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 349, in test_07_deferred_queue_freezes_task_parameters_model_and_output_limit\n    self.save(parameters={\"temperature\": 1.2, \"max_tokens\": 3000},\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change (__main__.TaskParameterHTTPTests.test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 378, in test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change\n    self.save(task_parameters={\"continue\": {\"temperature\": 0, \"max_tokens\": 5600,\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes (__main__.TaskParameterHTTPTests.test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 403, in test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes\n    self.save(task_parameters={\"continue\": {\"temperature\": 0, \"max_tokens\": 5700}})\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority (__main__.TaskParameterHTTPTests.test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 427, in test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority\n    self.save(parameters={\"temperature\": 1.2, \"max_tokens\": 3000},\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials (__main__.TaskParameterHTTPTests.test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 455, in test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials\n    self.save(task_parameters=preferences)\n  File \"<temporary-path>\", line 101, in save\n    self.assertEqual(status, 200, result)\nAssertionError: 400 != 200 : {'error': '设置包含未支持的字段。'}\n"
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters (__main__.TaskParameterHTTPTests.test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters)",
+      "traceback": "Traceback (most recent call last):\n  File \"<temporary-path>\", line 494, in test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters\n    self.assertEqual(stored.get(\"task_parameters\"), expected)\nAssertionError: None != {'continue': {'temperature': 0, 'max_toke[88 chars]400}}\n"
+    }
+  ],
+  "errors": [],
+  "started_at": "2026-10-14T22:35:45.718184+00:00",
+  "finished_at": "2026-10-14T22:35:52.750653+00:00",
+  "source_files_sha256_before": {
+    "server.py": "574d8bd998ba0a69516dbd881f7f66bea705d881ee0522dbbae195e5cc97785a",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_backups.py": "2c283b79cbb5485e1b34850dedee0806ded86f279723e8932efb6d09bca1f2f0",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "tests/provider_queue_integration_fixtures.py": "c6a9b7cac696d1b625b2e48c61f2008ab78bb02efffba8b0f520dbb4992e2915",
+    "tests/task_parameter_http_fixtures.py": "fec9b79e582ae2496ce37e596910b036fcc1c854b62872123e089e5f44f98b61"
+  },
+  "source_files_sha256_after": {
+    "server.py": "574d8bd998ba0a69516dbd881f7f66bea705d881ee0522dbbae195e5cc97785a",
+    "moyu_settings.py": "f32ee95f73c3571f3a4770f7eee7fd2fb722ef5e77862fda5d84be2bb7d516e8",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_backups.py": "2c283b79cbb5485e1b34850dedee0806ded86f279723e8932efb6d09bca1f2f0",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "tests/provider_queue_integration_fixtures.py": "c6a9b7cac696d1b625b2e48c61f2008ab78bb02efffba8b0f520dbb4992e2915",
+    "tests/task_parameter_http_fixtures.py": "fec9b79e582ae2496ce37e596910b036fcc1c854b62872123e089e5f44f98b61"
+  },
+  "source_unchanged": true,
+  "paid_provider_calls": 0,
+  "external_model_calls": 0,
+  "production_database_accessed": false,
+  "real_credentials_read": false,
+  "raw_database_values_saved": false,
+  "source_snapshot_provenance": "git archive 1552104 frozen source plus byte-identical independent fixture injection",
+  "scope": "Temporary synthetic SQLite; real loopback application HTTP and free local provider.",
+  "claim_limit": "Task parameter transport and data protection; no literary-quality or deployment claim.",
+  "http": [
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_04_task_reasoning_setting_replaces_inherited_alternative_representation",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_07_deferred_queue_freezes_task_parameters_model_and_output_limit",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "设置包含未支持的字段。"
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "method": "POST",
+      "path": "/api/backups",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "method": "GET",
+      "path": "/api/backups/backup_f54e0a86223f41ee91735648e2e5d577/download",
+      "status": 200,
+      "bytes": 2735,
+      "sha256": "238e6c1dddb2393d066b16e1defb316f87bac0fda1b2be179d19d27d246b403f"
+    }
+  ],
+  "observations": [],
+  "local_provider_calls": 0
+}

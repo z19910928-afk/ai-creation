@@ -96,7 +96,8 @@ const requiredScreenshots = {
     'compact-desktop-long-title-navigation.png', 'short-desktop-long-title-navigation.png',
     'desktop-record-knowledge-scope.png', 'desktop-review-repair.png'],
   planning_browser_regressions: ['planning-second-round.png'],
-  model_settings_browser_regressions: ['model-settings-failed.png', 'model-settings-success.png', 'desktop-settings.png'],
+  model_settings_browser_regressions: ['model-settings-failed.png', 'model-settings-success.png', 'desktop-settings.png',
+    'task-settings-1440x1000.png', 'task-settings-1280x900.png', 'task-settings-alias-inheritance.png'],
   desktop_author_flow_regressions: ['desktop-five-chapter-author.png', 'compact-desktop-five-chapter-author.png',
     'desktop-stale-payoff-blocked.png', 'desktop-final-complete.png'],
   instruction_draft_browser_regressions: ['instruction-draft-desktop.png', 'instruction-draft-desktop-1280x900.png'],
@@ -129,6 +130,9 @@ const fixtureReports = {
   },
   'tests/legacy_deleted_dependency_http_fixtures.py': {
     environment: 'MOYU_LEGACY_DELETED_DEPENDENCY_REPORT', name: 'legacy-deleted-dependencies-http',
+  },
+  'tests/task_parameter_http_fixtures.py': {
+    environment: 'MOYU_TASK_PARAMETER_REPORT', name: 'task-parameters-http',
   },
   'tests/reference_passages_http_fixtures.py': {
     environment: 'MOYU_REFERENCE_PASSAGES_REPORT', name: 'reference-passages-http',

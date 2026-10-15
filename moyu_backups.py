@@ -243,24 +243,46 @@ def tables(conn):
 
 
 def _portable_model_settings(raw):
+    from moyu_settings import PARAMETERS, TASKS
+
     settings = _strict_json(raw)
     if not isinstance(settings, dict):
         raise ValueError("备份中的模型设置格式无效")
-    public = {"base_url", "model", "models", "styles", "parameters", "daily_limit"}
+    public = {"base_url", "model", "models", "styles", "parameters", "task_parameters", "daily_limit"}
     settings = {key: value for key, value in settings.items() if key in public}
-    for key in ("models", "styles", "parameters"):
+    for key in ("models", "styles", "parameters", "task_parameters"):
         if key in settings and not isinstance(settings[key], dict):
             raise ValueError("备份中的模型设置格式无效")
     if "styles" in settings:
         settings["styles"] = {key: value for key, value in settings["styles"].items()
                               if key in {"tone", "instructions"}}
+    def public_parameters(values):
+        result = {key: value for key, value in values.items() if key in PARAMETERS}
+        if isinstance(result.get("thinking"), dict):
+            result["thinking"] = {key: value for key, value in result["thinking"].items()
+                                  if key == "type"}
+        return result
+
     if "parameters" in settings:
-        parameter_names = {"temperature", "max_tokens", "top_p", "presence_penalty",
-                           "frequency_penalty", "seed", "stop", "reasoning_effort", "thinking"}
-        settings["parameters"] = {key: value for key, value in settings["parameters"].items()
-                                  if key in parameter_names}
+        settings["parameters"] = public_parameters(settings["parameters"])
+    if "task_parameters" in settings:
+        from moyu_provider import prepare_chat_request
+        task_parameters = {}
+        for task, values in settings["task_parameters"].items():
+            if task not in TASKS:
+                continue
+            if not isinstance(values, dict):
+                raise ValueError("备份中的用途参数格式无效")
+            clean = public_parameters(values)
+            prepare_chat_request(
+                {"base_url": "http://127.0.0.1", "model": "backup-validation",
+                 "parameters": {key: value for key, value in clean.items() if key != "max_tokens"}},
+                [{"role": "user", "content": "backup-validation"}],
+                task=task, max_tokens=clean.get("max_tokens", 3000))
+            if clean:
+                task_parameters[task] = clean
+        settings["task_parameters"] = task_parameters
     if "models" in settings:
-        from moyu_settings import TASKS
         settings["models"] = {key: value for key, value in settings["models"].items() if key in TASKS}
     settings["_credential_ref"] = None
     settings["last_probe"] = None

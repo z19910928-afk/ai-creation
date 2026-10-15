@@ -11,7 +11,7 @@ const {chromium}=require(process.env.MOYU_PLAYWRIGHT_MODULE||'playwright');
 
 const root=path.resolve(__dirname,'..');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-settings-browser-'));
-const sources=['app.js','author-workspace.js','moyu_settings.py'];
+const sources=['app.js','author-workspace.js','styles.css','moyu_settings.py','server.py'];
 const fingerprint=()=>Object.fromEntries(sources.map(file=>[file,
  require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')]));
 const results={passed:false,scope:'电脑端模型设置、隔离SQLite、免费本机模拟提供方',
@@ -19,6 +19,7 @@ const results={passed:false,scope:'电脑端模型设置、隔离SQLite、免费
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 let app,provider,browser,page,base,mode='normal',release,lastProbe,serverLog='';
 const calls=[],pageErrors=[];
+const tasks=['continue','polish','outline','scene','summary','check','brainstorm','chapter_analysis','semantic_review'];
 
 async function freePort(){
  const socket=net.createServer();await new Promise(resolve=>socket.listen(0,'127.0.0.1',resolve));
@@ -45,6 +46,53 @@ async function submitTracked(key){
   form.requestSubmit();
   if(!(window[key] instanceof Promise))throw new Error('设置表单未发起可追踪的保存');
  },key);
+}
+function taskField(task,parameter){
+ return page.locator(`[data-task-row="${task}"] [data-task-parameter="${parameter}"]`);
+}
+async function saveTaskSettings(key){
+ const before=calls.length;
+ await submitTracked(key);await page.evaluate(key=>window[key],key);
+ await page.waitForFunction(()=>document.querySelector('#modelSettings [type="submit"]')?.disabled===false);
+ assert.equal(await page.locator('#modelSettings .form-error').textContent(),'');
+ assert.equal(calls.length,before,'保存用途设置不能外发模型请求');
+ return (await api('/api/ai/settings')).settings;
+}
+async function failTaskSettingsSave(key){
+ let intercepted=0;
+ await page.route('**/api/ai/settings',async route=>{
+  if(route.request().method()!=='PUT')return route.continue();
+  intercepted++;
+  await route.fulfill({status:500,contentType:'application/json',body:JSON.stringify({error:'fixture settings failure'})});
+ });
+ await submitTracked(key);await page.evaluate(key=>window[key],key);
+ await page.waitForFunction(()=>document.querySelector('#modelSettings .form-error')?.textContent.includes('fixture settings failure'));
+ assert.equal(intercepted,1);
+ assert.equal(await page.locator('#modelSettings [type="submit"]').isDisabled(),false);
+ assert.equal(await page.locator('#modelSettings input,#modelSettings textarea,#modelSettings select,#modelSettings button').evaluateAll(
+  controls=>controls.every(control=>!control.disabled)),true);
+ await page.unroute('**/api/ai/settings');
+}
+async function readTaskPreview(task){
+ const state=await api('/api/state');
+ const preview=await api('/api/ai/prompt-preview','POST',{task,chapter_id:state.chapters[0].id});
+ assert.equal(preview.request_audit.dispatched,false);
+ return preview.request;
+}
+async function reopenSettings(){
+ await page.locator('[data-view="editor"]').click();await settingsPage();
+}
+async function settingsScreenshot(filename){
+ await page.waitForFunction(()=>{
+  const toast=document.querySelector('#toast');
+  return !toast||!toast.classList.contains('show')&&Number(getComputedStyle(toast).opacity)===0;
+ });
+ await page.evaluate(async()=>{
+  window.scrollTo(0,0);await document.fonts.ready;
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+ });
+ await page.mouse.move(1200,100);await page.waitForTimeout(150);
+ await page.screenshot({path:path.join(temporary,filename),fullPage:true,animations:'disabled'});
 }
 async function probe(){
  lastProbe=null;await page.locator('#modelProbe').click();
@@ -119,7 +167,7 @@ async function main(){
   await page.reload();await page.waitForFunction(()=>backendOnline===true);await settingsPage();
   assert.match(await page.locator('#modelProbeStatus').textContent(),/默认模型实测成功/);
   assert.equal(calls.length,before+1);
-  await page.screenshot({path:path.join(temporary,'model-settings-success.png'),fullPage:true});
+  await settingsScreenshot('model-settings-success.png');
  });
  await test('最近失败替换旧成功，跨页和刷新均显示失败且不重发模型',async()=>{
   mode='unauthorized';const result=await probe();assert.equal(result.success,false);
@@ -131,7 +179,7 @@ async function main(){
   await page.reload();await page.waitForFunction(()=>backendOnline===true);await settingsPage();
   assert.match(await page.locator('#modelProbeStatus').textContent(),/未通过.*401/);
   assert.equal(calls.length,count);
-  await page.screenshot({path:path.join(temporary,'model-settings-failed.png'),fullPage:true});
+  await settingsScreenshot('model-settings-failed.png');
  });
  await test('回传模型不一致保留双方名称，不能显示所选模型检测成功',async()=>{
   mode='mismatch';const result=await probe();assert.equal(result.success,false);
@@ -202,7 +250,8 @@ async function main(){
   await page.locator('[data-view="library"]').click();await page.locator('[data-project-open="default-project"]').click();
   await page.waitForFunction(()=>requestedProject==='default-project'&&backendOnline===true);
   await api('/api/ai/settings','PUT',{base_url:`http://127.0.0.1:${providerPort}/v1`,
-   model:'stale-save-A-fixture',daily_limit:100},'default-project');
+   model:'stale-save-A-fixture',daily_limit:100,models:{scene:'stale-scene-A-fixture'},
+   task_parameters:{scene:{temperature:0.2,max_tokens:1100,reasoning_effort:'low'}}},'default-project');
   await page.locator('[data-view="settings"]').click();await page.locator('#modelSettings').waitFor();
   await page.waitForFunction(()=>document.querySelector('#modelDefault')?.value==='stale-save-A-fixture');
   let resume,observed;const held=new Promise(resolve=>observed=resolve);let captured=false;
@@ -214,16 +263,25 @@ async function main(){
   await page.locator('#modelDefault').fill('stale-save-A-fixture');
   await submitTracked('pendingStaleSave');
   await held;
-  await api('/api/ai/settings','PUT',{model:'stale-save-B-fixture'},'default-project');
+  const currentTaskParameters={scene:{temperature:0,max_tokens:2200,thinking:{type:'disabled'}}};
+  await api('/api/ai/settings','PUT',{model:'stale-save-B-fixture',models:{scene:'stale-scene-B-fixture'},
+   task_parameters:currentTaskParameters},'default-project');
   await page.locator('[data-view="editor"]').click();await page.locator('[data-view="settings"]').click();
   await page.locator('#modelSettings').waitFor();
   await page.waitForFunction(()=>document.querySelector('#modelDefault')?.value==='stale-save-B-fixture');
   assert.deepEqual(await page.evaluate(()=>({model:authorSettings.model,status:aiStatus.model,input:document.querySelector('#modelDefault').value})),
    {model:'stale-save-B-fixture',status:'stale-save-B-fixture',input:'stale-save-B-fixture'});
+  assert.deepEqual(await page.evaluate(()=>authorSettings.task_parameters),currentTaskParameters);
+  assert.equal(await page.locator('[data-task-model="scene"]').inputValue(),'stale-scene-B-fixture');
+  assert.equal(await taskField('scene','temperature').inputValue(),'0');
+  assert.equal(await taskField('scene','max_tokens').inputValue(),'2200');
+  assert.equal(await taskField('scene','reasoning').inputValue(),'deepseek_disabled');
   resume();await page.evaluate(()=>window.pendingStaleSave);await page.unroute('**/api/ai/settings');
   await page.waitForFunction(()=>document.querySelector('#modelSettings [type="submit"]')&&!document.querySelector('#modelSettings [type="submit"]').disabled);
   assert.deepEqual(await page.evaluate(()=>({model:authorSettings.model,status:aiStatus.model,input:document.querySelector('#modelDefault').value})),
    {model:'stale-save-B-fixture',status:'stale-save-B-fixture',input:'stale-save-B-fixture'});
+  assert.deepEqual(await page.evaluate(()=>authorSettings.task_parameters),currentTaskParameters);
+  assert.equal(await taskField('scene','temperature').inputValue(),'0');
   const count=calls.length;
   await submitTracked('pendingCurrentSettingsSave');
   await page.evaluate(()=>window.pendingCurrentSettingsSave);
@@ -231,6 +289,8 @@ async function main(){
    !document.querySelector('#modelSettings [type="submit"]')?.disabled);
   const saved=await api('/api/ai/settings','GET',undefined,'default-project');
   assert.equal(saved.settings.model,'stale-save-B-fixture');
+  assert.deepEqual(saved.settings.task_parameters,currentTaskParameters);
+  assert.equal(saved.settings.models.scene,'stale-scene-B-fixture');
   assert.equal(await page.evaluate(()=>authorSettings.model),'stale-save-B-fixture');
   assert.equal(await page.evaluate(()=>aiStatus.model),'stale-save-B-fixture');
   assert.equal(await page.locator('#modelDefault').inputValue(),'stale-save-B-fixture');
@@ -366,7 +426,8 @@ async function main(){
  await test('保存后的状态读取等待期间切换作品，不向另一作品发送检测',async()=>{
   mode='normal';const created=await api('/api/projects','POST',{title:'设置隔离作品'});
   const other=created.project.id;await api('/api/ai/settings','PUT',{base_url:`http://127.0.0.1:${providerPort}/v1`,
-   model:'other-project-fixture',daily_limit:100},other);
+   model:'other-project-fixture',daily_limit:100,models:{scene:'other-scene-fixture'},
+   task_parameters:{scene:{temperature:0.45,max_tokens:1700,reasoning_effort:'high'}}},other);
   let resume,observed;const held=new Promise(resolve=>observed=resolve);let captured=false;
   await page.route('**/api/ai/status',async route=>{
    if(captured||route.request().headers()['x-moyu-project']!=='default-project')return route.continue();
@@ -382,6 +443,12 @@ async function main(){
   assert.equal(await page.locator('#modelDefault').inputValue(),'other-project-fixture');
   assert.equal(await page.evaluate(()=>authorSettings.model),'other-project-fixture');
   assert.equal(await page.evaluate(()=>aiStatus.model),'other-project-fixture');
+  assert.deepEqual(await page.evaluate(()=>authorSettings.task_parameters),
+   {scene:{temperature:0.45,max_tokens:1700,reasoning_effort:'high'}});
+  assert.equal(await page.locator('[data-task-model="scene"]').inputValue(),'other-scene-fixture');
+  assert.equal(await taskField('scene','temperature').inputValue(),'0.45');
+  assert.equal(await taskField('scene','max_tokens').inputValue(),'1700');
+  assert.equal(await taskField('scene','reasoning').inputValue(),'high');
   assert.match(await page.locator('#modelProbeStatus').textContent(),/尚未验证/);
   assert.equal((await api('/api/ai/settings','GET',undefined,other)).settings.last_probe,null);
   results.other_project=other;
@@ -405,11 +472,225 @@ async function main(){
   assert.equal(await page.locator('#modelDefault').inputValue(),'other-project-fixture');
   assert.equal(await page.evaluate(()=>authorSettings.model),'other-project-fixture');
   assert.equal(await page.evaluate(()=>aiStatus.model),'other-project-fixture');
+  assert.deepEqual(await page.evaluate(()=>authorSettings.task_parameters),
+   {scene:{temperature:0.45,max_tokens:1700,reasoning_effort:'high'}});
+  assert.equal(await taskField('scene','temperature').inputValue(),'0.45');
   assert.match(await page.locator('#modelProbeStatus').textContent(),/尚未验证/);
   assert.doesNotMatch(await page.locator('#modelProbeStatus').textContent(),/实测成功/);
   assert.equal(calls.length,count+1);
  });
- await page.screenshot({path:path.join(temporary,'desktop-settings.png'),fullPage:true});
+ await page.locator('[data-view="library"]').click();await page.locator('[data-project-open="default-project"]').click();
+ await page.waitForFunction(()=>requestedProject==='default-project'&&backendOnline===true);await settingsPage();
+ mode='normal';
+ await test('九种用途模型与原始参数逐项保存，两种电脑尺寸全部控件互不遮挡',async()=>{
+  const seeded=Object.fromEntries(tasks.map((task,index)=>[task,{
+   temperature:index/10,max_tokens:600+index*100,top_p:0.4,seed:17+index,
+   ...(index%2?{reasoning_effort:'low'}:{thinking:{type:'disabled'}})}]));
+  const models=Object.fromEntries(tasks.map(task=>[task,'fixture-'+task]));
+  await api('/api/ai/settings','PUT',{base_url:`http://127.0.0.1:${providerPort}/v1`,model:'requested-fixture',
+   parameters:{temperature:0.65,max_tokens:3000,top_p:0.8,thinking:{type:'disabled'}},
+   models,task_parameters:seeded,daily_limit:100});
+  await reopenSettings();
+  assert.deepEqual(await page.locator('[data-task-row]').evaluateAll(rows=>rows.map(row=>row.dataset.taskRow)),tasks);
+  for(const task of tasks){
+   assert.equal(await page.locator(`[data-task-model="${task}"]`).inputValue(),models[task]);
+   assert.equal(await taskField(task,'temperature').inputValue(),String(seeded[task].temperature));
+   assert.equal(await taskField(task,'max_tokens').inputValue(),String(seeded[task].max_tokens));
+   const button=page.locator(`[data-task-clear="${task}"]`);
+   assert.ok(await button.getAttribute('title'));assert.ok(await button.getAttribute('aria-label'));
+  }
+  const saved=await saveTaskSettings('pendingAllTaskSettings');
+  assert.deepEqual(saved.task_parameters,seeded);assert.deepEqual(saved.models,models);
+  assert.equal(saved.parameters.top_p,0.8);
+  for(const viewport of [{width:1440,height:1000},{width:1280,height:900}]){
+   await page.setViewportSize(viewport);
+   const layout=await page.locator('.settings-task-table').evaluate(table=>{
+    const box=table.getBoundingClientRect(),issues=[];
+    for(const row of table.querySelectorAll('[data-task-row]')){
+     const controls=[...row.querySelectorAll('input,select,button')].map(control=>control.getBoundingClientRect());
+     controls.forEach((rect,index)=>{
+      if(rect.width<30||rect.left<box.left-0.5||rect.right>box.right+0.5)issues.push(row.dataset.taskRow+':bounds');
+      if(index&&controls[index-1].right>rect.left+0.5)issues.push(row.dataset.taskRow+':overlap');
+     });
+    }
+    return {issues,overflow:document.documentElement.scrollWidth>innerWidth,table:box.width};
+   });
+   assert.deepEqual(layout.issues,[]);assert.equal(layout.overflow,false);
+   await settingsScreenshot(`task-settings-${viewport.width}x${viewport.height}.png`);
+  }
+  await page.setViewportSize({width:1440,height:1000});
+  await page.reload();await page.waitForFunction(()=>backendOnline===true);await settingsPage();
+  assert.deepEqual(await page.evaluate(()=>authorSettings.task_parameters),seeded);
+ });
+ await test('用途温度零保留，空白删除数值覆盖，刷新后隐藏支持参数保持',async()=>{
+  await api('/api/ai/settings','PUT',{task_parameters:{scene:{
+   temperature:0,max_tokens:700,top_p:0.4,seed:17,stop:['scene-end'],
+   presence_penalty:0.1,frequency_penalty:-0.2}}});
+  await reopenSettings();
+  const zero=await saveTaskSettings('pendingZeroTaskSettings');
+  assert.equal(zero.task_parameters.scene.temperature,0);
+  assert.equal((await readTaskPreview('scene')).temperature,0);
+  await taskField('scene','temperature').fill('');await taskField('scene','max_tokens').fill('');
+  const blank=await saveTaskSettings('pendingBlankTaskSettings');
+  assert.deepEqual(blank.task_parameters.scene,{
+   top_p:0.4,seed:17,stop:['scene-end'],presence_penalty:0.1,frequency_penalty:-0.2});
+  assert.equal((await readTaskPreview('scene')).temperature,0.65);
+  assert.equal((await readTaskPreview('scene')).max_tokens,3000);
+  await page.reload();await page.waitForFunction(()=>backendOnline===true);await settingsPage();
+  assert.equal(await taskField('scene','temperature').inputValue(),'');
+  assert.equal(await taskField('scene','max_tokens').inputValue(),'');
+  assert.deepEqual((await saveTaskSettings('pendingBlankTaskReload')).task_parameters,blank.task_parameters);
+ });
+ await test('回顾与检查按整对象供分析审稿继承，显式子用途只覆盖全局且空白不制造对象',async()=>{
+  const raw={summary:{temperature:0,max_tokens:1200,reasoning_effort:'low'},
+   check:{temperature:0.2,max_tokens:1400,thinking:{type:'enabled'}}};
+  await api('/api/ai/settings','PUT',{task_parameters:raw});await reopenSettings();
+  assert.equal(await taskField('chapter_analysis','temperature').inputValue(),'');
+  assert.equal(await taskField('semantic_review','reasoning').inputValue(),'');
+  assert.equal(await taskField('chapter_analysis','temperature').getAttribute('placeholder'),'沿用回顾');
+  assert.equal(await taskField('semantic_review','temperature').getAttribute('placeholder'),'沿用检查');
+  assert.equal(await taskField('semantic_review','reasoning').locator('option').first().textContent(),'沿用检查');
+  assert.match(await taskField('chapter_analysis','temperature').getAttribute('title'),/未单设时沿用回顾与交接用途；单设后空项沿用全局/);
+  await taskField('summary','temperature').fill('');
+  await taskField('summary','max_tokens').fill('');
+  await taskField('summary','reasoning').selectOption('');
+  assert.equal(await taskField('chapter_analysis','temperature').getAttribute('placeholder'),'沿用全局');
+  await page.locator('[data-task-model="summary"]').fill('');
+  assert.equal(await page.locator('[data-task-model="chapter_analysis"]').getAttribute('placeholder'),'使用默认模型');
+  await taskField('summary','temperature').fill('0');
+  await taskField('summary','max_tokens').fill('1200');
+  await taskField('summary','reasoning').selectOption('low');
+  await page.locator('[data-task-model="summary"]').fill('fixture-summary');
+  assert.equal(await taskField('chapter_analysis','temperature').getAttribute('placeholder'),'沿用回顾');
+  assert.equal(await page.locator('[data-task-model="chapter_analysis"]').getAttribute('placeholder'),'沿用回顾模型');
+  await page.locator('[data-task-clear="check"]').click();
+  assert.equal(await taskField('semantic_review','reasoning').locator('option').first().textContent(),'沿用全局');
+  await page.locator('[data-task-model="check"]').fill('');
+  assert.equal(await page.locator('[data-task-model="semantic_review"]').getAttribute('placeholder'),'使用默认模型');
+  await taskField('check','temperature').fill('0.2');
+  await taskField('check','max_tokens').fill('1400');
+  await taskField('check','reasoning').selectOption('deepseek_enabled');
+  await page.locator('[data-task-model="check"]').fill('fixture-check');
+  assert.equal(await taskField('semantic_review','reasoning').locator('option').first().textContent(),'沿用检查');
+  assert.equal(await page.locator('[data-task-model="semantic_review"]').getAttribute('placeholder'),'沿用检查模型');
+  assert.deepEqual((await saveTaskSettings('pendingRawAliases')).task_parameters,raw);
+  const analysis=await readTaskPreview('chapter_analysis'),review=await readTaskPreview('semantic_review');
+  assert.equal(analysis.temperature,0);assert.equal(analysis.max_tokens,1200);
+  assert.equal(analysis.reasoning_effort,'low');assert.equal('thinking' in analysis,false);
+  assert.equal(review.temperature,0.2);assert.equal(review.max_tokens,1400);
+  assert.deepEqual(review.thinking,{type:'enabled'});
+  await taskField('chapter_analysis','max_tokens').fill('1900');
+  await taskField('semantic_review','max_tokens').fill('2100');
+  assert.equal(await taskField('chapter_analysis','temperature').getAttribute('placeholder'),'沿用全局');
+  assert.equal(await taskField('semantic_review','reasoning').locator('option').first().textContent(),'沿用全局');
+  const explicit=await saveTaskSettings('pendingExplicitAliases');
+  assert.deepEqual(explicit.task_parameters.chapter_analysis,{max_tokens:1900});
+  assert.deepEqual(explicit.task_parameters.semantic_review,{max_tokens:2100});
+  for(const [task,limit] of [['chapter_analysis',1900],['semantic_review',2100]]){
+   const request=await readTaskPreview(task);
+   assert.equal(request.temperature,0.65);assert.equal(request.max_tokens,limit);
+   assert.deepEqual(request.thinking,{type:'disabled'});assert.equal('reasoning_effort' in request,false);
+  }
+  await page.locator('[data-task-clear="chapter_analysis"]').click();
+  await page.locator('[data-task-clear="semantic_review"]').click();
+  assert.equal(await taskField('chapter_analysis','temperature').getAttribute('placeholder'),'沿用回顾');
+  assert.equal(await taskField('semantic_review','reasoning').locator('option').first().textContent(),'沿用检查');
+  assert.deepEqual((await saveTaskSettings('pendingClearAliases')).task_parameters,raw);
+  assert.equal((await readTaskPreview('chapter_analysis')).temperature,0);
+  assert.equal((await readTaskPreview('semantic_review')).temperature,0.2);
+  await api('/api/ai/settings','PUT',{task_parameters:{...raw,chapter_analysis:{seed:42}}});await reopenSettings();
+  assert.equal(await taskField('chapter_analysis','temperature').getAttribute('placeholder'),'沿用全局');
+  const hidden=await saveTaskSettings('pendingHiddenExplicitAlias');
+  assert.deepEqual(hidden.task_parameters.chapter_analysis,{seed:42});
+  assert.equal((await readTaskPreview('chapter_analysis')).temperature,0.65);
+  await page.locator('[data-task-clear="chapter_analysis"]').click();
+  assert.equal(await taskField('chapter_analysis','temperature').getAttribute('placeholder'),'沿用回顾');
+  await settingsScreenshot('task-settings-alias-inheritance.png');
+  assert.deepEqual((await saveTaskSettings('pendingClearHiddenAlias')).task_parameters,raw);
+ });
+ await test('单用途恢复图标清除整个参数对象，模型及其余八用途保留且刷新不复活隐藏字段',async()=>{
+  const raw=Object.fromEntries(tasks.map((task,index)=>[task,{
+   temperature:index/10,max_tokens:800+index*100,top_p:0.4,seed:40+index,reasoning_effort:'low'}]));
+  await api('/api/ai/settings','PUT',{task_parameters:raw});await reopenSettings();
+  const models=(await api('/api/ai/settings')).settings.models;
+  await page.locator('[data-task-clear="scene"]').click();
+  assert.equal(await page.locator('[data-task-model="scene"]').inputValue(),models.scene);
+  assert.equal(await taskField('scene','temperature').inputValue(),'');
+  assert.equal(await taskField('scene','max_tokens').inputValue(),'');
+  assert.equal(await taskField('scene','reasoning').inputValue(),'');
+  const expected={...raw};delete expected.scene;
+  const before=calls.length;
+  await failTaskSettingsSave('pendingFailedClearWholeTask');
+  assert.equal(calls.length,before);
+  assert.deepEqual((await api('/api/ai/settings')).settings.task_parameters,raw);
+  assert.equal(await taskField('scene','temperature').inputValue(),'');
+  assert.equal(await taskField('scene','max_tokens').inputValue(),'');
+  assert.equal(await taskField('scene','reasoning').inputValue(),'');
+  const saved=await saveTaskSettings('pendingClearWholeTask');
+  assert.deepEqual(saved.task_parameters,expected);assert.deepEqual(saved.models,models);
+  await page.reload();await page.waitForFunction(()=>backendOnline===true);await settingsPage();
+  assert.deepEqual((await saveTaskSettings('pendingClearWholeReload')).task_parameters,expected);
+  await taskField('scene','temperature').fill('0');
+  const replaced=await saveTaskSettings('pendingOverrideAfterClear');
+  assert.deepEqual(replaced.task_parameters.scene,{temperature:0});
+  await page.locator('[data-task-clear="scene"]').click();
+  await taskField('scene','max_tokens').fill('900');
+  const revised=await saveTaskSettings('pendingOverrideAfterLocalClear');
+  assert.deepEqual(revised.task_parameters.scene,{max_tokens:900});
+ });
+ await test('用途思考开关与强度互换仅保存一种形式，空白继承且其他参数不改',async()=>{
+  const original={temperature:0,max_tokens:750,seed:19,top_p:0.5};
+  await api('/api/ai/settings','PUT',{task_parameters:{scene:original}});await reopenSettings();
+  for(const [selection,expected] of [['deepseek_disabled',{thinking:{type:'disabled'}}],
+   ['high',{reasoning_effort:'high'}],['deepseek_enabled',{thinking:{type:'enabled'}}],['',{}]]){
+   await taskField('scene','reasoning').selectOption(selection);
+   const saved=await saveTaskSettings('pendingThinkingTask'+(selection||'inherit'));
+   assert.deepEqual(saved.task_parameters.scene,{...original,...expected});
+   assert.equal('thinking' in saved.task_parameters.scene&&'reasoning_effort' in saved.task_parameters.scene,false);
+  }
+  await page.reload();await page.waitForFunction(()=>backendOnline===true);await settingsPage();
+  assert.equal(await taskField('scene','reasoning').inputValue(),'');
+  assert.deepEqual((await readTaskPreview('scene')).thinking,{type:'disabled'});
+ });
+ await test('用途数值不合格时表单拒绝发送，任意有效小数温度可以保存',async()=>{
+  const before=calls.length;let writes=0;
+  const track=request=>{if(request.method()==='PUT'&&new URL(request.url()).pathname==='/api/ai/settings')writes++};
+  page.on('request',track);
+  for(const [parameter,value] of [['temperature','-0.1'],['temperature','2.1'],
+   ['max_tokens','0'],['max_tokens','128001'],['max_tokens','1.5']]){
+   await taskField('scene',parameter).fill(value);
+   assert.equal(await page.locator('#modelSettings').evaluate(form=>form.checkValidity()),false);
+   await page.locator('#modelSettings').evaluate(form=>form.requestSubmit());
+   assert.equal(writes,0);
+   await taskField('scene',parameter).fill('');
+  }
+  await taskField('scene','temperature').fill('0.375');
+  const saved=await saveTaskSettings('pendingFractionalTaskTemperature');
+  assert.equal(saved.task_parameters.scene.temperature,0.375);assert.equal(writes,1);
+  assert.equal(calls.length,before);page.off('request',track);
+  await page.locator('#modelTemperature').fill('0');
+  assert.equal((await saveTaskSettings('pendingGlobalZeroTemperature')).parameters.temperature,0);
+  assert.equal((await readTaskPreview('polish')).temperature,0);
+  await page.locator('#modelTemperature').fill('');
+  const cleared=await saveTaskSettings('pendingGlobalBlankTemperature');
+  assert.equal('temperature' in cleared.parameters,false);
+  await reopenSettings();
+  assert.equal(await page.locator('#modelTemperature').inputValue(),'');
+  assert.equal(await page.locator('#modelTemperature').getAttribute('placeholder'),'按用途默认');
+  assert.equal((await readTaskPreview('continue')).temperature,0.65);
+  assert.equal((await readTaskPreview('polish')).temperature,0.35);
+  await page.reload();await page.waitForFunction(()=>backendOnline===true);await settingsPage();
+  assert.equal(await page.locator('#modelTemperature').inputValue(),'');
+  assert.equal('temperature' in (await saveTaskSettings('pendingReloadGlobalBlankTemperature')).parameters,false);
+  await api('/api/ai/settings','PUT',{parameters:{}});await reopenSettings();
+  assert.equal(await page.locator('#modelTemperature').inputValue(),'');
+  assert.equal(await page.locator('#modelMaxTokens').inputValue(),'3000');
+  assert.equal('temperature' in (await saveTaskSettings('pendingLegacyBlankGlobalParameters')).parameters,false);
+  assert.equal((await readTaskPreview('continue')).temperature,0.65);
+  assert.equal((await readTaskPreview('polish')).temperature,0.35);
+  assert.equal(calls.length,before);
+ });
+ await settingsScreenshot('desktop-settings.png');
  assert.deepEqual(pageErrors,[]);
  results.provider_requests=calls.length;results.source_files_sha256_after=fingerprint();
  results.source_unchanged=JSON.stringify(results.source_files_sha256_before)===JSON.stringify(results.source_files_sha256_after);

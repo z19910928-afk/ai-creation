@@ -1,0 +1,257 @@
+{
+  "passed": true,
+  "scope": "桌面真实浏览器、隔离 SQLite、免费本机提供方；规划归档、已保存作品重开、Unicode 导入及旧审稿作者决定",
+  "cases": [
+    {
+      "name": "五章规划归档首章仍五章，已有正文目标场景视角卷身份完整保留",
+      "passed": true
+    },
+    {
+      "name": "归档跳过已完成后续章，刷新重复归档不会追加空章",
+      "passed": true
+    },
+    {
+      "name": "无后续章仅新建一次，保存失败恢复复用身份且新章目标不覆盖交接",
+      "passed": true
+    },
+    {
+      "name": "归档新章保存等待切章，迟到成功回应不强行切回",
+      "passed": true
+    },
+    {
+      "name": "new保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "new保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "new保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "copy保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的origin读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的target读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "import保存后的both读取失败重开不重复提交",
+      "passed": true
+    },
+    {
+      "name": "参考导入保存后回读失败，重试只打开参考库",
+      "passed": true
+    },
+    {
+      "name": "导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝",
+      "passed": true
+    },
+    {
+      "name": "新建作品200完整字符名称可保存，超限不会发出创建请求",
+      "passed": true
+    },
+    {
+      "name": "已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "25a2d3f4bdd3ece1e05071acc206de196ba49cb80f2590df0456bdffd29ccad6"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "6f50866443ce51a160a80f301398c876ab5845c00c147237dbf121425e10e1ce"
+    },
+    {
+      "path": "server.py",
+      "sha256": "369d910c530a00c57dd9507736cd99c825ddd5f51c9b0451470c150a2163fc14"
+    },
+    {
+      "path": "moyu_analysis.py",
+      "sha256": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330"
+    },
+    {
+      "path": "moyu_workspace.py",
+      "sha256": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3"
+    },
+    {
+      "path": "moyu_context.py",
+      "sha256": "828a32447dc1ff48cdbe849958b7763468c21d677f40ea1798def72bcb0b7543"
+    },
+    {
+      "path": "styles.css",
+      "sha256": "bf4747f751c99da376d6bab3a619aaf17718411be7049619b00f83b1e04fab4b"
+    },
+    {
+      "path": "tests/author_workspace_lifecycle_browser_regressions.cjs",
+      "sha256": "b4da23063bbb46a4e2db7b22c723361bdbe11aef31f9fc8286556d669a78796e"
+    }
+  ],
+  "desktop_layout": [
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "initial_handoff": {
+        "width": 968,
+        "height": 70,
+        "label_width": 968,
+        "x": 442,
+        "y": 859.1875,
+        "right": 1410,
+        "bottom": 929.1875,
+        "scroll_y": 0,
+        "within": true,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      },
+      "centered_for_capture": false,
+      "handoff": {
+        "width": 968,
+        "height": 70,
+        "label_width": 968,
+        "x": 442,
+        "y": 859.1875,
+        "right": 1410,
+        "bottom": 929.1875,
+        "scroll_y": 0,
+        "within": true,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      }
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "initial_handoff": {
+        "width": 808,
+        "height": 70,
+        "label_width": 808,
+        "x": 442,
+        "y": 831.1875,
+        "right": 1250,
+        "bottom": 901.1875,
+        "scroll_y": 28,
+        "within": false,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      },
+      "centered_for_capture": true,
+      "handoff": {
+        "width": 808,
+        "height": 70,
+        "label_width": 808,
+        "x": 442,
+        "y": 415.1875,
+        "right": 1250,
+        "bottom": 485.1875,
+        "scroll_y": 444,
+        "within": true,
+        "unobstructed": true,
+        "readonly": true,
+        "value": "交接只作上章说明，不替换后续章的目标和场景。"
+      }
+    }
+  ],
+  "recovery": [
+    {
+      "operation": "new",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "new",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "new",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "copy",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "origin",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 1,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "target",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    },
+    {
+      "operation": "import",
+      "failureMode": "both",
+      "posts": 1,
+      "originReads": 1,
+      "targetReads": 2,
+      "opened": true
+    }
+  ],
+  "provider_calls": 1,
+  "source_unchanged": true
+}

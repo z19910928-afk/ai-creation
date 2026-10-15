@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "observed_local_date": "2026-10-15",
+  "timezone": "Asia/Shanghai",
+  "scope": "Independent read-only review of A2 complete portable-backup delivery evidence for the approved commit.",
+  "approved_commit": "1552104b345588e06db326879e56f80f76a09d0a",
+  "passed": true,
+  "review_did_not_modify_source_or_product_data": true,
+  "production_data_writes": 0,
+  "provider_calls": 0,
+  "paid_calls": 0,
+  "independent_evidence_checks": [
+    "Exact approved commit across activation, post-update acceptance, desktop outcome, public projections and GitHub status; service checkout was clean at that commit.",
+    "Activation, post-update, desktop and before-update file hashes match every public and private chain reference.",
+    "Complete release report digest matches all consumers; 95 successful checks, 104 sources, 63 artifacts and 161 release desktop scenarios match recorded counts.",
+    "All 104 release source hashes match before and after inventories, current service files and the immutable approved Git commit.",
+    "All 63 release artifact hashes were recalculated: 19 JSON files and 44 PNG files.",
+    "All 10 activation snapshot source hashes match both activation snapshots and the approved complete release inventory.",
+    "Invariant hashes were independently recalculated and compared across activation and saved post-update snapshots.",
+    "All 65 saved table fingerprints match across pre-update, post-update-before and post-update-after snapshots, including content, counts, columns and schema.",
+    "Guarded activation succeeded, backup bytes match the manifest hash, integrity and foreign-key results passed, and the actual database was not restored.",
+    "Post-update acceptance is read only, made no search refresh, and retained healthy current search with the provider offline.",
+    "Saved real-browser evidence contains eight passed cases across editor, world, references and tasks at 1440 and 1280 desktop widths; page errors, writes and blocked requests are zero.",
+    "Both private screenshots match original file hashes, public hashes and PNG dimensions.",
+    "GitHub status matches the exact approved head and run 38648216073; one completed successful job has 25 completed successful steps matching the public ordered step list.",
+    "Public evidence scope excludes B1 task-specific parameters and literary or first-tier leadership claims.",
+    "Public projections contain no private absolute paths, manuscript rows, credentials or published private screenshots.",
+    "Private backup, GitHub status, browser report and screenshots are ignored and untracked, with no group or world permissions."
+  ],
+  "independent_evidence_check_count": 16,
+  "database_recalculation": {
+    "method": "Independent sqlite3 read-only transaction with query_only enabled; typed length-prefixed cell hashing, sorted row digests, column inventory and complete schema inventory. No product helper was imported.",
+    "compared_table_count": 65,
+    "saved_before_update_matches_saved_post_update_before_and_after": true,
+    "update_backup_matches_saved_before_update": true,
+    "current_local_database_matches_saved_before_update": true,
+    "backup_integrity_check": [
+      "ok"
+    ],
+    "current_database_integrity_check": [
+      "ok"
+    ],
+    "backup_foreign_key_issues": 0,
+    "current_database_foreign_key_issues": 0,
+    "raw_database_values_saved": false,
+    "full_fingerprints_canonical_sha256": "4f76aa1817d2da814fd1ad82bbf487f58714abbe91fc79efab576fa90b0fe6ed",
+    "database_schema_sha256": "36e2cdd2a2a160412b21a4e13a1d3d6af6dacb737c4659f18d4d654b4d00aeb7"
+  },
+  "recalculated_sha256": {
+    "activation_outcome": "24a02f061997a73fccbf6f7041a81bea623a6212f1652bab40bd5a6574e6234f",
+    "post_update_outcome": "c12feaa0bf0ecf42a4999dbac32df881d0da68236569173d94f33016c447209b",
+    "desktop_outcome": "ab28fd3ca7eab4f4eaf2eb91191ea857c79238aa98266a64985fbb013627ca3a",
+    "before_update_fingerprints": "53285853b05154f19f7178e5a2df0c989181d8ccdbdeb63c907753b6500ee3d7",
+    "private_browser_report": "c77b8dcaec257922128b98f2c43fee1ceb5dc9d8311dbbfa270ae0c8775053de",
+    "private_github_status": "805c5e3e1e9a953c754ae260da89813c086e6fb0b24e4fd92edbf3450e5a3bbb",
+    "public_local_service_json": "66bf7eb1b3bbf4349619431f195aa0af51bef06775ccd5c264739551b3c2b2d2",
+    "public_local_service_markdown": "5c7924c137f0d2bc34f39183b6f8523e931689d7090db34aad3a7245c011fe06",
+    "public_github_json": "216de394ea4ebcf4b48cf687c60eab91dab8a85c3ad6f3f1d088ed527189bb36",
+    "accepted_release_report": "a5aceee5dd25a1b4bafc1da36dd49a576c11b01a48ad1f4183aba5e66579f509",
+    "update_backup": "091866bbe0f39576283f86bfdb219b96b88275d72aaa43423d865b019d4de7a6",
+    "private_editor_1440x1000": "8def70df95ebebefb176360d91701e42ab4168c7a0548306451cd3ccf97895c5",
+    "private_editor_1280x900": "b068619486df007fbd088afaf6a60fdf99e0c10ab3e59aa747bd790b8bc4c068"
+  },
+  "count_boundaries": {
+    "release_checks": 95,
+    "release_sources": 104,
+    "release_artifacts": 63,
+    "release_browser_scenarios": 161,
+    "actual_service_desktop_scenarios": 8,
+    "github_jobs": 1,
+    "github_steps": 25,
+    "counts_above_are_not_added_together": true
+  },
+  "limitations": [
+    "The desktop wrapper retained its instantaneous before and after snapshots as digests only. Their original snapshot bytes cannot be independently rehashed. Saved complete table snapshots, current database and update backup were independently compared instead.",
+    "This review inspected the saved eight-case desktop browser evidence and did not run a second browser session.",
+    "This review validates the saved exact-head GitHub response and does not issue another GitHub API query.",
+    "A2 engineering delivery evidence does not prove B1 completion, literary quality or first-tier product ranking."
+  ],
+  "privacy": {
+    "absolute_private_paths_included": false,
+    "manuscript_or_reference_text_included": false,
+    "database_rows_included": false,
+    "credentials_included": false,
+    "screenshots_published": false
+  }
+}

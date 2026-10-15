@@ -20,6 +20,8 @@ from moyu_provider import (
 
 TASKS = {"continue", "polish", "outline", "scene", "summary", "check", "brainstorm",
          "chapter_analysis", "semantic_review"}
+PARAMETERS = {"temperature", "max_tokens", "top_p", "presence_penalty",
+              "frequency_penalty", "seed", "stop", "reasoning_effort", "thinking"}
 _REF = re.compile(r"^[a-f0-9]{64}-[a-f0-9]{32}$")
 
 
@@ -84,7 +86,7 @@ def _environment() -> dict[str, Any]:
     temperature = float(os.environ.get("MOYU_AI_TEMPERATURE", "0.65"))
     limit = int(os.environ.get("MOYU_AI_DAILY_QUOTA", "0") or 0)
     return {"base_url": os.environ.get("MOYU_AI_BASE_URL", "").strip().rstrip("/"),
-            "model": os.environ.get("MOYU_AI_MODEL", "").strip(), "models": {},
+            "model": os.environ.get("MOYU_AI_MODEL", "").strip(), "models": {}, "task_parameters": {},
             "styles": {"tone": "", "instructions": ""},
             "parameters": {"temperature": temperature, "max_tokens": 3000},
             "daily_limit": limit, "last_probe": None}
@@ -124,9 +126,19 @@ def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
         task_models.setdefault("chapter_analysis", task_models["summary"])
     if "check" in task_models:
         task_models.setdefault("semantic_review", task_models["check"])
+    task_parameters = {task: dict(values) for task, values in (payload.get("task_parameters") or {}).items()
+                       if values}
+    for source, target in (("summary", "chapter_analysis"), ("check", "semantic_review")):
+        if source in task_parameters:
+            task_parameters.setdefault(target, task_parameters[source])
+    task_max_tokens = {task: values["max_tokens"] for task, values in task_parameters.items()
+                       if "max_tokens" in values}
+    sampling_by_task = {task: {key: value for key, value in values.items() if key != "max_tokens"}
+                        for task, values in task_parameters.items()}
     return {"base_url": payload.get("base_url", ""), "model": payload.get("model", ""),
             "api_key": key, "task_models": task_models, "parameters": parameters,
-            "max_tokens": max_tokens, "styles": payload.get("styles") or {},
+            "max_tokens": max_tokens, "task_parameters": sampling_by_task,
+            "task_max_tokens": task_max_tokens, "styles": payload.get("styles") or {},
             "daily_limit": payload.get("daily_limit", 0),
             "credential_ref": payload.get("_credential_ref"),
             "credential_fingerprint": hashlib.sha256(key.encode()).hexdigest() if key else None,
@@ -163,6 +175,7 @@ def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
         "base_url": payload.get("base_url", ""), "model": payload.get("model", ""),
         "models": payload.get("models") or {}, "styles": payload.get("styles") or {},
         "parameters": payload.get("parameters") or {},
+        "task_parameters": payload.get("task_parameters") or {},
         "daily_limit": payload.get("daily_limit", 0), "last_probe": _public_probe(payload.get("last_probe")),
         "configured": bool(config["base_url"] and config["model"]),
         "api_key_configured": bool(config["api_key"]),
@@ -189,7 +202,7 @@ def _public_probe(probe: Any) -> dict[str, Any] | None:
 def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("设置必须为对象。")
-    allowed = {"base_url", "model", "api_key", "models", "styles", "parameters",
+    allowed = {"base_url", "model", "api_key", "models", "styles", "parameters", "task_parameters",
                "daily_limit", "clear_api_key"}
     if set(data) - allowed:
         raise ValueError("设置包含未支持的字段。")
@@ -207,9 +220,20 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
     styles = {"tone": _text(styles.get("tone", ""), "创作风格", 300),
               "instructions": _text(styles.get("instructions", ""), "写作要求", 8000)}
     parameters = data.get("parameters", current.get("parameters", {}))
-    if not isinstance(parameters, dict) or set(parameters) - {"temperature", "max_tokens", "top_p", "presence_penalty", "frequency_penalty", "seed", "stop", "reasoning_effort", "thinking"}:
+    if not isinstance(parameters, dict) or set(parameters) - PARAMETERS:
         raise ValueError("模型参数设置无效。")
     max_tokens = _integer(parameters.get("max_tokens", 3000), "输出上限", 1, 128_000)
+    task_parameters = data.get("task_parameters", current.get("task_parameters", {}))
+    if not isinstance(task_parameters, dict) or set(task_parameters) - TASKS:
+        raise ValueError("用途参数设置无效。")
+    next_task_parameters = {}
+    for task, overrides in task_parameters.items():
+        if not isinstance(overrides, dict) or set(overrides) - PARAMETERS:
+            raise ValueError("用途参数设置无效。")
+        if "max_tokens" in overrides:
+            _integer(overrides["max_tokens"], "用途输出上限", 1, 128_000)
+        if overrides:
+            next_task_parameters[task] = dict(overrides)
     daily_limit = _integer(data.get("daily_limit", current.get("daily_limit", 0)), "每日生成上限", 0, 100_000)
     key = data.get("api_key")
     if key is not None and not isinstance(key, str):
@@ -225,12 +249,20 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
                          "parameters": {name: value for name, value in parameters.items() if name != "max_tokens"}}
     prepare_chat_request(validation_config, [{"role": "user", "content": "settings-validation"}],
                          max_tokens=max_tokens)
+    for task, overrides in next_task_parameters.items():
+        prepare_chat_request(
+            {**validation_config, "task_parameters": {
+                task: {name: value for name, value in overrides.items() if name != "max_tokens"}}},
+            [{"role": "user", "content": "settings-validation"}], task=task,
+            max_tokens=overrides.get("max_tokens", max_tokens))
     next_payload = {
         "base_url": base_url, "model": model, "models": models, "styles": styles,
-        "parameters": {**parameters, "max_tokens": max_tokens}, "daily_limit": daily_limit,
+        "parameters": {**parameters, "max_tokens": max_tokens}, "task_parameters": next_task_parameters,
+        "daily_limit": daily_limit,
         "last_probe": current.get("last_probe"), "_credential_ref": current.get("_credential_ref"),
     }
-    previous_public = {name: current.get(name) for name in ("base_url", "model", "models", "styles", "parameters")}
+    previous_public = {name: current.get(name) for name in (
+        "base_url", "model", "models", "styles", "parameters", "task_parameters")}
     if previous_public != {name: next_payload.get(name) for name in previous_public} or key is not None or data.get("clear_api_key"):
         next_payload["last_probe"] = None
     if key is not None or data.get("clear_api_key") or (original is None and effective_key):

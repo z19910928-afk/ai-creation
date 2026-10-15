@@ -1,0 +1,43 @@
+{
+  "scope": "B1 task parameters directed stage evidence; synthetic data only; no release, literary or production claim.",
+  "source_fixture_sha256": "fec9b79e582ae2496ce37e596910b036fcc1c854b62872123e089e5f44f98b61",
+  "redaction": "Same recursive value-only local-path replacements as scripts/release_verification.cjs; originals retained under Git-ignored artifacts.",
+  "files": [
+    {
+      "local_original": "artifacts/task-parameters-20261015/before-frozen-1552104-12-methods.json",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/task-parameters-before-frozen-1552104-20261015.json",
+      "original_sha256": "a02195f9664d7b8b036fde3ba00b54c5060694bb94eecfdfb59f5445e009f18b",
+      "published_sha256": "1a2957ccfbc4a1fb42ce90ac04dcc404067c29c8319024904700c48f2d0aa5a3",
+      "public_bytes_are_original": false,
+      "original_source_snapshot_provenance": "git archive 1552104 frozen source plus byte-identical independent fixture injection",
+      "passed": false,
+      "methods": 12,
+      "http": 13,
+      "failures": 12,
+      "errors": 0,
+      "source_unchanged": true,
+      "local_provider_calls": 0,
+      "paid_provider_calls": 0,
+      "categories": [
+        "local_absolute_or_temporary_path"
+      ]
+    },
+    {
+      "local_original": "artifacts/task-parameters-20261015/after-v1-12-methods.json",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/task-parameters-after-v1-20261015.json",
+      "original_sha256": "e060608a73dff465e1191f6b0c4911e2ed2785a7e3433fab58dee46fb75c19a4",
+      "published_sha256": "e060608a73dff465e1191f6b0c4911e2ed2785a7e3433fab58dee46fb75c19a4",
+      "public_bytes_are_original": true,
+      "original_source_snapshot_provenance": "B1 backend current isolated worktree; same 12-method fixture as frozen 1552104 before",
+      "passed": true,
+      "methods": 12,
+      "http": 126,
+      "failures": 0,
+      "errors": 0,
+      "source_unchanged": true,
+      "local_provider_calls": 5,
+      "paid_provider_calls": 0,
+      "categories": []
+    }
+  ]
+}

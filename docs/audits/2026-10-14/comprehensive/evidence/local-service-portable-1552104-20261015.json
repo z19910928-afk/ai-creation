@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "observed_local_date": "2026-10-15",
+  "timezone": "Asia/Shanghai",
+  "scope": "Actual loopback desktop acceptance of the complete portable-backup commit only.",
+  "approved_commit": "1552104b345588e06db326879e56f80f76a09d0a",
+  "local_service_acceptance_passed": true,
+  "activation": {
+    "passed": true,
+    "stage": "activation_complete",
+    "service_restarted": true,
+    "backup_performed": true,
+    "backup_integrity_and_manifest_verified": true,
+    "source_matches_full_verification": true,
+    "manuscript_and_all_revisions_unchanged": true,
+    "all_table_counts_unchanged": true,
+    "model_jobs_runs_reservations_zero": true,
+    "production_database_restored": false,
+    "external_model_calls": 0,
+    "private_evidence_sha256": "24a02f061997a73fccbf6f7041a81bea623a6212f1652bab40bd5a6574e6234f"
+  },
+  "read_only_acceptance": {
+    "passed": true,
+    "acceptance_chain": "completed_activation",
+    "compared_tables": 65,
+    "all_table_content_counts_columns_and_schema_unchanged": true,
+    "changed_tables": [],
+    "search_refresh_attempted": false,
+    "manuscript_and_all_revisions_unchanged": true,
+    "branches_events_jobs_runs_reservations_unchanged": true,
+    "database_modified": false,
+    "service_restarted": false,
+    "backup_performed": false,
+    "health_ok": true,
+    "provider_mode": "offline",
+    "projection_status": "healthy",
+    "search_status": "current",
+    "external_model_calls": 0,
+    "private_evidence_sha256": "c12feaa0bf0ecf42a4999dbac32df881d0da68236569173d94f33016c447209b"
+  },
+  "actual_desktop_read_only_acceptance": {
+    "passed": true,
+    "viewports": [
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 1280,
+        "height": 900
+      }
+    ],
+    "views": [
+      "editor",
+      "world",
+      "references",
+      "tasks"
+    ],
+    "cases": 8,
+    "page_errors": 0,
+    "blocked_requests": 0,
+    "submitted_write_requests": 0,
+    "external_model_calls": 0,
+    "compared_tables": 65,
+    "all_tables_content_counts_columns_and_schema_unchanged_since_before_update": true,
+    "private_evidence_sha256": "ab28fd3ca7eab4f4eaf2eb91191ea857c79238aa98266a64985fbb013627ca3a",
+    "browser_report_sha256": "c77b8dcaec257922128b98f2c43fee1ceb5dc9d8311dbbfa270ae0c8775053de",
+    "screenshots": [
+      {
+        "name": "editor-1440x1000.png",
+        "sha256": "8def70df95ebebefb176360d91701e42ab4168c7a0548306451cd3ccf97895c5",
+        "private_only": true
+      },
+      {
+        "name": "editor-1280x900.png",
+        "sha256": "b068619486df007fbd088afaf6a60fdf99e0c10ab3e59aa747bd790b8bc4c068",
+        "private_only": true
+      }
+    ]
+  },
+  "accepted_full_verification": {
+    "passed": true,
+    "checks": 95,
+    "sources": 104,
+    "artifacts": 63,
+    "report": "compatibility-python311-node24-portable-evidence-scope-release-20261015.json",
+    "sha256": "a5aceee5dd25a1b4bafc1da36dd49a576c11b01a48ad1f4183aba5e66579f509"
+  },
+  "before_update_fingerprints_sha256": "53285853b05154f19f7178e5a2df0c989181d8ccdbdeb63c907753b6500ee3d7",
+  "privacy": {
+    "absolute_paths_included": false,
+    "database_rows_included": false,
+    "manuscript_or_reference_text_included": false,
+    "credentials_included": false,
+    "private_screenshots_published": false
+  },
+  "claims": {
+    "actual_local_service_updated": true,
+    "task_specific_parameters_included": false,
+    "proves_github_success": false,
+    "proves_literary_leadership": false,
+    "previous_failed_evidence_preserved": true
+  }
+}

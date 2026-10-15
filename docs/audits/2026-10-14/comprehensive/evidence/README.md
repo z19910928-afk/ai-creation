@@ -19,6 +19,7 @@
 | [上一轮ZIP冻结整轮](compatibility-python311-node24-portable-complete-backup-release-20261015.json) | 上海2026-10-15 05:16:33至05:25:48；94项全部通过、103份来源前后相同；12套电脑浏览器共161场景；18份JSON/44张截图 | 62份附件逐份指纹匹配，覆盖辅助31方法、恢复HTTP40方法、新删章HTTP5方法及Chrome恢复21场景。随后发现旧删章账本遗留正式事实使预览失败；旧报告只证明当轮冻结源码，不能作为新版完整、ZIP远程或实际4173服务成功结论。 |
 | [旧遗留资料中间整轮中断](portable-legacy-evidence-release-20261015-interruption.json) | 未完成、`passed=false`、没有完成时间，运行退出143；已登记84项通过、104份来源当时一致、10份附件 | 因独立复现未来章资料经人物状态或别名冲突进入早章提示而停止。原报告保持，不授予完整通过；已完成检查数量不作为新版完整或文学成绩。 |
 | [来源章节修后新完整整轮](compatibility-python311-node24-portable-evidence-scope-release-20261015.json) | 上海2026-10-15 06:17:11至06:26:55；95项全部通过，104份来源前后及当前相同；12套电脑浏览器161场景、19JSON/44截图 | 63附件逐份指纹匹配，最新49方法/257HTTP/65次200预览及ZIP辅助、恢复HTTP、新删章与Chrome恢复均纳入。旧94、中断原件及阶段对照保留；新标签通过仅为本机工程验收，GitHub、实际服务、文学及第一梯队另验。 |
+| [B1分用途参数新完整整轮](compatibility-python311-node24-task-parameters-release-20261015.json) | 上海2026-10-15 06:50:27.995至07:00:30.446；96项全部通过，105份来源前后及当前相同；12套浏览器167场景、20JSON/47截图 | 67附件逐份指纹匹配；62份Python夹具、18项JS语法、运行版本/语法2项、固定评测/编辑器2项、12浏览器。用途12方法/126HTTP/5免费调用及模型设置20场重新执行，[独立复核](task-parameters-release-independent-review-20261015.json)通过。只证明本机工程；B1自己的远程及实际服务另验，收费0。 |
 
 首次失败分别修为：没有有效指南时不占固定预算；私有指南来源放在预算统计之后，正文材料不重复裁剪；审稿决定保存后重新GET完整报告，保留局部修订目标。保存后GET失败锁定原窗口、提示已经保存、关闭重开回读，不重复提交或调用模型。
 
@@ -100,13 +101,15 @@
 
 ## 实际本地服务与GitHub分开验收
 
+完整恢复提交 `1552104b345588e06db326879e56f80f76a09d0a` 的[GitHub运行38648216073](github-portable-1552104-success-20261015.json)于上海2026-10-15 06:43:45全部成功，核对同一提交和全部步骤。[本机更新说明](local-service-portable-1552104-20261015.md)及[指纹记录](local-service-portable-1552104-20261015.json)证明备份、更新、健康及8个只读电脑页面通过，65张表内容、数量、字段及结构全等，原稿和全部历史未变，0模型调用，没有重建搜索。该实际版本包含完整恢复，不含之后的B1分用途参数。
+
 [公开服务链结论](local-service-reconciled-20261015.md)与[分阶段指纹](local-service-reconciled-20261015.json)对应提交 `3a369807252e5dcda9ce5bda039d169744fedee5`，公开JSON SHA为 `9152f4379c4bf20563164d5604f906920980a0029e926834e37508fc51829116`。原首次activation仍false；独立reconciliation、搜索修复和只读页面通过仅能给出 `local_service_acceptance_passed=true`，`all_validation_passed`仍false。它不证明之后参考版本已加载服务。
 
 独立只读reconciliation比较既有备份与实际库：64张原表所有内容、字段、数量、DDL及旧schema对象逐项一致，正文、全部历史版本、分支、事件、任务与用量不变；只新增空的 `app_entity_scope` 及自动主键索引。合成reconciliation保护33项、原post保护49项、post-reconciliation保护36项及独立复核56项分别通过，不相加冒充实际页面数量；均没有实际库/HTTP、模型、重启或新备份。
 
 实际搜索修复按独立链重验所有附件、来源、运行身份和搜索前全表基线，再执行固定空结果搜索，只改变7张衍生表：`app_search_document`、`app_search_fts`、`app_search_fts_content`、`app_search_fts_data`、`app_search_fts_docsize`、`app_search_fts_idx`、`app_search_index_state`。其余完整数据与结构、原稿和历史不变，搜索healthy/current、滞后0、indexed=expected=3。实际桌面只读验收在reconciliation之后、搜索修复之前，两尺寸的编辑、设定、参考、任务共8场景，65表完整内容/数量/schema不变、0写请求、0页面异常；私有截图不公开。整条实际服务链0模型、无额外重启或备份。
 
-GitHub运行 `38620315120` 在该提交上completed/failure。创作要求10个行为场景与1440布局通过，1280×900控件底部900.359375，超视口0.359375像素，位置断言失败；其后作者生命周期、导出覆盖、材料依赖及章后指南4步骤跳过。失败日志和状态私有归档；后续参考包94e2ade的[GitHub成功](github-reference-settings-94e2ade-success-20261015.json)另有独立原件，ZIP新提交和新版实际服务仍待验。配置存在、本机专项通过、独立服务链通过均不能抹去旧失败，也不能替新版授予成功。
+GitHub运行 `38620315120` 在该提交上completed/failure。创作要求10个行为场景与1440布局通过，1280×900控件底部900.359375，超视口0.359375像素，位置断言失败；其后作者生命周期、导出覆盖、材料依赖及章后指南4步骤跳过。失败日志和状态私有归档；后续参考包94e2ade的[GitHub成功](github-reference-settings-94e2ade-success-20261015.json)与完整恢复1552104的交付各有独立原件。新成功不抹去旧失败，配置存在、本机专项通过及历史服务链均不能替别的版本授予成功。
 
 ## 专项证据
 

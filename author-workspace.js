@@ -663,34 +663,91 @@ function authorBeginSettingsOperation(){
 function authorRenderSettings(){
  const host=document.querySelector('#settingsHost');if(!host||!authorSettings)return;
  const s=authorSettings,owner=requestedProject;const parameters=s.parameters||{},styles=s.styles||{},models=s.models||{};
+ const taskParameters=s.task_parameters||{},tasks=Object.entries(AI_TASK_NAMES),clearedTasks=new Set();
+ const reasoningOptions=[['','服务默认'],['none','关闭（通用）'],['minimal','最少'],['low','较少'],['medium','适中'],
+  ['high','较多'],['xhigh','充分'],['deepseek_disabled','关闭（DeepSeek）'],['deepseek_enabled','开启（DeepSeek）']];
+ const reasoningValue=value=>value.thinking?.type?'deepseek_'+value.thinking.type:value.reasoning_effort||'';
+ const reasoningSelect=(value,emptyLabel)=>reasoningOptions.map(([key,label])=>
+  `<option value="${key}" ${reasoningValue(value)===key?'selected':''}>${key?label:emptyLabel}</option>`).join('');
+ const aliases={chapter_analysis:'summary',semantic_review:'check'},aliasLabels={summary:'回顾',check:'检查'};
  host.innerHTML=`<form id="modelSettings" class="settings-form"><div class="settings-fields">
  <label>服务地址<input id="modelBaseUrl" type="url" value="${esc(s.base_url||'')}" placeholder="https://example.com/v1"></label>
  <label>默认模型<input id="modelDefault" value="${esc(s.model||'')}"></label>
  <label>访问密钥<input id="modelKey" type="password" autocomplete="new-password" placeholder="${esc(s.api_key_masked||s.key_masked||'填写密钥')}" value=""></label>
  <label>创作风格<input id="modelTone" value="${esc(styles.tone||'')}"></label>
  <label class="field-wide">写作要求<textarea id="modelStyleInstructions">${esc(styles.instructions||'')}</textarea></label>
- <label>变化程度<input id="modelTemperature" type="number" min="0" max="2" step="0.05" value="${parameters.temperature??0.65}"></label>
+ <label>变化程度<input id="modelTemperature" type="number" min="0" max="2" step="any" value="${parameters.temperature??''}" placeholder="按用途默认"></label>
  <label>每次输出上限<input id="modelMaxTokens" type="number" min="1" max="128000" step="1" value="${parameters.max_tokens??3000}"></label>
- <label>模型思考程度<select id="modelReasoning">${[['','服务默认'],['none','关闭（通用）'],['minimal','最少'],['low','较少'],['medium','适中'],['high','较多'],['xhigh','充分'],['deepseek_disabled','关闭（DeepSeek）'],['deepseek_enabled','开启（DeepSeek）']].map(([value,label])=>
- `<option value="${value}" ${(parameters.thinking?.type?'deepseek_'+parameters.thinking.type:parameters.reasoning_effort||'')===value?'selected':''}>${label}</option>`).join('')}</select></label>
- <label>每日生成上限<input id="modelDailyLimit" type="number" min="0" max="100000" value="${s.daily_limit??50}"></label>
- ${[['continue','续写模型'],['polish','润色模型'],['outline','规划模型'],['summary','回顾模型'],['check','审稿模型']].map(([key,label])=>
- `<label>${label}<input data-task-model="${key}" value="${esc(models[key]||'')}" placeholder="使用默认模型"></label>`).join('')}</div>
+ <label>模型思考程度<select id="modelReasoning">${reasoningSelect(parameters,'服务默认')}</select></label>
+ <label>每日生成上限<input id="modelDailyLimit" type="number" min="0" max="100000" value="${s.daily_limit??50}"></label></div>
+ <section class="settings-task-section" aria-labelledby="modelTaskHeading"><h3 id="modelTaskHeading">用途设置</h3>
+ <div class="settings-task-table" role="table" aria-label="用途模型与参数"><div class="settings-task-header" role="row">
+ <span role="columnheader">用途</span><span role="columnheader">模型</span><span role="columnheader">变化程度</span>
+ <span role="columnheader">输出上限</span><span role="columnheader">思考程度</span><span role="columnheader" aria-label="清除用途参数"></span></div>
+ ${tasks.map(([key,label])=>{
+  const override=taskParameters[key]||{},alias=aliases[key];
+  return `<div class="settings-task-row" data-task-row="${key}" role="row"><strong role="rowheader">${label}</strong>
+  <div role="cell"><input data-task-model="${key}" aria-label="${label}模型" value="${esc(models[key]||'')}" placeholder="${models[alias]?'沿用'+AI_TASK_NAMES[alias]+'模型':'使用默认模型'}"></div>
+  <div role="cell"><input data-task-parameter="temperature" type="number" min="0" max="2" step="any" aria-label="${label}变化程度" value="${esc(override.temperature??'')}" placeholder="沿用全局"></div>
+  <div role="cell"><input data-task-parameter="max_tokens" type="number" min="1" max="128000" step="1" aria-label="${label}输出上限" value="${esc(override.max_tokens??'')}" placeholder="沿用全局"></div>
+  <div role="cell"><select data-task-parameter="reasoning" aria-label="${label}思考程度">${reasoningSelect(override,'沿用全局')}</select></div>
+  <div role="cell"><button type="button" class="icon-btn settings-task-clear" data-task-clear="${key}" title="清除${label}用途参数" aria-label="清除${label}用途参数"><span aria-hidden="true">↺</span></button></div></div>`;
+ }).join('')}</div></section>
  <p id="modelProbeStatus" class="modal-help">${esc(authorProbeDescription(s.last_probe,s.model)||
   (s.configured||String(s.base_url||'').trim()&&String(s.model||'').trim()?'设置已保存，尚未验证默认模型响应':'尚未配置模型'))}</p>
  <p class="form-error" role="alert"></p><div class="settings-actions"><button class="ghost-btn" type="button" id="modelProbe">实测连接（调用模型）</button>
  <button class="primary-btn" type="submit">保存设置</button></div></form>`;
  const form=host.querySelector('#modelSettings');
+ const setNumber=(target,name,value)=>{
+  if(value.trim()==='')delete target[name];else target[name]=Number(value);
+ };
+ const setReasoning=(target,value)=>{
+  delete target.thinking;delete target.reasoning_effort;
+  if(value.startsWith('deepseek_'))target.thinking={type:value.slice('deepseek_'.length)};
+  else if(value)target.reasoning_effort=value;
+ };
+ const rowParameters=row=>{
+  const task=row.dataset.taskRow,next=clearedTasks.has(task)?{}:{...taskParameters[task]};
+  for(const name of ['temperature','max_tokens'])setNumber(next,name,row.querySelector(`[data-task-parameter="${name}"]`).value);
+  setReasoning(next,row.querySelector('[data-task-parameter="reasoning"]').value);return next;
+ };
+ const updateTaskHints=()=>{
+  const rows=[...form.querySelectorAll('[data-task-row]')];
+  const overrides=Object.fromEntries(rows.map(row=>[row.dataset.taskRow,rowParameters(row)]));
+  for(const row of rows){
+   const task=row.dataset.taskRow,alias=aliases[task];
+   const inherited=alias&&!Object.keys(overrides[task]).length&&Object.keys(overrides[alias]).length;
+   const hint=inherited?'沿用'+aliasLabels[alias]:'沿用全局';
+   const title=alias?`未单设时沿用${AI_TASK_NAMES[alias]}用途；单设后空项沿用全局`:'留空沿用全局设置';
+   row.querySelectorAll('[data-task-parameter]').forEach(control=>{
+    control.title=title;
+    if(control.tagName==='SELECT')control.options[0].textContent=hint;else control.placeholder=hint;
+   });
+   if(alias)row.querySelector('[data-task-model]').placeholder=
+    form.querySelector(`[data-task-model="${alias}"]`).value.trim()?'沿用'+aliasLabels[alias]+'模型':'使用默认模型';
+  }
+ };
+ form.querySelectorAll('[data-task-clear]').forEach(button=>button.onclick=()=>{
+  const row=button.closest('[data-task-row]');clearedTasks.add(button.dataset.taskClear);
+  row.querySelectorAll('[data-task-parameter]').forEach(control=>control.value='');
+  updateTaskHints();
+ });
+ form.querySelectorAll('[data-task-parameter],[data-task-model]').forEach(control=>control.addEventListener('input',updateTaskHints));
+ updateTaskHints();
  const payload=()=>{
   const value=id=>form.querySelector('#'+id).value;
-  const nextModels={};form.querySelectorAll('[data-task-model]').forEach(input=>nextModels[input.dataset.taskModel]=input.value.trim());
+  const nextModels={...models};form.querySelectorAll('[data-task-model]').forEach(input=>nextModels[input.dataset.taskModel]=input.value.trim());
+  const nextTaskParameters={...taskParameters};
+  form.querySelectorAll('[data-task-row]').forEach(row=>{
+   const task=row.dataset.taskRow,next=rowParameters(row);
+   if(Object.keys(next).length)nextTaskParameters[task]=next;else delete nextTaskParameters[task];
+  });
   const result={base_url:value('modelBaseUrl').trim(),model:value('modelDefault').trim(),models:nextModels,
    styles:{tone:value('modelTone'),instructions:value('modelStyleInstructions')},
-   parameters:{...parameters,temperature:Number(value('modelTemperature')),max_tokens:Number(value('modelMaxTokens'))},daily_limit:Number(value('modelDailyLimit'))};
-  const reasoning=value('modelReasoning');
-  delete result.parameters.thinking;delete result.parameters.reasoning_effort;
-  if(reasoning.startsWith('deepseek_'))result.parameters.thinking={type:reasoning.slice('deepseek_'.length)};
-  else if(reasoning)result.parameters.reasoning_effort=reasoning;
+   parameters:{...parameters},task_parameters:nextTaskParameters,daily_limit:Number(value('modelDailyLimit'))};
+  setNumber(result.parameters,'temperature',value('modelTemperature'));
+  setNumber(result.parameters,'max_tokens',value('modelMaxTokens'));
+  setReasoning(result.parameters,value('modelReasoning'));
   if(value('modelKey').trim())result.api_key=value('modelKey').trim();return result;
  };
  const saveSettings=async sequence=>{
@@ -712,9 +769,11 @@ function authorRenderSettings(){
  };
  form.onsubmit=async e=>{
   e.preventDefault();const sequence=authorBeginSettingsOperation();
-  const button=form.querySelector('[type="submit"]');button.disabled=true;
+  const controls=[...form.querySelectorAll('input,textarea,select,button')];
+  const disabled=controls.map(control=>control.disabled);controls.forEach(control=>control.disabled=true);
   try{await saveSettings(sequence);toast('模型与风格设置已经保存');authorRenderSettings()}
-  catch(error){if(owner===requestedProject&&sequence===authorSettingsSeq&&form.isConnected)form.querySelector('.form-error').textContent=error.message}finally{button.disabled=false}
+  catch(error){if(owner===requestedProject&&sequence===authorSettingsSeq&&form.isConnected)form.querySelector('.form-error').textContent=error.message}
+  finally{controls.forEach((control,index)=>control.disabled=disabled[index])}
  };
  form.querySelector('#modelProbe').onclick=async()=>{
   let sequence=authorBeginSettingsOperation();
