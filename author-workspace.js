@@ -40,6 +40,8 @@ let authorAgentRows=[];
 let authorAgentTimer=null;
 let authorAgentBusy=false;
 let authorAgentSequence=0;
+let authorAgentFocus=null;
+let authorAgentExpandedScope=null;
 let authorWorkbenchContextSequence=0;
 let authorWorkbenchLibraryTab='chapters';
 let authorWorkbenchResultsOpen=false;
@@ -435,7 +437,8 @@ function authorEditorView(){
  <span class="review-pill">审稿：${reviewLabel}</span>
  ${state.project.book_status==='complete'?'':`<button class="ghost-btn" data-action="finishChapter" ${authorFinishing?'disabled':''}>完成本章，写下一章</button>`}</div>
  <details class="chapter-plan" ${c.body?'':'open'}><summary>本章任务与回顾</summary>
- ${previous?.next_brief?`<label>上章交接<textarea id="previousChapterHandoff" readonly>${esc(previous.next_brief)}</textarea></label>`:''}<div class="plan-grid">
+ ${previous?.next_brief?`<label>上章交接<textarea id="previousChapterHandoff" readonly>${esc(previous.next_brief)}</textarea></label>
+ ${state.project.book_status!=='complete'&&c.status!=='完成'?'<div class="plan-actions"><button type="button" class="ghost-btn" data-action="prepareChapterHandoff">承接上章，准备本章</button></div>':''}`:''}<div class="plan-grid">
  ${[['chapterGoal','chapter_goal','本章目标'],['chapterPov','pov','视角'],['chapterScenePlan','scene_plan','场景计划'],
  ['chapterForeshadowing','foreshadowing_op','伏笔动作'],['chapterRecap','recap','章节回顾'],['chapterNextBrief','next_brief','下一章任务'],
  ['chapterHook','hook','章节出口']].map(([id,key,label])=>`<label>${label}${['chapterGoal','chapterPov'].includes(id)?
@@ -520,6 +523,32 @@ views.assistant=()=>`${authorPageHead('写作总管')}
 function authorAgentDraftKey(){return cacheKey(`:writing-agent:${state.branch_id||'main'}${view==='editor'?':'+activeChapter:''}`)}
 function authorAgentScope(){return {owner:requestedProject,branch:state.branch_id||'main'}}
 function authorAgentCurrent(scope,host){return scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&['assistant','editor'].includes(view)&&document.querySelector('#agentSessions')===host}
+function authorAgentEditorScopeCurrent(scope){
+ return !!scope&&view==='editor'&&scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&scope.chapter_id===activeChapter;
+}
+function authorAgentCurrentFocus(){
+ if(authorAgentFocus&&!authorAgentEditorScopeCurrent(authorAgentFocus))authorAgentFocus=null;
+ return authorAgentFocus;
+}
+async function authorOpenAgentSession(sessionId,chapterId){
+ const scope=authorAgentScope(),startingChapter=activeChapter;
+ const current=()=>scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&activeChapter===startingChapter;
+ if(!chapter(chapterId))throw new Error('来源章节已不存在，请从当前作品重新选择任务。');
+ if(!await syncBackend())throw new Error('请先保存或合并当前稿件。');
+ if(!current())return false;
+ const data=await authorJSON('/api/writing-agent?session_id='+encodeURIComponent(sessionId),
+  {headers:{'X-Moyu-Project':scope.owner,'X-Moyu-Branch':scope.branch}});
+ if(!current())return false;
+ const row=data.sessions?.find(item=>item.id===sessionId);
+ if(!row||row.chapter_id!==chapterId)throw new Error('写作任务与来源章节不一致，请重新打开。');
+ authorAgentFocus={...scope,id:sessionId,chapter_id:chapterId};
+ activeChapter=chapterId;storage.set(cacheKey(':active'),chapterId);view='editor';render();
+ const host=document.querySelector('#agentSessions');
+ if(authorAgentEditorScopeCurrent(authorAgentFocus)&&host){
+  authorAgentRows=[row];authorRenderAgent(scope,host);authorRevealWorkbenchSection('workbenchAgentSection');
+ }
+ return true;
+}
 function authorBindWritingAgent(){
  const form=document.querySelector('#writingAgent');if(!form){authorLoadAgent();return}
  const scope=authorAgentScope(),key=authorAgentDraftKey(),host=document.querySelector('#agentSessions');
@@ -564,11 +593,16 @@ function authorBindWritingAgent(){
 async function authorLoadAgent(){
  clearTimeout(authorAgentTimer);
  const scope=authorAgentScope(),host=document.querySelector('#agentSessions');if(!host)return;
+ const focus=authorAgentCurrentFocus();
  const sequence=++authorAgentSequence;
  try{
-  const query=typeof writingInboxAgentQuery==='function'?writingInboxAgentQuery(scope):'';
+  const query=focus?'?session_id='+encodeURIComponent(focus.id):
+   typeof writingInboxAgentQuery==='function'?writingInboxAgentQuery(scope):'';
   const data=await authorJSON('/api/writing-agent'+query,{headers:{'X-Moyu-Project':scope.owner,'X-Moyu-Branch':scope.branch}});
   if(sequence!==authorAgentSequence||!authorAgentCurrent(scope,host))return;
+  if(focus&&(!authorAgentEditorScopeCurrent(focus)||authorAgentFocus!==focus))return;
+  if(focus&&!data.sessions?.some(row=>row.id===focus.id&&row.chapter_id===focus.chapter_id))
+   throw new Error('写作任务与来源章节不一致，请重新打开。');
   authorAgentRows=data.sessions||[];if(!authorAgentBusy)authorRenderAgent(scope,host);
  }catch(error){if(sequence===authorAgentSequence&&authorAgentCurrent(scope,host)){
   let alert=host.querySelector('[data-agent-error]');if(!alert){alert=document.createElement('p');alert.dataset.agentError='';alert.className='form-error';alert.setAttribute('role','alert');host.prepend(alert)}alert.textContent=error.message;
@@ -577,9 +611,13 @@ async function authorLoadAgent(){
 
 function authorRenderAgent(scope,host){
  const labels={awaiting_authorization:'等待启动',awaiting_job:'正在执行',awaiting_adoption:'正文候选待采纳',awaiting_plan_confirmation:'本阶段候选待确认',awaiting_plan_application:'完整规划待采用',requires_action:'需要处理',review_ready:'记忆与审稿已就绪',canceled:'已停止',restored:'历史记录'};
- const rows=view==='editor'?authorAgentRows.filter(row=>row.mode==='plan'||row.chapter_id===activeChapter)
-  .sort((a,b)=>Number(['review_ready','canceled','restored'].includes(a.status))-Number(['review_ready','canceled','restored'].includes(b.status))).slice(0,3):authorAgentRows;
- host.innerHTML=rows.map(row=>`<article class="agent-session" data-agent-session="${safeId(row.id)}" data-agent-status="${esc(row.status)}" data-agent-mode="${esc(row.mode)}">
+ const focus=authorAgentCurrentFocus(),expanded=authorAgentEditorScopeCurrent(authorAgentExpandedScope);
+ const matching=view==='editor'?authorAgentRows.filter(row=>row.mode==='plan'||row.chapter_id===activeChapter)
+  .sort((a,b)=>Number(['review_ready','canceled','restored'].includes(a.status))-Number(['review_ready','canceled','restored'].includes(b.status))):authorAgentRows;
+ const rows=focus?matching.filter(row=>row.id===focus.id&&row.chapter_id===focus.chapter_id):view==='editor'&&!expanded?matching.slice(0,3):matching;
+ const navigation=focus?'<div class="inbox-focus-note"><span>正在查看这次写作任务</span><button type="button" class="ghost-btn" data-agent-return-all>返回本章全部任务</button></div>':
+  view==='editor'&&!expanded&&matching.length>3?'<div class="plan-actions"><button type="button" class="ghost-btn" data-agent-return-all>查看本章全部任务</button></div>':'';
+ host.innerHTML=navigation+(rows.map(row=>`<article class="agent-session" data-agent-session="${safeId(row.id)}" data-agent-status="${esc(row.status)}" data-agent-mode="${esc(row.mode)}">
  <div class="planning-heading"><h3>${row.mode==='plan'?'全书规划':`${row.mode==='polish'?'整章修订 · ':''}${esc(chapter(row.chapter_id)?.title||'原章节')}`}</h3><span>${esc(row.mode==='plan'&&row.status==='review_ready'?'完整规划已采用':labels[row.status]||'准备中')}</span></div>
  <p class="agent-query">${esc(row.query)}</p><ol class="agent-steps">${row.steps.map(step=>`<li><strong>${esc(step.label)}</strong><span>${esc(({pending:'尚未开始',complete:'候选已完成',confirmed:'已确认'})[step.status]||taskStatus(step.status))}</span></li>`).join('')}</ol>
  <p class="agent-budget">已生成 ${Number(row.calls_used)} / 最多 ${Number(row.max_calls)} 次</p>
@@ -597,7 +635,12 @@ function authorRenderAgent(scope,host){
  ${!row.restored_read_only&&row.status==='awaiting_adoption'?'<button class="ghost-btn" data-agent-action="applied">核对采纳结果</button>':''}
  ${!row.restored_read_only&&row.status==='review_ready'?(row.mode==='plan'?'<button class="ghost-btn" data-agent-planning>打开规划建立章节</button>':'<button class="ghost-btn" data-agent-analysis>章后记忆</button><button class="ghost-btn" data-agent-review>故事审稿</button>'):''}
  ${!row.restored_read_only&&['awaiting_authorization','awaiting_job','awaiting_adoption','awaiting_plan_confirmation','awaiting_plan_application'].includes(row.status)?'<button class="ghost-btn" data-agent-action="cancel">停止任务</button>':''}
- </div><p class="form-error" data-agent-action-error role="alert"></p></article>`).join('')||'<div class="empty">还没有写作任务。</div>';
+ </div><p class="form-error" data-agent-action-error role="alert"></p></article>`).join('')||'<div class="empty">还没有写作任务。</div>');
+ host.querySelector('[data-agent-return-all]')?.addEventListener('click',()=>{
+  if(!authorAgentCurrent(scope,host))return;
+  authorAgentFocus=null;authorAgentExpandedScope={...scope,chapter_id:activeChapter};
+  host.innerHTML='<div class="empty">正在读取本章写作任务…</div>';authorLoadAgent();
+ });
  host.querySelectorAll('[data-agent-session]').forEach(section=>{
   const row=authorAgentRows.find(item=>item.id===section.dataset.agentSession);
   section.querySelectorAll('[data-agent-action]').forEach(button=>button.onclick=async()=>{
@@ -2116,6 +2159,42 @@ function authorShowStoryReview(review,chapterId,scope=authorChapterReportScope(c
 function authorFinishSource(c){
  return JSON.stringify(['title','body','chapter_goal','scene_plan','pov','next_brief','recap','hook','foreshadowing_op'].map(key=>c?.[key]||''));
 }
+actions.prepareChapterHandoff=async()=>{
+ const c=chapter();if(!c)return;
+ const scope={...authorAgentScope(),chapter_id:c.id};
+ const current=()=>scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&activeChapter===scope.chapter_id;
+ try{
+  if(!backendOnline||!await syncBackend())throw new Error('请先保存或合并当前稿件，再承接上章。');
+  if(!current())return;
+  const path=`/api/chapters/${encodeURIComponent(c.id)}/handoff`;
+  const preview=await authorJSON(path,{headers:{'X-Moyu-Project':scope.owner,'X-Moyu-Branch':scope.branch}});
+  if(!current())return;
+  const requestId=crypto.randomUUID();let committed=false;
+  const wrap=authorForm('承接上章，准备本章',`<label>《${esc(preview.previous.title)}》的交接
+   <textarea id="handoffPrevious" readonly>${esc(preview.previous.next_brief)}</textarea></label>
+   ${preview.previous.recap?`<details><summary>上章回顾</summary><pre class="prompt-preview">${esc(preview.previous.recap)}</pre></details>`:''}
+   ${(preview.warnings||[]).map(message=>`<p class="modal-help">${esc(message)}</p>`).join('')}
+   <label>本章目标<textarea id="handoffGoal" maxlength="5000" required>${esc(preview.draft.chapter_goal)}</textarea></label>
+   <label>场景计划<textarea id="handoffScenes" maxlength="20000">${esc(preview.draft.scene_plan)}</textarea></label>
+   <label>视角<input id="handoffPov" maxlength="500" value="${esc(preview.draft.pov)}"></label>`,async form=>{
+    if(!current())throw new Error('作品或章节已切换，请回到原章节重新承接。');
+    if(!committed){
+     const data={request_id:requestId,source_token:preview.source_token,
+      chapter_goal:form.querySelector('#handoffGoal').value,scene_plan:form.querySelector('#handoffScenes').value,
+      pov:form.querySelector('#handoffPov').value};
+     await durableOperation(path,'POST',data,current,()=>{
+      committed=true;authorLockCommittedForm(form);form.querySelector('[type="submit"]').textContent='重新读取已保存任务';
+     });
+    }else{
+     const before=MoyuSync.copy(state),remote=await readServerState(scope.owner,scope.branch);
+     if(!current())throw new Error('本章任务已经保存，请回到来源章节查看。');
+     receiveState(remote,before);
+    }
+    if(current()){render();toast('本章任务已保存，可以继续写作')}
+   },'确认本章任务');
+  wrap.dataset.chapterHandoff=c.id;
+ }catch(error){if(current())toast(error.message)}
+};
 function authorNextUnfinishedChapter(id){
  return state.chapters.slice(state.chapters.findIndex(item=>item.id===id)+1).find(item=>item.status!=='完成');
 }

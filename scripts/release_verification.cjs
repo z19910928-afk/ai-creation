@@ -88,6 +88,9 @@ function saveStructuredEvidence(name, filename, value) {
 }
 
 const requiredScreenshots = {
+  chapter_transition_browser_regressions: ['chapter-transition-1440x1000.png',
+    'chapter-handoff-1280x900.png', 'chapter-transition-new-1280x900.png',
+    'chapter-handoff-confirm-1440x1000.png', 'chapter-chat-precise-result-1440x1000.png'],
   agent_chat_browser_regressions: ['agent-chat-1280x900.png', 'agent-chat-1440x1000.png',
     'agent-chat-1920x1080.png', 'agent-chat-results-1280x900.png',
     'agent-chat-results-1440x1000.png', 'agent-chat-results-1920x1080.png'],
@@ -135,6 +138,9 @@ const optionalScreenshots = {
   portable_backup_browser_regressions: ['portable-browser-failure.png'],
 };
 const fixtureReports = {
+  'tests/agent_chapter_flow_fixtures.py': {
+    environment: 'MOYU_AGENT_CHAPTER_REPORT', name: 'agent-chapter-flow-http',
+  },
   'tests/agent_chat_fixtures.py': {
     environment: 'MOYU_AGENT_CHAT_REPORT', name: 'agent-chat-http',
   },

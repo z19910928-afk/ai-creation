@@ -50,6 +50,7 @@ import moyu_materials
 import moyu_portable as portable_backups
 import moyu_agent_service as writing_agent
 import moyu_agent_chat as agent_chat
+import moyu_chapter_handoff as chapter_handoff
 import moyu_agent_settings as agent_connection
 
 
@@ -5303,6 +5304,7 @@ class Handler(SimpleHTTPRequestHandler):
                     or (parsed.path.startswith("/api/records/") and parsed.path.endswith("/knowledge"))
                     or parsed.path.startswith("/api/memory/")
                     or parsed.path.startswith("/api/agent-chat/")
+                    or (parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/handoff"))
                     or (parsed.path == "/api/writing-agent"
                         and "session_id" in parse_qs(parsed.query, keep_blank_values=True))
                 )
@@ -5542,6 +5544,9 @@ class Handler(SimpleHTTPRequestHandler):
                         revisions.append(item)
                         previous_body = body
                     return self.send_json(200, {"chapter_id": chapter_id, "revisions": revisions})
+                if parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/handoff"):
+                    chapter_id = checked_id(parsed.path.split("/")[-2], "chapter id")
+                    return self.send_json(200, chapter_handoff.preview(sys.modules[__name__], conn, chapter_id))
                 if parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/commits"):
                     chapter_id = checked_id(parsed.path.split("/")[-2], "chapter id")
                     if conn.execute("SELECT 1 FROM document_node WHERE id=? AND project_id=? AND branch_id=? AND kind='chapter'", (chapter_id, project_id(), branch_id())).fetchone() is None:
@@ -6288,6 +6293,11 @@ class Handler(SimpleHTTPRequestHandler):
                     conn.execute("INSERT INTO app_foreshadow_link(id,project_id,branch_id,plot_id,chapter_id,kind,note,created_at,updated_at,evidence_json) VALUES(?,?,?,?,?,?,?,?,?,?)", (fid, project_id(), branch_id(), pid, cid, kind, bounded_text(data.get("note") or "", 20_000, "foreshadow note"), t, t, json_text(evidence)))
                     append_event(conn, fid, "story.foreshadow_link.created", {"plot_id": pid, "kind": kind})
                     return self.send_json(201, next(x for x in story_map(conn)["foreshadowing"] if x["id"] == fid))
+                if parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/handoff"):
+                    chapter_id = checked_id(parsed.path.split("/")[-2], "chapter id")
+                    conn.commit()
+                    conn.execute("BEGIN IMMEDIATE")
+                    return self.send_json(200, chapter_handoff.apply(sys.modules[__name__], conn, chapter_id, data))
                 if parsed.path.startswith("/api/chapters/") and parsed.path.endswith("/commit"):
                     chapter_id = checked_id(parsed.path.split("/")[-2], "chapter id")
                     stage = bounded_text(data.get("stage") or "", 20, "commit stage")

@@ -76,6 +76,9 @@ class Provider(BaseHTTPRequestHandler):
                 for kind, label in (("continue", "接着写"), ("inspect", "检查本章"),
                                     ("plan", "规划后续"))
             ] + [{"kind": "open", "label": "查看记忆", "instruction": "", "view": "memory"}]
+        elif case == "next-chapter":
+            actions = [{"kind": "next_chapter", "label": "继续下一章",
+                        "instruction": "本章已经写完，请先归档，再打开下一章。"}]
         elif case == "polish":
             actions = [{"kind": "polish", "label": "修订选区", "instruction": "保留动作，压缩修辞。",
                         "reference_index": 0}]
@@ -424,6 +427,131 @@ class ChatTests(unittest.TestCase):
                 self.assertTrue(duplicate["idempotent"])
                 self.assertEqual(duplicate["action"]["result"]["writing_session_id"], session["id"])
                 self.assertEqual(self.counts(), after)
+        self.assertEqual(len(Provider.calls), 1)
+
+    def interrupted_writing_confirmation(self):
+        result = self.complete("actions")
+        action = next(item for item in result["messages"][-1]["actions"]
+                      if item["kind"] == "continue")
+        actual_request = chat.writing_agent.request
+        committed = {}
+
+        def interrupted_after_commit(*args, **kwargs):
+            outcome = actual_request(*args, **kwargs)
+            committed.update(outcome)
+            raise RuntimeError("synthetic interruption after committed writing session")
+
+        with closing(server.connect()) as conn, conn:
+            with patch.object(chat.writing_agent, "request", interrupted_after_commit):
+                with self.assertRaisesRegex(RuntimeError, "synthetic interruption"):
+                    chat.confirm_action(server, conn, action["id"], {"confirm": True})
+        with closing(server.connect()) as conn:
+            saved = conn.execute("SELECT status,result_json FROM app_agent_chat_action WHERE id=?",
+                                 (action["id"],)).fetchone()
+        self.assertEqual(saved["status"], "confirming")
+        self.assertEqual(json.loads(saved["result_json"]), {})
+        self.assertEqual(committed["session"]["status"], "awaiting_authorization")
+        return action, committed["session"]
+
+    def assert_interrupted_confirmation_recovers(self, change):
+        action, original = self.interrupted_writing_confirmation()
+        with closing(server.connect()) as conn, conn:
+            if change == "manuscript":
+                server.update_chapter(conn, self.chapter, {
+                    "body": MANUSCRIPT + "\n作者在上一次确认中断后继续改稿。",
+                })
+            elif change == "materials":
+                changed = conn.execute("UPDATE app_entity_meta SET description='作者补充了人物背景'")
+                self.assertGreater(changed.rowcount, 0)
+            elif change == "settings":
+                settings.save_settings(conn, self.project, {
+                    "base_url": self.base + "/changed", "model": MODEL + "-changed",
+                    "api_key": PRIVATE_KEY, "daily_limit": 100,
+                })
+            else:
+                self.fail("unexpected isolated mutation")
+        with closing(server.connect()) as conn:
+            saved_task = dict(conn.execute(
+                "SELECT * FROM app_agent_session WHERE id=?", (original["id"],)).fetchone())
+        before, worker_calls = self.counts(), self.worker.call_count
+        status, recovered = self.confirm(action)
+        self.assertEqual(status, 200, recovered)
+        self.assertEqual(recovered["action"]["status"], "confirmed")
+        self.assertEqual(recovered["action"]["result"]["writing_session_id"], original["id"])
+        self.assertEqual(recovered["writing_session"]["id"], original["id"])
+        self.assertEqual(recovered["writing_session"]["status"], "awaiting_authorization")
+        with closing(server.connect()) as conn:
+            current_task = dict(conn.execute(
+                "SELECT * FROM app_agent_session WHERE id=?", (original["id"],)).fetchone())
+        self.assertEqual(current_task, saved_task)
+        self.assertEqual(self.counts(), before)
+        self.assertEqual(self.worker.call_count, worker_calls)
+        status, duplicate = self.confirm(action)
+        self.assertEqual(status, 200, duplicate)
+        self.assertTrue(duplicate["idempotent"])
+        self.assertEqual(duplicate["action"]["result"]["writing_session_id"], original["id"])
+        self.assertEqual(self.counts(), before)
+        self.assertEqual(self.worker.call_count, worker_calls)
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_interrupted_confirmation_recovers_original_task_after_manuscript_changes(self):
+        self.assert_interrupted_confirmation_recovers("manuscript")
+
+    def test_interrupted_confirmation_recovers_original_task_after_material_changes(self):
+        self.assert_interrupted_confirmation_recovers("materials")
+
+    def test_interrupted_confirmation_recovers_original_task_after_model_settings_change(self):
+        self.assert_interrupted_confirmation_recovers("settings")
+
+    def test_interrupted_confirmation_rejects_mismatched_or_restored_existing_task(self):
+        with closing(server.connect()) as conn, conn:
+            other_chapter = server.create_chapter(conn, {
+                "title": "其他章节", "body": "渡口的船工正在收起灯笼。",
+            })
+        action, original = self.interrupted_writing_confirmation()
+        with closing(server.connect()) as conn:
+            saved_task = dict(conn.execute(
+                "SELECT * FROM app_agent_session WHERE id=?", (original["id"],)).fetchone())
+        wrong_mode = json.loads(saved_task["plan_json"])
+        wrong_mode["mode"] = "inspect"
+        changes = (
+            ("kind", "plan_json", server.json_text(wrong_mode)),
+            ("chapter", "chapter_id", other_chapter),
+            ("query", "query", "另一条不同的创作要求"),
+            ("restored", "restored_read_only", 1),
+        )
+        for name, column, value in changes:
+            with self.subTest(mismatch=name):
+                with closing(server.connect()) as conn, conn:
+                    conn.execute(f"UPDATE app_agent_session SET {column}=? WHERE id=?",
+                                 (value, original["id"]))
+                before = self.snapshot()
+                worker_calls = self.worker.call_count
+                status, rejected = self.confirm(action)
+                self.assertEqual(status, 400, rejected)
+                self.assertTrue(rejected.get("error"))
+                self.assertEqual(self.snapshot(), before)
+                self.assertEqual(self.worker.call_count, worker_calls)
+                with closing(server.connect()) as conn, conn:
+                    conn.execute(f"UPDATE app_agent_session SET {column}=? WHERE id=?",
+                                 (saved_task[column], original["id"]))
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_confirming_without_a_committed_task_still_rejects_changed_source(self):
+        result = self.complete("actions")
+        action = next(item for item in result["messages"][-1]["actions"]
+                      if item["kind"] == "continue")
+        with closing(server.connect()) as conn, conn:
+            conn.execute("UPDATE app_agent_chat_action SET status='confirming' WHERE id=?",
+                         (action["id"],))
+            server.update_chapter(conn, self.chapter, {"body": MANUSCRIPT + "\n作者改动了原稿。"})
+        before, worker_calls = self.snapshot(), self.worker.call_count
+        status, rejected = self.confirm(action)
+        self.assertEqual(status, 400, rejected)
+        self.assertIn("原稿已变化", rejected["error"])
+        self.assertEqual(self.snapshot(), before)
+        self.assertEqual(self.counts()[3], 0)
+        self.assertEqual(self.worker.call_count, worker_calls)
         self.assertEqual(len(Provider.calls), 1)
 
     def test_selected_polish_creates_one_scoped_job_with_exact_quote(self):

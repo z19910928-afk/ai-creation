@@ -1,0 +1,37 @@
+{
+  "passed": true,
+  "tests": 33,
+  "failures": 0,
+  "errors": 0,
+  "local_provider_calls": 23,
+  "paid_provider_calls": 0,
+  "real_database_access": false,
+  "scope": "real application HTTP, isolated temporary SQLite and local HTTP provider; no production data, real credentials or paid provider calls",
+  "claim_limit": "service correctness only; not browser appearance, literary quality or competitiveness",
+  "started_at": "2026-10-16T11:52:43.162873+00:00",
+  "finished_at": "2026-10-16T11:53:03.744456+00:00",
+  "runtime": "3.11.17",
+  "source_sha256_before": {
+    "server.py": "b509a0bd2e3f71bd39c8664db094bc137221e143cba50e6ecfd221431e61ec4d",
+    "moyu_agent_chat.py": "7391a31eef05d09b694fd57407a66e25a3de638e6e34da2901880049fa86081a",
+    "moyu_agent_service.py": "e59cc228fef2bac7b5f8e9f79c29126e1257670d840438c78065dce7c64378ea",
+    "moyu_agent_settings.py": "be08046273874e4e45385b74dd2311fec294e95fd2a6f00195dd6bcc455d1941",
+    "moyu_backups.py": "ed81e951c56f6087e98efdd268fa53c0e7d7b08e70a97bb9b78efb8c909748cf",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "tests/agent_chat_fixtures.py": "e5b6895501781c72902481b66c313bbf603d54a5b6c1a3148fa8e44f8e2dcd56"
+  },
+  "source_sha256_after": {
+    "server.py": "b509a0bd2e3f71bd39c8664db094bc137221e143cba50e6ecfd221431e61ec4d",
+    "moyu_agent_chat.py": "7391a31eef05d09b694fd57407a66e25a3de638e6e34da2901880049fa86081a",
+    "moyu_agent_service.py": "e59cc228fef2bac7b5f8e9f79c29126e1257670d840438c78065dce7c64378ea",
+    "moyu_agent_settings.py": "be08046273874e4e45385b74dd2311fec294e95fd2a6f00195dd6bcc455d1941",
+    "moyu_backups.py": "ed81e951c56f6087e98efdd268fa53c0e7d7b08e70a97bb9b78efb8c909748cf",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "tests/agent_chat_fixtures.py": "e5b6895501781c72902481b66c313bbf603d54a5b6c1a3148fa8e44f8e2dcd56"
+  },
+  "source_unchanged": true
+}

@@ -132,7 +132,7 @@
   const done=['confirmed','executed','completed','applied'].includes(action.status),dismissed=['dismissed','rejected','canceled'].includes(action.status);
   const confirming=action.status==='confirming',canConfirm=!done&&!dismissed&&!session?.restored_read_only;
   return `<section class="agent-chat-action" data-chat-action="${esc(action.id)}"><h4>${esc(action.label||'创作建议')}</h4>
-   ${action.instruction?`<p>${esc(action.instruction)}</p>`:''}<small>${dismissed?'已放弃':done?'已确认，处理结果已保存':confirming?'确认结果待恢复，请恢复此步骤后查看进度':action.kind==='open'?'查看当前作品内容':'确认后进入相应创作流程'}</small>
+   ${action.instruction?`<p>${esc(action.instruction)}</p>`:''}<small>${dismissed?'已放弃':done?'已确认，处理结果已保存':confirming?'确认结果待恢复，请恢复此步骤后查看进度':action.kind==='open'?'查看当前作品内容':action.kind==='next_chapter'?'检查通过后归档本章，打开下一章；本步骤不生成正文':'确认后进入相应创作流程'}</small>
    <div class="agent-chat-action-buttons">${canConfirm?`<button type="button" class="primary-btn" data-chat-confirm>${confirming?'恢复此步骤':action.kind==='open'?'打开':'确认此步骤'}</button>${action.kind!=='open'&&!confirming?'<button type="button" class="ghost-btn" data-chat-dismiss>放弃</button>':''}`:''}
    ${done?`<button type="button" class="ghost-btn" data-chat-open-result>${action.kind==='open'?'再次打开':'查看结果'}</button>`:''}</div><p class="form-error" data-chat-action-error role="alert"></p></section>`;
  }
@@ -157,7 +157,7 @@
    const action=messages.flatMap(message=>message.actions||[]).find(item=>item.id===element.dataset.chatAction);
    element.querySelector('[data-chat-confirm]')?.addEventListener('click',()=>performAction(action,'confirm',element));
    element.querySelector('[data-chat-dismiss]')?.addEventListener('click',()=>performAction(action,'dismiss',element));
-   element.querySelector('[data-chat-open-result]')?.addEventListener('click',()=>openActionResult(action));
+   element.querySelector('[data-chat-open-result]')?.addEventListener('click',()=>performAction(action,'result',element));
   });
   if(nearBottom||force)feed.scrollTop=feed.scrollHeight;else feed.scrollTop=scroll;
   updateControls();
@@ -294,13 +294,17 @@
   finally{if(sendOperation===operation){sendOperation=null;updateControls()}}
  }
  async function performAction(action,kind,element){
-  if(!action||actionOperation||session?.restored_read_only)return;
+  if(!action||actionOperation||session?.restored_read_only&&kind!=='result')return;
   const captured=capture(),operation={};actionOperation=operation;
   element.querySelectorAll('button').forEach(item=>item.disabled=true);element.querySelector('[data-chat-action-error]').textContent='';
   try{
    if(!await syncBackend())throw new Error('请先保存或合并当前稿件。');
    if(!current(captured))return;
-   const result=await request('/actions/'+encodeURIComponent(action.id)+'/'+kind,{method:'POST',body:JSON.stringify({confirm:true})},captured);
+   if(kind==='result'){await openActionResult(action);return}
+   const path='/actions/'+encodeURIComponent(action.id)+'/'+kind;
+   const result=action.kind==='next_chapter'&&kind==='confirm'?
+    await durableOperation('/api/agent-chat'+path,'POST',{confirm:true},()=>current(captured)):
+    await request(path,{method:'POST',body:JSON.stringify({confirm:true})},captured);
    if(!current(captured))return;
    if(kind==='confirm'){
     const updated=result.action||action;
@@ -315,8 +319,16 @@
  async function openActionResult(action){
   const result=action.result||{},cid=action.chapter_id;
   if(result.writing_session_id){
-   if(cid&&chapter(cid)){activeChapter=cid;view='editor'}else view='assistant';
-   render();if(view==='editor')authorRevealWorkbenchSection('workbenchAgentSection');await authorLoadAgent();return;
+   await authorOpenAgentSession(result.writing_session_id,cid);return;
+  }
+  if(action.kind==='next_chapter'&&result.chapter_id){
+   const captured=capture();
+   if(!await hydrate())throw new Error('章节交接已保存，页面暂未读到。恢复连接后可再查看结果。');
+   if(!current(captured))return;
+   if(mergePending)throw new Error('交接已保存，请先合并当前稿件，再打开下一章。');
+   if(!chapter(result.chapter_id))throw new Error('下一章已不存在，请从目录核对章节。');
+   activeChapter=result.chapter_id;storage.set(cacheKey(':active'),activeChapter);
+   view='editor';render();toast('本章已归档，下一章已打开');return;
   }
   if(result.job_id){
    if(cid&&chapter(cid)){activeChapter=cid;view='editor';render();authorRevealWorkbenchSection('workbenchCandidateSection')}

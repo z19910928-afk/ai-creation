@@ -123,6 +123,7 @@ JSON_REFERENCES = {
     "source_document_id": "app_reference_document", "source_section_id": "app_reference_section",
     "chat_session_id": "app_agent_chat_session", "chat_turn_id": "app_agent_chat_turn",
     "chat_action_id": "app_agent_chat_action", "writing_session_id": "app_agent_session",
+    "previous_chapter_id": "document_node", "next_chapter_id": "document_node",
 }
 JSON_REFERENCE_LISTS = {
     "entity_ids": "entity", "pov_entity_ids": "entity", "alias_matches": "entity",
@@ -139,6 +140,7 @@ JSON_OBJECT_IDENTITIES = {
     "current_chapter": "document_node", "chapter": "document_node",
     "chapters": "document_node", "previous_chapters": "document_node",
     "records": "entity", "memory": "candidate_memory",
+    "commits": "app_chapter_commit",
     "planning_workflow": "app_planning_workflow",
 }
 JSON_KIND_IDENTITIES = {
@@ -728,7 +730,7 @@ def _check_chat_graph(data, indexes, project, branch_of):
                             or binding.get("chat_turn_id") != row["id"]):
                         raise ValueError("备份中的聊天消息与模型任务归属不一致")
             if table == "app_agent_chat_action":
-                if (row["kind"] not in {"continue", "polish", "inspect", "plan", "open"}
+                if (row["kind"] not in {"continue", "polish", "inspect", "plan", "next_chapter", "open"}
                         or row["status"] not in {"proposed", "confirming", "confirmed", "dismissed"}):
                     raise ValueError("备份中的聊天动作类型或状态无效")
 
@@ -804,7 +806,7 @@ def _check_json_graph(value, indexes, project, branch, *, key="", historical=Fal
     elif isinstance(value, dict):
         kind = value.get("kind") or value.get("material_kind")
         target = JSON_OBJECT_IDENTITIES.get(key, JSON_KIND_IDENTITIES.get(kind) if isinstance(kind, str) else None)
-        if target and (key in {"current_chapter", "planning_workflow"} or key == "dependencies"):
+        if target and key in {"current_chapter", "planning_workflow", "dependencies", "commits"}:
             identity = value.get("id")
             related = indexes.get(target, {}).get(identity) if isinstance(identity, str) else None
             if related is None and not historical:

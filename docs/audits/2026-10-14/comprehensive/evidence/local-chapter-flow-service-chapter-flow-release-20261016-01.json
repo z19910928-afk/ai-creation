@@ -1,0 +1,99 @@
+{
+  "passed": true,
+  "verified_at": "2026-10-16T12:13:32.933614+00:00",
+  "release_report_sha256": "d608fd0bd22a6b38c5902ff190f6fe768427dd6c299f11f79a5c7518a5a729df",
+  "release_source_count": 145,
+  "release_source_inventory_sha256": "280b1011b10ebcfa80bd140a983734a75307e8ba94e3fc0da0cd3294935eef95",
+  "release_sources_match_before_and_after_restart": true,
+  "old_process": {
+    "pid": 44982,
+    "started_at_sha256": "c0dc7f6e913870f69dd1a4021ac7c6bd87fcfe12e6f38e70792bc1b04eb8e035",
+    "command_sha256": "7c12a2205113fab0859b3d0faf87aaff24bb4144d31704a8c63f36a6e3cfc040",
+    "working_directory_verified": true,
+    "loopback_listener_verified": true
+  },
+  "new_process": {
+    "pid": 54824,
+    "started_at_sha256": "827b6f5cc780594eff6b306f31aba68f389b1175a315ec365c83b2656165d645",
+    "command_sha256": "7c12a2205113fab0859b3d0faf87aaff24bb4144d31704a8c63f36a6e3cfc040",
+    "working_directory_verified": true,
+    "loopback_listener_verified": true
+  },
+  "original_process": {
+    "pid": 48520,
+    "started_at_sha256": "1d19c0e39f664e9ca8c0f2fcd4a0f880073b4833467ccf5499c04395f051be49",
+    "command_sha256": "76f0952635bb27f980f48761da58f50fee75c920fda634b35349aa8139c55b07",
+    "working_directory_verified": true,
+    "loopback_listener_verified": true
+  },
+  "original_process_unchanged": true,
+  "loopback_health_http_status": 200,
+  "health_sha256": "a66507c43a5b1dee1346e0c36e858b7bf61c85c3efa5c53dffb1d5cca8d3bb92",
+  "online_backups": {
+    "preview": {
+      "backup_sha256": "650fb959a77ce6765b36d773eb1b452b2336d7f79894b142e4759bca97781a40",
+      "manifest_sha256": "3abbbc3fed4be2b9581203ded474c894b3f1e9401ea5ea1ec1491f02fdf401d7",
+      "content_matches_source": true,
+      "source_schema_version": 10,
+      "backup_schema_version": 1,
+      "schema_counter_comparison": "Independent destination counter; live databases remain fully compared"
+    },
+    "original": {
+      "backup_sha256": "091866bbe0f39576283f86bfdb219b96b88275d72aaa43423d865b019d4de7a6",
+      "manifest_sha256": "5d0fcb979f27fde8f414a47c55a0af861718b9a993cd7f23ce17b6919be70d39",
+      "content_matches_source": true,
+      "source_schema_version": 174,
+      "backup_schema_version": 1,
+      "schema_counter_comparison": "Independent destination counter; live databases remain fully compared"
+    }
+  },
+  "before_snapshot_sha256": "281d9ec5d402b033b5f3107257e36c029e97da4f4cf83d237da1e7cebb99c02a",
+  "after_snapshot_sha256": "2d510d5e5b717e046a0464f5d82645e137fb8f8d552c87fd8bf6a70f9da90f85",
+  "databases": {
+    "preview": {
+      "table_count": 72,
+      "row_count": 50,
+      "schema_sha256": "055b29f67aee06a63ae1b7eb9b8d5c68e604176eb77fa47eeca129c532bca99a",
+      "tables_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+      "schema_version": 10,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    },
+    "original": {
+      "table_count": 65,
+      "row_count": 32,
+      "schema_sha256": "972d3c69e6dca70cd48da60d563953dbb6b64acfd6c044d863d3a45d8e2e893f",
+      "tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+      "schema_version": 174,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    }
+  },
+  "all_tables_content_schema_and_versions_unchanged": true,
+  "pending_work": {
+    "preview": {
+      "queued_or_running_jobs": 0,
+      "automatic_continuations": 0,
+      "saved_connection_records": 0
+    },
+    "original": {
+      "queued_or_running_jobs": 0,
+      "automatic_continuations": 0,
+      "saved_connection_records": 0
+    }
+  },
+  "pending_rechecked_after_old_process_stopped": true,
+  "connection_environment_cleared": true,
+  "model_calls": 0,
+  "messages_sent": 0,
+  "privacy": {
+    "manuscripts_included": false,
+    "credentials_included": false,
+    "database_files_published": false,
+    "private_paths_included": false
+  }
+}
