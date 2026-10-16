@@ -2,7 +2,7 @@
 
 本轮从上海时间2026-10-14开始，收尾延续至2026-10-15。七名专责分别重新核实官方固定源码，再交叉阅读其他项目原文。墨屿起点为 `64fe155387e0a3c2d902b60a2d82822f2457af0d` 加当时未提交修复；每份运行证据另外记录实际文件指纹。手机端不在本轮范围。
 
-2026-10-16新增[电脑创作工作台与写作总管专项](writing-workbench-agent.md)：基于成熟框架接续写、整章修订、章节检查及四阶段全书规划，三栏工作台连接实际正文、知识资料、候选和依据。[七项目新研究](../../../research/novel-workbench-comparison-2026-10-15.md)固定提交及借鉴边界；[300/1000章量测](long-workbench-baseline.md)记录编辑成本和已修目录定位问题。[05完整验收](evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)在上海2026-10-16 01:01:34至01:12:55通过103个执行项、14组浏览器199个电脑场景，115份来源前后相同，22份JSON与56张截图共78附件逐份匹配；[独立复核](evidence/agent-workbench-release-independent-review-20261016.json)及九图目视检查通过。新版本机入口为`http://127.0.0.1:4174`，原服务保留；本次提交GitHub结果与实际服务各自登记，下文继续保留历史。
+2026-10-16新增[电脑创作工作台与写作总管专项](writing-workbench-agent.md)：基于成熟框架接续写、整章修订、章节检查及四阶段全书规划，三栏工作台连接实际正文、知识资料、候选和依据。[七项目新研究](../../../research/novel-workbench-comparison-2026-10-15.md)固定提交及借鉴边界；[300/1000章量测](long-workbench-baseline.md)记录编辑成本和已修目录定位问题。[05完整验收](evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)在上海2026-10-16 01:01:34至01:12:55通过103个执行项、14组浏览器199个电脑场景，115份来源前后相同，22份JSON与56张截图共78附件逐份匹配；[独立复核](evidence/agent-workbench-release-independent-review-20261016.json)及九图目视检查通过。代码提交 `e9fe9eac15896c5aeda2cf9672003a0ed4433967` 已正常推送，[GitHub运行38776837992](evidence/github-agent-workbench-e9fe9ea-success-20261016.json)于上海2026-10-16 01:37:40完成，28步全部成功。[实际服务](evidence/local-workbench-preview-20261016.json)重启前后68表保持、三种电脑尺寸只读检查通过；新版本机入口为`http://127.0.0.1:4174`，原服务保留且预览未配置模型。各项结果分别登记，下文继续保留历史。
 
 **第一梯队仍是未完成的目标。** 本轮证明具体作者流程的修复与指定样本的正确性；七项目的源码、组件、免费模拟与真实文学效果分别记载，不按星数、菜单数或测试数量排名。
 

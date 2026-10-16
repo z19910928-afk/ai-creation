@@ -4,9 +4,9 @@
 
 ## 当前状态
 
-2026-10-16 的[电脑创作工作台与写作总管](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)已经接通目录/知识库、正文和任务三栏。总管基于 LangGraph（负责保存多步骤任务并在中断后接续的框架），协调续写、整章修订、章节检查和四阶段全书规划；正文采纳、规划确认和正式事实继续由作者决定。[05完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)已通过103个执行项、199个电脑场景，115份来源前后相同、78附件逐份匹配；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-workbench-release-independent-review-20261016.json)及九张截图目视检查通过。本次提交的GitHub检查和实际本机服务另行登记，工程结果不作为文学第一梯队成绩。
+2026-10-16 的[电脑创作工作台与写作总管](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)已经接通目录/知识库、正文和任务三栏。总管基于 LangGraph（负责保存多步骤任务并在中断后接续的框架），协调续写、整章修订、章节检查和四阶段全书规划；正文采纳、规划确认和正式事实继续由作者决定。[05完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)已通过103个执行项、199个电脑场景，115份来源前后相同、78附件逐份匹配；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-workbench-release-independent-review-20261016.json)及九张截图目视检查通过。代码提交 `e9fe9eac15896c5aeda2cf9672003a0ed4433967` 已正常推送，[本次GitHub检查38776837992](docs/audits/2026-10-14/comprehensive/evidence/github-agent-workbench-e9fe9ea-success-20261016.json)于上海2026-10-16 01:37:40完成，28步全部成功；[实际本机服务](docs/audits/2026-10-14/comprehensive/evidence/local-workbench-preview-20261016.json)也已独立验收。工程结果不作为文学第一梯队成绩。
 
-本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。数据库、原稿、私有截图和密钥不随源码上传；完整 Obsidian 双向同步尚未实现。
+本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。重启前后68张表的内容、结构和数据库版本保持，三种电脑尺寸的只读验证通过。此预览未配置生成模型；数据库、原稿、私有截图和密钥不随源码上传，完整 Obsidian 双向同步尚未实现。
 
 历史完整备份恢复版本 `1552104` 已正常推送，[GitHub检查](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)全部成功，并已[更新到本机](docs/audits/2026-10-14/comprehensive/evidence/local-service-portable-1552104-20261015.md)。更新前后65张表完整内容和结构保持，两个电脑尺寸共8个只读页面检查通过，没有模型调用或新增收费。
 

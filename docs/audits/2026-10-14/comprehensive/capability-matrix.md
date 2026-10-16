@@ -10,7 +10,7 @@
 
 A2电脑完整ZIP恢复入口已经实现。[上一轮冻结发布检查](evidence/compatibility-python311-node24-portable-complete-backup-release-20261015.json)于上海2026-10-15 05:16:33至05:25:48通过94项检查，103份来源前后一致，12套电脑浏览器共161个登记场景，18份JSON和44张截图共62份附件指纹匹配。随后修复旧删除账本遗留、未来章人物状态和别名冲突、非章节来源三类材料边界。最新同49方法专项全部通过，257次真实HTTP、读取前后65表与结构不变、模型及后台执行均0；多引用依最晚真实章节决定可用时点，非章节来源只在材料层排除，原审核和历史保留。[中间整轮已停止](evidence/portable-legacy-evidence-release-20261015-interruption.json)并保留。[新版完整整轮](evidence/compatibility-python311-node24-portable-evidence-scope-release-20261015.json)于上海2026-10-15 06:17:11至06:26:55完成，95项检查全部通过，104份来源前后及独立核对时一致，12组电脑浏览器161个场景；19份JSON与44张截图共63份附件逐份指纹匹配。独立复核同时核对本地原件及命令输出，收费0；当时尚待GitHub及实际服务验收，后续已由下文 `1552104` 独立完成交付。完整协议、历史专项和证据边界见[完整ZIP恢复记录](portable-complete-backup.md)。
 
-2026-10-16新增[三栏创作台与写作总管记录](writing-workbench-agent.md)。[05冻结整轮](evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)已通过103项、14组浏览器199个电脑场景，115份来源前后相同、78附件指纹匹配，[独立复核与九图目视检查](evidence/agent-workbench-release-independent-review-20261016.json)通过。当前实现范围见下表，本次提交GitHub与实际服务另验；上文历史成绩不自动覆盖本轮新增源码，也不作为文学质量或第一梯队证明。
+2026-10-16新增[三栏创作台与写作总管记录](writing-workbench-agent.md)。[05冻结整轮](evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)已通过103项、14组浏览器199个电脑场景，115份来源前后相同、78附件指纹匹配，[独立复核与九图目视检查](evidence/agent-workbench-release-independent-review-20261016.json)通过。当前实现范围见下表；本轮代码提交 `e9fe9eac15896c5aeda2cf9672003a0ed4433967` 的[GitHub运行38776837992](evidence/github-agent-workbench-e9fe9ea-success-20261016.json)28步全部成功，[实际服务](evidence/local-workbench-preview-20261016.json)重启前后68表保持、三种电脑尺寸只读检查通过。上文历史成绩不自动覆盖本轮新增源码，也不作为文学质量或第一梯队证明。
 
 ## 本轮已经实施的修复
 
