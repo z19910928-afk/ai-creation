@@ -1,0 +1,131 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "打开知识关联保留正文 DOM、选区方向与两层滚动",
+      "passed": true
+    },
+    {
+      "name": "知识独立分页、出入链跳转与未来秘密范围清楚可见",
+      "passed": true
+    },
+    {
+      "name": "候选和已确认来源显示完整 emoji 原句，定位按 Unicode 字符验证",
+      "passed": true
+    },
+    {
+      "name": "点击定位前重新读取来源，已变原句阻止跳转且保留当前选区",
+      "passed": true
+    },
+    {
+      "name": "原句复核期间切标签、刷新、关闭或切页后，迟到结果不能继续导航",
+      "passed": true
+    },
+    {
+      "name": "知识读取失败显示未核实与重试，不伪装为零条来源",
+      "passed": true
+    },
+    {
+      "name": "知识迟到响应在关闭、切章和切作品后不复活",
+      "passed": true
+    },
+    {
+      "name": "关系删除导致页码越界时回到最后有效页，不留下虚假的空页",
+      "passed": true
+    },
+    {
+      "name": "全书待办完整分类计数、三页任务无重漏，桌面布局无横向溢出",
+      "passed": true
+    },
+    {
+      "name": "超过最近五十条的旧写作任务能从待办精确打开且刷新仍只展示目标",
+      "passed": true
+    },
+    {
+      "name": "章后记忆按选中分析编号打开，独立记忆和审稿均有真实入口",
+      "passed": true
+    },
+    {
+      "name": "执行结果未知只可查看和打开章节，不自动重试或产生模型请求",
+      "passed": true
+    },
+    {
+      "name": "待办读取失败和坏计数显示尚未核实，恢复后重新呈现完整数量",
+      "passed": true
+    },
+    {
+      "name": "较早的顶部待办摘要迟到，不能覆盖已经读到的新列表数量",
+      "passed": true
+    },
+    {
+      "name": "离开待办或切作品后迟到列表不会覆盖新页面或另一本书的计数",
+      "passed": true
+    },
+    {
+      "name": "各类待办详情请求未完成时离开页面，迟到结果不能导航或弹出旧记录",
+      "passed": true
+    },
+    {
+      "name": "浏览只读操作不修改正文版本，也不派发模型请求或报浏览器错误",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "screenshots": [
+    "<temporary-root>/moyu-knowledge-inbox-5rSzHf/knowledge-links-1440x1000.png",
+    "<temporary-root>/moyu-knowledge-inbox-5rSzHf/knowledge-sources-1280x800.png",
+    "<temporary-root>/moyu-knowledge-inbox-5rSzHf/writing-inbox-1440x1000.png",
+    "<temporary-root>/moyu-knowledge-inbox-5rSzHf/writing-inbox-1280x800.png"
+  ],
+  "page_errors": [],
+  "paid_provider_calls": 0,
+  "model_request_posts": 0,
+  "browser_mutations": [],
+  "seed_agent_plans": 56,
+  "scope": "真实桌面 Chrome、隔离 SQLite；知识出入链、原句与全书待办；不授权模型任务",
+  "source_files": [
+    {
+      "path": "server.py",
+      "sha256": "c513c5dd9db574fe01ff41819a7153ca3113d01fb3c1b7b5d3c74c66df2bd037"
+    },
+    {
+      "path": "moyu_knowledge.py",
+      "sha256": "b112df182d3448a2ffe454ecc3dfa028987a5d72131f0f03597fac6dc07f3492"
+    },
+    {
+      "path": "moyu_inbox.py",
+      "sha256": "a74e108835d0ed5167aa83b0e2e8908e65fb30a217722276599465963d46d49a"
+    },
+    {
+      "path": "app.js",
+      "sha256": "f205c2ba5ef348b5a262d63c202d6c82bf5e0ee8fcda8b723178790b559b72af"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "80094fe301b35653fc382ed81f839bae6670204ce0108d88a5045e79d6605c53"
+    },
+    {
+      "path": "knowledge-workspace.js",
+      "sha256": "8e097f4a0b2ab8844ee87f979d8babb17163c9eb776339460d52a055880fc953"
+    },
+    {
+      "path": "writing-inbox.js",
+      "sha256": "92b80a216f2849cb3ae2fc8a831cc9b3118349ff6a7620a7f9fd5c7af44e2dfd"
+    },
+    {
+      "path": "knowledge-workspace.css",
+      "sha256": "f933d46852a21eb4747482ad9683696d0123a07d039677918c71b76e5b9ce576"
+    },
+    {
+      "path": "tests/knowledge_inbox_browser_regressions.cjs",
+      "sha256": "bbb69087619acd4192f588fabf8f34b67bc7c02ff1ae4fa240359b30af7fdd07"
+    }
+  ],
+  "fixture_counts": {
+    "agent": 56,
+    "queue": 1,
+    "analysis": 3,
+    "review": 2
+  },
+  "source_unchanged": true
+}

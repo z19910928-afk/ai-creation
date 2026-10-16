@@ -97,9 +97,14 @@ async function waitHeld(read, label) {
   throw new Error(label + ' was not captured');
 }
 
+async function openCandidate() {
+  await page.locator('[data-chat-result="workbenchCandidateSection"]').click();
+  await page.locator('#aiReferenceTools').waitFor();
+}
+
 async function editor() {
   await page.locator('[data-view="editor"]').click();
-  await page.locator('#aiReferenceTools').waitFor();
+  await openCandidate();
 }
 
 async function closeModals() {
@@ -108,6 +113,7 @@ async function closeModals() {
 
 async function pick(query, quote) {
   await closeModals();
+  await openCandidate();
   await page.locator('[data-reference-pick]').click();
   await page.locator('#referenceDocument').waitFor();
   await page.waitForFunction(() => document.querySelector('#referenceDocument')?.disabled === false);
@@ -118,6 +124,7 @@ async function pick(query, quote) {
   await result.waitFor();
   await result.locator('[data-reference-use]').click();
   await page.locator('[data-reference-editor]').click();
+  await openCandidate();
   await page.locator('[data-reference-inspect]').waitFor();
 }
 
@@ -135,6 +142,7 @@ async function openProject(id) {
 
 async function assertNoSelection() {
   assert.equal(await selectedQuote(), null);
+  await openCandidate();
   await page.locator('#aiReferenceTools').filter({hasText: '未选择'}).waitFor();
 }
 
@@ -165,6 +173,7 @@ async function waitCandidate(previousRun) {
 }
 
 async function adoptCandidate() {
+  await openCandidate();
   const runId = await page.evaluate(() => aiDraft.ai_run_id);
   await page.locator('#aiAdopt').click();
   await page.locator('[data-apply]').click();
@@ -255,6 +264,7 @@ async function main() {
   });
   await page.goto(base);await page.waitForFunction(() => backendOnline);await editor();
   await page.locator(`[data-chapter="${firstChapter}"]`).click();
+  await openCandidate();
   await page.locator('#aiInstruction').fill('生成240至300字，保留当前事件。');
 
   await test('选择和两种预览只读取参考原句且不写持久存储或数据库', async () => {
@@ -331,6 +341,7 @@ async function main() {
     await page.locator('#referenceQuery').fill('檐雨原句');await page.locator('[data-reference-search]').click();
     await page.locator('.reference-search-result').filter({hasText: quoteA}).locator('[data-reference-use]').click();
     await page.locator('[data-reference-editor]').click();
+    await openCandidate();
     assert.equal(await selectedQuote(), quoteA);
     assert.equal(await page.evaluate(() => activeChapter), firstChapter);
   });
@@ -541,6 +552,7 @@ async function main() {
   });
   await test('两种电脑尺寸引用工具和原生成清空控件完整可见互不遮挡', async () => {
     results.desktop_viewports = [];
+    await openCandidate();
     for (const viewport of [{width: 1440, height: 1000}, {width: 1280, height: 900}]) {
       await page.setViewportSize(viewport);
       for (const selector of ['.ai-controls', '#aiReferenceTools']) {

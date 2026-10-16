@@ -1,0 +1,3446 @@
+{
+  "schema_version": 2,
+  "tag": "agent-chat-release-20261016-04",
+  "passed": true,
+  "verified_at": "2026-10-16T10:25:20.312Z",
+  "scope": "Independent retained-evidence review; this checker executes no application tests, models, browsers or production-data reads.",
+  "release_report": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-release-20261016-04.json",
+  "release_report_sha256": "3bc4c716a071e73cd0bc5045ae3e48628204cf9840a9e96668fff2b3d5fd5f41",
+  "checker_sha256": "1016cc03bc051168f563d8eef8a3a110e2ae2557a45c180166ce5102e0d6cbd6",
+  "counts": {
+    "checks": 124,
+    "sources": 139,
+    "python_fixtures": 72,
+    "structured_fixtures": 8,
+    "browser_suites": 19,
+    "browser_scenarios": 241,
+    "artifacts": 100,
+    "json_artifacts": 28,
+    "png_artifacts": 72
+  },
+  "source_before_after_current_match": true,
+  "source_inventory": {
+    "moyu_agent_chat.py": "6e9e971f6155d1b6312488d13ec1a12e8ce3d49df1e389384a34b362ab45151f",
+    "moyu_agent_checkpoint.py": "c7f5c9b693cab1808f495c610390c79b72a939fa7466ffa33fbe2ff80eeb0d14",
+    "moyu_agent_planning.py": "06894409fd21565ec118d273c742994f6bd32083bb88cd20854a3bd2d704ea54",
+    "moyu_agent_service.py": "e59cc228fef2bac7b5f8e9f79c29126e1257670d840438c78065dce7c64378ea",
+    "moyu_agent_settings.py": "be08046273874e4e45385b74dd2311fec294e95fd2a6f00195dd6bcc455d1941",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "550b7c23d5ca3472cc89c8098e6299e4964949a3aefba2a1ff770ad362a7941f",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_inbox.py": "d89911339dca66027f8268976b350f6699f0e92d89015ef1c4280c0ce7e4e921",
+    "moyu_knowledge.py": "b112df182d3448a2ffe454ecc3dfa028987a5d72131f0f03597fac6dc07f3492",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_writing_agent.py": "dc14204e8059077471cf0796d70d5a99c2ac4869170daee355a93c627e52cd27",
+    "server.py": "c513c5dd9db574fe01ff41819a7153ca3113d01fb3c1b7b5d3c74c66df2bd037",
+    "scripts/apply_migration.py": "dd05512dfa69d7c8331b82c52a9af146f13a3921e9309f8a9616ead834044f14",
+    "scripts/evaluation_runner.py": "9f6554aee771bfcafe70e1e1e08e7259c8759efceeead4be4a342cabd7171af0",
+    "scripts/literary_evaluation.py": "746f30b47cd794e32c897d372b65d6bf6f7299b0df3bb4617a66dcc7f374c8c8",
+    "scripts/provider_shape_diagnostic.py": "9ee57e3d9c7bc22e3d97bbf974ae50654dcd30b2b08d966a909783c537bca23e",
+    "scripts/recovery_drill.py": "a4b567864328a35e1c2c94ecc97d9e4204bdc85e5b48e3339742f57ca8d0eadf",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "tests/agent_chat_fixtures.py": "44ba0a9c9d09820a75bc542999f370786a014f34b8c26ba9a1712128cab37ffd",
+    "tests/agent_settings_fixtures.py": "4fc2b4851fec4a721d584ded823133944d604f231571dc9971f0257ee5c3bb48",
+    "tests/ai_contract_fixtures.py": "2a61ae2944a17edbec96b20f5eb74e887ecc1e1d6df5217db58f2ca09cbd35c4",
+    "tests/ai_queue_fixtures.py": "0b1980bc030cfcb26ef031920c8f5dc4356b8b252b04adb42ae4bc7db371bda5",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_candidate_typed_http_fixtures.py": "4d2aacbf066fb938f0de7e36f36f5d0e183833cc4458f03fa68d2629b04c6943",
+    "tests/analysis_character_identity_http_fixtures.py": "9c78fa0b7e405a4f852bb381696d2c84d8cbfa7b4064f0bc401b16ba73f8cc31",
+    "tests/analysis_guidance_http_fixtures.py": "3aadb91914dbd7d05045bd5e2abfb2ae2f6c65482718e8fdc87bf731051e76a4",
+    "tests/analysis_partial_source_http_fixtures.py": "ee96de46002045e181c0279994d22b6b0c04677ba69670ace820921138a151d7",
+    "tests/assertion_workflow_fixtures.py": "d45d1cf0a64970759b025b9ce47f66efdb823f600f92b4b4f25e4b963fa17700",
+    "tests/author_resolution_material_http_fixtures.py": "759c969e482bd94b5cf3f6b1658715e0f1af09ced4b66eb2993de0812413e0b2",
+    "tests/backup_recovery_fixtures.py": "061ea33f60b160b70e8aaff75535b7b64a5faec098c49b81c6fa593c2c6b2152",
+    "tests/blueprint_guidance_http_fixtures.py": "1e307b84e8301d7df8a9e9845c14a38cb2e9f8ba4a4bbc17ff02760500953072",
+    "tests/branch_cas_fixtures.py": "21da9bcf4c91d2be0ce3ae99921b0bd06563adfa82993a0f5ceea747bf6e3cc7",
+    "tests/candidate_revision_fixtures.py": "d39b45e513977d06df4cf84b8fd07cc1108fd859c86c7ba86fcdf432b2b6372e",
+    "tests/chapter_analysis_workflow_fixtures.py": "bbb01527139c5455610dddffc22de3215081d1d9321a0c9325bfcafcfaba83ba",
+    "tests/chapter_commit_fixtures.py": "7c34c78a90573e053917f4af04677b386c75b8eb7173980ce263404de6026fea",
+    "tests/chapter_deletion_dependency_http_fixtures.py": "4def7a7a2c5caf8775651a33022d6374673429f6005b6f6d8271caf6fd119227",
+    "tests/character_state_fixtures.py": "3846f19bc3f685e65b81250934dabcad7e6567dbf2e74a6228d7cf1ed334a1c4",
+    "tests/context_http_fixtures.py": "add018506a3f25f1e0d8471e802f6444dd82cf6e60a0cce38c958b0bf6a68622",
+    "tests/context_pipeline_fixtures.py": "196f039ef3a6091b49f0373a12a67d946ea565d93ab7719a9089040f144b29a5",
+    "tests/context_scope_intersection_fixtures.py": "dd26d79da166adcd1e02f38acf82b7c41a352154832272b5f7a3243cee51f698",
+    "tests/corrupt_import_fixtures.py": "2271f184bad571d656a54342a6c6d437d25850c30ed97a19bb6661ca503f0ea4",
+    "tests/frontend_story_fixtures.py": "419e03d451c7b7b1e148e8651434b65cef947d3c976ee8c458a8b1885f12d1da",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/import_archive_lifecycle_fixtures.py": "ea142f2e57bf91c72a05e22c28b51a855ac1ea3a873903f477a8cbe5e1aaf410",
+    "tests/knowledge_inbox_http_fixtures.py": "bb92593394f83d58e2db46fa512d8684ac880e16af2ed930cefbe9548a4d1c3c",
+    "tests/legacy_deleted_dependency_http_fixtures.py": "af7b43a1b107d7d97d9e650ad187f9e41b299ba19ba894792e53b0e8e24960f1",
+    "tests/literary_evaluation_fixtures.py": "e7ebdc1a5b770ed6c5c0308aae98e1367777280ccfc17a36f435418787f0a4aa",
+    "tests/longform_knowledge_scope_fixtures.py": "2a67c5e1f2283030bc75a78a60fca5564c501bff2ff2de82d56f521085f6b6fd",
+    "tests/manuscript_import_fixtures.py": "38f15132b33611befc1c9122a0e45afae20d5fda19047734bda74e7ee9e20eb5",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_evidence_compat_http_fixtures.py": "9d014df2073a7859104910edde119886a93528782eaa10ca581430ed1559d1f2",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/material_scope_order_http_fixtures.py": "1e0ffdca4cb1acaad93c5420b6a35177abe7c8a3e638f590fc1e3d26a150b55a",
+    "tests/memory_candidate_evidence_fixtures.py": "c014728623a2516aa071bbb1a5ad06182d8f810129ae51753d82a1de7d95f670",
+    "tests/model_settings_fixtures.py": "7d720c4d0b79d653a035594f6e701aac2f57a98b2faeea668be5a61482269763",
+    "tests/nested_record_scope_http_fixtures.py": "8407478ab51f19d8902bf4ca2b94c9182d216932876055a6f885fdf6596b4f16",
+    "tests/output_contract_fixtures.py": "e489776c512e197c3f6235e50af3d7896a57eff457929206f8bc0fc4f69fdf37",
+    "tests/planning_backup_fixtures.py": "ec7652e156eddd46f06447936057ee0073ce8b6ebd1ce680e06fef04f13f60d0",
+    "tests/planning_http_fixtures.py": "002aaca7a48b412431cf62f8f88de9ad683f93573bf88f7ba48ab3c30f5af4de",
+    "tests/planning_workflow_fixtures.py": "7cc7101ee5a943910de1c9110ad29e47329a36eac4abaa14d60988ce8edf1d6f",
+    "tests/portable_backup_fixtures.py": "09483d8f25b10e146ae15b5099046e0fe14aca75bae795ce17ff9e0834dd1b11",
+    "tests/portable_backup_http_fixtures.py": "bc6305b994c36e158f0da29cc1ec5e458c1b5af53e7fec234ea62cb6122ff1bb",
+    "tests/projection_health_fixtures.py": "22a0d9a5fe00573e17b9865e988d4468296690940b85b3f0f1d0516744389214",
+    "tests/prose_output_http_fixtures.py": "34a97b91045291d32ed5cea99e8a6176138ddac6eb751380649055ee939c808c",
+    "tests/provider_protocol_fixtures.py": "d79bad2abf713cf1cd04a6163a76d2dd45b447fdbd32784b5c828bdaa3279015",
+    "tests/provider_queue_integration_fixtures.py": "c6a9b7cac696d1b625b2e48c61f2008ab78bb02efffba8b0f520dbb4992e2915",
+    "tests/publication_assistant_fixtures.py": "cc440251c4871338c4bab8876b8a1cac413ca03c3c816d1823aa756a41c6c6b9",
+    "tests/range_patch_fixtures.py": "6083a6a1b73465653f28986a26e805672adb4857f6f3b9c2815ca29a0f2c9a2b",
+    "tests/record_knowledge_fixtures.py": "651b6bb041ef317e8671d69602cf3e2c4f175c56c5cdf3256a01e2761c3fe3c7",
+    "tests/record_scope_http_fixtures.py": "2051bcdff3e15c249c5053267d0653efb46fb3cc593c4c459ee8c110a6a59c87",
+    "tests/reference_passages_http_fixtures.py": "4aa21b3a2c8bdd930be9eb2a9cd73ca8074e57d6e6b734c38183679043259c96",
+    "tests/reference_passages_integrity_http_fixtures.py": "8dbb29632703adbd9cad26a9f4a387149253018a3de177bf7729b35ad9233fa7",
+    "tests/repository_privacy_fixtures.py": "242b4be36da85653d07458b48a9a471db5e711723913e7bed13aa45479a2b272",
+    "tests/reversible_patch_fixtures.py": "b10c446a82bec642989cc2673df11600331bc5b780fdbeabb76c0f0d4a5d1f2c",
+    "tests/review_guidance_http_fixtures.py": "70e162fb310c8488eeeed5eb4e084647179aa0b8f04cf20fcce7fde5edaf6bb9",
+    "tests/runtime_continuity_fixtures.py": "a9fe62e7afa7e712181f6cd2d4c2795fe05b629a22ce82219a5c3d348ed6a0f5",
+    "tests/schema_negative_fixtures.py": "81f29f9425214dfd9e773e94fd29b8f18867f436318857927ee737e6a5083585",
+    "tests/search_fixtures.py": "a782b1ac09fdf2654a3da09c3946101541f74986c494491cff06e919ad753189",
+    "tests/story_review_publication_http_fixtures.py": "411587e9e4047c6e8d8a7ca1c803b31b1e645d5cea3f6510d4964d020bde51b0",
+    "tests/story_review_repair_http_fixtures.py": "76fba57168cafcae37680db38a93983b7bd78e4386bde4e25e0fe8e4a987845a",
+    "tests/story_structure_fixtures.py": "7803c9248361b148902ad2577f285db2242d437a1314c0571c0b0ae60458f7bc",
+    "tests/stream_resume_fixtures.py": "2340b44603602e7ff66d1c5c53cf80be89843eb3c57bb3f90af191d8f5ab3bcf",
+    "tests/strict_feature_fixtures.py": "e1380922b77fd3064fef9b814bb97f83959da8b3937cb280f098f9e49918fb61",
+    "tests/task_parameter_http_fixtures.py": "fec9b79e582ae2496ce37e596910b036fcc1c854b62872123e089e5f44f98b61",
+    "tests/workspace_workflow_fixtures.py": "d69f627af1002f50acd386e49c300a84500f93082e928ce8416d41fcf8f71f75",
+    "tests/writing_agent_fixtures.py": "b56ed93a47e81458e26bd57b6b35e995b8f76c4dad61f171b74dddf322b473dd",
+    "tests/writing_agent_planning_fixtures.py": "8407665bdbee5807b32bd9bbb099a172a84a47c24c64e41a129ee2c9c84116ee",
+    "tests/writing_agent_service_fixtures.py": "ae308fd7d65641023874ec27a9213fb5b667f07d7dc382f506804328021c58b0",
+    "tests/writing_inbox_fixtures.py": "ab36a21c3e22ec2ceb91e71346c63a87646c8153a887d8ed7cd533cc1ab44ed4",
+    "agent-chat.js": "28e93edee47ab72665549b2b0e34ad2d2d05406d5f80735736ecd84771386796",
+    "agent-settings.js": "a2ce6bfbd13f8b1651424ca72454fb2b4ed95a5c2187039f77a0508f75e21715",
+    "app.js": "f205c2ba5ef348b5a262d63c202d6c82bf5e0ee8fcda8b723178790b559b72af",
+    "author-workspace.js": "80094fe301b35653fc382ed81f839bae6670204ce0108d88a5045e79d6605c53",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "knowledge-workspace.js": "8e097f4a0b2ab8844ee87f979d8babb17163c9eb776339460d52a055880fc953",
+    "writing-inbox.js": "92b80a216f2849cb3ae2fc8a831cc9b3118349ff6a7620a7f9fd5c7af44e2dfd",
+    "scripts/publish_audit_archive.cjs": "a84c20d4e467697d4774f869cec72d8571642b34ac29aa279469cea85c6e5fc4",
+    "scripts/release_verification.cjs": "fee4a94d1dc388af120067cc15198b904d8a4d8230ff40e3b69af3e8aada5185",
+    "tests/agent_chat_browser_regressions.cjs": "73a15f3a3a30ff19a28d33f453c84914d23bdd15d2ec4ed5ebcab1b854776472",
+    "tests/agent_chat_flow_browser_regressions.cjs": "45ddc4de6feacd51b95c177eae6ad7831c28b93fbeddcabe7868abb5d0faab61",
+    "tests/agent_settings_browser_regressions.cjs": "d4b53003596d5a744ad63da2880c4424f5d8d9dbfd8e3485c3b47103539cbf1f",
+    "tests/analysis_guidance_browser_regressions.cjs": "a0d7ea66457bb77060e2c990a428d7af1931df8fc603918bf63e8171b677db62",
+    "tests/author_workspace_lifecycle_browser_regressions.cjs": "b4da23063bbb46a4e2db7b22c723361bdbe11aef31f9fc8286556d669a78796e",
+    "tests/desktop_author_flow_regressions.cjs": "651d46fd838c2e037458c3db57e00e4dbf5d8fccc2dbfd36eea782d4998fdb0d",
+    "tests/editor_preferences_browser_regressions.cjs": "a3fc5b4dacbc41ca14b6b8d14b75e54050b09f3fb9750b0e4d5544c9018f95b7",
+    "tests/editor_sync_fixtures.cjs": "e63c47079c73ec3859ac2f429da02d7ac8944f4d081047a57b98357233625525",
+    "tests/export_override_browser_regressions.cjs": "40b3296307aab830a02ad3b01eaafaf6c72910a556c296c91951bbc28382c619",
+    "tests/frontend_browser_regressions.cjs": "61f6eb933f0bd609862ca39e12c4f8771c98b851ef925fc28315dd2d26e2eac8",
+    "tests/instruction_draft_browser_regressions.cjs": "ed364be018c2fcd230125606a69f1e8f687bb25a8392242d9da041647ab0c4d3",
+    "tests/knowledge_inbox_browser_regressions.cjs": "bbb69087619acd4192f588fabf8f34b67bc7c02ff1ae4fa240359b30af7fdd07",
+    "tests/material_dependency_browser_regressions.cjs": "60013d8f38fec783bb04add426b25780d374d88c3d868df3865378e5bc4c39d6",
+    "tests/model_settings_browser_regressions.cjs": "d7318e1251e206ef149fcbc59497860369c7eee428143478d5ffb81b58c02bbf",
+    "tests/planning_browser_regressions.cjs": "4e6bb2546e262de8b5ff9b383891011394a02fd3de7111514b5e9923e137cff5",
+    "tests/portable_backup_browser_regressions.cjs": "af0894a29d784cbbe590d536cf083db50ecbe9b89e9fe650df6fefb5cd97bbae",
+    "tests/reference_passages_browser_regressions.cjs": "3ba2117af5c508f1f0800335a6e415337b60c92476b0c80966224b553e3e1fb5",
+    "tests/search_browser_regressions.cjs": "2cb2ffeaf0140684229abfb7b4c9c19921b2c328a3ad9e519c2c376c7cf1240f",
+    "tests/workbench_scope_browser_regressions.cjs": "9273e113f8175981a8ff699bdd736a3390d45f4bb7b1f4e4dbf73d2cd569867e",
+    "tests/writing_agent_browser_regressions.cjs": "26acf4e6630fcc418e48f9ca712a3e9f7f9c6ee4dc2b6a41b9df68c60c121568",
+    "agent-chat.css": "f33bbd02b68bb91744cfeb1a173c48a9cf03081a12e213f30c08882a46c6a098",
+    "agent-settings.css": "ef0943a2a47d6c83c364582f909fca4ed342f5464953ce30deeb4c467934a682",
+    "editor-preferences.css": "4f9ccbefa0f98f2abf7072177c80e30b07d14880cacaa93535067e395f2b0472",
+    "knowledge-workspace.css": "f933d46852a21eb4747482ad9683696d0123a07d039677918c71b76e5b9ce576",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    ".github/workflows/ci.yml": "2d2a02b1c6dc70b99b24e6e1c940edd1bd192ad0fdd973f71fdaacf4cd9aa5fc",
+    "requirements.txt": "cfdc1c5a6c68f7b6736219d00ff4d84b12ae6829754717591b537c838a24bfd7",
+    "index.html": "4c1451998698b547a13f6ae925c859b60cb13eeffba8a8bda13c884615acae5c"
+  },
+  "auxiliary_schema_sha256": {
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0"
+  },
+  "commands": [
+    {
+      "name": "Python runtime",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/01.log",
+      "sha256": "686560bcd94a5a3fe8187b7c4fc49beaff41c87eccb79908cd3da863ec30e52e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python syntax",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: agent-chat.js",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/03.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: agent-settings.js",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/04.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: app.js",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/05.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: author-workspace.js",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/06.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: editor-sync.js",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/07.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: knowledge-workspace.js",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/08.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: writing-inbox.js",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/09.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: scripts/publish_audit_archive.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/10.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: scripts/release_verification.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/11.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/agent_chat_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/12.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/agent_chat_flow_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/13.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/agent_settings_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/14.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/analysis_guidance_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/15.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/author_workspace_lifecycle_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/16.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/desktop_author_flow_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/17.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/editor_preferences_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/18.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/editor_sync_fixtures.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/19.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/export_override_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/20.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/frontend_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/21.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/instruction_draft_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/22.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/knowledge_inbox_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/23.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/material_dependency_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/24.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/model_settings_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/25.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/planning_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/26.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/portable_backup_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/27.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/reference_passages_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/28.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/search_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/29.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/workbench_scope_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/30.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/writing_agent_browser_regressions.cjs",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/31.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/agent_chat_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/32.log",
+      "sha256": "d9b0c7a3df8039ec1cf85b1e46ee75df4828c1b9ebe9dab35ae59b5f5536709e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/agent_settings_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/33.log",
+      "sha256": "ba2be65526a578e00b68da21bbdc986f9bae6a1cd0041b409a569fc4a726a4ab",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/ai_contract_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/34.log",
+      "sha256": "8b75c2bc56cbf983b7765a5c2ad4114b5b8a10b57fe78ef14b53ab2cf7e52c14",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/ai_queue_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/35.log",
+      "sha256": "4a04916669647c48e92b565af674062ef8fbdbf97574f914006d0cd621d17abd",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_candidate_reuse_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/36.log",
+      "sha256": "5b772669f7b63290fae8a3173f06d621a307f555402ed9721d588d24cceba935",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_candidate_typed_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/37.log",
+      "sha256": "24815c33560a2d1f890ed5d0e5c28878dc9f551db398d0dfa8506e4d8f16d424",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_character_identity_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/38.log",
+      "sha256": "1df996a53faeb6295f8dfdbc9e5e267a48f6e7d150de39a6b4491810c34e74c5",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_guidance_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/39.log",
+      "sha256": "61e5470633e01a7ef1b1780233d60515441c31d54056f7dc568db7a2b43927bc",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_partial_source_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/40.log",
+      "sha256": "14e13ef35cacac924848ccf4ebb67fd27506f8f9cb016b4a8b01fcf7e0f529c4",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/assertion_workflow_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/41.log",
+      "sha256": "f928a0f9b810b27e694e8cf54d596b092dca1ca2f6b67ce67c4ab888a1f9ed49",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/author_resolution_material_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/42.log",
+      "sha256": "a7d339f6575d548ec7f6120ab31346c31402b560797f796faa0086871522afb3",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/backup_recovery_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/43.log",
+      "sha256": "08e98b224e529713c14d782f45fe918d3191f3c3a0725bfac9916a9593a48669",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/blueprint_guidance_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/44.log",
+      "sha256": "e52e32309e38a9d222fda7934c1f9942e47ce01b5e915f1ab5af53e13b094311",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/branch_cas_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/45.log",
+      "sha256": "0359306c74cfbbde209dee76b360600ed8949eae0b394084054dbb661706a3e8",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/candidate_revision_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/46.log",
+      "sha256": "e61d674d05c029fc74868666868808a6245c26772829e54adbc22150c150f03d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_analysis_workflow_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/47.log",
+      "sha256": "5d042e17832f25e204368e8d5ea666f11c806a88d0a520358a27d59cbc378eea",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_commit_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/48.log",
+      "sha256": "39ef8effec3e3616523d9b6fc1b34eac94276444a1a8b6c34d0171d47825bdb7",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_deletion_dependency_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/49.log",
+      "sha256": "f8cb7f5bbbcaacb51a0de35b3ec3d54a4a9b6a340615cbb2b147775f58849171",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/character_state_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/50.log",
+      "sha256": "b52a87e64f051b4197009a8027a72822d96c6c21b808ca1ace30c021d189e39f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/context_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/51.log",
+      "sha256": "f9c48d3a5ad3086ac14ac5d124e1f05fa4074c4dd3cd769284d0ce0d7af6c05f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/context_pipeline_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/52.log",
+      "sha256": "a141d60415733fbdcaaa9f4d9c7a22123575739dfe078c95b4ef32db38351afa",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/context_scope_intersection_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/53.log",
+      "sha256": "8edad9a13899ca2d26d686fbc1220db5c16974964414910e1e45e165a023d6ef",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/corrupt_import_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/54.log",
+      "sha256": "eefafcc9e77e8f31048a5e06f3fdffad5cf4be2390706cb695db50d96a2512e8",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/frontend_story_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/55.log",
+      "sha256": "f3b5a383a38b5df89b8a5a741d134caf2865968a83ee801f9d56e71783f9370d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/guidance_alias_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/56.log",
+      "sha256": "2c5c65680883d0aede120ad0b81aa1512c21e5b6066c790b0e33a7af4e383f5d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/guidance_scope_change_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/57.log",
+      "sha256": "21b8211f5f220051dba09f317022967d4c72c9d5efd3b0716c80fc146a05b810",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/import_archive_lifecycle_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/58.log",
+      "sha256": "0e030dca78d495ad7d6c50ab96a0a4e5e7517f7890ed3f243006d34e54a593d0",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/knowledge_inbox_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/59.log",
+      "sha256": "466d0180e5039f0f428ac726c116f141b8fdff47bc69e6fdd51c1023c9334b35",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/legacy_deleted_dependency_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/60.log",
+      "sha256": "8d84e5fb927cb740e3e74ea404bad7f5d30939ee3b90ed2862f03e64bdf5c7ab",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/literary_evaluation_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/61.log",
+      "sha256": "356e20f5b64d84ed828bf1581ad8029c1d86996cb00bd31b950bb4a84f699f7d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/longform_knowledge_scope_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/62.log",
+      "sha256": "debeb762ed918ac104a48ef89b105b4ba6e02d87ac98774b4f02e05792549b52",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/manuscript_import_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/63.log",
+      "sha256": "fe2903df874e55b4893c5d3666452e7717c16f2da70ddc21302cbfc2e551075a",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_dependency_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/64.log",
+      "sha256": "0760557c53d2daa3335a38f4d8e6d96183cf9e105f6c5706919cb6263655d5dd",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_evidence_compat_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/65.log",
+      "sha256": "a9f2f76a47808caf6ee8bb99eac194224027530bc3fac7b4d1fc8f177f62452b",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_legacy_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/66.log",
+      "sha256": "38af9ea11d3c87b956d1de1ebd7e0373a86633f31d5503d02cab060bcf66b0f2",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_scope_order_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/67.log",
+      "sha256": "083377cefcd5ac65ae5f955e3563abe7581ead71e6aacc5a1155bdda5242a32e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/memory_candidate_evidence_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/68.log",
+      "sha256": "71a139adb0be052e9cfcb3adb3442cbe0659b0aadaf7d37f3de611fbd8a638c4",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/model_settings_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/69.log",
+      "sha256": "b6bcc875907f86333b3c0706ec6b394f63ba1827b3d4648da9d4c9663abe0ddd",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/nested_record_scope_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/70.log",
+      "sha256": "7951bea90d1e719e3890607c77fa639f9137d905d346afb49f87c63c0662cbc7",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/output_contract_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/71.log",
+      "sha256": "bf7c525d87dfe7479980e18a04462e55e7b8edf300c9514cce109bdeb921793e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_backup_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/72.log",
+      "sha256": "cfdce7464cb4052bc1ddd33d45ac94409e6eb99952d4f36f033d9a454911ff9b",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/73.log",
+      "sha256": "b219a9dad87f9c09ab057eb0ddda309ce0705f2345f1ff4e6f1876ac396e0bfb",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_workflow_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/74.log",
+      "sha256": "43d701244bd4cc1a552f77a899a314d4917deb0d1bc0a8af3526b31ad76afe07",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/portable_backup_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/75.log",
+      "sha256": "3264ea11b6ee6ffc19aad336537659a1d0899c3447ed2a47814e008d86f9e08e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/portable_backup_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/76.log",
+      "sha256": "c9386ebc968289f252813a94c29baaaa4056881da934adcd885021f5f3bebd4c",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/projection_health_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/77.log",
+      "sha256": "550514b638212ebfd4eb80cef917ce41bd0328c781aade68095067731cf3d836",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/prose_output_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/78.log",
+      "sha256": "ac643527c8988ad93f15214a14d7ce5005ba67f44253d4a2768881f91dc044e1",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/provider_protocol_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/79.log",
+      "sha256": "1c4fd69dd73f9822b3821909c4053f21a195583a9a34bef7fa5ed12e0ea83fab",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/provider_queue_integration_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/80.log",
+      "sha256": "8031083a5c963bfa3885b79f7e96e29117108dff82a869ced66d24a662a3b329",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/publication_assistant_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/81.log",
+      "sha256": "29b236984fc969ead68b28118dd399d5b5792f439c8880ca332129a420188c9d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/range_patch_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/82.log",
+      "sha256": "2d535c74805d2a0cba75fa371d385af5fd28a86206a7e2a38eda3a0cf4f90875",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/record_knowledge_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/83.log",
+      "sha256": "02441d0b4fa8c231f6585339222496874f25037eebb54adda3d50e7255bb95a4",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/record_scope_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/84.log",
+      "sha256": "ccebc21da8dfdca7a6e28fe3802cb59c818aed37ee10bfc62a9fce60ed7be0fe",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/reference_passages_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/85.log",
+      "sha256": "ddfa1caefbc35aad61516643b059f8806000de381a3118b0b3054e155e5dbf9e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/reference_passages_integrity_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/86.log",
+      "sha256": "c33feae379ea8cc2a23ffc246729bc982478bbdcfc89fb9c7c81703b29edae40",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/repository_privacy_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/87.log",
+      "sha256": "ea6a4509f9eff4bb309eb062b05fe8c049edd0dd8a0ab4299747b153cb5a9eba",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/reversible_patch_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/88.log",
+      "sha256": "ec094ec2b2e12c111c52a560acef190fcc8c297de506fe165bae7fba690ecdb1",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/review_guidance_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/89.log",
+      "sha256": "8d25e89f5905528b80dcdb73c4b68dde11c384d0c5f7c92b3d658c0faed4ca27",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/runtime_continuity_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/90.log",
+      "sha256": "e133fc381e951f5ea451dd0417f4fd798a829e74cbe8756fc4596513b3d4cc05",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/schema_negative_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/91.log",
+      "sha256": "7f379a12412c05812f19c88576f9da7d44b61daee8bdb5c9c3f106c025f62eb1",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/search_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/92.log",
+      "sha256": "8963a51eb95503945d83097fb3fa7c5f47c2b5f0b57e06516c369ca68593417d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/story_review_publication_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/93.log",
+      "sha256": "bb289cb18880843eebf2f3c0f9a7768447db939b989d299ef901830a5cd24415",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/story_review_repair_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/94.log",
+      "sha256": "4e87c29ee405e061419a635c5f70d64fbc5429b1141759681836dae6e3365b34",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/story_structure_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/95.log",
+      "sha256": "cf449612fca44712c1cff369a93427009ed1d958ef7cd3e0a2ebedbbbcb194ab",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/stream_resume_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/96.log",
+      "sha256": "4d0ca061e7493233ce0a6fea78a5bbcaffc1bba5434f0ef56adcf62cc504bb3e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/strict_feature_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/97.log",
+      "sha256": "71e19fd5b5e061097a4940fa3952f9d0ce8a505c10557d57098da57abdc3c02b",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/task_parameter_http_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/98.log",
+      "sha256": "c1c7946d9625df99d7fa01d2ca044582981b924d6ca61b9cda317214e25412e8",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/workspace_workflow_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/99.log",
+      "sha256": "db4fc2e15f44f26b1e65ef9d10195724a27b123ff8df9496e09d6978f0c32145",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_agent_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/100.log",
+      "sha256": "15ae35b7af612642dcc6046c03dc905dd18767ef6b128e0e36c04c91b19400ab",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_agent_planning_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/101.log",
+      "sha256": "96ecae50ba4189f9502a558490e89628d92b1f3d59c9982e4442a0e8337b618a",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_agent_service_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/102.log",
+      "sha256": "6e82c6670a6fb91fe255b072da1e9fab3a059c871ca8d3d24127d42c1a66f81c",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_inbox_fixtures.py",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/103.log",
+      "sha256": "a22d2a851f48b01e058397bc7066500542de78145aa66894f3c8621a6a1ce2c8",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Fixed evaluation",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/104.log",
+      "sha256": "f7b6eac76fd9791d57e252dc464b29c22532cdf1ec5c92ed9e955d06c792010c",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Editor merge regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/105.log",
+      "sha256": "5ea90e71073f2cca49d0b5326ad68391752df3abea950f668f24b6204b5b4c57",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: agent_chat_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/106.log",
+      "sha256": "0e084984454c08f2b8638b0a4f9884121b573d0385d4a18996a1c4b0a594bc01",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: agent_chat_flow_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/107.log",
+      "sha256": "0447b82c2ed45c89fde7a484e67672b74737713595dee4f9085bfb53b95bd299",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: agent_settings_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/108.log",
+      "sha256": "b0782d1a04eaaa099c79f3ea7b56e67ec875f5d6ace152fadc5d4b30315ea9aa",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: analysis_guidance_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/109.log",
+      "sha256": "5fd5c1065ba7e36f0388d7a2f47bb1269ecf618706fb7bac89e7260957d1613c",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: author_workspace_lifecycle_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/110.log",
+      "sha256": "993489e7aacbf90859d8c92ccf0cd172544d31f4026e85f7d6c4350d916b3459",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: desktop_author_flow_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/111.log",
+      "sha256": "d4a3e94f5c29823a97f46218b954732afdfce35a08ed81067660c8ff0f71ce90",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: editor_preferences_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/112.log",
+      "sha256": "347a341fa3a725d9d96c41c83c4df75df318bb2431b3a30af74e6476f632ec86",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: export_override_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/113.log",
+      "sha256": "4efc51f27e155131dec4dc46d984892ffdc3022d13f0cac67ff16e9dcacdfba2",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: frontend_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/114.log",
+      "sha256": "4e3cb665e7dab820b8b16d080dc8fdfa689896ca35e9a95727b8e5fda50fa4b4",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: instruction_draft_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/115.log",
+      "sha256": "50be2dbf90e540d05ff6dfded74de9c82f27aef9c8e971c16891aaee5b2d75da",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: knowledge_inbox_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/116.log",
+      "sha256": "8803fb68df639e9f15f992c0c56c1d1b19902ad4cc8723dcd4966d99118bb671",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: material_dependency_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/117.log",
+      "sha256": "b586f9180cfaeab9b1b8c6294691cdd555a0e34079c8b4ec8fb75ae8ca51c608",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: model_settings_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/118.log",
+      "sha256": "d8422060bdf2cb22cb661db2e53ca9f00d75ad625bb40c29857cea8d5ad321fe",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: planning_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/119.log",
+      "sha256": "08bbe85cce330276c247c6ffe5d71685f20f081de081157839cb24e7f1ede55a",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: portable_backup_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/120.log",
+      "sha256": "2ff8cc95e3ff17d9dc993cc9305c1533857e032f6757e37073d58ac490d6e60a",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: reference_passages_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/121.log",
+      "sha256": "07304eae9a56d7d6441b087c0372af6430fecfd16a1131c28a7824ab604417e1",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: search_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/122.log",
+      "sha256": "f1889620a6ef714a5e7f36b0e9d4ed4fcfbf1ccbbabe705b584e59bd64367d23",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: workbench_scope_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/123.log",
+      "sha256": "1cd48a0a695a1bd5782e41d075e361244a87a47bd8f47658ac5f4a644f3f1d79",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: writing_agent_browser_regressions",
+      "file": "artifacts/release-verification-agent-chat-release-20261016-04/124.log",
+      "sha256": "f52894dd14145244d500d666308af5a30662a3e1749d0f6c954d03a39398a2be",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    }
+  ],
+  "structured_fixtures": [
+    {
+      "name": "agent-chat-http",
+      "count": 28,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-http-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "4c7fce01658dde0bca330f8092cb6c03c8005b87da4ec718b4b36d0b5c62bb14",
+      "local_sha256": "4c7fce01658dde0bca330f8092cb6c03c8005b87da4ec718b4b36d0b5c62bb14",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true,
+      "local_provider_calls": 18
+    },
+    {
+      "name": "chapter-deletion-dependencies-http",
+      "count": 5,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/chapter-deletion-dependencies-http-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "294678db3a3de2b7203873cbed58a91db33ba7a90a7b5442008bf5797bf44beb",
+      "local_sha256": "294678db3a3de2b7203873cbed58a91db33ba7a90a7b5442008bf5797bf44beb",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "legacy-deleted-dependencies-http",
+      "count": 49,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/legacy-deleted-dependencies-http-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "ef1b4205be2697f61f1bf53c134d3195d7b79757c11a5d3014c27a182af32666",
+      "local_sha256": "62aa94116d44d6b5d7dee8e9733ff9d1710dc8e1d6f715d924aa74c953d1d0b8",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "portable-backup-helpers",
+      "count": 43,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-helpers-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "8105fdaba74f6d553806cca6244f1af7657bd3cb0257d1efec64a05ed1ab129c",
+      "local_sha256": "8105fdaba74f6d553806cca6244f1af7657bd3cb0257d1efec64a05ed1ab129c",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "portable-backup-http",
+      "count": 41,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-http-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "0ae4fbaac1d1cbea65dd21efb40da3c1ea19d797f9842332451128eadd32fa18",
+      "local_sha256": "0e8b1623825636e33a7c7f4a40f683fc82f18cce9509d25356879dd73e149254",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "reference-passages-http",
+      "count": 36,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-http-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "3977319c6ea3627e152e2c31d757325a52130158877598d0cea4c69757d9bf79",
+      "local_sha256": "3977319c6ea3627e152e2c31d757325a52130158877598d0cea4c69757d9bf79",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "reference-passages-integrity-http",
+      "count": 13,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-integrity-http-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "bcd16f696db94792c56a7e642eece6a2f4daa9529085376bf8b3b4012a9116c1",
+      "local_sha256": "bcd16f696db94792c56a7e642eece6a2f4daa9529085376bf8b3b4012a9116c1",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "task-parameters-http",
+      "count": 12,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/task-parameters-http-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "2ab62ca3f25cdb5f396b5a6132d37ca7afd02076425ad74574e033261b776dae",
+      "local_sha256": "2ab62ca3f25cdb5f396b5a6132d37ca7afd02076425ad74574e033261b776dae",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true,
+      "local_provider_calls": 5
+    }
+  ],
+  "new_python_method_inventory": [
+    {
+      "script": "tests/agent_chat_fixtures.py",
+      "class_name": "ChatTests",
+      "tests": 28,
+      "method_names": [
+        "test_changed_source_blocks_queued_dispatch_and_proposed_action",
+        "test_chat_without_a_chapter_sends_only_minimal_verified_context",
+        "test_concurrent_action_confirmations_create_one_writing_session",
+        "test_concurrent_duplicate_messages_create_one_metered_job",
+        "test_confirmed_writing_actions_enter_existing_durable_workflows_once",
+        "test_crossed_chat_marker_is_rejected_before_provider_dispatch",
+        "test_dismissed_actions_require_no_calls_and_cannot_be_confirmed",
+        "test_forged_reference_quote_returns_conflict_before_task_creation",
+        "test_inflight_session_rejects_a_second_distinct_message",
+        "test_interrupted_or_invalid_model_reply_cannot_create_actions",
+        "test_invalid_message_inputs_do_not_write_or_dispatch",
+        "test_manuscript_change_during_reply_cannot_publish_stale_proposals",
+        "test_matching_tampered_reference_snapshots_still_fail_before_dispatch",
+        "test_missing_connection_creates_no_job_or_quota_and_no_offline_reply",
+        "test_missing_persisted_turn_ends_job_without_provider_dispatch",
+        "test_modified_reference_quote_is_rejected_before_dispatch",
+        "test_no_chapter_chat_cannot_propose_unsourced_writing_tasks",
+        "test_other_projects_and_branches_cannot_read_or_submit_chat_artifacts",
+        "test_proposals_wait_for_confirmation_and_open_does_not_consume_quota",
+        "test_public_list_and_get_do_not_expose_context_prompts_or_credentials",
+        "test_queued_cancel_releases_quota_and_does_not_resend_same_request",
+        "test_real_stream_reply_preserves_prose_and_dispatch_audit",
+        "test_reference_only_chat_drops_actions_that_require_unseen_full_chapter",
+        "test_restore_is_read_only_and_local_connection_is_not_transferred",
+        "test_running_cancel_retains_unknown_billing_and_never_retries_automatically",
+        "test_selected_polish_creates_one_scoped_job_with_exact_quote",
+        "test_session_creation_and_message_submission_are_idempotent",
+        "test_unexpected_worker_failure_closes_chat_and_preserves_billing_evidence"
+      ],
+      "source_method_names_match_log": true,
+      "unittest_summary_matches": true
+    },
+    {
+      "script": "tests/agent_settings_fixtures.py",
+      "class_name": "AgentSettingsTests",
+      "tests": 13,
+      "method_names": [
+        "test_agent_and_main_probe_share_daily_quota",
+        "test_canceled_before_send_releases_shared_slot",
+        "test_configuration_change_during_probe_does_not_overwrite_latest_settings",
+        "test_default_inherits_main_and_never_exposes_plaintext_key",
+        "test_failed_protocol_and_identity_checks_never_report_healthy",
+        "test_independent_connection_preserves_main_and_frozen_credentials",
+        "test_inherited_probe_expires_when_main_connection_changes",
+        "test_key_files_are_private_and_references_cannot_cross_projects",
+        "test_partial_usage_keeps_connection_verified_and_charge_unknown",
+        "test_probe_records_dispatch_before_send_and_only_updates_agent_settings",
+        "test_same_settings_and_key_preserve_probe_but_connection_changes_clear_it",
+        "test_switching_modes_keeps_independent_connection_and_key",
+        "test_validation_accepts_zero_and_rejects_unsafe_or_unknown_values"
+      ],
+      "source_method_names_match_log": true,
+      "unittest_summary_matches": true
+    }
+  ],
+  "browsers": [
+    {
+      "name": "agent_chat_browser_regressions",
+      "cases": 9,
+      "case_names": [
+        "切换功能页保留同一个聊天面板和未发送草稿",
+        "1440、1280、1920电脑布局无横向溢出，正文结果按需展开",
+        "切换作品与前端分支分别恢复各自草稿，不把旧稿写入新作品",
+        "会话创建回应丢失时复用原身份，消息保存丢失后重试不重复发送",
+        "新对话未发送草稿刷新后恢复，旧会话历史仍可打开",
+        "正文选区附带已保存版本与Unicode范围，可预览和移除",
+        "请求延迟时新输入和切换作品的草稿不被旧回应清除",
+        "停止与动作确认通过真实请求入口，失败时不跳转或改稿",
+        "未知回复结束等待，确认中步骤可恢复且不能误放弃"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/agent_chat_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "aa1c2ec6e916a051579514acca3f12492af93d50e66bd4f3ca72e41e25484e39",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero"
+    },
+    {
+      "name": "agent_chat_flow_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "持续对话通过真实聊天服务保存，普通讨论不创建写作任务",
+        "聊天步骤确认后建立写作任务，正文比较采纳再接续记忆与审稿",
+        "选区修订回到原章比较，仅替换引用内容并保留其余正文",
+        "作者改稿后旧聊天建议被拒绝，不产生额外写作任务",
+        "停止迟到回复、重启会话恢复与切作品隔离均由真实服务处理"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/agent_chat_flow_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "de06518f0e2c7602d39c222ecb6ab55e4a5b1af903085641365833c892b7749c",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero",
+      "local_provider_calls": 9
+    },
+    {
+      "name": "agent_settings_browser_regressions",
+      "cases": 4,
+      "case_names": [
+        "总管默认继承主模型，真实探测后主设置变化立即撤销旧实测状态",
+        "保存独立模型不发送请求，密钥只在本机保存且公共设置不泄露凭据",
+        "主连接保存和检测事件只刷新总管摘要，保留尚未保存的独立密钥及模型",
+        "切换模式保留独立模型，浏览器存储和服务日志不含保存及未保存密钥"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/agent_settings_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "09a5f8fcda7b97541968ca464ae5e760ce6bd9bc6716d034f13eb967b5eec218",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero",
+      "local_mock_model_requests": 2
+    },
+    {
+      "name": "analysis_guidance_browser_regressions",
+      "cases": 3,
+      "case_names": [
+        "1440电脑窗口只改蓝图前提，旧章后分析只读且强制确认409无写入",
+        "1280乘900电脑窗口只改创作约定，旧分析禁用保存并允许重新提取",
+        "当前分析通过实际页面依次确认回顾交接和记忆，自身保存不使报告过期"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/analysis_guidance_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "5f4f866f8258cd4b5dc0a9760a7f8abd01f9a28af28e0628a39ab4f9a5d3d90a",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero",
+      "local_provider_calls": 3
+    },
+    {
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "cases": 17,
+      "case_names": [
+        "五章规划归档首章仍五章，已有正文目标场景视角卷身份完整保留",
+        "归档跳过已完成后续章，刷新重复归档不会追加空章",
+        "无后续章仅新建一次，保存失败恢复复用身份且新章目标不覆盖交接",
+        "归档新章保存等待切章，迟到成功回应不强行切回",
+        "new保存后的origin读取失败重开不重复提交",
+        "new保存后的target读取失败重开不重复提交",
+        "new保存后的both读取失败重开不重复提交",
+        "copy保存后的origin读取失败重开不重复提交",
+        "copy保存后的target读取失败重开不重复提交",
+        "copy保存后的both读取失败重开不重复提交",
+        "import保存后的origin读取失败重开不重复提交",
+        "import保存后的target读取失败重开不重复提交",
+        "import保存后的both读取失败重开不重复提交",
+        "参考导入保存后回读失败，重试只打开参考库",
+        "导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝",
+        "新建作品200完整字符名称可保存，超限不会发出创建请求",
+        "已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/author_workspace_lifecycle_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "c481624a42dccbc1a097e26b4c9e56a72bf06c4a22f2a8783de561077efd03b2",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported",
+      "local_provider_calls": 1
+    },
+    {
+      "name": "desktop_author_flow_regressions",
+      "cases": 7,
+      "case_names": [
+        "作者通过书架创建作品并真实填写五章、记忆确认、审稿和归档",
+        "第1章埋、第3章推进、第5章回收原句可定位且刷新后原稿完整",
+        "删除回收原句后真实终稿和导出拒绝，其他四章逐字保留",
+        "恢复原句仍需作者重新确认原链接，不能靠恢复文字自动放行",
+        "1280电脑窗口保留五章原稿与终稿入口，编辑区没有横向溢出",
+        "终稿通过后完稿状态持久保存，完稿期间不能再归档创建章节",
+        "真实下载Markdown和EPUB均含五章原稿，空白交接章不进入出版文件"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/desktop_author_flow_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "df53a0344c54497b1e48ef998ad68e5e53113447769075f1633c198997804135",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported"
+    },
+    {
+      "name": "editor_preferences_browser_regressions",
+      "cases": 10,
+      "case_names": [
+        "1440x1000 与 1280x800 阅读偏好即时应用，不替换正文节点或修改稿件",
+        "切章分别恢复选区方向、正文滚动和编辑区滚动，按旧编辑框身份保存",
+        "同章重新绘制保留光标、选区与滚动，刷新后恢复本机偏好与位置",
+        "切换真实作品后各自恢复位置，切换前的位置不会写到另一作品",
+        "同一章节编号在不同前端分支隔离，恢复主线不套用另一分支位置",
+        "删除身份或同名新章不继承其他章位置，正文变化不恢复旧选区",
+        "证据、审稿和全文搜索的明确原句定位优先于历史阅读位置",
+        "存储写入失败时设置与切章仍可用，并明确提示未能记住",
+        "存储读取和写入都被禁止时能够打开稿件并调整阅读设置",
+        "阅读操作不产生正文版本、写接口或模型调用"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/editor_preferences_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "08f652519c0ecc14a95fdafd29394471c0239c62915abc9df528885165a751a0",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero"
+    },
+    {
+      "name": "export_override_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "没有作者理由时真实页面和下载接口都阻断未审稿文稿",
+        "七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算",
+        "从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留",
+        "同一中文理由可实际下载EPUB，包内原稿及审计与Markdown一致",
+        "导出后改稿会使旧中文理由失效，两种格式重新要求作者确认"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/export_override_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "a628e353e0eae01222c764f23969f423ca1480f99cf99da2dd7b1c9c9fb76db0",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported"
+    },
+    {
+      "name": "frontend_browser_regressions",
+      "cases": 53,
+      "case_names": [
+        "慢保存继续输入，新文字落库且版本连续推进",
+        "断网不会假报已保存，恢复后保留并保存草稿",
+        "粗体、引用、场景分隔和撤销真正修改并保存正文",
+        "请求等待时切章，迟到候选保持来源身份且单次采纳",
+        "emoji选区润色只替换选中范围",
+        "连续20轮写作、切章、实际生成与单次采纳保持完整",
+        "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+        "结构候选更新场景计划并保持正文与作者决定",
+        "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+        "截断任务在无缓存窗口完整恢复只读片段，已知用量可手动重试",
+        "缺少流式结束标记的未知结果可回看片段，不显示重发且拒绝过期来源",
+        "只有本机分片账本时只读恢复未知结果，读取中断可续读且不会再次调用模型",
+        "未完成的结构分析和JSON正文保留原始片段，只读复制且无法整理或采纳",
+        "长章无选区润色不会全文覆盖",
+        "两窗口同句冲突展示双方并可手工合并",
+        "两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段",
+        "两窗口合并后撤销本页改稿并重做，两次都保留另一页新增段落",
+        "同起点插入与删除双方向显示双方稿件，选择后保存及撤销重做不丢字",
+        "重做插入遇到另一页同起点删字时保留正文和重做记录，恢复后可继续重做",
+        "粗体撤销后接收另一页新改稿，快捷键重做和撤销仅变化粗体",
+        "另一页覆盖本页撤销位置时拒绝操作，保留正文和可重试的撤销记录",
+        "真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存",
+        "自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章",
+        "拒绝记忆后新浏览器仍回读真实作品",
+        "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+        "语义审稿显示原句并保存作者解释，改稿后报告过期",
+        "多问题审稿明确选择原句，精确修订第二重复句并重新审稿",
+        "超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿",
+        "整理超限候选保留父原文，双击仅一次调用且合限子候选等待明确采纳",
+        "手工编辑过的父候选禁止模型整理，正文和原候选均继续保留",
+        "整理确认期间原稿变化会阻止发送，过期候选保留供阅读",
+        "整理回应丢失后刷新只读取已有任务，保持请求身份且不重复模型调用",
+        "模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用",
+        "关闭思考设置遇到非空思考字段，正文保留且采纳和整理均禁用",
+        "队列先完成后人工编辑，迟到流式分片不覆盖候选、缓存或原稿",
+        "1280×800电脑窗口无横向溢出，编辑和生成控件可用",
+        "复制作品的完整历史候选同步只读标记，旧完整缓存也不能整理或采纳",
+        "两作品切换隔离，卷章场景保存后建立目录",
+        "电脑端四阶段规划中途刷新和失败重做，最终采用蓝图不改变已写正文",
+        "同一时刻连续点击打开两书，最终作品与缓存完全隔离",
+        "旧作品读取成功与错误迟到，均不改变当前正文、缓存和保存状态",
+        "旧作品模型设置迟到，当前模型身份保持正确",
+        "服务回应作品身份错误时拒绝覆盖，恢复后仍为原书",
+        "设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型",
+        "电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关",
+        "旧书预览拆分合并导入独立作品，原作品保持原稿",
+        "作为参考来源导入、阅读和按原句搜索不改变本书正文",
+        "完整备份下载与恢复副本保留正文和参考来源",
+        "200字作品名恢复可读写，读取失败后只重开已建立副本且不提前报成功",
+        "恢复成功回复后原作和副本读取同时失败，重开仍只有一次恢复写入",
+        "含emoji的名称按完整字符恢复，刷新与默认复制都能打开且保留原稿",
+        "200字作品名在大小电脑窗口中保留写作入口，导航独立滚动且不遮挡正文",
+        "设定的揭晓章节和知情人物经页面保存刷新后仍限制实际写作材料"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/frontend_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "2e3f5819d78ad162374a5bfb7f23e309071f881790130d8b4088e3b6c9cb0af0",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported"
+    },
+    {
+      "name": "instruction_draft_browser_regressions",
+      "cases": 11,
+      "case_names": [
+        "切页查看设定与刷新后保留当前章任务及完整要求",
+        "不同章节任务草稿互相隔离，刷新仍回到该章草稿",
+        "两部作品各自保留要求，离开再回来不会串用",
+        "同作品同章的合成分支身份具有独立草稿",
+        "旧作品已卸载控件的迟到输入和清空事件不会改写任一作品草稿",
+        "程序写入要求后重新渲染或立即刷新仍保存原控件身份",
+        "显式清空恢复续写，刷新不复活旧要求且其他章节和作品不受影响",
+        "损坏或不支持的草稿被忽略，不影响编辑器和原稿",
+        "浏览器存储失败时同页保留要求并提示，恢复存储后无需重新输入即可补存",
+        "已保存生成任务继续使用原冻结要求，后改草稿和刷新不重发模型",
+        "两种电脑尺寸下清空与生成控件可见且互不遮挡"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/instruction_draft_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "b166d94d3f96aa588549b2ac9b5d28c3330ee495367726658d4c77e3127561bb",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported",
+      "local_mock_model_requests": 1
+    },
+    {
+      "name": "knowledge_inbox_browser_regressions",
+      "cases": 17,
+      "case_names": [
+        "打开知识关联保留正文 DOM、选区方向与两层滚动",
+        "知识独立分页、出入链跳转与未来秘密范围清楚可见",
+        "候选和已确认来源显示完整 emoji 原句，定位按 Unicode 字符验证",
+        "点击定位前重新读取来源，已变原句阻止跳转且保留当前选区",
+        "原句复核期间切标签、刷新、关闭或切页后，迟到结果不能继续导航",
+        "知识读取失败显示未核实与重试，不伪装为零条来源",
+        "知识迟到响应在关闭、切章和切作品后不复活",
+        "关系删除导致页码越界时回到最后有效页，不留下虚假的空页",
+        "全书待办完整分类计数、三页任务无重漏，桌面布局无横向溢出",
+        "超过最近五十条的旧写作任务能从待办精确打开且刷新仍只展示目标",
+        "章后记忆按选中分析编号打开，独立记忆和审稿均有真实入口",
+        "执行结果未知只可查看和打开章节，不自动重试或产生模型请求",
+        "待办读取失败和坏计数显示尚未核实，恢复后重新呈现完整数量",
+        "较早的顶部待办摘要迟到，不能覆盖已经读到的新列表数量",
+        "离开待办或切作品后迟到列表不会覆盖新页面或另一本书的计数",
+        "各类待办详情请求未完成时离开页面，迟到结果不能导航或弹出旧记录",
+        "浏览只读操作不修改正文版本，也不派发模型请求或报浏览器错误"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge_inbox_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "3eb8fbda681e45583d2480eec6554fd8a258a4c4ddd22365c978f4d73f56e712",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero"
+    },
+    {
+      "name": "material_dependency_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "1440电脑端生成完整候选，尚未采纳时原稿保持不变",
+        "资料变化后真实任务回读只读原因，禁止采纳整理但可复制并刷新保留",
+        "1280乘900电脑窗口回看相同旧候选，禁用动作和可复制原文均保留",
+        "旧章后分析仍可读报告，资料变化后确认禁用且直接确认接口拒绝写入",
+        "真实材料窗口排除设定后该设定变化不阻断新候选，仍可比较并单次采纳"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/material_dependency_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "abf2afc01d9d1af8e130d41b638e00b362a5f96a07916332557a5f1176b23799",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero",
+      "local_provider_calls": 3
+    },
+    {
+      "name": "model_settings_browser_regressions",
+      "cases": 20,
+      "case_names": [
+        "只保存设置不调用模型，电脑两种宽度表单均无横向遮挡",
+        "合格默认模型检测即刻更新设置和助手状态，刷新保留同次结果",
+        "最近失败替换旧成功，跨页和刷新均显示失败且不重发模型",
+        "回传模型不一致保留双方名称，不能显示所选模型检测成功",
+        "只有一字的完整stop回复保留完成证据，但页面持续显示不合格",
+        "关闭思考仍返回思考字段时不通过，页面和记录不展示思考内容",
+        "另一窗口修改设置使旧检测失效，页面回读当前模型且不报成功",
+        "同一作品保存新设置后，迟到旧检测不能覆盖页面内存或后续保存",
+        "同一作品迟到旧保存响应不能覆盖新读取，后续保存不回写旧模型或调用模型",
+        "设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置",
+        "已发出的旧保存响应在离开设置页后不写回全局设置或状态",
+        "设置PUT和检测在队列等待期间变旧时不发送旧操作",
+        "保存后的状态读取等待期间切换作品，不向另一作品发送检测",
+        "检测完成后的状态读取迟到，不向另一作品页面回写旧成功",
+        "九种用途模型与原始参数逐项保存，两种电脑尺寸全部控件互不遮挡",
+        "用途温度零保留，空白删除数值覆盖，刷新后隐藏支持参数保持",
+        "回顾与检查按整对象供分析审稿继承，显式子用途只覆盖全局且空白不制造对象",
+        "单用途恢复图标清除整个参数对象，模型及其余八用途保留且刷新不复活隐藏字段",
+        "用途思考开关与强度互换仅保存一种形式，空白继承且其他参数不改",
+        "用途数值不合格时表单拒绝发送，任意有效小数温度可以保存"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/model_settings_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "e8cc48909ee93a584475c36584c2aa501bb6209030fb2f8d49cd5dbac175edb7",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported"
+    },
+    {
+      "name": "planning_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "同一规划输入框连续两次自动保存不会丢第二次修改",
+        "采用规划等待期间切页返回仍锁定输入，结束后新输入正常保存",
+        "规划保存失败后刷新仍能恢复本地规划草稿并阻止静默离开",
+        "两标签同字段规划冲突保留双方并按作者选择保存",
+        "第二套规划物化只新增章节并保留第一轮章节全部内容"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/planning_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "bdb9326a647d49fcdea33866ce96e5b9e11c13d9ab8d058e921cb085a862c604",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported"
+    },
+    {
+      "name": "portable_backup_browser_regressions",
+      "cases": 21,
+      "case_names": [
+        "60表合成源服务真实下载完整ZIP后关闭，目标目录启动前为空",
+        "1440×1000文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+        "1280×900文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+        "1280×800长文件名及200字作品名无横向溢出且确认控件可点击",
+        "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+        "取消和已知预览重新选择只释放服务器文件，不建立作品",
+        "迟到A预览不能替换B，A与B服务器文件最终都释放",
+        "预览响应迟到时close使窗口失效，不能应用原文件",
+        "预览响应迟到时project使窗口失效，不能应用原文件",
+        "预览响应迟到时branch使窗口失效，不能应用原文件",
+        "双击确认只发一次恢复，正在保存时不能修改标题或重复提交",
+        "保存响应丢失后同一身份重试只返回原副本，浏览器不保存ZIP内容",
+        "页面刷新且服务重启后重新选择先取消再读回执，只能打开已保存副本",
+        "副本已保存后origin读取失败只重开同一身份且不再次建立",
+        "副本已保存后target读取失败只重开同一身份且不再次建立",
+        "副本已保存后both读取失败只重开同一身份且不再次建立",
+        "重新打开已保存副本时保留另一页真实编辑的离线草稿，不把旧稿写到新作品",
+        "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+        "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+        "预览响应尚未到达时刷新仍释放上传前身份，迟到响应不能占用服务器槽",
+        "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/portable_backup_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "f8420d68704c769dc653517b0f6ace451d31e176d5332ea8c11df4d88e667c6a",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero",
+      "local_provider_calls": 0
+    },
+    {
+      "name": "reference_passages_browser_regressions",
+      "cases": 15,
+      "case_names": [
+        "选择和两种预览只读取参考原句且不写持久存储或数据库",
+        "单段替换撤回保持完整原句900字符表情边界可选且901字符合成响应禁选",
+        "刷新与换作品分支章节清空同章重绘保留且没有跨书引用",
+        "参考库搜索结果可直接选用并返回原写作章",
+        "旧搜索迟到不能覆盖新查询关闭弹窗或切走再返回不能复活",
+        "参考预览失效不会落到离线材料或发送模型任务并保留选择",
+        "旧完整预览迟到不能覆盖后来新选择或重新弹出旧材料",
+        "不支持的写作任务阻止引用提交网络失败保留本次引用",
+        "续写预览与模型完整参考一致202成功清本次引用原稿仅确认后增加",
+        "先选正文再选参考返回仍保留润色选区三个入口一致且仅替换选区",
+        "长整章润色材料预览避免请求地址超限且完整提示保留全部原稿和参考",
+        "202后状态读取失败仍清当次参考并恢复已保存候选",
+        "迟到202仅消费发送快照而不清后来新选参考",
+        "切章再返回后迟到202不会重开旧候选或消费新参考",
+        "两种电脑尺寸引用工具和原生成清空控件完整可见互不遮挡"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/reference_passages_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "662c2b5a77eff0cb2e74f9c22b8ed15830af328cc20c5ba42b738b4a7cc1b3e1",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero",
+      "local_mock_model_requests": 5
+    },
+    {
+      "name": "search_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "后端搜索失败时实际回退到本地草稿并可搜别名",
+        "后端返回损坏响应时回退到本地草稿",
+        "较早的搜索响应不会覆盖后来提交的关键词",
+        "搜索结果显示精确原文并按 Unicode 字符范围定位到章节",
+        "章节正文改变后，旧搜索证据不能定位到错误位置"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/search_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "f130ec2a8d8a58b7327afbe057212e805429833f37e3c9fb044b86e1dea6f064",
+      "retained_original_sidecar": false,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "not_reported"
+    },
+    {
+      "name": "workbench_scope_browser_regressions",
+      "cases": 13,
+      "case_names": [
+        "1440 与 1280 电脑设定保存只刷新资料，保留正文节点、选区、滚动和专注状态",
+        "设定在知识库页面保存后仍刷新列表",
+        "先后查看两次证据时只显示最新请求，关闭后不重建正文",
+        "证据迟到时 page 切换使旧结果失效",
+        "证据迟到时 chapter 切换使旧结果失效",
+        "证据迟到时 project 切换使旧结果失效",
+        "证据迟到时 branch 切换使旧结果失效",
+        "已经打开的旧作品证据失效后不能通过遗留按钮修改正典",
+        "同一作品正常证据审查仍保存且只保留一个新弹窗，取消理由不提交",
+        "持久化请求排队期间切版本时不发送到新版本",
+        "持久化 mutation 响应迟到时不合并进另一版本",
+        "持久化 state-read 响应迟到时不合并进另一版本",
+        "长篇目录切到后章和前章后保持当前章可见，规划回读保留目录位置"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/workbench_scope_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "281ff37af60ab0b06f656b688f5bc542c80bab596c192800a04052c6f8f27d60",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero"
+    },
+    {
+      "name": "writing_agent_browser_regressions",
+      "cases": 16,
+      "case_names": [
+        "桌面三栏工作台接入真实章节、人物资料、上下文和专注模式",
+        "已保存总管计划在正文旁恢复，不调用模型，刷新后保留同一进度",
+        "启动后后台生成正文，重复确认只复用原任务",
+        "现有比较采纳接通总管，自动整理记忆与审稿共三次",
+        "检查模式仅调用两次，服务重启后沿已存计划继续",
+        "已启动任务停止后不追加调用，迟到内容不进入正文",
+        "模型连接断开后保留任务，不自动重发",
+        "紧凑电脑宽度和长文本无溢出，页面没有脚本错误",
+        "1280电脑正文、资料和总管仍保持三栏，当前稿改动使依据过期",
+        "章后记忆和审稿延迟回应在页面或作品切换后不弹出旧报告",
+        "作品切换后迟到的旧任务列表不能覆盖新作品",
+        "整章修订忽略编辑选区，明确采纳后替换全章并继续记忆审稿",
+        "全书规划任务刷新可恢复，不依赖当前打开的章节",
+        "四阶段规划逐次确认，完整采用前不改变蓝图或正文",
+        "蓝图变化后旧规划停止执行，恢复只读任务没有启动或采纳按钮",
+        "全书完稿后工作台和空章节状态均隐藏新建入口，直接操作也不新增"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/writing_agent_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "public_sha256": "3ace6b69c81576b3fcb7cc0a503193ef2293e86ff7b1b12ce3bb7147043d141f",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true,
+      "paid_call_counter": "reported_zero",
+      "local_provider_calls": 14
+    }
+  ],
+  "screenshots": [
+    {
+      "suite": "agent_chat_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-1280x900.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "dcfd0716806fba349366a27f5f4074d055faf2ead6a4113380947c6b2ea0867e",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-1440x1000.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "c03998997cb86729aa329ffe03e4ae30d84e809dc05d87c5ef87895b80b67939",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-1920x1080.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "da01852bb07904c43142637290e44e5911755ab72643833039a7d6731a27ad65",
+      "width": 1920,
+      "height": 1080,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-results-1280x900.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "f6abc740f716dac2bccc6afdd58b623f1263989366526e239ffd8aacd0e9b4b8",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-results-1440x1000.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "378eab4e8ec054f1ed0407a8ef494cc4bf2ca1fcca80b95c65d4809bb67c8d52",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-results-1920x1080.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "b619498deb4797bfdcdd637db9cba0cd989ea9837af830c52e9727855927455c",
+      "width": 1920,
+      "height": 1080,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_flow_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-discussion-1440x1000.png",
+      "name": "agent_chat_flow_browser_regressions",
+      "sha256": "0369f378cdf13981c0ab34187c02b77298b307d69d07ec72c227a646da9da0cd",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_flow_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-compare-1440x1000.png",
+      "name": "agent_chat_flow_browser_regressions",
+      "sha256": "65b335e0b75612325827fa11efa90d2b66faa7ccf8d85daef53eb043d7ee914d",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_chat_flow_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-selection-applied-1440x1000.png",
+      "name": "agent_chat_flow_browser_regressions",
+      "sha256": "2cdf667ee16dd80f87c0bfe82b1c4933e03a1863ccc0395d9c94a7644e1eb99a",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "agent_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-settings-desktop.png",
+      "name": "agent_settings_browser_regressions",
+      "sha256": "35dc4c8d15c38f2d6898d94a0b2a020389c6130afbee554cda74eb3c8c409852",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "analysis_guidance_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-analysis-guidance-stale-desktop.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "6eba504e2568fecaaab0c5f8ac8c3245a3c9c6bb1594f6738b5d3ba411fdb019",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "analysis_guidance_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-analysis-guidance-stale-1280x900.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "09a6ce264d0dfade892f4b6220681cca7f816e33e80aa26f84d27fe8b6bd4ac8",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-planned-next-chapter.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "e4e272fa59540aa2f8de8e3b4d6d8990f6a052ed75b86a3afeed15d49709b110",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-planned-next-chapter-1280x900.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "16b4d12cf6c45b9c298fc00c39564e43f78657d1a6aca9924170e4594c820bc7",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-stale-review-author-explanation.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "dfff68941d9a34e6a1999d2aceaa07d85b74f3967adad2b704048e8049455d52",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "dbf42b250d0705c40aa8042b3cb165339e89e898c1d7feabe6368d227f22fdbf",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-compact-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "adf5e73a87f55ede49857ba6bf9de3a9bd6f583ecd1430c210123bcb7de3b670",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-stale-payoff-blocked.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "873f973e85c491179cd22f0f8ed30b94187777f4770494dd03156fd0c5a9fb26",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-final-complete.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "34d203e66267039dab5666c616feaffd48cf196106ca10dd7d4730f267e01f51",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "editor_preferences_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-editor-preferences-1440x1000.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "c45c614b523254629c4b29549388fbcb95fd7fb9d3772059ee952044c2ff2827",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "editor_preferences_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-editor-preferences-1280x800.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "d489bcca287cc5dbb82fa8935a7ce6bd88c7e1992ae763a9da5893aef42a6aca",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "export_override_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-export-override-desktop.png",
+      "name": "export_override_browser_regressions",
+      "sha256": "4ffe2f5a2e83ecf6e035073f31adc6ab8e81fc6e8a3af9b247cb3b4263306688",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "9fe441780ac27662df57b9cb23d0588eea2f7d6cb8c95b906b43b8f51fc2ba3b",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-compact-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "08060d92e1d805f9d31ca4108ca5273b9627a8395bbce39cfcf37d114fda5b8a",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-planning.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "2e3feb7267d517880a4a21fdf820a37c75b441a8f3b392374b1f325eda6080d9",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-revised-candidate.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "8ca26d92c6cc7ff205bfca13d01a4813b406f8ec2e090af31f606ee35381bf42",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-interrupted-fragment.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "a103ce075ab5f62445093dc87076dacc724e9fa6ffa8d7f01b94a8df4bc7769a",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-interrupted-task.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "5273c19e445a791df20d112f715b329637190d2981b4b4c57be5043503537cca",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-backup-open-failure.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "d7aaf21250041722f29eafe3240e1eae0d42601301b841a9b9f325990d9daf8c",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-backup-restored.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "ead831a2a067454e35caca9ecdf427246f63267bc8fc96251dfd3739447bb5cf",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "019c30d9211b86d123af5638b112d73df9a1f13799da2a5a444f488b125da335",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-compact-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "70b13729d959f519c6afa03a707ce39b14e3cb5723b26d956a73c5c680dc1aca",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-short-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "59fbf4c8f6d860d1eb4eff95fd9dcf9303b4256fa6caf5e45d783b4600422740",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-record-knowledge-scope.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "d5f52d94deaea1a887db686fa158d946fa1671d66470a62c93eacd85c84f6f9d",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-review-repair.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "db8965af9da354b28326e1e93afe15d82d39ecfc2712df2ff51f6d5796b347ae",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "instruction_draft_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-instruction-draft-desktop.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "70ab5e0e51e411adefb258525304742229c792b8798204db366cae0bf8dc0cba",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "instruction_draft_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-instruction-draft-desktop-1280x900.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "cadb7acd190d49d8033f596d25813075efbb4d791f8af8ba56d6a69c3c9104bc",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-knowledge-links-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "bbeba5733d04da4cdd943b2d7052bffad96cde951ff9fa6ff46834d7279415f1",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-knowledge-sources-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "261ccccb664eb84c6a1db885eb6c49def0119e9513732332721239c158d72e1d",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-inbox-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "1559fb63257382fd840ad30744474aeec062b184c004720410cd041d401c75e9",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-inbox-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "4590ba28faef937b1691b9d83a8388574c5b37e8408d2cd11b30ebfbee161883",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "material_dependency_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-material-stale-candidate-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "4d3f49b6c6f7e2e3417895d893652623ea9a0933778c55f5a962a1bc54210f2d",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "material_dependency_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-material-stale-candidate-1280x900.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "a126696b499b523431648a9c6711bd546d896a57f52ae798fdd154733df0420a",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "material_dependency_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-material-stale-analysis-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "85376ca015274aa2aefff5586d68d9d161b3afa262bb1635f741e5dc30087b03",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-model-settings-failed.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "07c282cd38412f4ed6918eae3b8e9a214919200414110c3e64ffe65030abb950",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-model-settings-success.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "07c282cd38412f4ed6918eae3b8e9a214919200414110c3e64ffe65030abb950",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-settings.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "f809dc6df65b12fb6c77a210edf2593a3c81fe7ef3fe430edcec1cf847710e92",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-task-settings-1440x1000.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "02d07079057a53c462130fb81687388560900820865bc425f2bdad13e986d3de",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-task-settings-1280x900.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "ed352457f1df927094b4fb60bace56a7aa2b9408ca8c1601fc9ec2f18aac0fc6",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-task-settings-alias-inheritance.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "1764875b2630bd2c6a2212a1e56946151242cf964eba1542f943f7208546d253",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "planning_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-planning-second-round.png",
+      "name": "planning_browser_regressions",
+      "sha256": "b734a17eb171072bc73d8dc4fc9642a9be02a8eceddd40bfba12a7d15a746e3e",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-preview-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "80984e33e0772a27be92d80213a13d394037303659541da03845b6cb1094fb45",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-editor-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "1055a9fa23aa7c8870796271cf1ee96146c51a55e85068a7fb4fbeeb446cfe28",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-preview-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "df34530c8cd6013f2145a74d592dc537d60e88d34c960691cd23ff248f27b5e2",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-editor-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "f4c5a0b83743349b22de83b98d3f2eeb164732231247daea9fa3b41e6be55f48",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-long-title-1280x800.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "3fc5ed78b39e4276c6049ef6739eede539f4a1fe3898435341558e3d1c519ddc",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-saved-reopen.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "4e94d848f43acfc4dd7d0571ae031ee8610a3c157c7be67aea39e3b350d42599",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-pending-reloaded.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "3d34d21e43ed009d1ba107280660c94b5fce26b90da074cd9fe5f0445e53cb7a",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-status-saved.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "c633f8d8853b3bdb3bcf36aea789db314178b156ffb3b7bc355c96ee068d0a34",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "6a43a56ef1e3e3c762edd0f6e977963618a401265f2175ba6b64400d0c75abac",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "e4c993a3aea79d2205a50b97a7f977f48c907c8cbfd80b31802c1d333dd62df6",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-original-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "34c69a3b26d503599a250f7bcc9217ba3f78c21d05a6bad61088edac13d49a86",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-original-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "164f602f6fb986d9a934b60890e8e99081a0dada9252ebf5d083fcd6ac5e1b69",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-plan-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "3d7d84ed3f1390307d17b6b17ed718757ae6983fcce59d71992f91b9666f6005",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-complete-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "755ce485a28850f0aea35fd76b0b57b88ac74f269945f91bba034938610f8b02",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "c5242121803d107c097ef3c0de2ddcf3f8860e4bf52c76ab4dae5743970dbd59",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-workbench-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "f58d8125a1d793f062df0f4b8beb2a50415062c9f383312ea413d4f80a163bf5",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-workbench-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "7e090f913727399ce2f38fb4f2e60f130ca5983b129c4262ac548d890010409b",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-polish-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "87c63571c138be38a6fa34cc571d2b7f51c8ee8fd9a95045da55bca895657480",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-polish-compare-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "694144d63e8716b0d4bf56fa20fc0fc21265036e633b8ab02b9c375bfde58689",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-overview-confirm-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "63459e01e76ba1e5ecf46197d240fd28fca9208539d1212107d3d57f858ea1e8",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-full-plan-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "9d4eeef09e9cf2a220c855700839f312ee129600f658a4f5ed487babd02c4d63",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true,
+      "created_in_current_suite_window": true
+    }
+  ],
+  "attachment_inventory": [
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-http-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "agent-chat-http",
+      "sha256": "4c7fce01658dde0bca330f8092cb6c03c8005b87da4ec718b4b36d0b5c62bb14"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/chapter-deletion-dependencies-http-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "chapter-deletion-dependencies-http",
+      "sha256": "294678db3a3de2b7203873cbed58a91db33ba7a90a7b5442008bf5797bf44beb"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/legacy-deleted-dependencies-http-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "legacy-deleted-dependencies-http",
+      "sha256": "ef1b4205be2697f61f1bf53c134d3195d7b79757c11a5d3014c27a182af32666"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-helpers-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "portable-backup-helpers",
+      "sha256": "8105fdaba74f6d553806cca6244f1af7657bd3cb0257d1efec64a05ed1ab129c"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-http-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "portable-backup-http",
+      "sha256": "0ae4fbaac1d1cbea65dd21efb40da3c1ea19d797f9842332451128eadd32fa18"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-http-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "reference-passages-http",
+      "sha256": "3977319c6ea3627e152e2c31d757325a52130158877598d0cea4c69757d9bf79"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-integrity-http-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "reference-passages-integrity-http",
+      "sha256": "bcd16f696db94792c56a7e642eece6a2f4daa9529085376bf8b3b4012a9116c1"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/task-parameters-http-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "task-parameters-http",
+      "sha256": "2ab62ca3f25cdb5f396b5a6132d37ca7afd02076425ad74574e033261b776dae"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/fixed-evaluation-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "Fixed evaluation",
+      "sha256": "6d13ef526a865c6bd0474ccaff3b828c7e5f5d8ae0d40ea5f6ace1704b6da041"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent_chat_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "aa1c2ec6e916a051579514acca3f12492af93d50e66bd4f3ca72e41e25484e39"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-1280x900.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "dcfd0716806fba349366a27f5f4074d055faf2ead6a4113380947c6b2ea0867e",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-1440x1000.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "c03998997cb86729aa329ffe03e4ae30d84e809dc05d87c5ef87895b80b67939",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-1920x1080.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "da01852bb07904c43142637290e44e5911755ab72643833039a7d6731a27ad65",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-results-1280x900.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "f6abc740f716dac2bccc6afdd58b623f1263989366526e239ffd8aacd0e9b4b8",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-results-1440x1000.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "378eab4e8ec054f1ed0407a8ef494cc4bf2ca1fcca80b95c65d4809bb67c8d52",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-results-1920x1080.png",
+      "name": "agent_chat_browser_regressions",
+      "sha256": "b619498deb4797bfdcdd637db9cba0cd989ea9837af830c52e9727855927455c",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent_chat_flow_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "agent_chat_flow_browser_regressions",
+      "sha256": "de06518f0e2c7602d39c222ecb6ab55e4a5b1af903085641365833c892b7749c"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-discussion-1440x1000.png",
+      "name": "agent_chat_flow_browser_regressions",
+      "sha256": "0369f378cdf13981c0ab34187c02b77298b307d69d07ec72c227a646da9da0cd",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-compare-1440x1000.png",
+      "name": "agent_chat_flow_browser_regressions",
+      "sha256": "65b335e0b75612325827fa11efa90d2b66faa7ccf8d85daef53eb043d7ee914d",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-chat-selection-applied-1440x1000.png",
+      "name": "agent_chat_flow_browser_regressions",
+      "sha256": "2cdf667ee16dd80f87c0bfe82b1c4933e03a1863ccc0395d9c94a7644e1eb99a",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent_settings_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "agent_settings_browser_regressions",
+      "sha256": "09a5f8fcda7b97541968ca464ae5e760ce6bd9bc6716d034f13eb967b5eec218"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-agent-settings-desktop.png",
+      "name": "agent_settings_browser_regressions",
+      "sha256": "35dc4c8d15c38f2d6898d94a0b2a020389c6130afbee554cda74eb3c8c409852",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/analysis_guidance_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "5f4f866f8258cd4b5dc0a9760a7f8abd01f9a28af28e0628a39ab4f9a5d3d90a"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-analysis-guidance-stale-desktop.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "6eba504e2568fecaaab0c5f8ac8c3245a3c9c6bb1594f6738b5d3ba411fdb019",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-analysis-guidance-stale-1280x900.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "09a6ce264d0dfade892f4b6220681cca7f816e33e80aa26f84d27fe8b6bd4ac8",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/author_workspace_lifecycle_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "c481624a42dccbc1a097e26b4c9e56a72bf06c4a22f2a8783de561077efd03b2"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-planned-next-chapter.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "e4e272fa59540aa2f8de8e3b4d6d8990f6a052ed75b86a3afeed15d49709b110",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-planned-next-chapter-1280x900.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "16b4d12cf6c45b9c298fc00c39564e43f78657d1a6aca9924170e4594c820bc7",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-stale-review-author-explanation.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "dfff68941d9a34e6a1999d2aceaa07d85b74f3967adad2b704048e8049455d52",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/desktop_author_flow_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "df53a0344c54497b1e48ef998ad68e5e53113447769075f1633c198997804135"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "dbf42b250d0705c40aa8042b3cb165339e89e898c1d7feabe6368d227f22fdbf",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-compact-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "adf5e73a87f55ede49857ba6bf9de3a9bd6f583ecd1430c210123bcb7de3b670",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-stale-payoff-blocked.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "873f973e85c491179cd22f0f8ed30b94187777f4770494dd03156fd0c5a9fb26",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-final-complete.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "34d203e66267039dab5666c616feaffd48cf196106ca10dd7d4730f267e01f51",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/editor_preferences_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "08f652519c0ecc14a95fdafd29394471c0239c62915abc9df528885165a751a0"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-editor-preferences-1440x1000.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "c45c614b523254629c4b29549388fbcb95fd7fb9d3772059ee952044c2ff2827",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-editor-preferences-1280x800.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "d489bcca287cc5dbb82fa8935a7ce6bd88c7e1992ae763a9da5893aef42a6aca",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/export_override_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "export_override_browser_regressions",
+      "sha256": "a628e353e0eae01222c764f23969f423ca1480f99cf99da2dd7b1c9c9fb76db0"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-export-override-desktop.png",
+      "name": "export_override_browser_regressions",
+      "sha256": "4ffe2f5a2e83ecf6e035073f31adc6ab8e81fc6e8a3af9b247cb3b4263306688",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/frontend_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "frontend_browser_regressions",
+      "sha256": "2e3f5819d78ad162374a5bfb7f23e309071f881790130d8b4088e3b6c9cb0af0"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "9fe441780ac27662df57b9cb23d0588eea2f7d6cb8c95b906b43b8f51fc2ba3b",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-compact-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "08060d92e1d805f9d31ca4108ca5273b9627a8395bbce39cfcf37d114fda5b8a",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-planning.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "2e3feb7267d517880a4a21fdf820a37c75b441a8f3b392374b1f325eda6080d9",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-revised-candidate.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "8ca26d92c6cc7ff205bfca13d01a4813b406f8ec2e090af31f606ee35381bf42",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-interrupted-fragment.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "a103ce075ab5f62445093dc87076dacc724e9fa6ffa8d7f01b94a8df4bc7769a",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-interrupted-task.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "5273c19e445a791df20d112f715b329637190d2981b4b4c57be5043503537cca",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-backup-open-failure.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "d7aaf21250041722f29eafe3240e1eae0d42601301b841a9b9f325990d9daf8c",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-backup-restored.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "ead831a2a067454e35caca9ecdf427246f63267bc8fc96251dfd3739447bb5cf",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "019c30d9211b86d123af5638b112d73df9a1f13799da2a5a444f488b125da335",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-compact-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "70b13729d959f519c6afa03a707ce39b14e3cb5723b26d956a73c5c680dc1aca",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-short-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "59fbf4c8f6d860d1eb4eff95fd9dcf9303b4256fa6caf5e45d783b4600422740",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-record-knowledge-scope.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "d5f52d94deaea1a887db686fa158d946fa1671d66470a62c93eacd85c84f6f9d",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-review-repair.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "db8965af9da354b28326e1e93afe15d82d39ecfc2712df2ff51f6d5796b347ae",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/instruction_draft_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "b166d94d3f96aa588549b2ac9b5d28c3330ee495367726658d4c77e3127561bb"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-instruction-draft-desktop.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "70ab5e0e51e411adefb258525304742229c792b8798204db366cae0bf8dc0cba",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-instruction-draft-desktop-1280x900.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "cadb7acd190d49d8033f596d25813075efbb4d791f8af8ba56d6a69c3c9104bc",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge_inbox_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "3eb8fbda681e45583d2480eec6554fd8a258a4c4ddd22365c978f4d73f56e712"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-knowledge-links-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "bbeba5733d04da4cdd943b2d7052bffad96cde951ff9fa6ff46834d7279415f1",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-knowledge-sources-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "261ccccb664eb84c6a1db885eb6c49def0119e9513732332721239c158d72e1d",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-inbox-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "1559fb63257382fd840ad30744474aeec062b184c004720410cd041d401c75e9",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-inbox-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "4590ba28faef937b1691b9d83a8388574c5b37e8408d2cd11b30ebfbee161883",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/material_dependency_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "abf2afc01d9d1af8e130d41b638e00b362a5f96a07916332557a5f1176b23799"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-material-stale-candidate-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "4d3f49b6c6f7e2e3417895d893652623ea9a0933778c55f5a962a1bc54210f2d",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-material-stale-candidate-1280x900.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "a126696b499b523431648a9c6711bd546d896a57f52ae798fdd154733df0420a",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-material-stale-analysis-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "85376ca015274aa2aefff5586d68d9d161b3afa262bb1635f741e5dc30087b03",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/model_settings_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "model_settings_browser_regressions",
+      "sha256": "e8cc48909ee93a584475c36584c2aa501bb6209030fb2f8d49cd5dbac175edb7"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-model-settings-failed.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "07c282cd38412f4ed6918eae3b8e9a214919200414110c3e64ffe65030abb950",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-model-settings-success.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "07c282cd38412f4ed6918eae3b8e9a214919200414110c3e64ffe65030abb950",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-desktop-settings.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "f809dc6df65b12fb6c77a210edf2593a3c81fe7ef3fe430edcec1cf847710e92",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-task-settings-1440x1000.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "02d07079057a53c462130fb81687388560900820865bc425f2bdad13e986d3de",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-task-settings-1280x900.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "ed352457f1df927094b4fb60bace56a7aa2b9408ca8c1601fc9ec2f18aac0fc6",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-task-settings-alias-inheritance.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "1764875b2630bd2c6a2212a1e56946151242cf964eba1542f943f7208546d253",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/planning_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "planning_browser_regressions",
+      "sha256": "bdb9326a647d49fcdea33866ce96e5b9e11c13d9ab8d058e921cb085a862c604"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-planning-second-round.png",
+      "name": "planning_browser_regressions",
+      "sha256": "b734a17eb171072bc73d8dc4fc9642a9be02a8eceddd40bfba12a7d15a746e3e",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/portable_backup_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "f8420d68704c769dc653517b0f6ace451d31e176d5332ea8c11df4d88e667c6a"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-preview-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "80984e33e0772a27be92d80213a13d394037303659541da03845b6cb1094fb45",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-editor-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "1055a9fa23aa7c8870796271cf1ee96146c51a55e85068a7fb4fbeeb446cfe28",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-preview-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "df34530c8cd6013f2145a74d592dc537d60e88d34c960691cd23ff248f27b5e2",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-editor-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "f4c5a0b83743349b22de83b98d3f2eeb164732231247daea9fa3b41e6be55f48",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-long-title-1280x800.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "3fc5ed78b39e4276c6049ef6739eede539f4a1fe3898435341558e3d1c519ddc",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-saved-reopen.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "4e94d848f43acfc4dd7d0571ae031ee8610a3c157c7be67aea39e3b350d42599",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-pending-reloaded.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "3d34d21e43ed009d1ba107280660c94b5fce26b90da074cd9fe5f0445e53cb7a",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-portable-status-saved.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "c633f8d8853b3bdb3bcf36aea789db314178b156ffb3b7bc355c96ee068d0a34",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/reference_passages_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "662c2b5a77eff0cb2e74f9c22b8ed15830af328cc20c5ba42b738b4a7cc1b3e1"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "6a43a56ef1e3e3c762edd0f6e977963618a401265f2175ba6b64400d0c75abac",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "e4c993a3aea79d2205a50b97a7f977f48c907c8cbfd80b31802c1d333dd62df6",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-original-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "34c69a3b26d503599a250f7bcc9217ba3f78c21d05a6bad61088edac13d49a86",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-reference-passages-original-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "164f602f6fb986d9a934b60890e8e99081a0dada9252ebf5d083fcd6ac5e1b69",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/search_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "search_browser_regressions",
+      "sha256": "f130ec2a8d8a58b7327afbe057212e805429833f37e3c9fb044b86e1dea6f064"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/workbench_scope_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "workbench_scope_browser_regressions",
+      "sha256": "281ff37af60ab0b06f656b688f5bc542c80bab596c192800a04052c6f8f27d60"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/writing_agent_browser_regressions-python311-node24-agent-chat-release-20261016-04.json",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "3ace6b69c81576b3fcb7cc0a503193ef2293e86ff7b1b12ce3bb7147043d141f"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-plan-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "3d7d84ed3f1390307d17b6b17ed718757ae6983fcce59d71992f91b9666f6005",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-complete-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "755ce485a28850f0aea35fd76b0b57b88ac74f269945f91bba034938610f8b02",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "c5242121803d107c097ef3c0de2ddcf3f8860e4bf52c76ab4dae5743970dbd59",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-workbench-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "f58d8125a1d793f062df0f4b8beb2a50415062c9f383312ea413d4f80a163bf5",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-workbench-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "7e090f913727399ce2f38fb4f2e60f130ca5983b129c4262ac548d890010409b",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-polish-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "87c63571c138be38a6fa34cc571d2b7f51c8ee8fd9a95045da55bca895657480",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-polish-compare-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "694144d63e8716b0d4bf56fa20fc0fc21265036e633b8ab02b9c375bfde58689",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-overview-confirm-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "63459e01e76ba1e5ecf46197d240fd28fca9208539d1212107d3d57f858ea1e8",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-20261016-04-writing-agent-full-plan-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "9d4eeef09e9cf2a220c855700839f312ee129600f658a4f5ed487babd02c4d63",
+      "width": 1280,
+      "height": 900
+    }
+  ],
+  "preserved_previous_failure": {
+    "tag": "agent-chat-release-20261016-01",
+    "passed": false,
+    "file": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-release-20261016-01.json",
+    "sha256": "c509b0cb74f7e1f24d4403812b823655360745d417af4676473ab6eef664a34a",
+    "failed_checks": [
+      {
+        "name": "Python fixtures: tests/legacy_deleted_dependency_http_fixtures.py",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-01/60.log",
+        "sha256": "ab4daa834958119030301902bd508fab678cfb266562f9b2f7bca49476761715"
+      },
+      {
+        "name": "Python fixtures: tests/portable_backup_http_fixtures.py",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-01/76.log",
+        "sha256": "9835d800abde1ac6bb293373ee499326b35a95ab8eba8d983c06efbb14e60515"
+      },
+      {
+        "name": "Browser: model_settings_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-01/118.log",
+        "sha256": "9807a1d31771958230b7e8cd384c10aecdd46cb81cb6b67b9e1072724dee6a54"
+      },
+      {
+        "name": "Browser: portable_backup_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-01/120.log",
+        "sha256": "86c9d52529109bb50fb24c163f398e1524ee3bf98545f6e70e758b0914dbaf4d"
+      }
+    ],
+    "unchanged_artifacts": 89
+  },
+  "preserved_interrupted_release": {
+    "tag": "agent-chat-release-20261016-03",
+    "passed": false,
+    "acceptance_evidence": false,
+    "file": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-release-20261016-03.json",
+    "sha256": "c6f8e1f89b33e02c3e538c9677f45bfa1cc3602549a9db510e43ce9d87429168",
+    "source_before_after_current_match": true,
+    "passed_checks": 116,
+    "failed_checks": [
+      {
+        "name": "Browser: frontend_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/114.log",
+        "sha256": "66693e4448dc43bb7cf3aceed879e85921ceb61b4e1d7e0b78a6999db583b570",
+        "timeout": true,
+        "exit_code": null,
+        "signal": "SIGTERM",
+        "duration_seconds": 892.44
+      },
+      {
+        "name": "Browser: instruction_draft_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/115.log",
+        "sha256": "5561ce42ad570b81d9bc8d7c5120473e028ab057b0fd8bf2f0d804b1ea097963",
+        "timeout": true,
+        "exit_code": null,
+        "signal": "SIGTERM",
+        "duration_seconds": 1035.69
+      },
+      {
+        "name": "Browser: material_dependency_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/117.log",
+        "sha256": "025e324af0e9601585c901b4d666cdb0372f920e35dacd86a6978c1fe33ae5e1",
+        "timeout": true,
+        "exit_code": null,
+        "signal": "SIGTERM",
+        "duration_seconds": 1035.17
+      },
+      {
+        "name": "Browser: model_settings_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/118.log",
+        "sha256": "03294e72d363ecb8f2e25c2bfa7203ab685ba2af691e66989384a541a3e95ec6",
+        "timeout": true,
+        "exit_code": null,
+        "signal": "SIGTERM",
+        "duration_seconds": 1063
+      },
+      {
+        "name": "Browser: planning_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/119.log",
+        "sha256": "834b7c4bb73b9dee120745ad9d6a281e4f2fd6f7b45ed032dfb60ed5952b845a",
+        "timeout": true,
+        "exit_code": 1,
+        "signal": null,
+        "duration_seconds": 960.28
+      },
+      {
+        "name": "Browser: portable_backup_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/120.log",
+        "sha256": "560422560fc7862d734212052b4b66e6e642f31d3bf55cbc0cbf0c9a1505240b",
+        "timeout": true,
+        "exit_code": 1,
+        "signal": null,
+        "duration_seconds": 1043.8
+      },
+      {
+        "name": "Browser: workbench_scope_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/123.log",
+        "sha256": "3687a34aefb725dabb4c5ac0586d70d8db838b5e9c6c497e8194b951fe961ce8",
+        "timeout": true,
+        "exit_code": null,
+        "signal": "SIGTERM",
+        "duration_seconds": 1075.7
+      },
+      {
+        "name": "Browser: writing_agent_browser_regressions",
+        "file": "artifacts/release-verification-agent-chat-release-20261016-03/124.log",
+        "sha256": "6747ffac7455c05f3352ace53050f4075522af8a33bb4b511f7ad1e37fafe51f",
+        "timeout": true,
+        "exit_code": null,
+        "signal": "SIGTERM",
+        "duration_seconds": 1193
+      }
+    ],
+    "unchanged_artifacts": 76,
+    "limitation": "Retains timeout failures only; system-sleep causation is assessed separately."
+  },
+  "review_provider_calls": 0,
+  "review_paid_calls": 0,
+  "review_external_calls": 0,
+  "review_production_database_reads": 0,
+  "privacy": {
+    "private_absolute_paths_included": false,
+    "credential_patterns_found": false
+  },
+  "limitations": [
+    "Retained engineering evidence does not establish literary quality, first-tier ranking, production deployment or GitHub CI.",
+    "Some browser suites retain one source snapshot or no child hashes; the complete release before/after/current source guard covers them and each guard type is recorded.",
+    "The runner does not retain actual child argv; ordered check names, source inventory, exit results, local logs and exact sanitized tails are cross-checked.",
+    "PNG bytes, dimensions, original/public equality and current-suite modification times are checked; visual inspection is recorded separately.",
+    "Public JSON is scanned for private absolute paths and known credential patterns. No credential files or production database were read.",
+    "Existing paid/external counters are checked when present; loopback-only setup for new chat tests is also matched against reviewed source. This checker does not capture network traffic."
+  ]
+}

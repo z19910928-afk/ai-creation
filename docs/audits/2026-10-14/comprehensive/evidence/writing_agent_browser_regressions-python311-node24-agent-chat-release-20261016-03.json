@@ -1,0 +1,68 @@
+{
+  "passed": false,
+  "scope": "真实桌面 Chrome、隔离数据库、免费本机模拟模型；通过真实接口建立任务，再由页面验证启动、候选采纳、恢复和规划确认。持续聊天入口另由聊天专项覆盖。",
+  "cases": [
+    {
+      "name": "桌面三栏工作台接入真实章节、人物资料、上下文和专注模式",
+      "passed": true
+    },
+    {
+      "name": "已保存总管计划在正文旁恢复，不调用模型，刷新后保留同一进度",
+      "passed": true
+    },
+    {
+      "name": "启动后后台生成正文，重复确认只复用原任务",
+      "passed": true
+    },
+    {
+      "name": "现有比较采纳接通总管，自动整理记忆与审稿共三次",
+      "passed": true
+    },
+    {
+      "name": "检查模式仅调用两次，服务重启后沿已存计划继续",
+      "passed": true
+    },
+    {
+      "name": "已启动任务停止后不追加调用，迟到内容不进入正文",
+      "passed": true
+    },
+    {
+      "name": "模型连接断开后保留任务，不自动重发",
+      "passed": true
+    },
+    {
+      "name": "紧凑电脑宽度和长文本无溢出，页面没有脚本错误",
+      "passed": true
+    },
+    {
+      "name": "1280电脑正文、资料和总管仍保持三栏，当前稿改动使依据过期",
+      "passed": true
+    },
+    {
+      "name": "章后记忆和审稿延迟回应在页面或作品切换后不弹出旧报告",
+      "passed": true
+    },
+    {
+      "name": "作品切换后迟到的旧任务列表不能覆盖新作品",
+      "passed": true
+    },
+    {
+      "name": "整章修订忽略编辑选区，明确采纳后替换全章并继续记忆审稿",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-agent-browser-h4ugA1/writing-workbench-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-h4ugA1/writing-agent-plan-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-h4ugA1/writing-agent-complete-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-h4ugA1/writing-agent-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-h4ugA1/writing-workbench-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-h4ugA1/writing-agent-polish-compare-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-h4ugA1/writing-agent-polish-1280x900.png"
+  ],
+  "page_errors": [],
+  "paid_provider_calls": 0,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "error": "locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-view=\"assistant\"]')\u001b[22m\n\u001b[2m    - locator resolved to <button title=\"⌕写作总管\" class=\"nav-item\" aria-label=\"⌕写作总管\" data-view=\"assistant\">…</button>\u001b[22m\n\u001b[2m  - attempting click action\u001b[22m\n\u001b[2m    - waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m    - element is visible, enabled and stable\u001b[22m\n\u001b[2m    - scrolling into view if needed\u001b[22m\n\n    at ./tests/writing_agent_browser_regressions.cjs:283:115\n    at async test (./tests/writing_agent_browser_regressions.cjs:54:30)\n    at async main (./tests/writing_agent_browser_regressions.cjs:280:2)",
+  "server_log": "TP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:41+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:41+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:41+00:00] \"POST /api/writing-agent/agent_65f0e3c8f96841e19d5220908ac4e9dc/resume HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:41+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:41+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:41+00:00] \"GET /api/ai/runs/airun_1fd41d4ba0734c46b2a39cef654cb462/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:41+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-inbox?limit=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"POST /api/ai/runs/airun_1fd41d4ba0734c46b2a39cef654cb462/apply HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/context?chapter_id=ch_9fbad986a8fc487480e97824a9557265&task=continue&instruction=&materials=%7B%7D&retrieval_profile=%7B%22max_tokens%22%3A24000%2C%22chapter_top_k%22%3A20%2C%22recent_window%22%3A3%2C%22memory_top_k%22%3A60%2C%22record_top_k%22%3A40%7D HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-inbox?limit=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:42+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"POST /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"GET / HTTP/1.1\" 304 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T06:44:43+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n"
+}

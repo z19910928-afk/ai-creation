@@ -88,6 +88,12 @@ function saveStructuredEvidence(name, filename, value) {
 }
 
 const requiredScreenshots = {
+  agent_chat_browser_regressions: ['agent-chat-1280x900.png', 'agent-chat-1440x1000.png',
+    'agent-chat-1920x1080.png', 'agent-chat-results-1280x900.png',
+    'agent-chat-results-1440x1000.png', 'agent-chat-results-1920x1080.png'],
+  agent_chat_flow_browser_regressions: ['agent-chat-discussion-1440x1000.png',
+    'agent-chat-compare-1440x1000.png', 'agent-chat-selection-applied-1440x1000.png'],
+  agent_settings_browser_regressions: ['agent-settings-desktop.png'],
   knowledge_inbox_browser_regressions: ['knowledge-links-1440x1000.png',
     'knowledge-sources-1280x800.png', 'writing-inbox-1440x1000.png', 'writing-inbox-1280x800.png'],
   editor_preferences_browser_regressions: ['editor-preferences-1440x1000.png',
@@ -129,6 +135,9 @@ const optionalScreenshots = {
   portable_backup_browser_regressions: ['portable-browser-failure.png'],
 };
 const fixtureReports = {
+  'tests/agent_chat_fixtures.py': {
+    environment: 'MOYU_AGENT_CHAT_REPORT', name: 'agent-chat-http',
+  },
   'tests/portable_backup_fixtures.py': {
     environment: 'MOYU_PORTABLE_BACKUP_REPORT', name: 'portable-backup-helpers',
   },

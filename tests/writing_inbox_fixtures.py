@@ -240,6 +240,43 @@ class WritingInboxTests(unittest.TestCase):
         self.assertEqual(rows[owned]["session_id"], session)
         self.assertEqual(rows[owned]["status"], "requires_action")
 
+    def test_chat_jobs_never_become_writing_candidates_or_queue_attention(self):
+        chat_jobs, writing_jobs = set(), {}
+        for task in ("assistant_chat", "continue"):
+            for status, run_status, expected in (
+                    ("success", "success", "candidate_ready"),
+                    ("failed", "failed", "failed"),
+                    ("failed", "unknown", "unknown")):
+                job, _ = self.job(task=task, status=status, run_status=run_status)
+                if task == "assistant_chat":
+                    chat_jobs.add(job)
+                else:
+                    writing_jobs[job] = expected
+        before = self.snapshot()
+        for kind in ("all", "queue"):
+            with self.subTest(kind=kind):
+                result = self.inbox(kind=kind)
+                self.assertTrue(result["read_only"])
+                self.assertEqual(result["counts"]["queue"], 3)
+                rows = {item["job_id"]: item for item in result["items"]
+                        if item["kind"] == "queue"}
+                self.assertEqual(set(rows), set(writing_jobs))
+                self.assertTrue(chat_jobs.isdisjoint(rows))
+                for job, expected in writing_jobs.items():
+                    self.assertEqual(rows[job]["task"], "continue")
+                    self.assertEqual(rows[job]["title"], "续写候选")
+                    self.assertEqual(rows[job]["status"], expected)
+                    self.assertEqual(rows[job]["action"], "open_job")
+                    self.assertEqual(rows[job]["read_only"], expected != "candidate_ready")
+                if kind == "queue":
+                    self.assertEqual(result["total"], 3)
+                    self.assertFalse(result["has_more"])
+                serialized = json.dumps(result, ensure_ascii=False)
+                for private in (BODY, "PRIVATE_", "instruction", "context_json",
+                                "consent_json", "request_audit", "provider_config"):
+                    self.assertNotIn(private, serialized)
+                self.assertEqual(self.snapshot(), before)
+
     def test_adoption_receipt_and_decision_ledger_hide_finalized_candidates(self):
         applied, run = self.job()
         decided, other_run = self.job()

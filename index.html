@@ -8,6 +8,8 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="knowledge-workspace.css" />
   <link rel="stylesheet" href="editor-preferences.css" />
+  <link rel="stylesheet" href="agent-chat.css" />
+  <link rel="stylesheet" href="agent-settings.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -38,6 +40,7 @@
         <div class="sidebar-foot"><span class="status-dot"></span>数据保存在本机<div class="shortcut">墨屿</div></div>
       </aside>
       <main id="main" class="main"></main>
+      <aside id="agentChat" class="agent-chat" aria-label="写作总管对话"></aside>
     </div>
   </div>
   <input id="fileInput" type="file" accept="application/json" hidden />
@@ -46,8 +49,10 @@
   <div id="toast" class="toast" role="status"></div>
   <script src="editor-sync.js"></script>
   <script src="app.js"></script>
+  <script src="agent-settings.js"></script>
   <script src="author-workspace.js"></script>
   <script src="knowledge-workspace.js"></script>
   <script src="writing-inbox.js"></script>
+  <script src="agent-chat.js"></script>
 </body>
 </html>

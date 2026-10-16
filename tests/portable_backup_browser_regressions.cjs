@@ -21,7 +21,12 @@ if (fs.existsSync(reportPath)) throw new Error('Evidence exists; choose a new re
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const pendingKey = 'mo-yu-novel-v1:portable-restore-pending';
-const capturedTableCount = 57;
+const capturedTableCount = 60;
+const chatTableRows = {
+  app_agent_chat_session: 2,
+  app_agent_chat_turn: 5,
+  app_agent_chat_action: 4,
+};
 const sourceFiles = [
   'app.js', 'author-workspace.js', 'styles.css', 'index.html', 'server.py',
   'moyu_portable.py', 'moyu_backups.py', 'moyu_workspace.py', 'moyu_import.py',
@@ -594,19 +599,119 @@ async function lostApply(page, title) {
   return lost;
 }
 
+function assertRestoredChat(captured, restored, viewport, phase) {
+  const tables = captured.tables;
+  for (const [table, count] of Object.entries(chatTableRows)) {
+    assert.equal(tables[table].length, count, table);
+    const originalIds = new Set(sourcePayload.tables[table].map(row => row.id));
+    assert.ok(tables[table].every(row =>
+      row.project_id === restored.project.id && !originalIds.has(row.id)), table);
+  }
+  const sessions = tables.app_agent_chat_session;
+  const sessionMap = new Map();
+  for (const original of sourcePayload.tables.app_agent_chat_session) {
+    const matches = sessions.filter(row => row.request_id === original.request_id);
+    assert.equal(matches.length, 1);
+    const session = matches[0];
+    sessionMap.set(original.id, session.id);
+    assert.equal(session.title, original.title, 'ID-like session titles are plain text');
+    assert.equal(session.restored_read_only, 1);
+    assert.equal(session.branch_id, restored.branch_id);
+  }
+  const targetChapter = restored.chapters[0].id;
+  const turns = tables.app_agent_chat_turn;
+  const turnMap = new Map();
+  const statuses = [];
+  for (const original of sourcePayload.tables.app_agent_chat_turn) {
+    const matches = turns.filter(row => row.request_id === original.request_id);
+    assert.equal(matches.length, 1);
+    const turn = matches[0];
+    turnMap.set(original.id, turn.id);
+    const expectedStatus = ['queued', 'running'].includes(original.status) ? 'failed' : original.status;
+    statuses.push(turn.status);
+    assert.equal(turn.status, expectedStatus);
+    assert.equal(turn.session_id, sessionMap.get(original.session_id));
+    assert.equal(turn.branch_id, restored.branch_id);
+    assert.equal(turn.chapter_id, targetChapter);
+    for (const field of ['content', 'reply', 'request_hash']) {
+      assert.equal(turn[field], original[field], `chat turn ${field} is preserved`);
+    }
+    const originalSource = JSON.parse(original.source_json);
+    const turnSource = JSON.parse(turn.source_json);
+    const revision = tables.document_revision.find(row => row.id === turnSource.source_revision_id);
+    const originalRevision = sourcePayload.tables.document_revision.find(row =>
+      row.id === originalSource.source_revision_id);
+    assert.ok(revision && originalRevision, 'chat source revision exists in the restored copy');
+    assert.notEqual(revision.id, originalRevision.id);
+    assert.equal(revision.document_node_id, targetChapter);
+    assert.equal(revision.content_hash, originalRevision.content_hash);
+    const mapSource = source => ({...source, project_id: restored.project.id,
+      branch_id: restored.branch_id, chapter_id: targetChapter, source_revision_id: revision.id});
+    assert.deepEqual(turnSource, mapSource(originalSource));
+    assert.deepEqual(JSON.parse(turn.references_json),
+      JSON.parse(original.references_json).map(mapSource),
+      'selection ranges, source hashes, and quoted text survive both restores');
+    const context = JSON.parse(original.context_json);
+    context.project.id = restored.project.id;
+    context.current_chapter.id = targetChapter;
+    context.current_chapter.revision_id = revision.id;
+    context._agent_chat = {chat_session_id: turn.session_id, chat_turn_id: turn.id};
+    assert.deepEqual(JSON.parse(turn.context_json), context);
+    const job = tables.app_ai_job.find(row => row.id === turn.job_id);
+    assert.ok(job, 'each chat turn keeps its own restored job');
+    assert.notEqual(job.id, original.job_id);
+    assert.equal(job.task, 'assistant_chat');
+    assert.equal(job.status, expectedStatus);
+    assert.equal(job.chapter_id, targetChapter);
+    assert.deepEqual(JSON.parse(job.context_json), {...context, _restored_read_only: true});
+  }
+  const actions = tables.app_agent_chat_action;
+  assert.deepEqual(actions.map(row => row.status).sort(),
+    ['confirmed', 'dismissed', 'proposed', 'proposed']);
+  const originalAction = sourcePayload.tables.app_agent_chat_action.find(row =>
+    row.status === 'proposed');
+  const successTurn = turns.find(row =>
+    row.id === turnMap.get('portable-chat-turn-success'));
+  const actionSource = JSON.parse(successTurn.source_json);
+  for (const action of actions) {
+    assert.equal(action.session_id, successTurn.session_id);
+    assert.equal(action.turn_id, successTurn.id);
+    assert.equal(action.branch_id, restored.branch_id);
+    assert.equal(action.chapter_id, targetChapter);
+    for (const field of ['kind', 'label', 'instruction']) {
+      assert.equal(action[field], originalAction[field], `chat action ${field} is preserved`);
+    }
+    assert.deepEqual(JSON.parse(action.source_json), actionSource);
+    assert.deepEqual(JSON.parse(action.payload_json), JSON.parse(originalAction.payload_json));
+    assert.deepEqual(JSON.parse(action.result_json), action.status === 'confirmed' ? {
+      writing_session_id: tables.app_agent_session[0].id, chapter_id: targetChapter,
+    } : {});
+  }
+  results.chat_restores ||= [];
+  results.chat_restores.push({viewport, phase, table_rows: {...chatTableRows},
+    restored_read_only_sessions: sessions.length, turn_statuses: statuses,
+    action_statuses: actions.map(row => row.status).sort(),
+    original_text_and_selection_preserved: true, all_references_point_to_restored_copy: true});
+}
+
 async function main() {
   browser = await chromium.launch({
     headless: true, executablePath: process.env.MOYU_CHROME_PATH || undefined,
     args: ['--disable-background-networking', '--disable-component-update',
       '--disable-default-apps', '--no-first-run'],
   });
-  await test('57表合成源服务真实下载完整ZIP后关闭，目标目录启动前为空', async () => {
+  await test('60表合成源服务真实下载完整ZIP后关闭，目标目录启动前为空', async () => {
     const sourceDirectory = path.join(temporary, 'source');
     sourceService = await launchService('source', sourceDirectory);
     assert.equal(sourceService.initiallyAbsent, true);
     sourcePayload = await control(sourceService, 'capture', {project_id: 'portable-source-book'});
     assert.equal(Object.keys(sourcePayload.tables).length, capturedTableCount);
     assert.ok(Object.values(sourcePayload.tables).every(rows => rows.length > 0));
+    for (const [table, count] of Object.entries(chatTableRows)) {
+      assert.equal(sourcePayload.tables[table].length, count, table);
+    }
+    assert.equal(sourcePayload.tables.app_ai_job.filter(row => row.task === 'assistant_chat').length, 5);
+    assert.equal(sourcePayload.tables.app_ai_job.filter(row => row.task !== 'assistant_chat').length, 7);
     sourceState = await control(sourceService, 'state', {project_id: 'portable-source-book'});
     base = sourceService.base;
     const {context, page} = await openPage({width: 1440, height: 1000}, 'portable-source-book');
@@ -622,7 +727,7 @@ async function main() {
     assert.equal(archiveRaw.subarray(0, 2).toString(), 'PK');
     results.source_download = {bytes: archiveRaw.length, sha256: hash(archiveRaw),
       captured_tables: capturedTableCount, every_captured_table_nonempty: true,
-      real_browser_download: true};
+      chat_table_rows: {...chatTableRows}, real_browser_download: true};
     await context.close();
     await stopService(sourceService);
     sourceFileHash = hash(fs.readFileSync(sourceService.database));
@@ -647,7 +752,7 @@ async function main() {
         await page.locator('#portableRestoreTitle').waitFor();
         const selected = await page.evaluate(() => authorPortableDialog.preview);
         assert.equal(selected.counts.reference_documents, 2);
-        assert.equal(selected.counts.jobs, 7);
+        assert.equal(selected.counts.jobs, 12);
         assert.equal(selected.counts.planning_workflows, 3);
         assert.equal(Object.keys(selected.row_counts).length, capturedTableCount);
         for (const [table, rows] of Object.entries(sourcePayload.tables)) {
@@ -665,6 +770,8 @@ async function main() {
           sourceState.chapters.map(chapter => chapter.body));
         assert.ok(restored.chapters.every(chapter =>
           !sourceState.chapters.some(originalChapter => originalChapter.id === chapter.id)));
+        assertRestoredChat(await control(targetService, 'capture', {project_id: restoredId}),
+          restored, viewport, 'first_restore');
         assert.deepEqual((await api('/api/state')).chapters, original.chapters);
         assert.equal(await pending(page), null);
         assert.equal(postsSince(start).length, 1);
@@ -748,6 +855,8 @@ async function main() {
         const captured = await control(targetService, 'capture', {project_id: secondId});
         assert.equal(Object.keys(captured.tables).length, capturedTableCount);
         assert.equal(captured.tables.app_reference_document.length, 2);
+        assert.equal(captured.tables.app_ai_job.filter(row => row.task === 'assistant_chat').length, 5);
+        assert.equal(captured.tables.app_ai_job.filter(row => row.task !== 'assistant_chat').length, 7);
         assert.ok(captured.tables.app_ai_job.every(job =>
           !['queued', 'running'].includes(job.status) &&
           JSON.parse(job.context_json)._restored_read_only === true));
@@ -761,6 +870,7 @@ async function main() {
             sourcePayload.tables[table].map(row => row[field]));
           assert.ok(captured.tables[table].every(row => row.session_id === sessions[0].id));
         }
+        assertRestoredChat(captured, secondState, viewport, 'second_restore');
         results.restored_edits ||= [];
         results.restored_edits.push({viewport, first_project: restoredId, second_project: secondId,
           body_sha256: hash(body), two_real_downloads: true});

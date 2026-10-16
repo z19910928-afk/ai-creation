@@ -42,6 +42,8 @@ let authorAgentBusy=false;
 let authorAgentSequence=0;
 let authorWorkbenchContextSequence=0;
 let authorWorkbenchLibraryTab='chapters';
+let authorWorkbenchResultsOpen=false;
+let authorWorkbenchResultsSection='workbenchAgentSection';
 const authorEditorPreferenceKey=KEY+':editor-preferences:v1';
 const authorEditorPositionKey=KEY+':editor-positions:v1';
 const authorEditorPreferenceDefaults={font_size:16,line_height:2.05,content_width:880};
@@ -272,18 +274,23 @@ function authorAgentForm(compact=false){
 }
 
 function authorRevealWorkbenchSection(id,behavior='auto'){
- const scroll=document.querySelector('.workbench-rail-scroll'),section=document.getElementById(id);
- if(scroll&&section)scroll.scrollTo({top:section.offsetTop,behavior});
+ const panel=document.querySelector('#workbenchResults'),section=document.getElementById(id);
+ if(!panel||!section)return;
+ authorWorkbenchResultsOpen=true;authorWorkbenchResultsSection=id;panel.hidden=false;
+ panel.querySelectorAll('.workbench-rail-section').forEach(item=>item.hidden=item!==section);
+ panel.querySelectorAll('[data-rail-section]').forEach(button=>button.setAttribute('aria-selected',String(button.dataset.railSection===id)));
+ panel.querySelector('.workbench-rail-scroll')?.scrollTo({top:0,behavior});
 }
 
 function authorWorkbenchRail(){
- return `<aside class="workbench-assistant" aria-label="当前章节写作总管">
- <div class="workbench-assistant-head"><div><span class="workbench-agent-dot"></span><strong>写作总管</strong></div><button type="button" class="icon-btn" data-workbench-view="assistant" title="全部写作任务" aria-label="全部写作任务">↗</button></div>
- <nav class="workbench-rail-nav" aria-label="写作工具"><button type="button" data-rail-section="workbenchAgentSection">任务</button><button type="button" data-rail-section="workbenchCandidateSection">候选</button><button type="button" data-rail-section="workbenchContextSection">依据</button></nav>
+ return `<section id="workbenchResults" class="workbench-results" aria-label="写作结果" ${authorWorkbenchResultsOpen?'':'hidden'}>
+ <div class="workbench-results-head"><nav class="workbench-rail-nav" role="tablist" aria-label="写作结果">
+ ${[['workbenchAgentSection','任务进度'],['workbenchCandidateSection','正文候选'],['workbenchContextSection','本章依据']].map(([id,label])=>`<button type="button" role="tab" aria-selected="${authorWorkbenchResultsSection===id}" aria-controls="${id}" data-rail-section="${id}">${label}</button>`).join('')}</nav>
+ <button type="button" class="icon-btn" data-workbench-results-close title="收起写作结果" aria-label="收起写作结果">×</button></div>
  <div class="workbench-rail-scroll">
- <section id="workbenchAgentSection" class="workbench-rail-section"><div class="workbench-section-title"><h3>本章任务</h3><span>计划 → 写作 → 审稿</span></div>
- ${authorAgentForm(true)}<div id="agentSessions" aria-live="polite"><p class="workbench-empty">正在读取本章进度…</p></div></section>
- <section id="workbenchCandidateSection" class="ai-copilot workbench-rail-section"><div class="ai-copilot-head"><h3>AI 候选</h3><span class="ai-badge" id="aiBadge">${aiStatus.configured?'已配置':'未配置模型'}</span></div>
+ <section id="workbenchAgentSection" class="workbench-rail-section" ${authorWorkbenchResultsSection==='workbenchAgentSection'?'':'hidden'}><div class="workbench-section-title"><h3>本章任务</h3><button type="button" class="workbench-link" data-workbench-view="assistant">全部任务</button></div>
+ <div id="agentSessions" aria-live="polite"><p class="workbench-empty">正在读取本章进度…</p></div></section>
+ <section id="workbenchCandidateSection" class="ai-copilot workbench-rail-section" ${authorWorkbenchResultsSection==='workbenchCandidateSection'?'':'hidden'}><div class="ai-copilot-head"><h3>正文候选</h3><span class="ai-badge" id="aiBadge">${aiStatus.configured?'已配置':'未配置模型'}</span></div>
  <div class="ai-controls"><select id="aiTask" aria-label="AI 任务">
  <option value="continue">续写</option><option value="polish">润色所选文字</option><option value="scene">本章场景计划</option>
  <option value="outline">故事总纲</option><option value="brainstorm">创意方向</option><option value="summary">回顾与交接</option>
@@ -294,10 +301,10 @@ function authorWorkbenchRail(){
  <button class="ghost-btn" id="aiCopy" ${aiDraft?'':'disabled'}>复制</button><button class="ghost-btn" id="aiClear">拒绝 / 停止</button>
  <button class="ghost-btn" id="aiOriginal" hidden>回看原候选</button><button class="ghost-btn" id="aiRevise" disabled>整理候选</button>
  <button class="primary-btn" id="aiAdopt" ${aiDraft?.complete?'':'disabled'}>比较并采纳</button></div></div></section>
- <section id="workbenchContextSection" class="workbench-rail-section"><div class="workbench-section-title"><h3>本章依据</h3><button type="button" class="icon-btn" data-workbench-context-refresh title="保存并刷新本章依据" aria-label="保存并刷新本章依据">↻</button></div>
+ <section id="workbenchContextSection" class="workbench-rail-section" ${authorWorkbenchResultsSection==='workbenchContextSection'?'':'hidden'}><div class="workbench-section-title"><h3>本章依据</h3><button type="button" class="icon-btn" data-workbench-context-refresh title="保存并刷新本章依据" aria-label="保存并刷新本章依据">↻</button></div>
  <div id="workbenchContext" aria-live="polite"><p class="workbench-empty">正在读取已保存稿件的资料…</p></div>
  <button type="button" class="workbench-link" data-action="contextPreview">完整上下文与材料控制</button></section>
- </div></aside>`;
+ </div></section>`;
 }
 
 function authorWorkbenchContextStale(){
@@ -382,6 +389,11 @@ function authorBindWorkbench(){
  document.querySelectorAll('[data-rail-section]').forEach(button=>button.onclick=()=>{
   authorRevealWorkbenchSection(button.dataset.railSection,'smooth');
  });
+ document.querySelector('[data-workbench-results-close]')?.addEventListener('click',()=>{
+  authorWorkbenchResultsOpen=false;document.querySelector('#workbenchResults').hidden=true;
+ });
+ document.querySelector('[data-workbench-results-open]')?.addEventListener('click',()=>authorRevealWorkbenchSection(authorWorkbenchResultsSection));
+ document.querySelector('[data-agent-chat-quote]')?.addEventListener('click',()=>globalThis.MoyuAgentChat?.quoteSelection());
  document.querySelector('[data-workbench-focus]')?.addEventListener('click',event=>{
   const focused=document.body.classList.toggle('workbench-focus');
   event.currentTarget.setAttribute('aria-pressed',String(focused));event.currentTarget.textContent=focused?'退出专注':'专注写作';
@@ -414,7 +426,8 @@ function authorEditorView(){
  <button data-format="bold" title="粗体" aria-label="粗体"><b>B</b></button><button data-format="quote" title="引用" aria-label="引用">❞</button>
  <button data-format="scene" title="场景分隔" aria-label="场景分隔">***</button>
  <button class="ghost-btn" data-action="reviewChapter">本章审稿</button><button class="ghost-btn" data-action="chapterAnalysis">章后记忆</button>
- <button class="ghost-btn" data-action="revisionHistory">历史</button>${authorEditorPreferenceControls()}<span class="editor-meta" id="selectionState">未选文字</span></div>
+ <button class="ghost-btn" data-action="revisionHistory">历史</button><button class="ghost-btn" data-agent-chat-quote title="将所选原文加入写作总管">引用选区</button>
+ <button class="ghost-btn" data-workbench-results-open>结果</button>${authorEditorPreferenceControls()}<span class="editor-meta" id="selectionState">未选文字</span></div>
  <input class="title-input" id="chapterTitle" value="${esc(c.title)}" aria-label="章节标题">
  <textarea class="chapter-editor" id="chapterBody" aria-label="章节正文">${esc(c.body)}</textarea>
  <div class="editor-footer"><span id="liveCount">${Array.from(c.body.replace(/\s/g,'')).length} 字</span>
@@ -489,7 +502,7 @@ views.blueprint=()=>`${authorPageHead('创作规划','<button class="ghost-btn" 
  <section class="planning-workflow"><div class="planning-heading"><h3>分阶段规划</h3><button class="ghost-btn" data-action="beginPlanning">新规划</button></div>
  <div id="planningWorkflowHost"><div class="empty">正在读取阶段…</div></div></section>
  <div id="blueprintHost"><div class="empty">正在读取规划…</div></div>`;
-views.settings=()=>`${authorPageHead('模型与风格')}
+views.settings=()=>`${authorPageHead('模型与风格')}<section id="agentSettingsHost" class="agent-settings-section"></section>
  <div id="settingsHost"><div class="empty">正在读取设置…</div></div>`;
 views.backups=()=>`${authorPageHead('备份中心','<button class="ghost-btn" data-action="importBackup">从电脑恢复 ZIP</button><button class="primary-btn" data-action="createBackup">＋ 完整备份</button>')}
  <div class="backup-scope"><strong>完整作品备份</strong><p>包含正文、历史版本、设定、记忆证据、人物关系、时间线、任务和审计记录。</p>
@@ -499,18 +512,16 @@ views.backups=()=>`${authorPageHead('备份中心','<button class="ghost-btn" da
 views.references=()=>`${authorPageHead('旧书与参考库','<button class="primary-btn" data-action="importBook">导入 TXT / MD / EPUB</button>')}
  <div id="referenceList"><div class="empty">正在读取参考来源…</div></div>`;
 views.assistant=()=>`${authorPageHead('写作总管')}
- ${authorAgentForm()}
- <div id="agentSessions" aria-live="polite"><div class="empty">正在读取写作进度…</div></div>
- <details class="agent-knowledge"><summary>查阅作品资料</summary>
- <form id="projectAssistant" class="settings-form"><label>问题或创作要求<textarea id="assistantQuery" maxlength="2000" required></textarea></label>
- <div class="settings-actions"><button class="primary-btn" type="submit">查看资料与候选计划</button></div></form>
- <div id="assistantAnswer"></div></details>`;
+ <nav class="agent-overview-actions" aria-label="写作总管管理"><button type="button" class="ghost-btn" data-agent-focus-chat>继续对话</button>
+ <button type="button" class="ghost-btn" data-agent-open-settings>连接设置</button><button type="button" class="ghost-btn" data-agent-open-tasks>生成任务</button></nav>
+ <section class="agent-overview-results"><h3>创作进度与待处理结果</h3>
+ <div id="agentSessions" aria-live="polite"><div class="empty">正在读取写作进度…</div></div></section>`;
 
 function authorAgentDraftKey(){return cacheKey(`:writing-agent:${state.branch_id||'main'}${view==='editor'?':'+activeChapter:''}`)}
 function authorAgentScope(){return {owner:requestedProject,branch:state.branch_id||'main'}}
 function authorAgentCurrent(scope,host){return scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&['assistant','editor'].includes(view)&&document.querySelector('#agentSessions')===host}
 function authorBindWritingAgent(){
- const form=document.querySelector('#writingAgent');if(!form)return;
+ const form=document.querySelector('#writingAgent');if(!form){authorLoadAgent();return}
  const scope=authorAgentScope(),key=authorAgentDraftKey(),host=document.querySelector('#agentSessions');
  let draft;let draftRevision=0,inFlightRequestId='';try{draft=JSON.parse(storage.get(key)||'null')}catch{}
  if(draft){form.querySelector('#agentQuery').value=draft.query||'';
@@ -647,32 +658,10 @@ function authorAgentPlanningPreview(row){
 }
 
 function authorBindAssistant(){
- authorBindWritingAgent();
- const form=document.querySelector('#projectAssistant');if(!form)return;
- form.onsubmit=async event=>{
-  event.preventDefault();const button=form.querySelector('button');button.disabled=true;
-  const host=document.querySelector('#assistantAnswer');host.innerHTML='<div class="empty">正在查看当前作品…</div>';
-  try{
-   if(!await syncBackend())throw new Error('请先保存或合并当前草稿');
-   const query=form.querySelector('#assistantQuery').value.trim();const c=chapter();
-   const guessed=/润色|改写|修改选中/.test(query)?'polish':/续写|接着写|往下写/.test(query)?'continue':'scene';
-   const source=c?candidateSource(guessed,c):null;
-   const result=await authorJSON('/api/assistant/query',{method:'POST',body:JSON.stringify({query,chapter_id:c?.id,source})});
-   const p=result.proposal;
-   host.innerHTML=`<p>${esc(result.answer)}</p>${(result.results||[]).map(item=>`<article class="result"><strong>${esc(item.title||item.name||'作品资料')}</strong><p>${esc(item.snippet||item.body||item.text||item.excerpt||'')}</p></article>`).join('')}
-   ${p?`<section class="assistant-proposal"><h3>${esc(p.label)}</h3><p>《${esc(p.chapter_title)}》 · ${esc(p.target)}</p><p>${esc(p.instruction)}</p>
-   <div class="settings-actions"><button class="ghost-btn" data-assistant-reject>放弃</button><button class="primary-btn" data-assistant-confirm>确认生成候选</button></div><p class="form-error" role="alert"></p></section>`:''}`;
-   host.querySelector('[data-assistant-reject]')?.addEventListener('click',()=>{host.querySelector('.assistant-proposal').remove();toast('已放弃，作品保持原稿')});
-   host.querySelector('[data-assistant-confirm]')?.addEventListener('click',async()=>{
-    const confirm=host.querySelector('[data-assistant-confirm]');confirm.disabled=true;
-    try{
-     if(!await syncBackend())throw new Error('请先保存或合并当前草稿');
-     const data=await durableOperation('/api/assistant/confirm','POST',{token:p.token,confirm:true});
-     const job=data.job;jobSources.set(job.id,job.source||p.source);scheduleQueue(0);view='tasks';render();toast('已保存生成任务，完成后可以比较候选');
-    }catch(error){host.querySelector('.form-error').textContent=error.message;confirm.disabled=false}
-   });
-  }catch(error){host.innerHTML=`<div class="empty">${esc(error.message)}</div>`}finally{button.disabled=false}
- };
+ authorLoadAgent();
+ document.querySelector('[data-agent-focus-chat]')?.addEventListener('click',()=>globalThis.MoyuAgentChat?.focus());
+ for(const [selector,target] of [['[data-agent-open-settings]','settings'],['[data-agent-open-tasks]','tasks']])
+  document.querySelector(selector)?.addEventListener('click',()=>{view=target;render()});
 }
 
 async function authorLoadPage(){
@@ -1209,6 +1198,8 @@ function authorRenderSettings(){
   form.querySelector('#modelKey').value='';await loadAIStatus();
   if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)
    throw new Error('设置页面已更新，请重新打开设置');
+  window.dispatchEvent(new CustomEvent('moyu:main-settings-changed',
+   {detail:{projectId:owner,branchId:state.branch_id||'main'}}));
   return result;
  };
  form.onsubmit=async e=>{
@@ -1233,6 +1224,8 @@ function authorRenderSettings(){
    if(result.settings)authorSettings=result.settings;
    await loadAIStatus();
    if(owner!==requestedProject||sequence!==authorSettingsSeq||!form.isConnected)return;
+   window.dispatchEvent(new CustomEvent('moyu:main-settings-changed',
+    {detail:{projectId:owner,branchId:state.branch_id||'main'}}));
    if(result.configuration_stale&&form.isConnected)authorRenderSettings();
    if(view==='settings'){
     const status=document.querySelector('#modelProbeStatus');
@@ -2237,6 +2230,7 @@ function authorBind(){
    authorReleasePortablePreviews().then(authorRenderPortablePending).catch(()=>authorRenderPortablePending());
  }
  if(view==='assistant')authorBindAssistant();
+ if(view==='settings')globalThis.MoyuAgentSettings?.mount(document.querySelector('#agentSettingsHost'));
  if(view==='editor'){
   authorBindWorkbench();
   const body=document.querySelector('#chapterBody');
@@ -2317,6 +2311,7 @@ render=function(){
  if(view==='editor'){authorRestoreChapterNavigation(libraryScroll);authorRestoreEditorPosition()}
  if(view==='editor')authorLoadEditorBlueprint();
  if(['library','blueprint','settings','backups','references'].includes(view))authorLoadPage();
+ globalThis.MoyuAgentChat?.sync();
 };
 document.querySelectorAll('.nav-item').forEach(button=>button.onclick=async()=>{
  if(authorBlueprintDirty&&!await authorSaveBlueprint())return;

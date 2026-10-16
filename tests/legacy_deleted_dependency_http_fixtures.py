@@ -26,9 +26,33 @@ server = seed.server
 SOURCES = (
     "server.py", "moyu_context.py", "moyu_materials.py", "moyu_backups.py",
     "moyu_portable.py", "moyu_records.py", "moyu_workspace.py",
+    "moyu_agent_chat.py", "moyu_agent_settings.py",
     "tests/chapter_deletion_dependency_http_fixtures.py",
     "tests/legacy_deleted_dependency_http_fixtures.py",
 )
+EXPECTED_TABLES = {
+    "actor", "ai_run", "app_agent_chat_action", "app_agent_chat_session",
+    "app_agent_chat_turn", "app_agent_checkpoint", "app_agent_connection",
+    "app_agent_session", "app_agent_write", "app_ai_chunk", "app_ai_job",
+    "app_ai_run_decision", "app_assistant_request", "app_backup_artifact",
+    "app_blueprint", "app_candidate_application", "app_candidate_revision",
+    "app_chapter_analysis", "app_chapter_commit", "app_chapter_meta",
+    "app_chapter_structure", "app_deleted_node", "app_entity_meta",
+    "app_entity_scope", "app_foreshadow_link", "app_manuscript_import",
+    "app_model_settings", "app_planning_application", "app_planning_attempt",
+    "app_planning_event", "app_planning_workflow", "app_plot_item",
+    "app_project_meta", "app_quota_reservation", "app_reference_document",
+    "app_reference_section", "app_search_document", "app_search_fts",
+    "app_search_fts_config", "app_search_fts_content", "app_search_fts_data",
+    "app_search_fts_docsize", "app_search_fts_idx", "app_search_index_state",
+    "app_state_version", "app_story_relation", "app_story_review",
+    "app_timeline_event", "app_workspace", "assertion", "audit_event",
+    "branch", "candidate_memory", "character_state", "deletion_event",
+    "document_node", "document_revision", "entity", "event_log", "export_job",
+    "external_source", "index_checkpoint", "merge_conflict", "migration_ledger",
+    "plot_thread", "project", "prov_activity", "prov_agent", "prov_edge",
+    "prov_entity", "run_manifest", "source_span",
+}
 REPORT = {
     "observations": [], "http": [], "attempted_provider_calls": 0,
     "attempted_worker_calls": 0, "initialization_integrity": [],
@@ -176,7 +200,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         })
         with self.subTest(check="legacy_initialization_preserves_history"):
-            self.assertEqual(len(before["tables"]), 68)
+            self.assertEqual(set(before["tables"]), EXPECTED_TABLES)
             self.assertEqual(before, after)
 
     def restore_zip(self):
@@ -339,8 +363,8 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         }
         REPORT["observations"].append(observation)
-        with self.subTest(check="all_68_tables_and_schema_are_read_only"):
-            self.assertEqual(len(before["tables"]), 68)
+        with self.subTest(check="all_expected_tables_and_schema_are_read_only"):
+            self.assertEqual(set(before["tables"]), EXPECTED_TABLES)
             self.assertEqual(before, after)
             self.assertIn("app_search_fts_data", before["tables"])
             self.assertIn("app_search_fts_idx", before["tables"])
@@ -494,7 +518,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
         }
         REPORT["observations"].append(observation)
         with self.subTest(check="span_story_read_preserves_every_table_and_schema"):
-            self.assertEqual(len(before["tables"]), 68)
+            self.assertEqual(set(before["tables"]), EXPECTED_TABLES)
             self.assertEqual(before, after)
             self.assertIn("app_search_fts_data", before["tables"])
             self.assertIn("app_search_fts_idx", before["tables"])
@@ -762,7 +786,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         })
         with self.subTest(check="assertion_scope_preserves_all_tables_and_history"):
-            self.assertEqual(len(before["tables"]), 68)
+            self.assertEqual(set(before["tables"]), EXPECTED_TABLES)
             self.assertEqual(before, after)
             self.assertEqual(
                 self.assertion_scope_physical(project, branch, memory_key), physical)
@@ -887,7 +911,7 @@ class LegacyDeletedDependenciesHTTP(unittest.TestCase):
             "database_sha256_after": database_digest(after),
         })
         with self.subTest(check="nonchapter_history_and_tables_are_read_only"):
-            self.assertEqual(len(before["tables"]), 68)
+            self.assertEqual(set(before["tables"]), EXPECTED_TABLES)
             self.assertEqual(before, after)
             self.assertEqual(
                 self.assertion_scope_physical(seed.PROJECT, seed.BRANCH, memory_key),

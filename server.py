@@ -49,6 +49,8 @@ import moyu_records as records_store
 import moyu_materials
 import moyu_portable as portable_backups
 import moyu_agent_service as writing_agent
+import moyu_agent_chat as agent_chat
+import moyu_agent_settings as agent_connection
 
 
 ROOT = Path(__file__).resolve().parent
@@ -61,6 +63,7 @@ ACTOR_ID = os.environ.get("MOYU_ACTOR_ID", "local-user")
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_-]{0,127}$")
 
 AI_TASKS = {
+    "assistant_chat": "与作者讨论当前作品，提出需要作者确认的创作步骤。",
     "continue": "续写当前章节，推进一个具体冲突。保持视角、时态、人物动机和已确认事实；只返回候选正文。",
     "polish": "润色当前章节，保留事件、人物动机、事实和叙事视角；减少空话、重复和机械连接词。只返回候选正文。",
     "outline": "为当前作品规划下一步故事：目标、冲突、转折、场景和需要回收的伏笔。不要直接写长篇正文。",
@@ -77,6 +80,8 @@ AI_TASKS = {
 # free text, while structured tasks can request JSON and receive validation
 # metadata.
 AI_TASK_CONTRACTS = {
+    "assistant_chat": {"input": ["session_id", "content"], "output": "agent_reply",
+                       "response_format": "json", "schema": agent_chat.SCHEMA},
     "continue": {"input": ["chapter_id", "instruction"], "output": "candidate_text", "response_format": "text", "schema": None},
     "polish": {"input": ["chapter_id", "instruction"], "output": "candidate_text", "response_format": "text", "schema": None},
     "outline": {"input": ["chapter_id", "instruction"], "output": "outline", "response_format": "json", "schema": {"type": "object", "required": ["goal", "conflict", "turn", "scenes", "foreshadowing"]}},
@@ -359,8 +364,8 @@ def ai_public_settings() -> dict[str, Any]:
     return {
         **settings, "mode": "provider" if settings["configured"] else "offline",
         "model": settings["model"] or "离线创作助手",
-        "tasks": sorted(AI_TASKS),
-        "contracts": {task: ai_contract(task) for task in AI_TASKS},
+        "tasks": sorted(task for task in AI_TASKS if task != "assistant_chat"),
+        "contracts": {task: ai_contract(task) for task in AI_TASKS if task != "assistant_chat"},
         "quota": {"daily_runs": settings["daily_limit"], "cost_per_1k_tokens": AI_COST_PER_1K},
     }
 
@@ -1169,6 +1174,8 @@ def generate_ai(task: str, context: dict[str, Any], instruction: str, response_f
     if cancel_event is not None and cancel_event.is_set():
         raise ProviderCanceled()
     if not config["base_url"] or not config["model"]:
+        if task == "assistant_chat":
+            raise ValueError("请先配置写作总管连接；未调用模型，不会生成模拟回复。")
         structured = offline_structured(task, context, instruction) if response_format == "json" else None
         text = json.dumps(structured, ensure_ascii=False) if structured is not None else (
             offline_ai(task, context, instruction) if task in {"continue", "polish", "outline", "scene", "summary", "check", "brainstorm"}
@@ -1511,6 +1518,8 @@ def retry_ai_job(conn: sqlite3.Connection, job_id: str,
     ).fetchone()
     if row is None:
         raise LookupError("AI job not found")
+    if row["task"] == "assistant_chat":
+        raise ValueError("对话回复不能从通用任务入口重试，请在对话中发送新的消息。")
     old_run = conn.execute(
         "SELECT status,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?",
         (row["ai_run_id"], project_id(), branch_id()),
@@ -1632,6 +1641,8 @@ def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, 
         validate_guidance_source(conn, context)
         if job["task"] in {"chapter_analysis", "semantic_review"} and result.get("mode") == "provider":
             persist_structured_result(conn, job, result)
+    if job["task"] == "assistant_chat":
+        agent_chat.finish_turn(sys.modules[__name__], conn, job, result, status)
     if error_text:
         result["error"] = error_text
     if isinstance(error, ProviderError):
@@ -1715,6 +1726,10 @@ def _process_ai_job_claimed(job_id: str) -> dict[str, Any]:
         consent = json.loads(run["consent_json"] or "{}")
         snapshot = consent.get("provider_config")
         try:
+            if row["task"] == "assistant_chat":
+                agent_chat.validate_dispatch(sys.modules[__name__], conn,
+                                             json.loads(row["context_json"] or "{}"),
+                                             job_id=row["id"])
             validate_review_candidate_source(conn, row["task"], json.loads(row["context_json"] or "{}"))
             validate_planning_job_source(conn, json.loads(row["context_json"] or "{}"))
             validate_candidate_revision_source(conn, row["task"], json.loads(row["context_json"] or "{}"))
@@ -1725,7 +1740,7 @@ def _process_ai_job_claimed(job_id: str) -> dict[str, Any]:
             else:
                 config = frozen_provider_settings(conn, project_id(), snapshot) if snapshot else ai_settings(conn)
             reserve_ai_budget(conn, row["ai_run_id"], config)
-        except ValueError as exc:
+        except (ValueError, BranchHeadConflict, agent_chat.ChatNotFound) as exc:
             error = ProviderError(
                 str(exc),
                 code="dispatch_precondition_failed", request_dispatched=False)
@@ -1785,12 +1800,50 @@ def _ai_worker(job_id: str) -> None:
         process_ai_job(job_id)
     except Exception:
         with connect() as conn:
+            conn.execute("BEGIN IMMEDIATE")
+            row = conn.execute(
+                "SELECT j.*,a.status AS run_status,a.consent_json,q.status AS quota_status "
+                "FROM app_ai_job j JOIN ai_run a ON a.id=j.ai_run_id "
+                "LEFT JOIN app_quota_reservation q ON q.ai_run_id=a.id "
+                "WHERE j.id=? AND j.project_id=? AND j.branch_id=?",
+                (job_id, project_id(), branch_id()),
+            ).fetchone()
+            if row is None or row["status"] not in {"queued", "running"}:
+                return
             failed_at = now()
-            message = "worker stopped; inspect task before retry"
-            conn.execute("UPDATE app_ai_job SET status='failed',error=?,finished_at=?,updated_at=? WHERE id=? AND status IN ('queued','running')",
-                         (message, failed_at, failed_at, job_id))
-            conn.execute("UPDATE ai_run SET status='unknown',error=?,ended_at=? WHERE id=(SELECT ai_run_id FROM app_ai_job WHERE id=?) AND status IN ('queued','running')",
-                         (message, failed_at, job_id))
+            not_dispatched = (row["status"] == row["run_status"] == "queued"
+                              and row["quota_status"] in {None, "reserved", "released"})
+            billing = "not_dispatched" if not_dispatched else "unknown"
+            run_status = "failed" if not_dispatched else "unknown"
+            message = ("任务在发送前中断，未调用模型，请检查后重新发起。"
+                       if not_dispatched else
+                       "任务意外中断，执行和费用结果尚未确认；已保留原稿，不会自动重发。")
+            previous_result = _json_object(row["result_json"], {})
+            result = {
+                **(previous_result if isinstance(previous_result, dict) else {}),
+                "safe_to_apply": False, "completion_state": run_status,
+                "billing_state": billing, "error_code": "worker_interrupted", "error": message,
+            }
+            consent = _json_object(row["consent_json"], {})
+            if not isinstance(consent, dict):
+                consent = {}
+            consent.update(billing_state=billing, completion_state=run_status, safe_to_apply=False)
+            conn.execute(
+                "UPDATE app_ai_job SET status='failed',error=?,result_json=?,finished_at=?,updated_at=? WHERE id=?",
+                (message, json_text(result), failed_at, failed_at, job_id),
+            )
+            conn.execute(
+                "UPDATE ai_run SET status=?,error=?,ended_at=?,consent_json=? WHERE id=?",
+                (run_status, message, failed_at, json_text(consent), row["ai_run_id"]),
+            )
+            conn.execute(
+                "UPDATE app_quota_reservation SET status=?,updated_at=? WHERE ai_run_id=?",
+                ("released" if not_dispatched else "unknown", failed_at, row["ai_run_id"]),
+            )
+            if row["task"] == "assistant_chat":
+                agent_chat.finish_turn(sys.modules[__name__], conn, row, result, "failed")
+            append_event(conn, row["ai_run_id"], "ai_run." + run_status,
+                         {"job_id": job_id, "error": message, "billing_state": billing})
 
 
 def start_ai_worker(job_id: str) -> bool:
@@ -1817,7 +1870,7 @@ def recover_ai_jobs() -> list[str]:
     with connect() as conn:
         ensure_seed(conn)
         t = now()
-        rows = conn.execute("SELECT j.id,j.ai_run_id,a.consent_json FROM app_ai_job j JOIN ai_run a ON a.id=j.ai_run_id WHERE j.status='running' AND j.project_id=? AND j.branch_id=?", (project_id(), branch_id())).fetchall()
+        rows = conn.execute("SELECT j.id,j.ai_run_id,j.task,a.consent_json FROM app_ai_job j JOIN ai_run a ON a.id=j.ai_run_id WHERE j.status='running' AND j.project_id=? AND j.branch_id=?", (project_id(), branch_id())).fetchall()
         for row in rows:
             snapshot = json.loads(row["consent_json"] or "{}").get("provider_config") or {}
             if snapshot.get("base_url") or (not snapshot and ai_settings(conn)["base_url"]):
@@ -1825,6 +1878,8 @@ def recover_ai_jobs() -> list[str]:
                 conn.execute("UPDATE app_ai_job SET status='failed',error=?,finished_at=?,updated_at=? WHERE id=?", (message, t, t, row["id"]))
                 conn.execute("UPDATE ai_run SET status='unknown',error=?,ended_at=? WHERE id=?", (message, t, row["ai_run_id"]))
                 conn.execute("UPDATE app_quota_reservation SET status='unknown',updated_at=? WHERE ai_run_id=?", (t, row["ai_run_id"]))
+                if row["task"] == "assistant_chat":
+                    agent_chat.finish_turn(sys.modules[__name__], conn, row, {}, "failed")
             else:
                 conn.execute("UPDATE app_ai_job SET status='queued',error='offline worker recovered',updated_at=? WHERE id=?", (t, row["id"]))
                 conn.execute("UPDATE ai_run SET status='queued',ended_at=NULL,error='offline worker recovered' WHERE id=?", (row["ai_run_id"],))
@@ -2260,6 +2315,8 @@ def init_db() -> None:
         planning.install_schema(conn)
         from moyu_agent_checkpoint import install_schema as install_agent_schema
         install_agent_schema(conn)
+        agent_chat.install_schema(conn)
+        agent_connection.install_schema(conn)
         conn.execute("""CREATE TABLE IF NOT EXISTS app_planning_application(
             id TEXT PRIMARY KEY,
             workflow_id TEXT NOT NULL UNIQUE REFERENCES app_planning_workflow(id),
@@ -5085,7 +5142,8 @@ class Handler(SimpleHTTPRequestHandler):
     server_version = "MoyuSQLite/1.0"
     STATIC_FILES = {"/", "/index.html", "/app.js", "/editor-sync.js", "/author-workspace.js", "/styles.css",
                     "/knowledge-workspace.js", "/writing-inbox.js", "/knowledge-workspace.css",
-                    "/editor-preferences.css"}
+                    "/editor-preferences.css", "/agent-chat.js", "/agent-chat.css",
+                    "/agent-settings.js", "/agent-settings.css"}
 
     def log_message(self, fmt: str, *args: Any) -> None:
         sys.stderr.write("%s - - [%s] %s\n" % (self.address_string(), now(), fmt % args))
@@ -5244,6 +5302,7 @@ class Handler(SimpleHTTPRequestHandler):
                     parsed.path == "/api/writing-inbox"
                     or (parsed.path.startswith("/api/records/") and parsed.path.endswith("/knowledge"))
                     or parsed.path.startswith("/api/memory/")
+                    or parsed.path.startswith("/api/agent-chat/")
                     or (parsed.path == "/api/writing-agent"
                         and "session_id" in parse_qs(parsed.query, keep_blank_values=True))
                 )
@@ -5251,6 +5310,17 @@ class Handler(SimpleHTTPRequestHandler):
                     ensure_seed(conn)
                 if parsed.path == "/api/projects":
                     return self.send_json(200, {"projects": workspace.project_rows(conn)})
+                if parsed.path == "/api/agent-chat/settings":
+                    return self.send_json(200, {"settings": agent_connection.public_settings(conn, project_id())})
+                if parsed.path == "/api/agent-chat/sessions":
+                    return self.send_json(200, agent_chat.list_sessions(sys.modules[__name__], conn))
+                if parsed.path.startswith("/api/agent-chat/"):
+                    parts = parsed.path.strip("/").split("/")
+                    if len(parts) == 4 and parts[2] == "sessions":
+                        return self.send_json(200, agent_chat.get_session(sys.modules[__name__], conn, parts[3]))
+                    if len(parts) == 4 and parts[2] == "runs":
+                        return self.send_json(200, agent_chat.get_run(sys.modules[__name__], conn, parts[3]))
+                    return self.send_json(404, {"error": "对话入口不存在。"})
                 if parsed.path == "/api/writing-inbox":
                     from moyu_inbox import writing_inbox
                     query = parse_qs(parsed.query, keep_blank_values=True)
@@ -5703,6 +5773,8 @@ class Handler(SimpleHTTPRequestHandler):
                         row["payload_json"] = json.loads(row["payload_json"])
                     return self.send_json(200, {"events": rows})
                 return self.send_json(404, {"error": "not found"})
+        except agent_chat.ChatNotFound as exc:
+            return self.send_json(404, {"error": str(exc)})
         except planning.PlanningError as exc:
             return self.send_json(getattr(exc, "status", 400), {"error": str(exc)})
         except Exception as exc:
@@ -5790,6 +5862,30 @@ class Handler(SimpleHTTPRequestHandler):
                     })
                     return self.send_json(status, result)
                 ensure_seed(conn)
+                if parsed.path == "/api/agent-chat/settings":
+                    return self.send_json(200, {"settings": agent_connection.save_settings(conn, project_id(), data)})
+                if parsed.path == "/api/agent-chat/settings/probe":
+                    conn.commit()
+                    return self.send_json(200, agent_connection.probe(conn, project_id()))
+                if parsed.path == "/api/agent-chat/sessions":
+                    return self.send_json(201, agent_chat.create_session(sys.modules[__name__], conn, data))
+                if parsed.path.startswith("/api/agent-chat/"):
+                    parts = parsed.path.strip("/").split("/")
+                    api = sys.modules[__name__]
+                    if len(parts) == 5 and parts[2] == "sessions" and parts[4] == "messages":
+                        result = agent_chat.post_message(api, conn, parts[3], data)
+                        job_id = result.pop("_start_job", None)
+                        conn.commit()
+                        if job_id:
+                            start_ai_worker(job_id)
+                        return self.send_json(202, result)
+                    if len(parts) == 5 and parts[2] == "runs" and parts[4] == "cancel":
+                        return self.send_json(200, agent_chat.cancel_run(api, conn, parts[3]))
+                    if len(parts) == 5 and parts[2] == "actions" and parts[4] in {"confirm", "dismiss"}:
+                        result = (agent_chat.confirm_action(api, conn, parts[3], data)
+                                  if parts[4] == "confirm" else agent_chat.dismiss_action(api, conn, parts[3]))
+                        return self.send_json(200, result)
+                    return self.send_json(404, {"error": "对话操作不存在。"})
                 if parsed.path == "/api/projects":
                     return self.send_json(201, new_project(conn, data))
                 if parsed.path == "/api/writing-agent" or (parsed.path.startswith("/api/writing-agent/") and parsed.path.endswith("/resume")):
@@ -6367,7 +6463,7 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json(200, result)
                 if parsed.path in {"/api/ai", "/api/ai/queue"}:
                     task = bounded_text(data.get("task"), 40, "AI task")
-                    if task not in AI_TASKS:
+                    if task not in AI_TASKS or task == "assistant_chat":
                         return self.send_json(400, {"error": "unsupported AI task"})
                     chapter_id = data.get("chapter_id")
                     if chapter_id is None:
@@ -6608,6 +6704,8 @@ class Handler(SimpleHTTPRequestHandler):
                     if prior is not None:
                         return self.send_json(200, {"id": prior["id"], "idempotent": True})
             return self.send_json(409, {"error": str(exc)})
+        except agent_chat.ChatNotFound as exc:
+            return self.send_json(404, {"error": str(exc)})
         except (ValueError, json.JSONDecodeError) as exc:
             return self.send_json(getattr(exc, "status", 400), {"error": str(exc)})
         except BranchHeadConflict as exc:

@@ -226,7 +226,8 @@ def _queue(conn, scope, chapters, revisions, jobs, owned):
     items = []
     project, branch = scope["project_id"], scope["branch_id"]
     for row in jobs.values():
-        if row["id"] in owned or row["status"] in {"queued", "running", "canceled"}:
+        if (row["task"] == "assistant_chat" or row["id"] in owned
+                or row["status"] in {"queued", "running", "canceled"}):
             continue
         context, consent = _object(row["context_json"]), _object(row["consent_json"])
         if (context.get("_restored_read_only") or consent.get("restored_read_only")

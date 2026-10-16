@@ -89,6 +89,11 @@ async function waitSaved(page) {
   );
 }
 
+async function openCandidate(page) {
+  await page.locator('[data-chat-result="workbenchCandidateSection"]').click();
+  await page.locator('#aiInstruction').waitFor();
+}
+
 async function open(viewport) {
   const context = await browser.newContext({viewport});
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -102,6 +107,7 @@ async function open(viewport) {
   await page.locator('[data-view="editor"]').click();
   await page.locator(`[data-chapter="${chapterId}"]`).click();
   await waitSaved(page);
+  await openCandidate(page);
   return {context, page, errors};
 }
 
@@ -115,6 +121,7 @@ async function openSavedCandidate(page, runId) {
   await button.waitFor({timeout: 15000});
   await button.click();
   await page.waitForFunction(id => aiDraft?.ai_run_id === id && aiDraft?.complete, runId);
+  await openCandidate(page);
 }
 
 async function assertReadableStaleCandidate(page) {
@@ -316,6 +323,7 @@ async function main() {
 
   await test('真实材料窗口排除设定后该设定变化不阻断新候选，仍可比较并单次采纳', async () => {
     providerMode = 'prose';
+    await openCandidate(page);
     await page.locator('[data-context-preview]').click();
     await page.locator(`[data-material-omit][data-kind="records"][data-id="${card.id}"]`).check();
     await page.locator('[data-save-material]').click();

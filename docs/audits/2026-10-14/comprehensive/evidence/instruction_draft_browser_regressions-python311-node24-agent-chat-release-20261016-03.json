@@ -1,0 +1,58 @@
+{
+  "passed": false,
+  "scope": "真实桌面Chrome、隔离SQLite、本机免费模拟提供方",
+  "cases": [
+    {
+      "name": "切页查看设定与刷新后保留当前章任务及完整要求",
+      "passed": true
+    },
+    {
+      "name": "不同章节任务草稿互相隔离，刷新仍回到该章草稿",
+      "passed": true
+    },
+    {
+      "name": "两部作品各自保留要求，离开再回来不会串用",
+      "passed": true
+    },
+    {
+      "name": "同作品同章的合成分支身份具有独立草稿",
+      "passed": true
+    },
+    {
+      "name": "旧作品已卸载控件的迟到输入和清空事件不会改写任一作品草稿",
+      "passed": true
+    },
+    {
+      "name": "程序写入要求后重新渲染或立即刷新仍保存原控件身份",
+      "passed": true
+    },
+    {
+      "name": "显式清空恢复续写，刷新不复活旧要求且其他章节和作品不受影响",
+      "passed": true
+    },
+    {
+      "name": "损坏或不支持的草稿被忽略，不影响编辑器和原稿",
+      "passed": true
+    },
+    {
+      "name": "浏览器存储失败时同页保留要求并提示，恢复存储后无需重新输入即可补存",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "external_model_calls": 0,
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "f205c2ba5ef348b5a262d63c202d6c82bf5e0ee8fcda8b723178790b559b72af"
+    },
+    {
+      "path": "tests/instruction_draft_browser_regressions.cjs",
+      "sha256": "ed364be018c2fcd230125606a69f1e8f687bb25a8392242d9da041647ab0c4d3"
+    }
+  ],
+  "failure": {
+    "message": "page.waitForFunction: Timeout 30000ms exceeded.",
+    "server_log": "-10-16T04:57:20+00:00] \"GET /knowledge-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /agent-chat.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /writing-inbox.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/context?chapter_id=ch_6f37c16d5d8d4034bc8096eb1c025209&task=outline&instruction=%E5%AD%98%E5%82%A8%E5%8F%97%E9%99%90%E6%97%B6%E5%85%88%E5%9C%A8%E5%BD%93%E5%89%8D%E6%B5%8F%E8%A7%88%E5%99%A8%E4%BF%9D%E7%95%99%E3%80%82&materials=%7B%7D&retrieval_profile=%7B%22max_tokens%22%3A24000%2C%22chapter_top_k%22%3A20%2C%22recent_window%22%3A3%2C%22memory_top_k%22%3A60%2C%22record_top_k%22%3A40%7D HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"POST /api/ai/queue HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/writing-inbox?limit=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/ai/runs/airun_3cff33c9887a4b8eb7aaad479904dd40/stream?after_seq=0 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET / HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /editor-preferences.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /styles.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /knowledge-workspace.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:20+00:00] \"GET /editor-sync.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /agent-settings.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /app.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /agent-settings.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /agent-chat.css HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /knowledge-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /writing-inbox.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /author-workspace.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /agent-chat.js HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/ai/status HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/state HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/context?chapter_id=ch_6f37c16d5d8d4034bc8096eb1c025209&task=scene&instruction=%E5%90%8E%E6%94%B9%E8%8D%89%E7%A8%BF%E5%8F%AA%E8%A7%84%E5%88%92%E4%B8%8B%E4%B8%80%E5%9C%BA%E6%99%AF%EF%BC%8C%E4%B8%8D%E6%94%B9%E5%8F%98%E6%97%A2%E6%9C%89%E4%BB%BB%E5%8A%A1%E3%80%82&materials=%7B%7D&retrieval_profile=%7B%22max_tokens%22%3A24000%2C%22chapter_top_k%22%3A20%2C%22recent_window%22%3A3%2C%22memory_top_k%22%3A60%2C%22record_top_k%22%3A40%7D HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/writing-inbox?limit=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:21+00:00] \"GET /api/ai/queue HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T04:57:23+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n"
+  }
+}

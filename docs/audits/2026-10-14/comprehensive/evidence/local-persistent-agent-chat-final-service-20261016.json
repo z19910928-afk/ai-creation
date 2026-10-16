@@ -1,0 +1,83 @@
+{
+  "verified_at": "2026-10-16T10:25:18.651370+00:00",
+  "passed": true,
+  "origin": "http://127.0.0.1:4174",
+  "release_report": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-release-20261016-04.json",
+  "release_report_sha256": "3bc4c716a071e73cd0bc5045ae3e48628204cf9840a9e96668fff2b3d5fd5f41",
+  "release_source_count": 139,
+  "release_sources_match_before_and_after_restart": true,
+  "old_process": {
+    "pid": 36346,
+    "started_at_local": "Fri Oct 16 12:04:05 2026",
+    "command_sha256": "7c12a2205113fab0859b3d0faf87aaff24bb4144d31704a8c63f36a6e3cfc040",
+    "working_directory_verified": true
+  },
+  "new_process": {
+    "pid": 44982,
+    "started_at_local": "Fri Oct 16 18:25:18 2026",
+    "command_sha256": "7c12a2205113fab0859b3d0faf87aaff24bb4144d31704a8c63f36a6e3cfc040",
+    "working_directory_verified": true
+  },
+  "original_process": {
+    "pid": 48520,
+    "started_at_local": "Thu Oct 15 17:54:57 2026",
+    "command_sha256": "76f0952635bb27f980f48761da58f50fee75c920fda634b35349aa8139c55b07",
+    "working_directory_verified": true
+  },
+  "original_process_unchanged": true,
+  "new_process_started_from_verified_release": true,
+  "active_jobs_before_restart": 0,
+  "automatic_continuations_before_restart": 0,
+  "pending_work_and_database_rechecked_after_old_process_stopped": true,
+  "health_http_status": 200,
+  "health_report_sha256": "a66507c43a5b1dee1346e0c36e858b7bf61c85c3efa5c53dffb1d5cca8d3bb92",
+  "online_backups": {
+    "preview": {
+      "file": "artifacts/agent-chat-preview-20261016/preview-before-final-service-restart.sqlite3",
+      "sha256": "650fb959a77ce6765b36d773eb1b452b2336d7f79894b142e4759bca97781a40",
+      "availability": "local_only"
+    },
+    "original": {
+      "file": "artifacts/agent-chat-preview-20261016/original-before-final-service-restart.sqlite3",
+      "sha256": "091866bbe0f39576283f86bfdb219b96b88275d72aaa43423d865b019d4de7a6",
+      "availability": "local_only"
+    }
+  },
+  "snapshots": {
+    "before": {
+      "file": "artifacts/agent-chat-preview-20261016/before-final-service-restart.json",
+      "sha256": "c25cdef3a01e497666fa1fa34f6b0fe000a446ca2a2189e9e2b440fdd1632d3c"
+    },
+    "after": {
+      "file": "artifacts/agent-chat-preview-20261016/after-final-service-restart.json",
+      "sha256": "125eaeca43a9461dff6b2f39b6fe5149ebb779bae4bda92ca6785a81637f5b93"
+    }
+  },
+  "databases": {
+    "preview": {
+      "tables": 72,
+      "tables_unchanged": true,
+      "table_snapshot_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+      "user_version": 11,
+      "integrity_ok": true,
+      "foreign_key_errors": 0
+    },
+    "original": {
+      "tables": 65,
+      "tables_unchanged": true,
+      "table_snapshot_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+      "user_version": 11,
+      "integrity_ok": true,
+      "foreign_key_errors": 0
+    }
+  },
+  "model_calls": 0,
+  "messages_sent": 0,
+  "privacy": {
+    "manuscripts_included": false,
+    "credentials_included": false,
+    "database_files_published": false,
+    "private_paths_included": false
+  },
+  "claim_limit": "Verifies the local restart, frozen sources and unchanged database contents; remote model completion and literary quality were not tested."
+}

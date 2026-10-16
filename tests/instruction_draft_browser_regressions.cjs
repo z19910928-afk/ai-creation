@@ -33,14 +33,20 @@ async function test(name,run){
  console.log(JSON.stringify({test:name,state:'running'}));await run();
  results.cases.push({name,passed:true});console.log(JSON.stringify({test:name,state:'passed'}));
 }
+async function openCandidate(page){
+ await page.locator('[data-chat-result="workbenchCandidateSection"]').click();
+ await page.locator('#aiInstruction').waitFor();
+}
 async function draft(page){
+ await openCandidate(page);
  return page.evaluate(()=>({task:document.querySelector('#aiTask').value,instruction:document.querySelector('#aiInstruction').value}));
 }
 async function fillDraft(page,task,instruction){
+ await openCandidate(page);
  await page.locator('#aiTask').selectOption(task);await page.locator('#aiInstruction').fill(instruction);
 }
 async function enterEditor(page){
- await page.locator('[data-view="editor"]').click();await page.locator('#aiInstruction').waitFor();
+ await page.locator('[data-view="editor"]').click();await openCandidate(page);
 }
 async function openProject(page,id){
  await page.locator('[data-view="library"]').click();await page.locator(`[data-project-open="${id}"]`).click();

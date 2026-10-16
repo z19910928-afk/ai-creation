@@ -6,11 +6,12 @@ const os = require('node:os');
 const path = require('node:path');
 const http = require('node:http');
 const net = require('node:net');
+const crypto = require('node:crypto');
 const {spawn} = require('node:child_process');
 const {chromium} = require(process.env.MOYU_PLAYWRIGHT_MODULE || 'playwright');
 const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'moyu-agent-browser-'));
-const report = {passed:false, scope:'真实桌面 Chrome、隔离数据库、免费本机模拟模型', cases:[], screenshots:[], page_errors:[], paid_provider_calls:0, artifacts:temporary};
+const report = {passed:false, scope:'真实桌面 Chrome、隔离数据库、免费本机模拟模型；通过真实接口建立任务，再由页面验证启动、候选采纳、恢复和规划确认。持续聊天入口另由聊天专项覆盖。', cases:[], screenshots:[], page_errors:[], paid_provider_calls:0, artifacts:temporary};
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 let app, provider, browser, base, appPort, providerPort, firstId, fault = '', delay = 80;
 let log = '';
@@ -52,13 +53,10 @@ function output(input){
 }
 async function test(name,fn){await fn();report.cases.push({name,passed:true});console.log(JSON.stringify({test:name,passed:true}))}
 async function screenshot(page,name,fullPage=true){const file=path.join(temporary,name);await page.screenshot({path:file,fullPage});report.screenshots.push(file)}
-async function createFromUI(page,query,mode='continue'){
+async function createSavedPlan(page,query,mode='continue'){
  await page.locator('[data-view="assistant"]').click();
- await page.locator('#agentQuery').fill(query);
- await page.locator(`[name="agentMode"][value="${mode}"]`).check();
- await page.getByRole('button',{name:'准备写作计划',exact:true}).click();
- await until(async()=>{const rows=(await api('/api/writing-agent')).sessions;return rows.find(r=>r.query===query)},'saved plan');
- const row=(await api('/api/writing-agent')).sessions.find(r=>r.query===query);
+ const response=await api('/api/writing-agent','POST',{request_id:crypto.randomUUID(),query,mode,chapter_id:firstId});
+ const row=response.session;await page.evaluate(()=>authorLoadAgent());
  await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).waitFor();return row;
 }
 async function main(){
@@ -79,10 +77,11 @@ async function main(){
  let mainSession;
  await test('桌面三栏工作台接入真实章节、人物资料、上下文和专注模式',async()=>{
   await page.locator('[data-view="editor"]').click();
+  await page.locator('[data-chat-result="workbenchContextSection"]').click();
   await page.locator('#workbenchContext [data-context-state]').waitFor();
   const sizes=await page.evaluate(()=>{
    const rect=selector=>{const r=document.querySelector(selector).getBoundingClientRect();return {left:r.left,right:r.right,width:r.width,top:r.top,bottom:r.bottom,height:r.height}};
-   return {library:rect('.workbench-library'),editor:rect('.workbench-manuscript'),agent:rect('.workbench-assistant'),
+   return {library:rect('.workbench-library'),editor:rect('.workbench-manuscript'),agent:rect('.agent-chat'),
     viewport:innerWidth,scroll:document.documentElement.scrollWidth,height:innerHeight,pageHeight:document.documentElement.scrollHeight};
   });
   assert.ok(sizes.library.right<=sizes.editor.left&&sizes.editor.right<=sizes.agent.left,JSON.stringify(sizes));
@@ -93,11 +92,12 @@ async function main(){
   await page.getByRole('button',{name:'取消',exact:true}).click();assert.equal(await page.locator('#chapterBody').inputValue(),body);
   await page.locator('#workbenchFilter').fill('找不到的资料');await page.locator('.workbench-filter-empty').waitFor({state:'visible'});
   await page.locator('#workbenchFilter').fill('');await page.locator('[data-library-tab="chapters"]').click();
-  await page.locator('[data-workbench-focus]').click();await page.locator('.workbench-assistant').waitFor({state:'hidden'});
+  await page.locator('[data-workbench-results-close]').click();
+  await page.locator('[data-workbench-focus]').click();await page.locator('.agent-chat').waitFor({state:'hidden'});
   assert.equal(await page.locator('#chapterBody').inputValue(),body);await page.locator('[data-workbench-focus]').click();
-  await page.locator('.workbench-assistant').waitFor({state:'visible'});
+  await page.locator('.agent-chat').waitFor({state:'visible'});
   for(const id of ['workbenchCandidateSection','workbenchContextSection','workbenchAgentSection']){
-   await page.locator(`[data-rail-section="${id}"]`).click();
+   await page.locator(`[data-chat-result="${id}"]`).click();
    await page.waitForFunction(id=>{
     const rail=document.querySelector('.workbench-rail-scroll').getBoundingClientRect(),section=document.getElementById(id).getBoundingClientRect();
     return section.top>=rail.top-2&&section.top<rail.bottom;
@@ -105,10 +105,10 @@ async function main(){
   }
   await screenshot(page,'writing-workbench-1440x1000.png');
  });
- await test('在正文旁直接创建总管计划不调用模型，刷新后保留同一进度',async()=>{
-  await page.locator('#agentQuery').fill('继续写门口的冲突，保留林岚视角。');
-  await page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  await until(async()=>{mainSession=(await api('/api/writing-agent')).sessions.find(row=>row.query==='继续写门口的冲突，保留林岚视角。');return mainSession},'workbench plan');
+ await test('已保存总管计划在正文旁恢复，不调用模型，刷新后保留同一进度',async()=>{
+  mainSession=(await api('/api/writing-agent','POST',{request_id:crypto.randomUUID(),chapter_id:firstId,
+   query:'继续写门口的冲突，保留林岚视角。',mode:'continue'})).session;
+  await page.evaluate(()=>authorLoadAgent());
   await page.locator(`[data-agent-session="${mainSession.id}"] [data-agent-action="authorize"]`).waitFor();assert.equal(requests.length,0);
   await page.locator(`[data-agent-session="${mainSession.id}"] .agent-context-evidence`).waitFor();
   await screenshot(page,'writing-agent-plan-1440x1000.png');
@@ -127,6 +127,7 @@ async function main(){
   const ready=await waitStatus(mainSession.id,'review_ready');assert.equal(ready.calls_used,3);assert.equal(requests.length,3);
   assert.ok((await api('/api/state')).chapters.find(c=>c.id===firstId).body.endsWith(prose));
   assert.equal((await api(`/api/chapter-analysis?chapter_id=${firstId}`)).analyses.length,1);
+  await page.locator('[data-chat-result="workbenchAgentSection"]').click();
   await page.locator(`[data-agent-session="${mainSession.id}"] [data-agent-review]`).waitFor();
   for(const selector of ['[data-agent-review]','[data-agent-analysis]','[data-agent-open]']){
    await page.evaluate(()=>{
@@ -146,14 +147,14 @@ async function main(){
   await screenshot(page,'writing-agent-complete-1440x1000.png');
  });
  await test('检查模式仅调用两次，服务重启后沿已存计划继续',async()=>{
-  const row=await createFromUI(page,'核对人物动作、因果和章后记忆。','inspect');await stopApp();await startApp();
+  const row=await createSavedPlan(page,'核对人物动作、因果和章后记忆。','inspect');await stopApp();await startApp();
   await page.reload();await page.waitForFunction(()=>backendOnline);await page.locator('[data-view="assistant"]').click();
   await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).click();
   const ready=await waitStatus(row.id,'review_ready');assert.equal(ready.calls_used,2);assert.equal(requests.length,5);
  });
  await test('已启动任务停止后不追加调用，迟到内容不进入正文',async()=>{
   delay=1500;const before=(await api('/api/state')).chapters[0].body;
-  const row=await createFromUI(page,'停止任务的本机验证。');
+  const row=await createSavedPlan(page,'停止任务的本机验证。');
   await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).click();
   await until(()=>requests.length===6,'provider entered');
   const current=await session(row.id);await api(`/api/writing-agent/${row.id}/resume`,'POST',{action:'cancel',checkpoint_id:current.checkpoint_id});
@@ -161,73 +162,29 @@ async function main(){
   assert.equal((await api('/api/state')).chapters[0].body,before);delay=80;
  });
  await test('模型连接断开后保留任务，不自动重发',async()=>{
-  fault='unknown';const row=await createFromUI(page,'连接中断的本机验证。');
+  fault='unknown';const row=await createSavedPlan(page,'连接中断的本机验证。');
   await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).click();
   const stopped=await waitStatus(row.id,'requires_action');assert.equal(requests.length,7);assert.equal(stopped.calls_used,1);
   await api(`/api/writing-agent/${row.id}/resume`,'POST',{action:'advance',checkpoint_id:stopped.checkpoint_id});
   await page.reload();await page.waitForFunction(()=>backendOnline);await page.locator('[data-view="assistant"]').click();await pause(300);
   assert.equal(requests.length,7);fault='';
  });
- await test('计划请求完成时不清除用户后来输入的草稿',async()=>{
-  let release,seen=false;const held=new Promise(resolve=>release=resolve);
-  await page.route('**/api/writing-agent',async route=>{
-   if(!seen&&route.request().method()==='POST'){
-    seen=true;const response=await route.fetch();await held;await route.fulfill({response});return;
-   }
-   return route.continue();
-  });
-  await page.locator('#agentQuery').fill('先提交的计划要求。');
-  const submit=page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  await until(()=>seen,'plan request entered');
-  await page.locator('#agentQuery').fill('用户后来输入的新计划要求。');
-  release();await submit;await page.unroute('**/api/writing-agent');
-  assert.equal(await page.locator('#agentQuery').inputValue(),'用户后来输入的新计划要求。');
-  assert.equal((await api('/api/writing-agent')).sessions.filter(r=>r.query==='先提交的计划要求。').length,1);
- });
- await test('旧计划请求失败后新草稿使用新身份并可保存',async()=>{
-  let release,seen=false;const held=new Promise(resolve=>release=resolve);
-  await page.route('**/api/writing-agent',async route=>{
-   if(!seen&&route.request().method()==='POST'){
-    seen=true;await route.fetch();await held;await route.abort('failed');return;
-   }
-   return route.continue();
-  });
-  await page.locator('#agentQuery').fill('先提交后失败的计划。');
-  const submit=page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  await until(()=>seen,'failed plan request entered');
-  await page.locator('#agentQuery').fill('失败后输入的新计划。');
-  release();await submit;await page.unroute('**/api/writing-agent');
-  assert.equal(await page.locator('#agentQuery').inputValue(),'失败后输入的新计划。');
-  await page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  await until(()=>page.locator('#agentQuery').inputValue().then(v=>v===''),'new draft saved');
-  const rows=(await api('/api/writing-agent')).sessions;
-  assert.equal(rows.filter(r=>r.query==='先提交后失败的计划。').length,1);
-  assert.equal(rows.filter(r=>r.query==='失败后输入的新计划。').length,1);
- });
- await test('网络失败保留创作要求，重试不会创建两条计划',async()=>{
-  await page.locator('#agentQuery').fill('重试请求必须使用同一身份。');let interrupted=false;
-  await page.route('**/api/writing-agent',async route=>{if(route.request().method()==='POST'&&!interrupted){interrupted=true;await route.fetch();return route.abort('failed')}return route.continue()});
-  await page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  await until(()=>page.locator('#writingAgent .form-error').textContent(),'network error');
-  assert.equal(await page.locator('#agentQuery').inputValue(),'重试请求必须使用同一身份。');
-  await page.unroute('**/api/writing-agent');await page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  await until(()=>page.locator('#agentQuery').inputValue().then(v=>v===''),'retry completed');
-  assert.equal((await api('/api/writing-agent')).sessions.filter(r=>r.query==='重试请求必须使用同一身份。').length,1);
- });
+ // Message draft races and retry identity are covered by agent_chat_browser_regressions.cjs.
  await test('紧凑电脑宽度和长文本无溢出，页面没有脚本错误',async()=>{
-  await page.setViewportSize({width:1280,height:900});await page.locator('#agentQuery').fill('长创作要求'.repeat(100));
+  await page.setViewportSize({width:1280,height:900});await page.locator('#agentChatInput').fill('长创作要求'.repeat(100));
   await screenshot(page,'writing-agent-1280x900.png');
   const dimensions=await page.evaluate(()=>({width:innerWidth,scroll:document.documentElement.scrollWidth}));assert.ok(dimensions.scroll<=dimensions.width);
   assert.deepEqual(report.page_errors,[]);
  });
  await test('1280电脑正文、资料和总管仍保持三栏，当前稿改动使依据过期',async()=>{
-  await page.locator('[data-view="editor"]').click();await page.locator('#workbenchContext [data-context-state]').waitFor();
+  await page.locator('[data-view="editor"]').click();await page.locator('[data-chat-result="workbenchContextSection"]').click();
+  await page.locator('#workbenchContext [data-context-state]').waitFor();
   const before=await page.locator('#chapterBody').inputValue();await page.locator('#chapterBody').fill(before+'\n\n她没有越过那道门槛。');
   assert.match(await page.locator('#workbenchContext [data-context-state]').textContent(),/已变化/);
   await page.locator('[data-workbench-context-refresh]').click();
   await until(()=>page.locator('#workbenchContext [data-context-state]').textContent().then(value=>value.includes('已保存稿件资料')),'updated context');
   const dimensions=await page.evaluate(()=>{
-   const editor=document.querySelector('.workbench-manuscript').getBoundingClientRect(),agent=document.querySelector('.workbench-assistant').getBoundingClientRect();
+   const editor=document.querySelector('.workbench-manuscript').getBoundingClientRect(),agent=document.querySelector('.agent-chat').getBoundingClientRect();
    return {width:innerWidth,scroll:document.documentElement.scrollWidth,editor:editor.width,overlap:editor.right>agent.left,
     height:innerHeight,pageHeight:document.documentElement.scrollHeight,editorBottom:editor.bottom,agentBottom:agent.bottom};
   });
@@ -277,11 +234,9 @@ async function main(){
   await page.evaluate(()=>authorSwitchProject('default-project'));await page.locator('[data-view="editor"]').click();
   const before=(await api('/api/state')).chapters.find(c=>c.id===firstId).body,beforeCalls=requests.length;
   await page.locator('#chapterBody').evaluate(element=>element.setSelectionRange(2,7));
-  await page.locator('[name="agentMode"][value="polish"]').check();
-  assert.match(await page.locator('[data-agent-mode-scope]').textContent(),/整章正文/);
-  await page.locator('#agentQuery').fill('整章修订，保留门外冲突和人物视角。');
-  await page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  const row=await until(async()=>(await api('/api/writing-agent')).sessions.find(r=>r.query==='整章修订，保留门外冲突和人物视角。'),'polish plan');
+  const row=(await api('/api/writing-agent','POST',{request_id:crypto.randomUUID(),chapter_id:firstId,
+   query:'整章修订，保留门外冲突和人物视角。',mode:'polish'})).session;
+  await page.evaluate(()=>authorLoadAgent());await page.locator('[data-chat-result="workbenchAgentSection"]').click();
   assert.equal(row.mode,'polish');assert.equal(requests.length,beforeCalls);
   await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).click();
   const candidate=await waitStatus(row.id,'awaiting_adoption');
@@ -322,18 +277,13 @@ async function main(){
   await screenshot(page,'writing-agent-polish-1280x900.png');
  });
  let planningSession;
- await test('全书规划模式草稿刷新可恢复，任务不依赖当前打开的章节',async()=>{
-  await page.locator('[data-view="assistant"]').click();await page.locator('[name="agentMode"][value="plan"]').check();
-  await page.locator('#agentQuery').fill('林岚追查铜钥匙的来历，从旧门冲突展开悬疑长篇。');
-  assert.equal(await page.locator('[data-agent-chapter-field]').isVisible(),false);
-  await page.reload();await page.waitForFunction(()=>backendOnline);await page.locator('[data-view="assistant"]').click();
-  assert.equal(await page.locator('[name="agentMode"][value="plan"]').isChecked(),true);
-  assert.equal(await page.locator('[data-agent-chapter-field]').isVisible(),false);
+ await test('全书规划任务刷新可恢复，不依赖当前打开的章节',async()=>{
   const beforeCalls=requests.length;
-  await page.getByRole('button',{name:'准备写作计划',exact:true}).click();
-  planningSession=await until(async()=>(await api('/api/writing-agent')).sessions.find(r=>r.mode==='plan'),'book plan');
+  planningSession=await createSavedPlan(page,'林岚追查铜钥匙的来历，从旧门冲突展开悬疑长篇。','plan');
+  await page.reload();await page.waitForFunction(()=>backendOnline);await page.locator('[data-view="assistant"]').click();
   assert.equal(planningSession.max_calls,4);assert.equal(requests.length,beforeCalls);
   await page.locator('[data-view="editor"]').click();
+  await page.locator('[data-chat-result="workbenchAgentSection"]').click();
   await page.locator(`[data-agent-session="${planningSession.id}"]`).waitFor();
   assert.match(await page.locator(`[data-agent-session="${planningSession.id}"] h3`).textContent(),/全书规划/);
   await page.locator('[data-view="assistant"]').click();
@@ -376,7 +326,7 @@ async function main(){
   assert.equal(chapters.filter(c=>c.plan_id).length,3);
  });
  await test('蓝图变化后旧规划停止执行，恢复只读任务没有启动或采纳按钮',async()=>{
-  const row=await createFromUI(page,'根据当前蓝图继续规划。','plan'),beforeCalls=requests.length;
+  const row=await createSavedPlan(page,'根据当前蓝图继续规划。','plan'),beforeCalls=requests.length;
   const current=await api('/api/blueprint');current.blueprint.premise+=' 后来的作者修改。';
   await api('/api/blueprint','PUT',{blueprint:current.blueprint,expected_version:current.version});
   await page.reload();await page.waitForFunction(()=>backendOnline);await page.locator('[data-view="assistant"]').click();

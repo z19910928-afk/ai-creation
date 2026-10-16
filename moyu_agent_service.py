@@ -95,7 +95,19 @@ def public_session(api, conn, row):
             "created_at": row["created_at"], "updated_at": row["updated_at"]}
 
 
-def _planning_request(api, data, session_id=None):
+def _validate_expected_source(api, conn, chapter_id, source):
+    if source is None:
+        return
+    chapter = next((c for c in api.chapter_rows(conn) if c["id"] == chapter_id), None)
+    if chapter is None or any(source.get(key) != value for key, value in (
+        ("project_id", api.project_id()), ("branch_id", api.branch_id()),
+        ("chapter_id", chapter_id), ("source_revision_id", chapter["revision_id"]),
+        ("source_body_hash", api.hash_text(chapter["body"])),
+    )):
+        raise ValueError("原稿已变化，请按当前正文重新讨论。")
+
+
+def _planning_request(api, data, session_id=None, *, expected_source=None):
     pending, canceled = [], []
     with closing(api.connect(check_same_thread=False)) as conn, conn:
         conn.execute("BEGIN IMMEDIATE")
@@ -115,6 +127,7 @@ def _planning_request(api, data, session_id=None):
                         json.loads(previous["plan_json"]).get("mode") != "plan"):
                     raise ValueError("这次请求已保存，请回看原任务或创建新任务。")
                 return {"session": public_session(api, conn, previous), "idempotent": True}
+            _validate_expected_source(api, conn, chapter_id, expected_source)
             plan = planning_agent.create(api, conn, chapter_id, query)
             session_id = api.uid("agent_")
             conn.execute("INSERT INTO app_agent_session VALUES(?,?,?,?,?,?,?,?,?,?,0)",
@@ -142,7 +155,7 @@ def _planning_request(api, data, session_id=None):
     return result
 
 
-def request(api, data, session_id=None):
+def request(api, data, session_id=None, *, expected_source=None):
     """Commit graph + queue atomically; only then dispatch queued work."""
     if not isinstance(data, dict):
         raise ValueError("写作任务内容无效。")
@@ -150,7 +163,7 @@ def request(api, data, session_id=None):
     if set(data) - allowed:
         raise ValueError("写作任务包含不支持的选项。")
     if session_id is None and data.get("mode") == "plan":
-        return _planning_request(api, data)
+        return _planning_request(api, data, expected_source=expected_source)
     if session_id is not None:
         session_id = api.checked_id(session_id, "writing session")
         with closing(api.connect()) as conn:
@@ -180,6 +193,7 @@ def request(api, data, session_id=None):
                         json.loads(previous["plan_json"]).get("mode") != mode):
                     raise ValueError("这次请求已保存，请回看原任务或创建新任务。")
                 return {"session": public_session(api, conn, previous), "idempotent": True}
+            _validate_expected_source(api, conn, chapter_id, expected_source)
             chapter = next((c for c in api.chapter_rows(conn) if c["id"] == chapter_id), None)
             if chapter is None:
                 raise ValueError("请先选择当前作品中的章节。")

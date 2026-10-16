@@ -1,0 +1,158 @@
+{
+  "generated_at": "2026-10-16T04:19:49.319Z",
+  "scope": "Read-only HTTP delivery of desktop page resources; no model or manuscript requests.",
+  "release_file": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-release-20261016-02.json",
+  "release_source_inventory_sha256": "d847761ddea1475ef37e48822afefd04fa1e92472d8588721acc782ceccaaaa2",
+  "resource_count": 13,
+  "http_get_count": 14,
+  "writes": 0,
+  "model_calls": 0,
+  "manuscript_requests": 0,
+  "source_files_sha256_before": {
+    "index.html": "4c1451998698b547a13f6ae925c859b60cb13eeffba8a8bda13c884615acae5c",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    "knowledge-workspace.css": "f933d46852a21eb4747482ad9683696d0123a07d039677918c71b76e5b9ce576",
+    "editor-preferences.css": "4f9ccbefa0f98f2abf7072177c80e30b07d14880cacaa93535067e395f2b0472",
+    "agent-chat.css": "f33bbd02b68bb91744cfeb1a173c48a9cf03081a12e213f30c08882a46c6a098",
+    "agent-settings.css": "ef0943a2a47d6c83c364582f909fca4ed342f5464953ce30deeb4c467934a682",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "app.js": "f205c2ba5ef348b5a262d63c202d6c82bf5e0ee8fcda8b723178790b559b72af",
+    "agent-settings.js": "a2ce6bfbd13f8b1651424ca72454fb2b4ed95a5c2187039f77a0508f75e21715",
+    "author-workspace.js": "80094fe301b35653fc382ed81f839bae6670204ce0108d88a5045e79d6605c53",
+    "knowledge-workspace.js": "8e097f4a0b2ab8844ee87f979d8babb17163c9eb776339460d52a055880fc953",
+    "writing-inbox.js": "92b80a216f2849cb3ae2fc8a831cc9b3118349ff6a7620a7f9fd5c7af44e2dfd",
+    "agent-chat.js": "28e93edee47ab72665549b2b0e34ad2d2d05406d5f80735736ecd84771386796"
+  },
+  "source_files_sha256_after": {
+    "index.html": "4c1451998698b547a13f6ae925c859b60cb13eeffba8a8bda13c884615acae5c",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    "knowledge-workspace.css": "f933d46852a21eb4747482ad9683696d0123a07d039677918c71b76e5b9ce576",
+    "editor-preferences.css": "4f9ccbefa0f98f2abf7072177c80e30b07d14880cacaa93535067e395f2b0472",
+    "agent-chat.css": "f33bbd02b68bb91744cfeb1a173c48a9cf03081a12e213f30c08882a46c6a098",
+    "agent-settings.css": "ef0943a2a47d6c83c364582f909fca4ed342f5464953ce30deeb4c467934a682",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "app.js": "f205c2ba5ef348b5a262d63c202d6c82bf5e0ee8fcda8b723178790b559b72af",
+    "agent-settings.js": "a2ce6bfbd13f8b1651424ca72454fb2b4ed95a5c2187039f77a0508f75e21715",
+    "author-workspace.js": "80094fe301b35653fc382ed81f839bae6670204ce0108d88a5045e79d6605c53",
+    "knowledge-workspace.js": "8e097f4a0b2ab8844ee87f979d8babb17163c9eb776339460d52a055880fc953",
+    "writing-inbox.js": "92b80a216f2849cb3ae2fc8a831cc9b3118349ff6a7620a7f9fd5c7af44e2dfd",
+    "agent-chat.js": "28e93edee47ab72665549b2b0e34ad2d2d05406d5f80735736ecd84771386796"
+  },
+  "source_unchanged": true,
+  "requests": [
+    {
+      "resource": "/",
+      "source_file": "index.html",
+      "status": 200,
+      "sha256": "4c1451998698b547a13f6ae925c859b60cb13eeffba8a8bda13c884615acae5c",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "index.html",
+      "source_file": "index.html",
+      "status": 200,
+      "sha256": "4c1451998698b547a13f6ae925c859b60cb13eeffba8a8bda13c884615acae5c",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "styles.css",
+      "source_file": "styles.css",
+      "status": 200,
+      "sha256": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "knowledge-workspace.css",
+      "source_file": "knowledge-workspace.css",
+      "status": 200,
+      "sha256": "f933d46852a21eb4747482ad9683696d0123a07d039677918c71b76e5b9ce576",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "editor-preferences.css",
+      "source_file": "editor-preferences.css",
+      "status": 200,
+      "sha256": "4f9ccbefa0f98f2abf7072177c80e30b07d14880cacaa93535067e395f2b0472",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "agent-chat.css",
+      "source_file": "agent-chat.css",
+      "status": 200,
+      "sha256": "f33bbd02b68bb91744cfeb1a173c48a9cf03081a12e213f30c08882a46c6a098",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "agent-settings.css",
+      "source_file": "agent-settings.css",
+      "status": 200,
+      "sha256": "ef0943a2a47d6c83c364582f909fca4ed342f5464953ce30deeb4c467934a682",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "editor-sync.js",
+      "source_file": "editor-sync.js",
+      "status": 200,
+      "sha256": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "app.js",
+      "source_file": "app.js",
+      "status": 200,
+      "sha256": "f205c2ba5ef348b5a262d63c202d6c82bf5e0ee8fcda8b723178790b559b72af",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "agent-settings.js",
+      "source_file": "agent-settings.js",
+      "status": 200,
+      "sha256": "a2ce6bfbd13f8b1651424ca72454fb2b4ed95a5c2187039f77a0508f75e21715",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "author-workspace.js",
+      "source_file": "author-workspace.js",
+      "status": 200,
+      "sha256": "80094fe301b35653fc382ed81f839bae6670204ce0108d88a5045e79d6605c53",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "knowledge-workspace.js",
+      "source_file": "knowledge-workspace.js",
+      "status": 200,
+      "sha256": "8e097f4a0b2ab8844ee87f979d8babb17163c9eb776339460d52a055880fc953",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "writing-inbox.js",
+      "source_file": "writing-inbox.js",
+      "status": 200,
+      "sha256": "92b80a216f2849cb3ae2fc8a831cc9b3118349ff6a7620a7f9fd5c7af44e2dfd",
+      "matches_current_source": true,
+      "matches_release_source": true
+    },
+    {
+      "resource": "agent-chat.js",
+      "source_file": "agent-chat.js",
+      "status": 200,
+      "sha256": "28e93edee47ab72665549b2b0e34ad2d2d05406d5f80735736ecd84771386796",
+      "matches_current_source": true,
+      "matches_release_source": true
+    }
+  ],
+  "claim_limit": "Verifies served static bytes only; does not prove Python process identity, provider health, chat completion, or literary quality.",
+  "passed": true
+}

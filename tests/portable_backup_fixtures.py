@@ -55,7 +55,8 @@ BASE_TABLES = {
     "app_planning_attempt", "app_planning_event", "app_planning_application",
 }
 AGENT_TABLES = {"app_agent_session", "app_agent_checkpoint", "app_agent_write"}
-ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"} | AGENT_TABLES
+CHAT_TABLES = {"app_agent_chat_session", "app_agent_chat_turn", "app_agent_chat_action"}
+ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"} | AGENT_TABLES | CHAT_TABLES
 ALL_TABLES = BASE_TABLES | ADDITIVE_TABLES
 SOURCE_PROJECT = "portable-source-book"
 SOURCE_BRANCH = "portable-main"
@@ -633,6 +634,83 @@ def seed_source(conn: sqlite3.Connection) -> dict:
            checkpoint_ns="", task_id="portable-agent-task", task_path="prepare",
            idx=0, channel="sealed-history", type="sealed-test-bytes",
            value=b"\x80\x04opaque-write\x00\xfd")
+    for session_id in ("portable-chat-session", "portable-chat-other-session"):
+        insert(conn, "app_agent_chat_session", id=session_id,
+               project_id=SOURCE_PROJECT, branch_id=SOURCE_BRANCH, title=chapter_id,
+               request_id=session_id + "-request", created_at=STAMP, updated_at=STAMP,
+               restored_read_only=0)
+    chat_reference = copy.deepcopy(source)
+    chat_reference["mode"] = "replace"
+    chat_reference["range"] = {"start": 0, "end": len(latest_body), "quote": latest_body}
+    for status in ("queued", "running", "success", "failed", "canceled"):
+        run_id = "portable-chat-run-" + status
+        job_id = "portable-chat-job-" + status
+        turn_id = "portable-chat-turn-" + status
+        context = {
+            "project": {"id": SOURCE_PROJECT, "title": chapter_id},
+            "current_chapter": {"id": chapter_id, "revision_id": latest_revision,
+                                "body": chapter_id},
+            "_agent_chat": {"chat_session_id": "portable-chat-session",
+                            "chat_turn_id": turn_id},
+            "request_audit": audit,
+        }
+        output = json_text({"reply": chapter_id, "actions": []})
+        result = {"text": output, "structured": {"reply": chapter_id, "actions": []},
+                  "response_format": "json", "mode": "provider",
+                  "safe_to_apply": True, "finish_reason": "stop",
+                  "completion_state": "complete", "truncated": False,
+                  "usage": {"prompt_tokens": 11, "completion_tokens": 3,
+                            "total_tokens": 14}, "billing_state": "known"}
+        insert(conn, "ai_run", id=run_id, project_id=SOURCE_PROJECT,
+               branch_id=SOURCE_BRANCH, mode="provider", provider="synthetic",
+               model=chapter_id, model_snapshot=chapter_id,
+               system_prompt_hash=text_hash(chapter_id), prompt_hash=audit["request_sha256"],
+               input_hash=text_hash(json_text(context)),
+               output_hash=text_hash(output) if status == "success" else None,
+               sampling_json=json_text({"stop": [chapter_id]}), tool_calls_json="[]",
+               started_at=STAMP, ended_at=STAMP if status not in {"queued", "running"} else None,
+               status=status, error=None, context_item_ids_json="[]",
+               token_json=json_text({"usage": result["usage"], "usage_state": "known"}),
+               latency_ms=9, cost_json=json_text({"actual_cost": 0.002, "billing_state": "known"}),
+               author_decision="pending", consent_json=json_text({
+                   "job_id": job_id, "task": "assistant_chat", "response_format": "json",
+                   "request_audit": audit}))
+        insert(conn, "app_ai_job", id=job_id, project_id=SOURCE_PROJECT,
+               branch_id=SOURCE_BRANCH, ai_run_id=run_id, task="assistant_chat",
+               chapter_id=chapter_id, instruction=chapter_id,
+               context_json=json_text(context), response_format="json", max_tokens=100,
+               status=status, retry_of=None,
+               result_json=json_text(result) if status == "success" else None,
+               error=None, created_at=STAMP, updated_at=STAMP)
+        insert(conn, "app_quota_reservation", ai_run_id=run_id,
+               project_id=SOURCE_PROJECT, day="2026-10-15",
+               status="reserved" if status == "queued" else "dispatched",
+               created_at=STAMP, updated_at=STAMP)
+        insert(conn, "app_agent_chat_turn", id=turn_id,
+               project_id=SOURCE_PROJECT, branch_id=SOURCE_BRANCH,
+               session_id="portable-chat-session", request_id=turn_id + "-request",
+               request_hash=text_hash(status), content=chapter_id,
+               references_json=json_text([chat_reference]), chapter_id=chapter_id,
+               source_json=json_text(source), context_json=json_text(context),
+               job_id=job_id, reply=chapter_id if status == "success" else "",
+               status=status, created_at=STAMP, updated_at=STAMP)
+    for status in ("proposed", "confirming", "confirmed", "dismissed"):
+        insert(conn, "app_agent_chat_action", id="portable-chat-action-" + status,
+               project_id=SOURCE_PROJECT, branch_id=SOURCE_BRANCH,
+               session_id="portable-chat-session", turn_id="portable-chat-turn-success",
+               kind="continue", label=chapter_id, instruction=chapter_id,
+               chapter_id=chapter_id, source_json=json_text(source),
+               payload_json=json_text({"mode": "continue"}),
+               status=status, result_json=json_text({
+                   "writing_session_id": "portable-agent-session", "chapter_id": chapter_id,
+               }) if status == "confirmed" else "{}",
+               created_at=STAMP, updated_at=STAMP)
+    insert(conn, "app_agent_connection", project_id=SOURCE_PROJECT,
+           settings_json=json_text({
+               "mode": "independent", "api_key": SYNTHETIC_CREDENTIAL,
+               "_credential_ref": "portable-chat-local-credential-reference",
+               "base_url": "http://127.0.0.1:1/v1", "model": "synthetic-agent-model",
+           }), updated_at=STAMP)
     conn.commit()
     return {"chapter_id": chapter_id, "revision_id": revision,
             "latest_revision_id": latest_revision, "body": latest_body,
@@ -669,6 +747,8 @@ EXTRA_IDENTITY_COLUMNS = {
     "app_planning_attempt": {"job_id"},
     "app_planning_event": {"attempt_id"},
     "app_planning_application": {"project_id", "branch_id"},
+    "app_agent_chat_turn": {"session_id", "chapter_id", "job_id"},
+    "app_agent_chat_action": {"session_id", "turn_id", "chapter_id"},
 }
 EVIDENCE_IDENTITY_KEYS = {
     "source_span_id", "source_chapter_id", "source_revision_id",
@@ -760,6 +840,10 @@ def expected_json(table, column, raw, mapping):
             marker["branch_id"] = mapping[marker["branch_id"]]
             for dependency in marker["dependencies"]:
                 dependency["id"] = mapping[dependency["id"]]
+        if value.get("_agent_chat"):
+            for field in ("chat_session_id", "chat_turn_id"):
+                if value["_agent_chat"].get(field):
+                    value["_agent_chat"][field] = mapping[value["_agent_chat"][field]]
         for passage in value.get("reference_passages", []):
             for field in ("document_id", "section_id", "project_id", "branch_id"):
                 passage[field] = mapping[passage[field]]
@@ -789,6 +873,22 @@ def expected_json(table, column, raw, mapping):
                 if dependency.get(field) in mapping:
                     dependency[field] = mapping[dependency[field]]
         value = map_evidence(value, mapping)
+    elif table in CHAT_TABLES:
+        if column == "references_json":
+            value = [map_source(source, mapping) for source in value]
+        elif column == "source_json":
+            value = map_source(value, mapping)
+        elif column == "context_json":
+            value["project"]["id"] = mapping[value["project"]["id"]]
+            value["current_chapter"]["id"] = mapping[value["current_chapter"]["id"]]
+            value["current_chapter"]["revision_id"] = mapping[
+                value["current_chapter"]["revision_id"]]
+            for field in ("chat_session_id", "chat_turn_id"):
+                value["_agent_chat"][field] = mapping[value["_agent_chat"][field]]
+        elif column == "result_json":
+            for field in ("writing_session_id", "chapter_id"):
+                if value.get(field):
+                    value[field] = mapping[value[field]]
     return value
 
 
@@ -938,6 +1038,12 @@ class PortableBackupTests(unittest.TestCase):
                             error="备份中的规划模型请求费用与执行状态未知，未重复执行。")
         if table == "app_agent_session":
             expected.update(status="restored", restored_read_only=1)
+        if table == "app_agent_chat_session":
+            expected["restored_read_only"] = 1
+        if table == "app_agent_chat_turn" and source_row["status"] in {"queued", "running"}:
+            expected["status"] = "failed"
+        if table == "app_agent_chat_action" and source_row["status"] == "confirming":
+            expected["status"] = "proposed"
         return expected
 
     def assert_all_rows(self, payload, result):
@@ -1131,12 +1237,13 @@ class PortableBackupTests(unittest.TestCase):
         legacy = copy.deepcopy(self.payload)
         legacy["tables"].pop("app_entity_scope")
         legacy["tables"].pop("app_candidate_revision")
-        for table in AGENT_TABLES:
+        for table in AGENT_TABLES | CHAT_TABLES:
             legacy["tables"].pop(table)
         # A genuine pre-candidate package has no parent/child candidate bind.
         for row in legacy["tables"]["app_ai_job"]:
             context = json.loads(row["context_json"])
             context.pop("_candidate_revision", None)
+            context.pop("_agent_chat", None)
             row["context_json"] = json_text(context)
             if row["result_json"]:
                 result = json.loads(row["result_json"])
@@ -1151,7 +1258,7 @@ class PortableBackupTests(unittest.TestCase):
             "SELECT COUNT(*) FROM app_candidate_revision WHERE project_id=?",
             (result["project_id"],),
         ).fetchone()[0], 0)
-        for table in AGENT_TABLES:
+        for table in AGENT_TABLES | CHAT_TABLES:
             self.assertEqual(self.conn.execute(
                 'SELECT COUNT(*) FROM "' + table + '" WHERE project_id=?',
                 (result["project_id"],),
@@ -1159,6 +1266,108 @@ class PortableBackupTests(unittest.TestCase):
         malformed = copy.deepcopy(self.payload)
         malformed["tables"].pop("app_candidate_revision")
         self.assert_invalid_payload(malformed)
+
+    def test_pre_chat_packages_restore_without_chat_or_local_connection(self):
+        payload = copy.deepcopy(self.payload)
+        for table in CHAT_TABLES:
+            payload["tables"].pop(table)
+        for row in payload["tables"]["app_ai_job"]:
+            context = json.loads(row["context_json"])
+            context.pop("_agent_chat", None)
+            row["context_json"] = json_text(context)
+        result = self.restore(payload, "portable-pre-chat-copy")
+        for table in CHAT_TABLES | {"app_agent_connection"}:
+            self.assertEqual(self.conn.execute(
+                f'SELECT COUNT(*) FROM "{table}" WHERE project_id=?',
+                (result["project_id"],),
+            ).fetchone()[0], 0)
+
+    def test_chat_records_require_closed_same_session_branch_and_job_bindings(self):
+        mutations = (
+            ("app_agent_chat_turn", "portable-chat-turn-success", "session_id", "missing-session"),
+            ("app_agent_chat_turn", "portable-chat-turn-success", "job_id", "missing-job"),
+            ("app_agent_chat_turn", "portable-chat-turn-success", "branch_id", ALTERNATE_BRANCH),
+            ("app_agent_chat_action", "portable-chat-action-proposed",
+             "session_id", "portable-chat-other-session"),
+            ("app_agent_chat_action", "portable-chat-action-proposed",
+             "turn_id", "missing-turn"),
+            ("app_agent_chat_action", "portable-chat-action-proposed",
+             "chapter_id", self.identities["alternate_chapter_id"]),
+        )
+        for table, identity, field, value in mutations:
+            with self.subTest(table=table, field=field):
+                payload = copy.deepcopy(self.payload)
+                row = next(row for row in payload["tables"][table] if row["id"] == identity)
+                row[field] = value
+                self.assert_invalid_payload(payload)
+        for field, value in (("chat_session_id", "portable-chat-other-session"),
+                             ("chat_turn_id", "portable-chat-turn-queued")):
+            with self.subTest(binding=field):
+                payload = copy.deepcopy(self.payload)
+                job = next(row for row in payload["tables"]["app_ai_job"]
+                           if row["id"] == "portable-chat-job-success")
+                context = json.loads(job["context_json"])
+                context["_agent_chat"][field] = value
+                job["context_json"] = json_text(context)
+                self.assert_invalid_payload(payload)
+        payload = copy.deepcopy(self.payload)
+        action = next(row for row in payload["tables"]["app_agent_chat_action"]
+                      if row["id"] == "portable-chat-action-confirmed")
+        action["result_json"] = json_text({"writing_session_id": "missing-writing-task"})
+        self.assert_invalid_payload(payload)
+
+    def test_chat_json_types_and_enumerated_actions_are_checked_without_writes(self):
+        cases = (
+            ("app_agent_chat_turn", "portable-chat-turn-success", "references_json", "{}"),
+            ("app_agent_chat_turn", "portable-chat-turn-success", "source_json", "[]"),
+            ("app_agent_chat_turn", "portable-chat-turn-success", "context_json", "[]"),
+            ("app_agent_chat_turn", "portable-chat-turn-success", "status", "retry"),
+            ("app_agent_chat_action", "portable-chat-action-proposed", "kind", "delete"),
+            ("app_agent_chat_action", "portable-chat-action-proposed", "status", "executing"),
+            ("app_agent_chat_action", "portable-chat-action-proposed", "payload_json", "[]"),
+            ("app_agent_chat_action", "portable-chat-action-confirmed", "result_json", "[]"),
+        )
+        for table, identity, field, value in cases:
+            with self.subTest(table=table, field=field):
+                payload = copy.deepcopy(self.payload)
+                row = next(row for row in payload["tables"][table] if row["id"] == identity)
+                row[field] = value
+                self.assert_invalid_payload(payload)
+
+    def test_chat_restore_preserves_prose_and_history_and_excludes_local_credentials(self):
+        self.assertNotIn("app_agent_connection", self.payload["tables"])
+        self.assertNotIn(SYNTHETIC_CREDENTIAL, json_text(self.payload))
+        self.assertNotIn("portable-chat-local-credential-reference", json_text(self.payload))
+        result = self.restore(project="portable-chat-recovered")
+        self.assert_all_rows(self.payload, result)
+        mapping = result["identity_map"]
+        session = self.conn.execute(
+            "SELECT * FROM app_agent_chat_session WHERE id=?",
+            (mapping["portable-chat-session"],),
+        ).fetchone()
+        self.assertEqual(session["restored_read_only"], 1)
+        self.assertEqual(session["title"], self.identities["chapter_id"])
+        for status in ("queued", "running", "success", "failed", "canceled"):
+            turn = self.conn.execute("SELECT * FROM app_agent_chat_turn WHERE id=?",
+                                     (mapping["portable-chat-turn-" + status],)).fetchone()
+            self.assertEqual(turn["session_id"], session["id"])
+            self.assertEqual(turn["content"], self.identities["chapter_id"])
+            self.assertEqual(turn["reply"],
+                             self.identities["chapter_id"] if status == "success" else "")
+            self.assertEqual(turn["status"], "failed" if status in {"queued", "running"} else status)
+            self.assertEqual(json.loads(turn["source_json"])["chapter_id"],
+                             mapping[self.identities["chapter_id"]])
+            self.assertEqual(json.loads(turn["references_json"])[0]["range"]["quote"],
+                             self.identities["body"])
+        action = self.conn.execute("SELECT * FROM app_agent_chat_action WHERE id=?",
+                                   (mapping["portable-chat-action-confirmed"],)).fetchone()
+        self.assertEqual(json.loads(action["result_json"])["writing_session_id"],
+                         mapping["portable-agent-session"])
+        self.assertEqual(action["instruction"], self.identities["chapter_id"])
+        self.assertEqual(self.conn.execute(
+            "SELECT COUNT(*) FROM app_agent_connection WHERE project_id=?",
+            (result["project_id"],),
+        ).fetchone()[0], 0)
 
     def test_unknown_table_unknown_column_missing_column_and_bad_rows_rejected(self):
         cases = []
@@ -2038,7 +2247,9 @@ class PortableBackupTests(unittest.TestCase):
                 self.conn.commit()
                 server.process_ai_job(job_id)
                 self.assertEqual(snapshot(self.conn), before)
-                with self.assertRaisesRegex((RuntimeError, ValueError), "仅供阅读"):
+                retry_error = ("对话回复不能从通用任务入口重试"
+                               if job["task"] == "assistant_chat" else "仅供阅读")
+                with self.assertRaisesRegex((RuntimeError, ValueError), retry_error):
                     server.retry_ai_job(self.conn, job_id, {"mode": "original"})
                 self.conn.rollback()
                 self.assertEqual(snapshot(self.conn), before)

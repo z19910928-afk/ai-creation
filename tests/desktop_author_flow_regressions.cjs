@@ -122,6 +122,7 @@ async function reviewAll(ids) {
 async function openAnalysisCandidate(id, task, label, body) {
   await page.waitForFunction(value => aiDraft?.task === value.task &&
     aiDraft.source?.chapter_id === value.id && aiDraft.complete, {id, task});
+  await page.locator('[data-chat-result="workbenchCandidateSection"]').click();
   await page.locator('#aiTask').selectOption('continue');
   assert.equal(await page.locator('.ai-copilot h3').innerText(), label);
   assert.match(await page.locator('#aiStatus').innerText(), new RegExp(`${label}已生成`));

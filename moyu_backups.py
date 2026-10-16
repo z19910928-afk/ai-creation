@@ -21,17 +21,19 @@ from scripts.sqlite_backup import backup_database, verify_backup
 
 
 SKIP_TABLES = {"migration_ledger", "app_backup_artifact", "app_search_document",
-               "app_search_index_state", "app_search_fts", "index_checkpoint"}
+               "app_search_index_state", "app_search_fts", "index_checkpoint",
+               "app_agent_connection"}
 PLANNING_TABLES = {"app_planning_workflow", "app_planning_attempt",
                    "app_planning_event", "app_planning_application"}
 AGENT_TABLES = {"app_agent_session", "app_agent_checkpoint", "app_agent_write"}
+CHAT_TABLES = {"app_agent_chat_session", "app_agent_chat_turn", "app_agent_chat_action"}
 PLANNING_RESTORE_REASON = "从备份恢复的规划仅供阅读，请重新开始规划；旧模型请求不会自动再次执行。"
 PROJECT_TITLE_LIMIT = 200
 RESTORE_TITLE_SUFFIX = " · 恢复副本"
 MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
 MAX_EXPANDED_BYTES = 256_000_000
 SCHEMA_VERSION = 11
-KNOWN_ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"} | AGENT_TABLES
+KNOWN_ADDITIVE_TABLES = {"app_candidate_revision", "app_entity_scope"} | AGENT_TABLES | CHAT_TABLES
 # The first complete v1 archive already included all of these tables.
 REQUIRED_TABLES = set("""
 project branch document_node document_revision event_log deletion_event source_span
@@ -74,6 +76,19 @@ EXTRA_REFERENCES = {
                              "session_id": "app_agent_session"},
     "app_agent_write": {"project_id": "project", "branch_id": "branch",
                         "session_id": "app_agent_session"},
+    "app_agent_chat_session": {
+        "project_id": "project", "branch_id": "branch",
+    },
+    "app_agent_chat_turn": {
+        "project_id": "project", "branch_id": "branch",
+        "session_id": "app_agent_chat_session", "chapter_id": "document_node",
+        "job_id": "app_ai_job",
+    },
+    "app_agent_chat_action": {
+        "project_id": "project", "branch_id": "branch",
+        "session_id": "app_agent_chat_session", "turn_id": "app_agent_chat_turn",
+        "chapter_id": "document_node",
+    },
 }
 PROVENANCE_TYPES = {
     "entity": "entity", "document_node": "document_node", "revision": "document_revision",
@@ -106,6 +121,8 @@ JSON_REFERENCES = {
     "job_id": "app_ai_job", "actor_id": "actor", "decision_id": "app_ai_run_decision",
     "workflow_id": "app_planning_workflow", "attempt_id": "app_planning_attempt",
     "source_document_id": "app_reference_document", "source_section_id": "app_reference_section",
+    "chat_session_id": "app_agent_chat_session", "chat_turn_id": "app_agent_chat_turn",
+    "chat_action_id": "app_agent_chat_action", "writing_session_id": "app_agent_session",
 }
 JSON_REFERENCE_LISTS = {
     "entity_ids": "entity", "pov_entity_ids": "entity", "alias_matches": "entity",
@@ -681,7 +698,46 @@ def _check_graph(data, schema, project, *, full):
                                       branch_of(table, row), historical=table in {
                                           "event_log", "deletion_event", "audit_event",
                                       }, names=table == "app_entity_scope")
+    _check_chat_graph(data, indexes, project, branch_of)
     return indexes
+
+
+def _check_chat_graph(data, indexes, project, branch_of):
+    """Validate chat ownership without interpreting message prose as IDs."""
+    for table in CHAT_TABLES:
+        for row in data.get(table, []):
+            session = (row if table == "app_agent_chat_session" else
+                       indexes.get("app_agent_chat_session", {}).get(row["session_id"]))
+            row_branch = branch_of(table, row)
+            if session is None or session["project_id"] != project or session["branch_id"] != row_branch:
+                raise ValueError("备份中的聊天记录跨越了稿件分支")
+
+            turn_id = row.get("turn_id")
+            if turn_id is not None:
+                turn = indexes.get("app_agent_chat_turn", {}).get(turn_id)
+                if turn is None or turn["session_id"] != session["id"]:
+                    raise ValueError("备份中的聊天消息不属于当前会话")
+            if table == "app_agent_chat_turn":
+                if row["status"] not in {"queued", "running", "success", "failed", "canceled"}:
+                    raise ValueError("备份中的聊天回复状态无效")
+                if row["job_id"]:
+                    context = _strict_json(indexes["app_ai_job"][row["job_id"]]["context_json"])
+                    binding = context.get("_agent_chat")
+                    if (not isinstance(binding, dict)
+                            or binding.get("chat_session_id") != row["session_id"]
+                            or binding.get("chat_turn_id") != row["id"]):
+                        raise ValueError("备份中的聊天消息与模型任务归属不一致")
+            if table == "app_agent_chat_action":
+                if (row["kind"] not in {"continue", "polish", "inspect", "plan", "open"}
+                        or row["status"] not in {"proposed", "confirming", "confirmed", "dismissed"}):
+                    raise ValueError("备份中的聊天动作类型或状态无效")
+
+            for field, raw in row.items():
+                if field.endswith("_json") and raw is not None:
+                    parsed = _strict_json(raw)
+                    expected = list if field == "references_json" else dict
+                    if not isinstance(parsed, expected) and not (field == "source_json" and parsed is None):
+                        raise ValueError("备份中的聊天资料格式无效")
 
 
 def _check_json_graph(value, indexes, project, branch, *, key="", historical=False, names=False):
@@ -1120,6 +1176,12 @@ def transplant(conn, payload, new_project, title=None):
                 row.update(status="unknown", error="备份中的规划模型请求费用与执行状态未知，未重复执行。")
             if table == "app_agent_session":
                 row.update(status="restored", restored_read_only=1)
+            if table == "app_agent_chat_session":
+                row["restored_read_only"] = 1
+            if table == "app_agent_chat_turn" and row["status"] in {"queued", "running"}:
+                row["status"] = "failed"
+            if table == "app_agent_chat_action" and row["status"] == "confirming":
+                row["status"] = "proposed"
     order = _table_order(data, schema)
     branches = data.get("branch") or []
     branch = next((row["id"] for row in branches if row["status"] == "active"), None)

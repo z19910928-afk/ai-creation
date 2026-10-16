@@ -1,0 +1,137 @@
+{
+  "evidence_type": "regression_reproduction",
+  "recorded_at": "2026-10-16",
+  "source_private_report": {
+    "relative_name": "moyu-chat-inbox-red-test-u4_836a7/report.json",
+    "sha256": "416eec5d374df4594fbaeb3c64fdd71f0c44b9c8ce602c9ff9c5cfed4697b2f2"
+  },
+  "observed_bug": true,
+  "expectation_met": false,
+  "synthetic_only": true,
+  "scope": "real GET /api/writing-inbox; isolated queue fixture; no real credentials, user data or model provider",
+  "private_content_present": false,
+  "database_dump_sha256_before": "2790992bee8082515979e5c75d7345cec2695adfeb8f09b5a1a23dd2f252e0d9",
+  "database_dump_sha256_after": "2790992bee8082515979e5c75d7345cec2695adfeb8f09b5a1a23dd2f252e0d9",
+  "database_unchanged": true,
+  "model_calls": 0,
+  "worker_calls": 0,
+  "outbound_calls": 0,
+  "requests": [
+    {
+      "method": "GET",
+      "route": "/api/writing-inbox?kind=queue&limit=100",
+      "http_status": 200,
+      "response_sha256": "238912c25258782537123a3177a70514d13909debf8b57fbe226dbe1bcc1fe23",
+      "observed_queue_count": 6,
+      "expected_queue_count": 3,
+      "rows": [
+        {
+          "task": "assistant_chat",
+          "title": "写作候选",
+          "status": "candidate_ready",
+          "status_label": "等待查看候选",
+          "action": "open_job",
+          "read_only": false
+        },
+        {
+          "task": "assistant_chat",
+          "title": "写作候选",
+          "status": "failed",
+          "status_label": "任务失败，需检查",
+          "action": "open_job",
+          "read_only": true
+        },
+        {
+          "task": "assistant_chat",
+          "title": "写作候选",
+          "status": "unknown",
+          "status_label": "费用状态未知，需检查",
+          "action": "open_job",
+          "read_only": true
+        },
+        {
+          "task": "continue",
+          "title": "续写候选",
+          "status": "candidate_ready",
+          "status_label": "等待查看候选",
+          "action": "open_job",
+          "read_only": false
+        },
+        {
+          "task": "continue",
+          "title": "续写候选",
+          "status": "failed",
+          "status_label": "任务失败，需检查",
+          "action": "open_job",
+          "read_only": true
+        },
+        {
+          "task": "continue",
+          "title": "续写候选",
+          "status": "unknown",
+          "status_label": "费用状态未知，需检查",
+          "action": "open_job",
+          "read_only": true
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "route": "/api/writing-inbox?limit=100",
+      "http_status": 200,
+      "response_sha256": "58b55e3116586c3d2410a053ce99c8947986cd183d8b7b83d35b20a88ccabd58",
+      "observed_queue_count": 6,
+      "expected_queue_count": 3,
+      "rows": [
+        {
+          "task": "assistant_chat",
+          "title": "写作候选",
+          "status": "candidate_ready",
+          "status_label": "等待查看候选",
+          "action": "open_job",
+          "read_only": false
+        },
+        {
+          "task": "assistant_chat",
+          "title": "写作候选",
+          "status": "failed",
+          "status_label": "任务失败，需检查",
+          "action": "open_job",
+          "read_only": true
+        },
+        {
+          "task": "assistant_chat",
+          "title": "写作候选",
+          "status": "unknown",
+          "status_label": "费用状态未知，需检查",
+          "action": "open_job",
+          "read_only": true
+        },
+        {
+          "task": "continue",
+          "title": "续写候选",
+          "status": "candidate_ready",
+          "status_label": "等待查看候选",
+          "action": "open_job",
+          "read_only": false
+        },
+        {
+          "task": "continue",
+          "title": "续写候选",
+          "status": "failed",
+          "status_label": "任务失败，需检查",
+          "action": "open_job",
+          "read_only": true
+        },
+        {
+          "task": "continue",
+          "title": "续写候选",
+          "status": "unknown",
+          "status_label": "费用状态未知，需检查",
+          "action": "open_job",
+          "read_only": true
+        }
+      ]
+    }
+  ]
+}

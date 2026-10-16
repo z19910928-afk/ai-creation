@@ -1,0 +1,365 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-16T04:16:14.164Z",
+  "scope": "independent_read_only_summary_of_local_4174_preview_records",
+  "sources": {
+    "before": {
+      "file": "artifacts/agent-chat-preview-20261016/before.json",
+      "sha256": "0f3f2283fa88546b39c830b445678a3bcb47af848524747656e229027d55a58a",
+      "availability": "local_only"
+    },
+    "after_restart": {
+      "file": "artifacts/agent-chat-preview-20261016/after-restart.json",
+      "sha256": "f14d4021ce23dca1585e72c340a985f5cc21a7ff8b9a8aa0b2c090df87783be2",
+      "availability": "local_only"
+    },
+    "after_browser": {
+      "file": "artifacts/agent-chat-preview-20261016/after-browser.json",
+      "sha256": "f14d4021ce23dca1585e72c340a985f5cc21a7ff8b9a8aa0b2c090df87783be2",
+      "availability": "local_only"
+    },
+    "browser": {
+      "file": "artifacts/local-4174-readonly-acceptance/2026-10-16T04-04-42-522Z/report.json",
+      "sha256": "9c58298f2db26753fcf13672dafc0b8d21e80d2348cd5e15272bf1b99dbf906a",
+      "availability": "local_only"
+    }
+  },
+  "source_reports_unchanged_during_summary": true,
+  "databases": {
+    "before": {
+      "preview": {
+        "table_count": 68,
+        "row_count": 50,
+        "schema_sha256": "d5293de60d35cda52903d4ed47a2baf8dd9045c733116469c62ecc70d537e138",
+        "table_snapshot_sha256": "56ee244e995a7d1e6301cdca4582d647c4af3719fb57b62cf3204668ad62b16f",
+        "user_version": 11,
+        "integrity_ok": true,
+        "foreign_key_errors": 0
+      },
+      "original": {
+        "table_count": 65,
+        "row_count": 32,
+        "schema_sha256": "972d3c69e6dca70cd48da60d563953dbb6b64acfd6c044d863d3a45d8e2e893f",
+        "table_snapshot_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "user_version": 11,
+        "integrity_ok": true,
+        "foreign_key_errors": 0
+      }
+    },
+    "after_restart": {
+      "preview": {
+        "table_count": 72,
+        "row_count": 50,
+        "schema_sha256": "055b29f67aee06a63ae1b7eb9b8d5c68e604176eb77fa47eeca129c532bca99a",
+        "table_snapshot_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+        "user_version": 11,
+        "integrity_ok": true,
+        "foreign_key_errors": 0
+      },
+      "original": {
+        "table_count": 65,
+        "row_count": 32,
+        "schema_sha256": "972d3c69e6dca70cd48da60d563953dbb6b64acfd6c044d863d3a45d8e2e893f",
+        "table_snapshot_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "user_version": 11,
+        "integrity_ok": true,
+        "foreign_key_errors": 0
+      }
+    },
+    "after_browser": {
+      "preview": {
+        "table_count": 72,
+        "row_count": 50,
+        "schema_sha256": "055b29f67aee06a63ae1b7eb9b8d5c68e604176eb77fa47eeca129c532bca99a",
+        "table_snapshot_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+        "user_version": 11,
+        "integrity_ok": true,
+        "foreign_key_errors": 0
+      },
+      "original": {
+        "table_count": 65,
+        "row_count": 32,
+        "schema_sha256": "972d3c69e6dca70cd48da60d563953dbb6b64acfd6c044d863d3a45d8e2e893f",
+        "table_snapshot_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "user_version": 11,
+        "integrity_ok": true,
+        "foreign_key_errors": 0
+      }
+    }
+  },
+  "comparisons": {
+    "preview": {
+      "before_to_restart": {
+        "previous_table_count": 68,
+        "current_table_count": 72,
+        "changed_existing_table_count": 0,
+        "missing_existing_table_count": 0,
+        "added_table_count": 4,
+        "added_tables": {
+          "app_agent_chat_action": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "5b093ec672c85795089012a7949738c47f72e928a3375ff569f65c5f1627ff84"
+          },
+          "app_agent_chat_session": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "ac216289d3efd062f52df0a2605237e9c6bfd510d575f2bdaebebf5d83e91331"
+          },
+          "app_agent_chat_turn": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "aa656108aa2ff99c57abb0fd8af680ccd4886256699b41880ebbf5070b656279"
+          },
+          "app_agent_connection": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "1c0b1af30829b0396db80431e570e962846ee8182938d59060882c8f8f178690"
+          }
+        },
+        "expected_additions_match": true,
+        "additions_empty": true,
+        "previous_tables_sha256": "56ee244e995a7d1e6301cdca4582d647c4af3719fb57b62cf3204668ad62b16f",
+        "retained_tables_sha256": "56ee244e995a7d1e6301cdca4582d647c4af3719fb57b62cf3204668ad62b16f",
+        "user_version_unchanged": true,
+        "passed": true
+      },
+      "restart_to_browser": {
+        "previous_table_count": 72,
+        "current_table_count": 72,
+        "changed_existing_table_count": 0,
+        "missing_existing_table_count": 0,
+        "added_table_count": 0,
+        "added_tables": {},
+        "expected_additions_match": true,
+        "additions_empty": true,
+        "previous_tables_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+        "retained_tables_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+        "user_version_unchanged": true,
+        "passed": true
+      },
+      "before_to_browser": {
+        "previous_table_count": 68,
+        "current_table_count": 72,
+        "changed_existing_table_count": 0,
+        "missing_existing_table_count": 0,
+        "added_table_count": 4,
+        "added_tables": {
+          "app_agent_chat_action": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "5b093ec672c85795089012a7949738c47f72e928a3375ff569f65c5f1627ff84"
+          },
+          "app_agent_chat_session": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "ac216289d3efd062f52df0a2605237e9c6bfd510d575f2bdaebebf5d83e91331"
+          },
+          "app_agent_chat_turn": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "aa656108aa2ff99c57abb0fd8af680ccd4886256699b41880ebbf5070b656279"
+          },
+          "app_agent_connection": {
+            "rows": 0,
+            "content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "schema_sha256": "1c0b1af30829b0396db80431e570e962846ee8182938d59060882c8f8f178690"
+          }
+        },
+        "expected_additions_match": true,
+        "additions_empty": true,
+        "previous_tables_sha256": "56ee244e995a7d1e6301cdca4582d647c4af3719fb57b62cf3204668ad62b16f",
+        "retained_tables_sha256": "56ee244e995a7d1e6301cdca4582d647c4af3719fb57b62cf3204668ad62b16f",
+        "user_version_unchanged": true,
+        "passed": true
+      }
+    },
+    "original": {
+      "before_to_restart": {
+        "previous_table_count": 65,
+        "current_table_count": 65,
+        "changed_existing_table_count": 0,
+        "missing_existing_table_count": 0,
+        "added_table_count": 0,
+        "added_tables": {},
+        "expected_additions_match": true,
+        "additions_empty": true,
+        "previous_tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "retained_tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "user_version_unchanged": true,
+        "passed": true
+      },
+      "restart_to_browser": {
+        "previous_table_count": 65,
+        "current_table_count": 65,
+        "changed_existing_table_count": 0,
+        "missing_existing_table_count": 0,
+        "added_table_count": 0,
+        "added_tables": {},
+        "expected_additions_match": true,
+        "additions_empty": true,
+        "previous_tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "retained_tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "user_version_unchanged": true,
+        "passed": true
+      },
+      "before_to_browser": {
+        "previous_table_count": 65,
+        "current_table_count": 65,
+        "changed_existing_table_count": 0,
+        "missing_existing_table_count": 0,
+        "added_table_count": 0,
+        "added_tables": {},
+        "expected_additions_match": true,
+        "additions_empty": true,
+        "previous_tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "retained_tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+        "user_version_unchanged": true,
+        "passed": true
+      }
+    }
+  },
+  "after_restart_and_after_browser_source_bytes_equal": true,
+  "browser": {
+    "counts": {
+      "checks_passed": 155,
+      "checks_failed": 0,
+      "screenshots": 30,
+      "page_errors": 0,
+      "exceptions": 0,
+      "local_get_requests": 129,
+      "blocked_write_requests": 0,
+      "blocked_external_requests": 0,
+      "observed_message_write_attempts": 0,
+      "blocked_sockets": 0,
+      "inspected_viewports": 3,
+      "send_behavior_exercised": 0,
+      "provider_probe_exercised": 0,
+      "unconfigured_settings": 3,
+      "unconfigured_composer_hints": 0,
+      "empty_composer_send_disabled": 3,
+      "viewport_0_chapters": 1,
+      "viewport_0_records": 3,
+      "viewport_0_memories": 1,
+      "viewport_0_sessions": 0,
+      "horizontal_bounds_passed": 30,
+      "chat_bounds_passed": 30,
+      "persistent_chat_nodes_passed": 30,
+      "editor_columns_passed": 12,
+      "connection_settings_visible_passed": 3,
+      "key_field_empty_passed": 3,
+      "unconfigured_settings_honest_passed": 3,
+      "unconfigured_empty_send_disabled_passed": 3,
+      "one_visible_result_passed": 9,
+      "results_do_not_cover_editor_passed": 9,
+      "chapter_summary_uncovered_passed": 9,
+      "saved_story_unchanged_passed": 3,
+      "chat_sessions_unchanged_passed": 3,
+      "scope_unchanged_passed": 3,
+      "viewport_1_chapters": 1,
+      "viewport_1_records": 3,
+      "viewport_1_memories": 1,
+      "viewport_1_sessions": 0,
+      "viewport_2_chapters": 1,
+      "viewport_2_records": 3,
+      "viewport_2_memories": 1,
+      "viewport_2_sessions": 0,
+      "no_write_attempts_passed": 1,
+      "no_messages_sent_passed": 1,
+      "no_external_attempts_passed": 1,
+      "no_page_errors_passed": 1,
+      "all_viewports_inspected_passed": 1
+    },
+    "viewports": [
+      {
+        "width": 1280,
+        "height": 900
+      },
+      {
+        "width": 1440,
+        "height": 1000
+      },
+      {
+        "width": 1920,
+        "height": 1080
+      }
+    ],
+    "geometry_sample_count": 30,
+    "geometry_sha256": "6ee9b9c4a7bbf0055ded28c89b9b6a3fe93ac20a4d0ec935feb12b362a9d20a8",
+    "snapshot_count": 6,
+    "snapshots_sha256": "d59da80d516dd8ecae370738e6573b22c896424aceb7170e6b2a90067225fda6",
+    "snapshot_comparisons": [
+      {
+        "viewport_index": 0,
+        "state_unchanged": true,
+        "chat_sessions_unchanged": true,
+        "scope_unchanged": true
+      },
+      {
+        "viewport_index": 1,
+        "state_unchanged": true,
+        "chat_sessions_unchanged": true,
+        "scope_unchanged": true
+      },
+      {
+        "viewport_index": 2,
+        "state_unchanged": true,
+        "chat_sessions_unchanged": true,
+        "scope_unchanged": true
+      }
+    ],
+    "private_screenshot_count": 30,
+    "private_screenshot_hashes_verified": true,
+    "private_screenshot_sha256": {
+      "1280x900-editor": "96c364bdd1d5ca2953c69a82dfe702a8f1e45351ab9b9cf943932e720e45f205",
+      "1280x900-blueprint": "90262ce0e9a7351aa242a70ab38da3a0d0dba1b6fb8547a21130004653fef6af",
+      "1280x900-world": "e135308d486c6e461523572cc3833de49a85aa750323c32de1097d488759d9e2",
+      "1280x900-memory": "7c757f5a6b6d693f6603a8e6c4d6d63b297171fe7dbb3bde37baf242fa45a0ee",
+      "1280x900-story": "3039bc4ea1e6b00d471947627e1aa74ea836a2a25fbee2651253ebc93810eb0d",
+      "1280x900-settings": "b67f352b461084eecd14560aa29c11bfd8aaf446c6f8b070d118a976d4b67fba",
+      "1280x900-dashboard": "0f54f489ef224a9a889a68e7a69d24f4f1542354dd1879394b87e74d1bba9bd0",
+      "1280x900-result-0": "de20c4a4b3cc14b84771edf26ecf5952e6b022d180600336d60d3f1472be3ff1",
+      "1280x900-result-1": "d8ad643eb9627153ca0112f57b3e73280ef5bfefaff623286672cd7036b02610",
+      "1280x900-result-2": "7257cc57a8399865dbf2868b408f1dc4d5c4b1094068e0820093e87bc324dac7",
+      "1440x1000-editor": "e86f9772be81a3ee3bad89f275f7e0d0858518c572a5f669769abdc2c4ea9873",
+      "1440x1000-blueprint": "deba4ab6327c05c6c2f42007cd8475fcadcea5d93168f80e14dea1bc77b6df35",
+      "1440x1000-world": "25d9f54588a052522de4368ff1ef8100991357ddac9e3476be9a6e1c12054c31",
+      "1440x1000-memory": "bac3a6d19e02d99a9803081ad3c5e0400c7495bda3fab0856aa3289ea49f4d8e",
+      "1440x1000-story": "4a95cb0b43acf93b64a211eae428d691d363dbb3374a1b01ee62476d157fe261",
+      "1440x1000-settings": "e77d6cbefa59a1ae313f5861301a7f5023d178d4d5cabf85863bdec23710902d",
+      "1440x1000-dashboard": "ed9c06290c2bf209ed1ebdc64e65488e74c7d6e6a8e348e4606bce2f240135a1",
+      "1440x1000-result-0": "0396b122fa30fb727d523058d8d8572b76953c99ba5392eb52e3f4a89b09eec0",
+      "1440x1000-result-1": "2951a5bf4bcc416a249526f9c528f1107ae7d64dcdede16c349cb124f05b3d12",
+      "1440x1000-result-2": "eaa4f4a0c373572e131864765e89234af6da156185de8b4ecb5c79677ec60cb4",
+      "1920x1080-editor": "297e5d2adce137bee0302c8f5dd76f853a137b2407fff92cd21a4a025fa46532",
+      "1920x1080-blueprint": "bf8086fbb1307d63784b3988ede8475860e167dadfa725a787f26254c0935c8b",
+      "1920x1080-world": "1d0f064f84f089256adb4f6d83f79af8c2a31d9e20d40b6311bc9eb8881d45c0",
+      "1920x1080-memory": "187269dc63ef272ede9525514ec931f12ec513e0165f1211dbf9159deb2d642e",
+      "1920x1080-story": "398c0105076bab816d9036de4048d5c7266184d7b3e0b5ac47a1418d541a7173",
+      "1920x1080-settings": "4c209e28584262f7f95161dd7483da56f1ae2387b71aebd71b88ce2a4363bae4",
+      "1920x1080-dashboard": "855f6b61105d92b52dee270680196c76879029cc58c99646177ec379a97eb30a",
+      "1920x1080-result-0": "15b1ab208477a60016cc5e8ebc00ad4a067e66c16bf25f6d4d6f9ad170684843",
+      "1920x1080-result-1": "977a0fa71e2fa96de96fcfbb6ced19ff1b0eb4d655027fb5950513ace37a2079",
+      "1920x1080-result-2": "213943dc3740b81828434967741725e10c1e31881bdecc642cd8bcf399b18bd2"
+    },
+    "private_screenshot_files_copied": 0
+  },
+  "conclusions": {
+    "preview_database_preservation_passed": true,
+    "read_only_browser_checks_passed": true,
+    "release_acceptance_established": false,
+    "real_chat_send_verified": false,
+    "provider_probe_verified": false,
+    "real_literary_quality_verified": false,
+    "served_resource_matches_frozen_source_verified": false,
+    "public_or_production_deployment_verified": false
+  },
+  "privacy": {
+    "manuscript_content_included": false,
+    "absolute_private_paths_included": false,
+    "credentials_included": false,
+    "private_screenshots_published": false,
+    "database_files_copied": 0,
+    "database_or_service_writes": 0
+  }
+}

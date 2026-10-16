@@ -245,8 +245,9 @@ function bindInstructionDraft(){
  });
  document.querySelector('.ai-controls')?.append(clear);
 }
-function loadCandidates(){try{const rows=JSON.parse(storage.get(cacheKey(':candidates'))||'[]');return new Map(Array.isArray(rows)?rows.map(row=>[row.ai_run_id,row]):[])}catch{return new Map()}}
-function persistCandidates(){return storage.set(cacheKey(':candidates'),JSON.stringify([...candidateStore.values()]))}
+function isWritingCandidate(candidate){return !!candidate&&candidate.task!=='assistant_chat'}
+function loadCandidates(){try{const rows=JSON.parse(storage.get(cacheKey(':candidates'))||'[]');return new Map(Array.isArray(rows)?rows.filter(isWritingCandidate).map(row=>[row.ai_run_id,row]):[])}catch{return new Map()}}
+function persistCandidates(){return storage.set(cacheKey(':candidates'),JSON.stringify([...candidateStore.values()].filter(isWritingCandidate)))}
 function rememberCandidateView(candidate){
  if(candidate)storage.set(cacheKey(':candidate-open'),JSON.stringify({run_id:candidate.ai_run_id,...candidate.source}));
  else storage.remove(cacheKey(':candidate-open'));
@@ -254,9 +255,9 @@ function rememberCandidateView(candidate){
 function activeCandidate(){
  try{
   const selection=JSON.parse(storage.get(cacheKey(':candidate-open'))||'null'),candidate=candidateStore.get(selection?.run_id);
-  if(selection?.chapter_id===activeChapter&&candidateScopeCurrent(candidate)&&candidate?.source?.chapter_id===activeChapter)return candidate;
+  if(selection?.chapter_id===activeChapter&&isWritingCandidate(candidate)&&candidateScopeCurrent(candidate)&&candidate.source?.chapter_id===activeChapter)return candidate;
  }catch{}
- return [...candidateStore.values()].reverse().find(item=>item.source?.chapter_id===activeChapter&&
+ return [...candidateStore.values()].reverse().find(item=>isWritingCandidate(item)&&item.source?.chapter_id===activeChapter&&
   item.source?.project_id===requestedProject&&item.source?.branch_id===(state.branch_id||state.project?.branch_id||'main')&&
   !['accepted','rejected'].includes(item.decision))||null;
 }
@@ -345,7 +346,7 @@ const AI_TASK_NAMES={continue:'续写',polish:'润色',outline:'故事总纲',sc
 function isAnalysisCandidate(candidate){return ['chapter_analysis','semantic_review'].includes(candidate?.task)}
 function terminalCandidateFailure(candidate){return ['failed','canceled','unknown','interrupted'].includes(candidate?.job_status)}
 function candidateReadOnly(candidate){
- return !candidate?.complete||terminalCandidateFailure(candidate)||candidate.truncated||isAnalysisCandidate(candidate)||
+ return !isWritingCandidate(candidate)||!candidate.complete||terminalCandidateFailure(candidate)||candidate.truncated||isAnalysisCandidate(candidate)||
   ['accepted','rejected'].includes(candidate?.decision)||!!candidate?.restored_read_only||!!candidate?.materials_read_only;
 }
 function editCandidateText(event){
@@ -379,6 +380,7 @@ function analysisCandidatePreview(candidate){
   ...uncertainties.map(note=>`待核实：${note}`)].join('\n\n');
 }
 function displayCandidate(candidate){
+ if(!isWritingCandidate(candidate))candidate=null;
  aiDraft=candidate;aiRunId=candidate?.ai_run_id||null;
  const decided=['accepted','rejected'].includes(candidate?.decision),analysis=isAnalysisCandidate(candidate);
  const taskName=candidate?.candidate_revision?`整理后的${AI_TASK_NAMES[candidate.task]||'正文'}`:AI_TASK_NAMES[candidate?.task]||'AI';
@@ -485,6 +487,7 @@ async function updateCandidateRevisionControls(){
  }catch(error){if(sequence===revisionControlSeq&&candidate===aiDraft)button.title=error.message}
 }
 function receiveCandidateJob(job){
+ if(!isWritingCandidate(job))return null;
  let draft=candidateStore.get(job.ai_run_id);
  const result=job.result||{},source=job.source||result.source||jobSources.get(job.id)||draft?.source;
  if(!source)return draft;
@@ -523,7 +526,7 @@ async function recoverCandidateRevision(candidate){
  const response=await fetch(`${API_BASE}/ai/queue?limit=200`,{headers:{'X-Moyu-Project':owner,'X-Moyu-Branch':branch}});
  const data=await response.json().catch(()=>({}));if(!response.ok)throw new Error(data.error||'整理任务暂未读到，请稍后恢复');
  if(owner!==requestedProject||branch!==(state.branch_id||state.project?.branch_id||'main'))throw new Error('作品已切换，回到原作品后可恢复整理任务');
- const rows=data.jobs||[];for(const job of [...rows].reverse())receiveCandidateJob(job);
+ const rows=(data.jobs||[]).filter(isWritingCandidate);for(const job of [...rows].reverse())receiveCandidateJob(job);
  let child=candidateRevisionChild(candidate);
  const run=await readCandidateRun(candidate.ai_run_id,owner,branch),job=run.candidate_revision_child;
  if(job&&job.candidate_revision?.parent_run_id===candidate.ai_run_id){child=receiveCandidateJob(job);if(!rows.some(row=>row.id===job.id))rows.unshift(job)}
@@ -635,6 +638,7 @@ function captureSelection(){
  savedSelection={chapter_id:activeChapter,start:body.selectionStart,end:body.selectionEnd,body:body.value};
  const line=document.querySelector('#selectionState');
  if(line)line.textContent=body.selectionEnd>body.selectionStart?`已选 ${Array.from(body.value.slice(body.selectionStart,body.selectionEnd)).length} 字`:'未选文字';
+ globalThis.MoyuAgentChat?.selectionChanged();
 }
 function candidateSource(task,c){
  const chars=Array.from(c.body);let start=0,end=chars.length,mode='structure';
@@ -1083,7 +1087,8 @@ async function aiPromptContract(){
  }catch(error){if(sequence===aiPreviewSeq)toast(error.message)}
 }
 async function adoptAI(){
- const draft=aiDraft;if(terminalCandidateFailure(draft))return toast('未完成的片段仅供阅读和复制，不能采纳');
+ const draft=aiDraft;if(draft&&!isWritingCandidate(draft))return toast('聊天讨论不能作为正文采纳，请在写作总管中查看');
+ if(terminalCandidateFailure(draft))return toast('未完成的片段仅供阅读和复制，不能采纳');
  if(!draft?.complete||!draft.text.trim())return toast('请等待候选完整生成');
  if(draft.restored_read_only)return toast('恢复的候选仅供阅读，请按当前稿件生成新候选');
  if(draft.materials_read_only&&!isAnalysisCandidate(draft))return toast(draft.material_issue||'使用的资料已变化，请生成新候选');
@@ -1147,7 +1152,7 @@ async function refreshQueue(){
   const response=await fetch(`${API_BASE}/ai/queue?limit=100`);const data=await response.json();
   if(!response.ok)throw new Error(data.error||'任务列表读取失败');
   if(owner!==requestedProject||branch!==(state.branch_id||state.project?.branch_id||'main'))return;
-  queueJobs=data.jobs||[];
+  queueJobs=(data.jobs||[]).filter(isWritingCandidate);
   for(const job of [...queueJobs].reverse()){
    const draft=receiveCandidateJob(job);
    if(draft&&(['queued','running'].includes(job.status)||
@@ -1224,7 +1229,7 @@ async function retryJob(id){
 }
 function renderTaskList(){
  const host=document.querySelector('#taskList');if(!host)return;
- host.innerHTML=queueJobs.map(job=>{
+ host.innerHTML=queueJobs.filter(isWritingCandidate).map(job=>{
   const c=chapter(job.chapter_id);const draft=candidateStore.get(job.ai_run_id);
   const planning=job.planning_workflow;
   const revision=job.candidate_revision||draft?.candidate_revision;

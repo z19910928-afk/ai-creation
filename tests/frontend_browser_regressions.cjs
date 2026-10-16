@@ -40,7 +40,9 @@ async function open(viewport={width:1440,height:1000}){
  page.on('pageerror',error=>errors.push(error.message));await page.goto(base);
  try{await page.waitForFunction(()=>backendOnline===true)}
  catch(error){throw new Error(`${error.message}; page errors: ${errors.join('; ')}; save status: ${await page.locator('#saveState').innerText()}`)}
- await page.locator('[data-view="editor"]').click();return {context,page,errors};
+ await page.locator('[data-view="editor"]').click();
+ await page.locator('[data-chat-result="workbenchCandidateSection"]').click();
+ return {context,page,errors};
 }
 async function test(name,fn){
  console.log(JSON.stringify({test:name,state:'running'}));

@@ -1,0 +1,54 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "切换功能页保留同一个聊天面板和未发送草稿",
+      "passed": true
+    },
+    {
+      "name": "1440、1280、1920电脑布局无横向溢出，正文结果按需展开",
+      "passed": true
+    },
+    {
+      "name": "切换作品与前端分支分别恢复各自草稿，不把旧稿写入新作品",
+      "passed": true
+    },
+    {
+      "name": "会话创建回应丢失时复用原身份，消息保存丢失后重试不重复发送",
+      "passed": true
+    },
+    {
+      "name": "新对话未发送草稿刷新后恢复，旧会话历史仍可打开",
+      "passed": true
+    },
+    {
+      "name": "正文选区附带已保存版本与Unicode范围，可预览和移除",
+      "passed": true
+    },
+    {
+      "name": "请求延迟时新输入和切换作品的草稿不被旧回应清除",
+      "passed": true
+    },
+    {
+      "name": "停止与动作确认通过真实请求入口，失败时不跳转或改稿",
+      "passed": true
+    },
+    {
+      "name": "未知回复结束等待，确认中步骤可恢复且不能误放弃",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-agent-chat-ui-SmM0am/agent-chat-results-1280x900.png",
+    "<temporary-root>/moyu-agent-chat-ui-SmM0am/agent-chat-1280x900.png",
+    "<temporary-root>/moyu-agent-chat-ui-SmM0am/agent-chat-results-1440x1000.png",
+    "<temporary-root>/moyu-agent-chat-ui-SmM0am/agent-chat-1440x1000.png",
+    "<temporary-root>/moyu-agent-chat-ui-SmM0am/agent-chat-results-1920x1080.png",
+    "<temporary-root>/moyu-agent-chat-ui-SmM0am/agent-chat-1920x1080.png"
+  ],
+  "page_errors": [],
+  "paid_provider_calls": 0,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "scope": "真实桌面 Chrome 与隔离作品数据库；聊天响应由本机受控接口模拟，仅验证前端交互、请求身份与隔离，不证明模型或聊天后端可用。",
+  "branch_identity_test": "Synthetic frontend branch identity; no branch-management UI claim."
+}

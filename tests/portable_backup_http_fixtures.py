@@ -39,8 +39,8 @@ import moyu_portable as portable  # noqa: E402
 import moyu_workspace as workspace  # noqa: E402
 import server  # noqa: E402
 from portable_backup_fixtures import (  # noqa: E402
-    AGENT_TABLES, ALTERNATE_BRANCH, ALL_TABLES, SOURCE_ACTOR, SOURCE_BRANCH, SOURCE_PROJECT,
-    seed_source,
+    AGENT_TABLES, ALTERNATE_BRANCH, ALL_TABLES, CHAT_TABLES, SOURCE_ACTOR, SOURCE_BRANCH,
+    SOURCE_PROJECT, seed_source,
 )
 
 TARGET_PROJECT = "portable-http-target"
@@ -54,6 +54,7 @@ SOURCES = (
     "moyu_planning.py", "moyu_settings.py", "moyu_records.py", "moyu_revision.py",
     "moyu_provider.py", "scripts/sqlite_backup.py",
     "moyu_agent_checkpoint.py", "moyu_agent_service.py", "moyu_writing_agent.py", "requirements.txt",
+    "moyu_agent_chat.py", "moyu_agent_settings.py",
     "docs/schema-v1.sql", "docs/schema-v1.1-migration.sql",
     "tests/portable_backup_fixtures.py", "tests/portable_backup_http_fixtures.py",
 )
@@ -509,6 +510,9 @@ def json_expected(table, column, raw, mapping):
                     value[name], mapping, {"parent_run_id", "root_run_id"})
         if value.get("project"):
             value["project"]["id"] = mapping[value["project"]["id"]]
+        if value.get("_agent_chat"):
+            value["_agent_chat"] = replace_named(
+                value["_agent_chat"], mapping, {"chat_session_id", "chat_turn_id"})
         if value.get("blueprint"):
             value["blueprint"] = blueprint_expected(value["blueprint"], mapping)
         if value.get("planning_workflow"):
@@ -527,6 +531,26 @@ def json_expected(table, column, raw, mapping):
                              + ":" + str(passage["section_end"]))
         if column == "context_json":
             value["_restored_read_only"] = True
+        return value
+    if table in CHAT_TABLES:
+        source_fields = {"project_id", "branch_id", "chapter_id", "source_revision_id"}
+        if column == "references_json":
+            return [replace_named(reference, mapping, source_fields) for reference in value]
+        if column == "source_json":
+            return replace_named(value, mapping, source_fields) if value is not None else None
+        if column == "context_json":
+            if value.get("project"):
+                value["project"]["id"] = mapping[value["project"]["id"]]
+            if value.get("current_chapter"):
+                value["current_chapter"] = replace_named(
+                    value["current_chapter"], mapping, {"id", "revision_id"})
+            if value.get("_agent_chat"):
+                value["_agent_chat"] = replace_named(
+                    value["_agent_chat"], mapping, {"chat_session_id", "chat_turn_id"})
+            return value
+        if column == "result_json":
+            return replace_named(
+                value, mapping, {"writing_session_id", "chapter_id", "job_id"})
         return value
     if table in {"app_chapter_analysis", "app_story_review"} and column == "payload_json":
         value = replace_named(value, mapping, {
@@ -807,6 +831,13 @@ class PortableBackupHTTP(unittest.TestCase):
                             error="备份中的规划模型请求费用与执行状态未知，未重复执行。")
                     if table == "app_agent_session":
                         expected.update(status="restored", restored_read_only=1)
+                    if table == "app_agent_chat_session":
+                        expected["restored_read_only"] = 1
+                    if (table == "app_agent_chat_turn"
+                            and source["status"] in {"queued", "running"}):
+                        expected["status"] = "failed"
+                    if table == "app_agent_chat_action" and source["status"] == "confirming":
+                        expected["status"] = "proposed"
                     where = " AND ".join('"' + key + '"=?' for key in keys)
                     row = conn.execute('SELECT rowid,* FROM "' + table + '" WHERE ' + where,
                                        [expected[key] for key in keys]).fetchone()
@@ -1543,8 +1574,12 @@ class PortableBackupHTTP(unittest.TestCase):
             payload["tables"][table][0][field] = value
             cases.append((table + "." + field, payload))
         payload = copy.deepcopy(self.payload)
-        source = payload["tables"]["app_ai_job"][1]
+        sources = [row for row in payload["tables"]["app_ai_job"]
+                   if row["id"] == "portable-job-success"]
+        self.assertEqual(len(sources), 1)
+        source = sources[0]
         context = json.loads(source["context_json"])
+        self.assertEqual(len(context["reference_passages"]), 1)
         context["reference_passages"][0]["source_quote"] = "wrong original quote"
         source["context_json"] = encode(context).decode("utf-8")
         cases.append(("job.reference_quote", payload))
@@ -1556,7 +1591,7 @@ class PortableBackupHTTP(unittest.TestCase):
         payload = copy.deepcopy(self.payload)
         payload["tables"].pop("app_entity_scope")
         payload["tables"].pop("app_candidate_revision")
-        for table in AGENT_TABLES:
+        for table in AGENT_TABLES | CHAT_TABLES:
             payload["tables"].pop(table)
         self.assert_bad_preview(make_zip(payload))
         for row in payload["tables"]["app_ai_job"]:
@@ -1565,6 +1600,7 @@ class PortableBackupHTTP(unittest.TestCase):
                     value = json.loads(row[field])
                     value.pop("_candidate_revision", None)
                     value.pop("candidate_revision", None)
+                    value.pop("_agent_chat", None)
                     row[field] = encode(value).decode("utf-8")
         for row in payload["tables"]["ai_run"]:
             value = json.loads(row["consent_json"])
@@ -1572,7 +1608,8 @@ class PortableBackupHTTP(unittest.TestCase):
             row["consent_json"] = encode(value).decode("utf-8")
         preview = self.preview(make_zip(payload))
         self.assertEqual(preview["compatibility"]["absent_known_additive_tables"],
-                         sorted(AGENT_TABLES | {"app_candidate_revision", "app_entity_scope"}))
+                         sorted(AGENT_TABLES | CHAT_TABLES
+                                | {"app_candidate_revision", "app_entity_scope"}))
         status, restored = self.call(
             "POST", "/api/backups/import/apply", self.confirmation(preview))
         self.assertEqual(status, 201, restored)

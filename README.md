@@ -4,11 +4,15 @@
 
 ## 当前状态
 
-2026-10-16 本批新增[资料关联、全书待办与阅读工作区](docs/audits/2026-10-14/comprehensive/knowledge-inbox-workspace.md)：可从人物或物品资料查看关联、回链与原句来源；按四类事项查看当前作品和分支的全书待办，并精确打开旧任务；正文支持本机字号、行距和宽度偏好，以及按作品、分支和章节恢复阅读位置。[02完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-knowledge-inbox-release-20261016-02.json)已通过114个执行项、16套浏览器226个电脑场景，128份源码前后不变；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-independent-review-20261016.json)核对86份附件、原日志与当前源码一致，[九张最终截图目视检查](docs/audits/2026-10-14/comprehensive/knowledge-inbox-visual-review-20261016.md)未发现影响主要操作的排版问题。本机验收已完成，推送后的具体提交仍须独立核对GitHub检查；这些结果不证明文学质量达到第一梯队。
+2026-10-16 持续对话版已接通：右侧“写作总管”在切换创作、资料和设置页面时持续保留，可带着当前章或最多三处原文讨论；确认建议后接入真实续写、修订、规划、章后记忆与审稿，结果回到原章比较与处理。连接集中到“模型与风格”，可沿用主连接或独立设置聊天连接；聊天历史随完整作品备份保存，恢复副本中的旧对话只读。[NovelForge流程与界面研究](docs/research/novelforge-writing-flow-and-interface-2026-10-16.md)明确研究与实现范围，完整开书到全书完稿的自动编排尚未完成。
+
+本版[04完整整轮](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-release-20261016-04.json)通过124个执行项，19套电脑浏览器241个场景，139份源码前后不变，100份附件指纹逐份匹配；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-chat-release-independent-review-20261016.json)通过，[12张最终截图逐张目视](docs/audits/2026-10-14/comprehensive/persistent-agent-chat-visual-review-20261016.md)未发现可见区域影响主要操作的新增遮挡或栏间重叠，并保留截图未展示部分的边界。[本批专项](docs/audits/2026-10-14/comprehensive/persistent-agent-chat.md)保留01失败、02覆盖缺口和03超时，本次实际提交的GitHub检查仍待核对。工程通过不证明真实远程模型、文学质量或第一梯队。
+
+此前的[资料关联、全书待办与阅读工作区](docs/audits/2026-10-14/comprehensive/knowledge-inbox-workspace.md)可从人物或物品资料查看关联、回链与原句来源；按四类事项查看当前作品和分支的全书待办，并精确打开旧任务；正文支持本机字号、行距和宽度偏好，以及按作品、分支和章节恢复阅读位置。该历史版本的[02完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-knowledge-inbox-release-20261016-02.json)已通过114个执行项、16套浏览器226个电脑场景，128份源码前后不变；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-independent-review-20261016.json)核对86份附件、原日志与当时源码一致，[九张最终截图目视检查](docs/audits/2026-10-14/comprehensive/knowledge-inbox-visual-review-20261016.md)未发现影响主要操作的排版问题。这些历史结果不代替持续对话版验收，也不证明文学质量达到第一梯队。
 
 此前的[电脑创作工作台与写作总管](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)已接通目录/知识库、正文和任务三栏。总管基于 LangGraph（负责保存多步骤任务并在中断后接续的框架），协调续写、整章修订、章节检查和四阶段全书规划；正文采纳、规划确认和正式事实继续由作者决定。该历史版本的[05完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)通过103个执行项、199个电脑场景，115份来源前后相同、78附件逐份匹配；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-workbench-release-independent-review-20261016.json)及九张截图目视检查通过。历史代码提交 `e9fe9eac15896c5aeda2cf9672003a0ed4433967` 已正常推送，[对应GitHub检查38776837992](docs/audits/2026-10-14/comprehensive/evidence/github-agent-workbench-e9fe9ea-success-20261016.json)于上海2026-10-16 01:37:40完成，28步全部成功；[对应本机服务](docs/audits/2026-10-14/comprehensive/evidence/local-workbench-preview-20261016.json)也已独立验收。这些工程结果不作为文学第一梯队成绩。
 
-本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。[本批服务复核](docs/audits/2026-10-14/comprehensive/evidence/local-knowledge-inbox-preview-20261016.json)已核对重启前后68张表的完整内容、结构和数据库版本保持，8份页面资源与4份修改的Python模块匹配02冻结源码，三种电脑尺寸的只读流程通过。此预览未配置生成模型；数据库、原稿、私有截图和密钥不随源码上传，完整 Obsidian 双向同步尚未实现。
+本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。[04服务重启](docs/audits/2026-10-14/comprehensive/evidence/local-persistent-agent-chat-final-service-20261016.json)已核对启动身份与139份固定源码，重启前后预览72张表及原库65张表内容、结构和版本保持；[13份页面资源](docs/audits/2026-10-14/comprehensive/evidence/local-persistent-agent-chat-final-resources-20261016.json)通过14次GET匹配04。[三种电脑尺寸只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-persistent-agent-chat-final-preview-20261016.json)155项断言全部通过，129次GET，没有写入、外联、发送聊天或连接实测。预览远程模型未配置，本批新增收费调用0；数据库、原稿、私有截图和密钥不随源码上传，完整Obsidian双向同步尚未实现。
 
 历史完整备份恢复版本 `1552104` 已正常推送，[GitHub检查](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)全部成功，并已[更新到本机](docs/audits/2026-10-14/comprehensive/evidence/local-service-portable-1552104-20261015.md)。更新前后65张表完整内容和结构保持，两个电脑尺寸共8个只读页面检查通过，没有模型调用或新增收费。
 
@@ -77,7 +81,7 @@ python -m pip install -r requirements.txt
 python server.py
 ```
 
-自行启动时默认在电脑浏览器打开 `http://127.0.0.1:4173`；已启动的新版预览使用 `http://127.0.0.1:4174`。旧版工作台验收见[历史专项](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)，本批验收状态见[资料与待办专项](docs/audits/2026-10-14/comprehensive/knowledge-inbox-workspace.md)。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
+自行启动时默认在电脑浏览器打开 `http://127.0.0.1:4173`；新版预览使用 `http://127.0.0.1:4174`，具体加载范围见上方独立服务记录。旧版工作台验收见[历史专项](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)，本批验收状态见[持续对话专项](docs/audits/2026-10-14/comprehensive/persistent-agent-chat.md)。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
 
 以后进入项目目录后执行 `source .venv/bin/activate`、`python server.py` 即可。下文的开发检查命令也应在同一环境中运行；浏览器检查可通过 `MOYU_TEST_PYTHON="$PWD/.venv/bin/python"` 使用已安装依赖的解释器。
 
@@ -96,10 +100,10 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 
 | 内容 | 默认位置与范围 |
 | --- | --- |
-| 作品、正文历史、设定、规划、证据、任务和审计 | 项目目录的 `moyu.sqlite3`；`MOYU_DB` 可指定其他文件 |
+| 作品、正文历史、设定、规划、证据、任务、总管对话与审计 | 项目目录的 `moyu.sqlite3`；`MOYU_DB` 可指定其他文件 |
 | 完整作品 ZIP 备份 | 数据库所在目录的 `backups/`；包含选中作品，不含其他作品和密钥 |
-| 页面保存的模型密钥 | `~/.moyu/credentials/`；目录权限 `0700`，文件权限 `0600`，SQLite 只存随机引用 |
-| 浏览器草稿和界面缓存 | 浏览器本地存储，按作品隔离；不能代替完整作品备份 |
+| 页面保存的主写作与独立总管密钥 | `~/.moyu/credentials/`；目录权限 `0700`，文件权限 `0600`，SQLite 只存随机引用 |
+| 浏览器草稿和界面缓存 | 浏览器本地存储；总管输入草稿按作品、分支和对话隔离，不含连接密钥，不能代替完整作品备份 |
 | 导入原文件与来源记录 | 作品数据库中保存原始字节、内容指纹和解析损失说明 |
 
 密钥可用 `MOYU_CREDENTIALS_DIR` 指定受控目录。换设备、复制或恢复为独立作品后需重新配置密钥；备份不会携带密钥和旧连接测试结论。数据库和备份目录已被 Git 忽略，不随源码推送。
@@ -139,6 +143,9 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - `POST /api/import/preview`、`POST /api/import/apply`、`GET /api/references`、`GET /api/references/:id`、`GET /api/references/:id/search?q=...`：TXT/MD/EPUB 分章预览、导入独立稿件或参考库、来源检索；导入不自动发送收费分析
 - `POST /api/assistant/query`、`POST /api/assistant/confirm`：有限任务的只读预览与作者确认后创建候选；正文仍需另行采纳
 - `GET/POST /api/writing-agent`、`POST /api/writing-agent/:id/resume`：写作总管的保存计划、授权、自动接续、停止与历史回看；重复提交不会重复建立任务，`GET` 可按 `session_id` 精确读取旧任务
+- `GET/POST /api/agent-chat/settings`、`POST /api/agent-chat/settings/probe`：总管对话的继承/独立连接与真实连接测试；独立连接不替代主写作连接，密钥不在公开回读或作品备份中返回
+- `GET/POST /api/agent-chat/sessions`、`GET /api/agent-chat/sessions/:id`、`POST /api/agent-chat/sessions/:id/messages`：保存和回读当前作品、分支的持续对话，消息固定本次正文、引用和材料
+- `GET /api/agent-chat/runs/:id`、`POST /api/agent-chat/runs/:id/cancel`、`POST /api/agent-chat/actions/:id/confirm|dismiss`：查看或停止回复、确认或放弃建议；确认使用稳定请求身份恢复已有步骤，正文仍须比较采纳
 - `GET /api/writing-inbox`：读取当前作品和分支的四类全书待办、完整分类计数及分页；不启动或重试模型任务
 - `GET /api/export/markdown`、`GET /api/export/epub`、`GET /api/export/manifest`：导出当前稿件及范围/损失清单；内嵌原稿与指纹，墨屿可精确回读正文；直连也受终稿门保护，作者覆盖需带 `X-Moyu-Export-Override`
 
@@ -151,7 +158,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 ## 当前功能
 
-- 电脑端三栏创作工作台：左侧目录与知识库、中间正文、右侧写作总管和依据；资料保存和结果回看保留当前稿件位置，专注模式可收起两侧
+- 电脑端创作工作台：左侧目录与知识库、中间正文、右侧持续对话；任务、正文候选和本章依据按需展开，资料保存和结果回看保留稿件位置，专注模式可收起目录
 - 人物与知识卡可查看有向关联、回链和逐条原句来源；有效来源点击后再次核对并定位，未来章节、未确认事实和失效证据保留范围说明
 - 全书待办按写作总管、生成结果、记忆确认和故事审稿分类，完整计数与分页，精确打开旧任务和对应记录；右栏局部数字仍保留其原有含义
 - 本机字号、行距和正文宽度偏好；按作品、分支、章节记住选区与滚动，明确原句定位优先于旧阅读位置
@@ -180,6 +187,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - 模型与风格设置、9种用途的模型与独立参数、真实连接测试、私密凭据保存和每日生成次数限制
 - 模型原生 SSE 解析、带序号的输出账本、断点重放、结束原因检查和已完成运行取消保护
 - 有限自然语言项目助手：只读搜索与任务预览，确认后创建候选
+- 持续写作对话、当前章与选区引用、历史恢复、作品与分支隔离，以及由聊天建议进入真实任务、候选比较、记忆与审稿；连接配置集中于设置
 - 基于 LangGraph 的写作总管：协调规划、续写、整章修订、章后记忆与故事审稿，采纳正文、确认规划与确认事实继续由作者决定
 - 全书完稿状态：终稿检查后可标记完成，状态持久化并支持恢复写作
 - 本轮验收和继续开发只覆盖电脑端；手机端不在当前目标内
@@ -190,7 +198,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 一般全文搜索使用 SQLite CJK FTS/BM25 和多信号排序；实际 AI 材料由 `moyu_context.assemble_context` 使用本地段落检索统一组装，并检查作品、分支、故事时点、视角、事实与作者计划边界。两者不是同一持久化全文索引。片段保留版本、字符范围和指纹；固定材料超预算时阻断，不静默裁掉。
 
-目前没有向量检索、真实模型分词计数、外部多进程任务调度、定时自动备份、提示模板版本库、DOCX/PDF、团队权限或完整 EPUB 版式往返。四阶段蓝图与五章伏笔作者链已有指定快照的真实电脑端回归；真实模型规划质量和审稿准确率仍未正式量测。项目助手仍提供有限任务预览；写作总管通过固定流程协调现有功能，正文采纳和事实确认仍保留作者决定。
+目前没有向量检索、真实模型分词计数、外部多进程任务调度、定时自动备份、提示模板版本库、DOCX/PDF、团队权限或完整 EPUB 版式往返。四阶段蓝图与五章伏笔作者链已有指定快照的真实电脑端回归；真实模型规划质量和审稿准确率仍未正式量测。持续对话可讨论并提出真实创作步骤，写作总管通过固定流程协调现有功能；尚未自动包办完整开书和下一章建立，正文采纳和事实确认仍保留作者决定。
 
 ## 长篇记忆
 
@@ -208,7 +216,11 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 ## AI 创作助手（可选）
 
-“写作总管”在正文工作台右侧管理创作流程。选择当前章并填写要求后，先保存计划；确认启动后，“续写”最多调用三次模型，依次生成正文候选、整理章后记忆、执行故事审稿。正文候选仍需作者比较并采纳，之后总管自动接续后两步。“整章修订”先提供整章修订候选，采纳后同样接续记忆与审稿，最多三次；整章超过12000字时先选段使用局部修订。12000字为整章修订硬上限，当前材料容量不足时也会在发送前拒绝，可选段修订或调整容量。“章节检查”只执行章后记忆和故事审稿，最多两次。
+页面右侧“写作总管”提供持续对话。可以直接讨论人物、情节和写法，也可勾选带入当前章；选中正文后点击“引用选区”，能够回看原文并请总管提出局部修改。每次最多引用三处；引用和本次材料保留来源版本，原稿或资料已变时，旧建议会要求重新讨论。切换功能页、刷新或服务重启后可继续查看已保存对话；切换作品与分支时各自隔离。
+
+总管认为需要创作操作时，会给出可确认或放弃的步骤。点击确认后，续写、整章修订、章节检查和规划进入现有流程；选区修订进入当前章的正文候选，比较并采纳后才替换原文。聊天中的普通回答不会直接修改正文，也不会自动建立写作任务。“任务进度”“正文候选”“本章依据”从聊天顶部打开，在正文下方查看和处理，可随时收起。
+
+多步写作先保存计划并等待确认启动；也可从“写作总管”管理页直接建立计划。下列次数只计写作流程，聊天回复另计调用并共用每日额度。“续写”最多调用三次模型，依次生成正文候选、整理章后记忆、执行故事审稿。正文候选仍需作者比较并采纳，之后总管自动接续后两步。“整章修订”先提供整章修订候选，采纳后同样接续记忆与审稿，最多三次；整章超过12000字时先选段使用局部修订。12000字为整章修订硬上限，当前材料容量不足时也会在发送前拒绝，可选段修订或调整容量。“章节检查”只执行章后记忆和故事审稿，最多两次。
 
 “全书规划”复用四阶段规划：故事总纲、分卷、章节、场景；每阶段由作者确认后自动安排下一阶段，最多四次。四阶段确认完成后仍需“采用完整规划”才更新蓝图，已写正文保持。规划规模继承现有蓝图，空蓝图默认1卷、每卷3章、每章2场景；单次上限为3卷、每卷8章、每章4场景，实际规模在计划中显示。生成结果不符合范围、来源变化或费用未知时流程停止并保留已有候选。
 
@@ -241,6 +253,8 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 顶部“终稿检查”向服务读取当前稿件的实际导出条件：未完成章节、未通过审查、未确认记忆、失效证据、未回收伏笔和明显空稿会阻断 Markdown/EPUB 终稿导出，直接调用导出 API 也会再次检查。作者确实要带着问题交付时，可以点击“作者覆盖并记录原因”，填写至少 8 个字符的理由；理由与当前稿件指纹一起保存在本机，EPUB 包内也会写入覆盖记录，稿件发生变化后需要重新覆盖。全书完稿后保存状态并禁止再归档创建下一章，恢复写作后可继续。JSON 备份仍可用于保留工作稿，不绕过终稿门。
 
 在“模型与风格”填写兼容接口地址、模型名称和密钥，保存后可执行“连接测试”。保存设置不等于连接健康；连接测试会真实调用模型并可能产生费用。用途模型、温度、输出长度、风格与写作要求可按作品保存，温度 `0` 会按原值发送。也可通过 `MOYU_AI_BASE_URL`、`MOYU_AI_MODEL`、`MOYU_AI_API_KEY` 提供未保存设置时的默认配置。
+
+同页“写作总管连接”默认沿用主写作连接，也可选择独立连接，单独保存对话的地址、模型、密钥和参数。独立连接只供聊天使用，续写、润色、规划、记忆和审稿继续使用主写作连接；两者共用每日额度。保存总管设置不调用模型，点击“实测连接”才会真实调用。主连接改变后，总管的继承状态和旧测试是否失效会同步刷新，同时保留尚未保存的独立连接输入。密钥只进入本机私密凭据文件，独立连接配置不随完整备份复制。
 
 用途表可分别填写变化程度、输出上限和思考程度；空白沿用全局，章后记忆和故事审稿未单独设置时分别沿用回顾与检查。清除一行只移除该用途参数，模型名称保留。温度0会保存为0，已排队任务和原请求重试继续使用创建时的参数。保存本身不调用模型。
 
@@ -288,11 +302,13 @@ node tests/editor_preferences_browser_regressions.cjs
 
 浏览器测试需安装 Playwright 与浏览器；`MOYU_PLAYWRIGHT_MODULE` 可指定模块路径，`MOYU_TEST_PYTHON` 可指定启动服务的 Python。参考片段的HTTP与完整性测试为 `tests/reference_passages_http_fixtures.py`、`tests/reference_passages_integrity_http_fixtures.py`，真实电脑页面测试为 `tests/reference_passages_browser_regressions.cjs`。电脑ZIP恢复的逐表和真实HTTP验证分别为 `tests/portable_backup_fixtures.py`、`tests/portable_backup_http_fixtures.py`，电脑页面验证为 `tests/portable_backup_browser_regressions.cjs`；新删章与旧遗留资料分别由 `tests/chapter_deletion_dependency_http_fixtures.py`、`tests/legacy_deleted_dependency_http_fixtures.py`覆盖。专项边界见[完整ZIP恢复记录](docs/audits/2026-10-14/comprehensive/portable-complete-backup.md)。资料关联与全书待办的规则及接口测试为 `tests/record_knowledge_fixtures.py`、`tests/writing_inbox_fixtures.py`、`tests/knowledge_inbox_http_fixtures.py`；共享材料的范围交集另由 `tests/context_scope_intersection_fixtures.py` 和 `tests/nested_record_scope_http_fixtures.py`覆盖。本批浏览器结果、截图和整轮状态单独登记在[资料与待办专项](docs/audits/2026-10-14/comprehensive/knowledge-inbox-workspace.md)。
 
+持续对话与连接设置的接口专项为 `tests/agent_chat_fixtures.py` 和 `tests/agent_settings_fixtures.py`。`tests/agent_chat_browser_regressions.cjs` 使用受控接口验证页面交互；`tests/agent_chat_flow_browser_regressions.cjs` 通过真实本机接口和免费模拟模型走通讨论、任务确认、候选采纳、记忆与审稿、停止和重启；`tests/agent_settings_browser_regressions.cjs` 验证连接继承、独立设置、联动刷新和密钥保护。这些专项不证明真实模型文学质量，本版完整验收与远程结果仍须对应具体源码记录。
+
 检查配置存在和本机通过不能替代实际远程执行；`e96e00c` 的[历史GitHub成功](docs/audits/2026-10-13/evidence/github-actions-e96e00c-success.json)、`3a369807` 的[后续失败](docs/audits/2026-10-14/comprehensive/evidence/local-service-reconciled-20261015.md)、`94e2ade` 的[参考包成功](docs/audits/2026-10-14/comprehensive/evidence/github-reference-settings-94e2ade-success-20261015.json)及 `1552104` 的[完整恢复交付](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)分别保留。写作总管和三栏工作台的05历史验收及其对应远程结果在[历史专项](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)登记，不能代替本批新增源码的完整验收或具体提交的 GitHub 检查。
 
 ## 备份、恢复与导入
 
-作者在“备份中心”点击“完整备份”，可查看清单、下载 ZIP，恢复时建立独立作品并保留原稿。完整备份包括正文、版本、设定、规划、人物状态、关系、时间线、伏笔、原句证据、任务、审计及参考来源；通过一致数据库快照、内容指纹、行数和外键检查后恢复。运行中或待执行的外部模型任务会标为失败或执行未知，不自动再次收费。**当前没有定时自动备份**。
+作者在“备份中心”点击“完整备份”，可查看清单、下载 ZIP，恢复时建立独立作品并保留原稿。完整备份包括正文、版本、设定、规划、人物状态、关系、时间线、伏笔、原句证据、任务、总管对话、审计及参考来源；通过一致数据库快照、内容指纹、行数和外键检查后恢复。运行中或待执行的外部模型任务会标为失败或执行未知，不自动再次收费；恢复的旧总管对话只读，需要新建对话继续，独立对话连接和密钥须重新配置。**当前没有定时自动备份**。
 
 要从电脑恢复完整备份，打开“备份中心”，点击“从电脑恢复 ZIP”，选择以前下载的完整作品 ZIP。先核对原作品、备份时间及章节和历史数量，再填写恢复后的作品名，勾选“我确认建立独立作品”，点击“建立独立作品”。会创建新作品并保留原稿；文件最多32 MiB，预览30分钟内有效。密钥需要在新作品中重新配置。
 
