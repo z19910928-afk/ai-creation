@@ -1,0 +1,1849 @@
+{
+  "passed": true,
+  "checks": 36,
+  "cases": [
+    {
+      "name": "test_900_codepoints_with_astral_characters_is_accepted_exactly",
+      "passed": true
+    },
+    {
+      "name": "test_901_codepoints_is_rejected_without_job_run_or_quota",
+      "passed": true
+    },
+    {
+      "name": "test_bool_offsets_are_rejected",
+      "passed": true,
+      "subtest": "test_bool_offsets_are_rejected (__main__.ReferencePassagesHTTP.test_bool_offsets_are_rejected) (field='section_start', value=False)"
+    },
+    {
+      "name": "test_bool_offsets_are_rejected",
+      "passed": true,
+      "subtest": "test_bool_offsets_are_rejected (__main__.ReferencePassagesHTTP.test_bool_offsets_are_rejected) (field='section_start', value=True)"
+    },
+    {
+      "name": "test_bool_offsets_are_rejected",
+      "passed": true,
+      "subtest": "test_bool_offsets_are_rejected (__main__.ReferencePassagesHTTP.test_bool_offsets_are_rejected) (field='section_end', value=False)"
+    },
+    {
+      "name": "test_bool_offsets_are_rejected",
+      "passed": true,
+      "subtest": "test_bool_offsets_are_rejected (__main__.ReferencePassagesHTTP.test_bool_offsets_are_rejected) (field='section_end', value=True)"
+    },
+    {
+      "name": "test_bool_offsets_are_rejected",
+      "passed": true
+    },
+    {
+      "name": "test_budget_keeps_reference_exact_and_counts_its_bytes",
+      "passed": true
+    },
+    {
+      "name": "test_changed_consumed_reference_blocks_apply_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_changed_consumed_reference_blocks_candidate_revision_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_changed_consumed_reference_blocks_job_and_run_retry_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_consumed_document_title_change_blocks_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_consumed_reference_body_change_blocks_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_consumed_reference_source_metadata_change_blocks_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_continue_preview_queue_and_provider_use_same_reference",
+      "passed": true
+    },
+    {
+      "name": "test_document_section_pair_must_match",
+      "passed": true
+    },
+    {
+      "name": "test_each_of_three_hashes_is_authoritative",
+      "passed": true,
+      "subtest": "test_each_of_three_hashes_is_authoritative (__main__.ReferencePassagesHTTP.test_each_of_three_hashes_is_authoritative) (field='source_sha256')"
+    },
+    {
+      "name": "test_each_of_three_hashes_is_authoritative",
+      "passed": true,
+      "subtest": "test_each_of_three_hashes_is_authoritative (__main__.ReferencePassagesHTTP.test_each_of_three_hashes_is_authoritative) (field='section_hash')"
+    },
+    {
+      "name": "test_each_of_three_hashes_is_authoritative",
+      "passed": true,
+      "subtest": "test_each_of_three_hashes_is_authoritative (__main__.ReferencePassagesHTTP.test_each_of_three_hashes_is_authoritative) (field='source_hash')"
+    },
+    {
+      "name": "test_each_of_three_hashes_is_authoritative",
+      "passed": true
+    },
+    {
+      "name": "test_empty_selection_preserves_existing_prompt_and_payload",
+      "passed": true
+    },
+    {
+      "name": "test_foreign_branch_reference_is_rejected",
+      "passed": true
+    },
+    {
+      "name": "test_foreign_project_reference_and_forged_pair_are_rejected",
+      "passed": true
+    },
+    {
+      "name": "test_frozen_passage_quote_mismatch_fails_closed",
+      "passed": true
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes",
+      "passed": true,
+      "subtest": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes (__main__.ReferencePassagesHTTP.test_incomplete_reference_bindings_block_both_retry_entries_without_writes) (scenario='missing_dependency')"
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes",
+      "passed": true,
+      "subtest": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes (__main__.ReferencePassagesHTTP.test_incomplete_reference_bindings_block_both_retry_entries_without_writes) (scenario='missing_passage')"
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes",
+      "passed": true,
+      "subtest": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes (__main__.ReferencePassagesHTTP.test_incomplete_reference_bindings_block_both_retry_entries_without_writes) (scenario='quote_mismatch')"
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes",
+      "passed": true,
+      "subtest": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes (__main__.ReferencePassagesHTTP.test_incomplete_reference_bindings_block_revise_and_apply_without_writes) (scenario='missing_dependency')"
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes",
+      "passed": true,
+      "subtest": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes (__main__.ReferencePassagesHTTP.test_incomplete_reference_bindings_block_revise_and_apply_without_writes) (scenario='missing_passage')"
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes",
+      "passed": true,
+      "subtest": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes (__main__.ReferencePassagesHTTP.test_incomplete_reference_bindings_block_revise_and_apply_without_writes) (scenario='quote_mismatch')"
+    },
+    {
+      "name": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_invalid_or_empty_ranges_are_rejected",
+      "passed": true,
+      "subtest": "test_invalid_or_empty_ranges_are_rejected (__main__.ReferencePassagesHTTP.test_invalid_or_empty_ranges_are_rejected) (start=-1, end=4)"
+    },
+    {
+      "name": "test_invalid_or_empty_ranges_are_rejected",
+      "passed": true,
+      "subtest": "test_invalid_or_empty_ranges_are_rejected (__main__.ReferencePassagesHTTP.test_invalid_or_empty_ranges_are_rejected) (start=4, end=4)"
+    },
+    {
+      "name": "test_invalid_or_empty_ranges_are_rejected",
+      "passed": true,
+      "subtest": "test_invalid_or_empty_ranges_are_rejected (__main__.ReferencePassagesHTTP.test_invalid_or_empty_ranges_are_rejected) (start=12, end=4)"
+    },
+    {
+      "name": "test_invalid_or_empty_ranges_are_rejected",
+      "passed": true,
+      "subtest": "test_invalid_or_empty_ranges_are_rejected (__main__.ReferencePassagesHTTP.test_invalid_or_empty_ranges_are_rejected) (start=0, end=79)"
+    },
+    {
+      "name": "test_invalid_or_empty_ranges_are_rejected",
+      "passed": true,
+      "subtest": "test_invalid_or_empty_ranges_are_rejected (__main__.ReferencePassagesHTTP.test_invalid_or_empty_ranges_are_rejected) (start=0.0, end=4)"
+    },
+    {
+      "name": "test_invalid_or_empty_ranges_are_rejected",
+      "passed": true,
+      "subtest": "test_invalid_or_empty_ranges_are_rejected (__main__.ReferencePassagesHTTP.test_invalid_or_empty_ranges_are_rejected) (start=0, end='4')"
+    },
+    {
+      "name": "test_invalid_or_empty_ranges_are_rejected",
+      "passed": true
+    },
+    {
+      "name": "test_mandatory_reference_budget_failure_is_before_any_write",
+      "passed": true
+    },
+    {
+      "name": "test_missing_consumed_reference_blocks_apply_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_missing_consumed_reference_blocks_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_missing_consumed_reference_blocks_job_and_run_retry_without_writes",
+      "passed": true
+    },
+    {
+      "name": "test_multiple_passages_cannot_bypass_total_limit",
+      "passed": true
+    },
+    {
+      "name": "test_orphan_reference_binding_without_passage_fails_closed",
+      "passed": true
+    },
+    {
+      "name": "test_polish_preview_queue_use_same_full_manuscript_selection_wrapper",
+      "passed": true
+    },
+    {
+      "name": "test_polish_without_reference_also_has_full_wrapper_parity",
+      "passed": true
+    },
+    {
+      "name": "test_raw_client_quote_cannot_replace_server_quote",
+      "passed": true
+    },
+    {
+      "name": "test_reference_does_not_enter_story_facts_or_public_job_payload",
+      "passed": true
+    },
+    {
+      "name": "test_reference_passage_without_source_binding_fails_closed",
+      "passed": true
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true,
+      "subtest": "test_reference_selection_only_allowed_for_continue_and_polish (__main__.ReferencePassagesHTTP.test_reference_selection_only_allowed_for_continue_and_polish) (task='outline')"
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true,
+      "subtest": "test_reference_selection_only_allowed_for_continue_and_polish (__main__.ReferencePassagesHTTP.test_reference_selection_only_allowed_for_continue_and_polish) (task='scene')"
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true,
+      "subtest": "test_reference_selection_only_allowed_for_continue_and_polish (__main__.ReferencePassagesHTTP.test_reference_selection_only_allowed_for_continue_and_polish) (task='summary')"
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true,
+      "subtest": "test_reference_selection_only_allowed_for_continue_and_polish (__main__.ReferencePassagesHTTP.test_reference_selection_only_allowed_for_continue_and_polish) (task='check')"
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true,
+      "subtest": "test_reference_selection_only_allowed_for_continue_and_polish (__main__.ReferencePassagesHTTP.test_reference_selection_only_allowed_for_continue_and_polish) (task='brainstorm')"
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true,
+      "subtest": "test_reference_selection_only_allowed_for_continue_and_polish (__main__.ReferencePassagesHTTP.test_reference_selection_only_allowed_for_continue_and_polish) (task='chapter_analysis')"
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true,
+      "subtest": "test_reference_selection_only_allowed_for_continue_and_polish (__main__.ReferencePassagesHTTP.test_reference_selection_only_allowed_for_continue_and_polish) (task='semantic_review')"
+    },
+    {
+      "name": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "passed": true
+    },
+    {
+      "name": "test_retry_preserves_original_reference_and_exact_payload",
+      "passed": true
+    },
+    {
+      "name": "test_revision_inherits_reference_and_replay_reads_existing_child",
+      "passed": true
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (selected=None)"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (selected={})"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (selected='reference')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (selected=[None])"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (selected=[{}])"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (missing='document_id')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (missing='section_id')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (missing='section_start')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (missing='section_end')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (missing='source_sha256')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (missing='section_hash')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true,
+      "subtest": "test_selection_container_and_required_fields_are_strict (__main__.ReferencePassagesHTTP.test_selection_container_and_required_fields_are_strict) (missing='source_hash')"
+    },
+    {
+      "name": "test_selection_container_and_required_fields_are_strict",
+      "passed": true
+    },
+    {
+      "name": "test_unconsumed_reference_changes_do_not_invalidate_frozen_request",
+      "passed": true
+    }
+  ],
+  "started_at": "2026-10-16T01:51:07.161598+00:00",
+  "finished_at": "2026-10-16T01:51:45.865234+00:00",
+  "observations": [
+    {
+      "test": "test_900_codepoints_with_astral_characters_is_accepted_exactly",
+      "scenario": "unicode900",
+      "codepoints": 900,
+      "exact_quote_preserved": true
+    },
+    {
+      "test": "test_901_codepoints_is_rejected_without_job_run_or_quota",
+      "scenario": "unicode901",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考最多 900 字，请选择更短的完整段落。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考最多 900 字，请选择更短的完整段落。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考最多 900 字，请选择更短的完整段落。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考最多 900 字，请选择更短的完整段落。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_bool_offsets_are_rejected",
+      "scenario": "bool_section_start",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_bool_offsets_are_rejected",
+      "scenario": "bool_section_start",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_bool_offsets_are_rejected",
+      "scenario": "bool_section_end",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_bool_offsets_are_rejected",
+      "scenario": "bool_section_end",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_budget_keeps_reference_exact_and_counts_its_bytes",
+      "scenario": "reference_budget",
+      "extra_context_bytes": 986,
+      "exact_quote_preserved": true
+    },
+    {
+      "test": "test_changed_consumed_reference_blocks_apply_without_writes",
+      "scenario": "stale_apply",
+      "http_status": 400,
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_changed_consumed_reference_blocks_candidate_revision_without_writes",
+      "scenario": "stale_candidate_revision",
+      "http_status": 400,
+      "database_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_changed_consumed_reference_blocks_job_and_run_retry_without_writes",
+      "scenario": "changed_consumed_section_retries",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "entry": "runs",
+          "status": 409,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_consumed_document_title_change_blocks_dispatch",
+      "scenario": "changed_consumed_document_title",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_consumed_reference_body_change_blocks_dispatch",
+      "scenario": "changed_consumed_section",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_consumed_reference_source_metadata_change_blocks_dispatch",
+      "scenario": "changed_source_metadata",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_continue_preview_queue_and_provider_use_same_reference",
+      "scenario": "continue_exact_request",
+      "preview_context_queue_equal": true,
+      "frozen_provider_payload_equal": true,
+      "exact_request_bytes_equal": true,
+      "reference_codepoints": 58,
+      "canon_unchanged": true,
+      "body_unchanged": true
+    },
+    {
+      "test": "test_document_section_pair_must_match",
+      "scenario": "unrelated_document_section_pair",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_each_of_three_hashes_is_authoritative",
+      "scenario": "wrong_source_sha256",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_each_of_three_hashes_is_authoritative",
+      "scenario": "wrong_section_hash",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_each_of_three_hashes_is_authoritative",
+      "scenario": "wrong_source_hash",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考书或原句已变化，请重新选择片段。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_empty_selection_preserves_existing_prompt_and_payload",
+      "scenario": "no_selection_compatibility",
+      "exact_payload_equal": true,
+      "database_unchanged": true
+    },
+    {
+      "test": "test_foreign_branch_reference_is_rejected",
+      "scenario": "foreign_branch",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_foreign_project_reference_and_forged_pair_are_rejected",
+      "scenario": "foreign_project",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_foreign_project_reference_and_forged_pair_are_rejected",
+      "scenario": "foreign_section_local_document",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_frozen_passage_quote_mismatch_fails_closed",
+      "scenario": "reference_quote_binding_mismatch",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes",
+      "scenario": "incomplete_reference_binding_retry_missing_dependency",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409,
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
+        },
+        {
+          "entry": "runs",
+          "status": 409,
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes",
+      "scenario": "incomplete_reference_binding_retry_missing_passage",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409,
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
+        },
+        {
+          "entry": "runs",
+          "status": 409,
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_incomplete_reference_bindings_block_both_retry_entries_without_writes",
+      "scenario": "incomplete_reference_binding_retry_quote_mismatch",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409,
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
+        },
+        {
+          "entry": "runs",
+          "status": 409,
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes",
+      "scenario": "incomplete_reference_binding_actions_missing_dependency",
+      "outcomes": [
+        {
+          "operation": "revise",
+          "status": 400
+        },
+        {
+          "operation": "apply",
+          "status": 400
+        }
+      ],
+      "database_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes",
+      "scenario": "incomplete_reference_binding_actions_missing_passage",
+      "outcomes": [
+        {
+          "operation": "revise",
+          "status": 400
+        },
+        {
+          "operation": "apply",
+          "status": 400
+        }
+      ],
+      "database_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_incomplete_reference_bindings_block_revise_and_apply_without_writes",
+      "scenario": "incomplete_reference_binding_actions_quote_mismatch",
+      "outcomes": [
+        {
+          "operation": "revise",
+          "status": 400
+        },
+        {
+          "operation": "apply",
+          "status": 400
+        }
+      ],
+      "database_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_or_empty_ranges_are_rejected",
+      "scenario": "invalid_range",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_or_empty_ranges_are_rejected",
+      "scenario": "invalid_range",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_or_empty_ranges_are_rejected",
+      "scenario": "invalid_range",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_or_empty_ranges_are_rejected",
+      "scenario": "invalid_range",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围已变化，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围已变化，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围已变化，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围已变化，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_or_empty_ranges_are_rejected",
+      "scenario": "invalid_range",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_invalid_or_empty_ranges_are_rejected",
+      "scenario": "invalid_range",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段范围无效，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_mandatory_reference_budget_failure_is_before_any_write",
+      "scenario": "mandatory_reference_exceeds_budget",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_missing_consumed_reference_blocks_apply_without_writes",
+      "scenario": "missing_reference_apply",
+      "http_status": 400,
+      "database_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_missing_consumed_reference_blocks_dispatch",
+      "scenario": "removed_consumed_section",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_missing_consumed_reference_blocks_job_and_run_retry_without_writes",
+      "scenario": "missing_consumed_section_retries",
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "status": 409,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        },
+        {
+          "entry": "runs",
+          "status": 409,
+          "error": "参考片段不存在或不属于当前作品和分支，请重新选择。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_multiple_passages_cannot_bypass_total_limit",
+      "scenario": "two_passages",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_orphan_reference_binding_without_passage_fails_closed",
+      "scenario": "reference_orphan_binding",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_polish_preview_queue_use_same_full_manuscript_selection_wrapper",
+      "scenario": "polish_wrapper_parity",
+      "exact_full_wrapper_equal": true,
+      "preview_queue_payload_equal": true
+    },
+    {
+      "test": "test_polish_without_reference_also_has_full_wrapper_parity",
+      "scenario": "legacy_polish_wrapper_parity",
+      "full_wrapper_equal": true
+    },
+    {
+      "test": "test_raw_client_quote_cannot_replace_server_quote",
+      "scenario": "client_raw_quote",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_reference_does_not_enter_story_facts_or_public_job_payload",
+      "scenario": "reference_fact_and_public_boundary",
+      "facts_unchanged": true,
+      "raw_reference_not_public": true
+    },
+    {
+      "test": "test_reference_passage_without_source_binding_fails_closed",
+      "scenario": "reference_missing_binding",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "scenario": "unsupported_outline",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "scenario": "unsupported_scene",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "scenario": "unsupported_summary",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "scenario": "unsupported_check",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "scenario": "unsupported_brainstorm",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "scenario": "unsupported_chapter_analysis",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_reference_selection_only_allowed_for_continue_and_polish",
+      "scenario": "unsupported_semantic_review",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考片段只能用于当前章节的续写或润色。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_retry_preserves_original_reference_and_exact_payload",
+      "scenario": "retry_original_reference",
+      "reference_retained": true,
+      "exact_payload_retained": true
+    },
+    {
+      "test": "test_revision_inherits_reference_and_replay_reads_existing_child",
+      "scenario": "stale_revision_child_dispatch",
+      "status": "failed",
+      "billing_state": "not_dispatched",
+      "extra_provider_calls": 0,
+      "canon_unchanged": true,
+      "body_unchanged": true,
+      "frozen_context_unchanged": true
+    },
+    {
+      "test": "test_revision_inherits_reference_and_replay_reads_existing_child",
+      "scenario": "revision_reference_inheritance",
+      "reference_retained": true,
+      "replay_only": true
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "invalid_selection_shape",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "invalid_selection_shape",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "invalid_selection_shape",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "本次参考应为空或只选择一段原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "invalid_selection_shape",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "invalid_selection_shape",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "missing_document_id",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "missing_section_id",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "missing_section_start",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "missing_section_end",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "missing_source_sha256",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "missing_section_hash",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_selection_container_and_required_fields_are_strict",
+      "scenario": "missing_source_hash",
+      "outcomes": [
+        {
+          "route": "/api/ai/prompt-preview",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai/queue",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/ai",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        },
+        {
+          "route": "/api/context",
+          "status": 400,
+          "error": "参考片段来源信息不完整，请重新选择原句。"
+        }
+      ],
+      "database_unchanged": true,
+      "body_unchanged": true,
+      "extra_provider_calls": 0
+    },
+    {
+      "test": "test_unconsumed_reference_changes_do_not_invalidate_frozen_request",
+      "scenario": "unconsumed_reference_change",
+      "dispatch_success": true,
+      "exact_frozen_payload": true
+    }
+  ],
+  "free_provider_calls": 11,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "server.py": "5d30604c2d2d822b325a5b5b0239f8515a7666f45029ff85bc8e478fca157940",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_backups.py": "34f57743ebcf9d009a9a954ceecb26a1d5f0513087269f6a26413dc7c1715882",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/reference_passages_http_fixtures.py": "4aa21b3a2c8bdd930be9eb2a9cd73ca8074e57d6e6b734c38183679043259c96"
+  },
+  "source_files_sha256_after": {
+    "server.py": "5d30604c2d2d822b325a5b5b0239f8515a7666f45029ff85bc8e478fca157940",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_backups.py": "34f57743ebcf9d009a9a954ceecb26a1d5f0513087269f6a26413dc7c1715882",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/reference_passages_http_fixtures.py": "4aa21b3a2c8bdd930be9eb2a9cd73ca8074e57d6e6b734c38183679043259c96"
+  },
+  "source_unchanged": true,
+  "scope": "temporary synthetic SQLite; real loopback HTTP; free local provider; no actual manuscript or credential",
+  "claim_limit": "reference passage integrity and workflow behavior only; no literary-quality or competitiveness claim"
+}

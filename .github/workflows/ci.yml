@@ -77,6 +77,16 @@ jobs:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
           MOYU_TEST_PYTHON: python
         run: node tests/workbench_scope_browser_regressions.cjs
+      - name: Knowledge and writing inbox browser regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/knowledge_inbox_browser_regressions.cjs
+      - name: Editor position and reading preferences
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/editor_preferences_browser_regressions.cjs
       - name: Instruction draft browser regressions
         env:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright

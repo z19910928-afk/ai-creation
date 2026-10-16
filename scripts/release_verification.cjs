@@ -39,7 +39,7 @@ const safeValue = value => {
 const fingerprints = () => {
   const currentFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/),
     ...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/),
-    '.github/workflows/ci.yml', 'requirements.txt', 'index.html', 'styles.css'];
+    ...filesIn('.', /\.css$/), '.github/workflows/ci.yml', 'requirements.txt', 'index.html'];
   return Object.fromEntries(currentFiles.map(file => [file, hash(fs.readFileSync(path.join(root, file)))]));
 };
 const report = {passed: false, scope: 'Python3.11/Node24 release; macOS arm64; isolated desktop tests and free local providers.',
@@ -88,6 +88,10 @@ function saveStructuredEvidence(name, filename, value) {
 }
 
 const requiredScreenshots = {
+  knowledge_inbox_browser_regressions: ['knowledge-links-1440x1000.png',
+    'knowledge-sources-1280x800.png', 'writing-inbox-1440x1000.png', 'writing-inbox-1280x800.png'],
+  editor_preferences_browser_regressions: ['editor-preferences-1440x1000.png',
+    'editor-preferences-1280x800.png'],
   writing_agent_browser_regressions: ['writing-agent-plan-1440x1000.png',
     'writing-agent-complete-1440x1000.png', 'writing-agent-1280x900.png',
     'writing-workbench-1440x1000.png', 'writing-workbench-1280x900.png',

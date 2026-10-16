@@ -1,0 +1,980 @@
+{
+  "passed": true,
+  "methods": 12,
+  "failures": [],
+  "errors": [],
+  "started_at": "2026-10-16T01:52:28.617270+00:00",
+  "finished_at": "2026-10-16T01:52:37.080349+00:00",
+  "source_files_sha256_before": {
+    "server.py": "5d30604c2d2d822b325a5b5b0239f8515a7666f45029ff85bc8e478fca157940",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_backups.py": "34f57743ebcf9d009a9a954ceecb26a1d5f0513087269f6a26413dc7c1715882",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "tests/provider_queue_integration_fixtures.py": "c6a9b7cac696d1b625b2e48c61f2008ab78bb02efffba8b0f520dbb4992e2915",
+    "tests/task_parameter_http_fixtures.py": "fec9b79e582ae2496ce37e596910b036fcc1c854b62872123e089e5f44f98b61"
+  },
+  "source_files_sha256_after": {
+    "server.py": "5d30604c2d2d822b325a5b5b0239f8515a7666f45029ff85bc8e478fca157940",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_backups.py": "34f57743ebcf9d009a9a954ceecb26a1d5f0513087269f6a26413dc7c1715882",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "tests/provider_queue_integration_fixtures.py": "c6a9b7cac696d1b625b2e48c61f2008ab78bb02efffba8b0f520dbb4992e2915",
+    "tests/task_parameter_http_fixtures.py": "fec9b79e582ae2496ce37e596910b036fcc1c854b62872123e089e5f44f98b61"
+  },
+  "source_unchanged": true,
+  "paid_provider_calls": 0,
+  "external_model_calls": 0,
+  "production_database_accessed": false,
+  "real_credentials_read": false,
+  "raw_database_values_saved": false,
+  "source_snapshot_provenance": "current isolated test checkout",
+  "scope": "Temporary synthetic SQLite; real loopback application HTTP and free local provider.",
+  "claim_limit": "Task parameter transport and data protection; no literary-quality or deployment claim.",
+  "http": [
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "GET",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_02_zero_values_clear_overrides_and_omitted_field_preserves_defaults",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途参数设置无效。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "temperature 必须是有效数字。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "temperature 超出允许范围。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "temperature 超出允许范围。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "temperature 必须是有效数字。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "top_p 超出允许范围。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "随机种子必须为有效整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "停止词必须为至多四项非空文字。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "思考开关必须为仅含type的对象，值为enabled或disabled。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "思考开关必须为仅含type的对象，值为enabled或disabled。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "思考开关与思考强度冲突，请统一设置。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "思考开关与思考强度冲突，请统一设置。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 400,
+      "error": "用途输出上限必须为1至128000的整数。"
+    },
+    {
+      "test": "test_04_task_reasoning_setting_replaces_inherited_alternative_representation",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_04_task_reasoning_setting_replaces_inherited_alternative_representation",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_04_task_reasoning_setting_replaces_inherited_alternative_representation",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_04_task_reasoning_setting_replaces_inherited_alternative_representation",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_05_aliases_replace_whole_objects_and_cleared_targets_restore_fallback",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "POST",
+      "path": "/api/ai",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "POST",
+      "path": "/api/ai/queue",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_06_explicit_output_limit_wins_for_preview_direct_and_queue_routes",
+      "method": "POST",
+      "path": "/api/ai/jobs/aijob_f33d3d7e1aa240a0bd63b58b84d17c4b/process",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_07_deferred_queue_freezes_task_parameters_model_and_output_limit",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_07_deferred_queue_freezes_task_parameters_model_and_output_limit",
+      "method": "POST",
+      "path": "/api/ai/queue",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_07_deferred_queue_freezes_task_parameters_model_and_output_limit",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_07_deferred_queue_freezes_task_parameters_model_and_output_limit",
+      "method": "POST",
+      "path": "/api/ai/jobs/aijob_9dc58c97777f4e74803345c4f98819ea/process",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "POST",
+      "path": "/api/ai/queue",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "POST",
+      "path": "/api/ai/jobs/aijob_482d693ed2f84edcb891291f6b0ecc82/cancel",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "POST",
+      "path": "/api/ai/jobs/aijob_482d693ed2f84edcb891291f6b0ecc82/retry",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_08_canceled_original_retry_keeps_exact_task_payload_after_settings_change",
+      "method": "GET",
+      "path": "/api/ai/jobs/aijob_1ba21204a85c466e96c29b75ac1d5956",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "method": "POST",
+      "path": "/api/ai/queue",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "method": "POST",
+      "path": "/api/ai/jobs/aijob_54e35b60430f4ed7b6b623fefb10f763/process",
+      "status": 200,
+      "error": "候选未完整生成，保留已有片段供查看，不能直接采纳。"
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "method": "POST",
+      "path": "/api/ai/jobs/aijob_54e35b60430f4ed7b6b623fefb10f763/retry",
+      "status": 409,
+      "error": "上次请求是否完成或计费尚不明确，请先核对服务商记录，再手动发起新任务"
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "method": "POST",
+      "path": "/api/ai/runs/airun_e220e02f441b402f84418c82ef6fcdf7/retry",
+      "status": 409,
+      "error": "上次请求是否完成或计费尚不明确，请先核对服务商记录，再手动发起新任务"
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows/planwf_b808929237c449498046dea138e1d208/start",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "GET",
+      "path": "/api/planning-workflows/planwf_0beba0a2d54b453092b24907c9ceaa40",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows/planwf_0beba0a2d54b453092b24907c9ceaa40/start",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows/planwf_a055adca7adf4baaa252689aec62e6ee/start",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "GET",
+      "path": "/api/planning-workflows/planwf_f1f33f44b3ae407da1adb4b2f510c72c",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "method": "POST",
+      "path": "/api/planning-workflows/planwf_f1f33f44b3ae407da1adb4b2f510c72c/start",
+      "status": 202,
+      "error": null
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "PUT",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "POST",
+      "path": "/api/backups",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "GET",
+      "path": "/api/backups/backup_b6ce4587ca9341fe87a1e66240251b48/download",
+      "status": 200,
+      "bytes": 2912,
+      "sha256": "e5fd4c438d5b22281258b6a59c7d6d40a54f4dac20d62589c15b6d483831fd84"
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "POST",
+      "path": "/api/backups/import/preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "POST",
+      "path": "/api/backups/import/apply",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "GET",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "method": "POST",
+      "path": "/api/ai/prompt-preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "method": "POST",
+      "path": "/api/backups",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "method": "GET",
+      "path": "/api/backups/backup_a512963973014203a936ed850f42e045/download",
+      "status": 200,
+      "bytes": 2831,
+      "sha256": "49deccb3d83167be44e54c670d2c3640ead08fd4987ba7816c6e10339973eb93"
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "method": "POST",
+      "path": "/api/backups/import/preview",
+      "status": 200,
+      "error": null
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "method": "POST",
+      "path": "/api/backups/import/apply",
+      "status": 201,
+      "error": null
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "method": "GET",
+      "path": "/api/ai/settings",
+      "status": 200,
+      "error": null
+    }
+  ],
+  "observations": [
+    {
+      "test": "test_01_nine_task_settings_roundtrip_and_preview_use_distinct_parameters",
+      "tasks": 9,
+      "preview_dispatches": 0
+    },
+    {
+      "test": "test_03_invalid_task_settings_are_atomic_and_do_not_store_new_credentials",
+      "invalid_cases": 28,
+      "all_tables_and_schema_unchanged": true,
+      "database_sha256_before": "96a3680b4ba81cd6537cb8c8af4a141d19718c37401a89d64d58f6d518bdfc61",
+      "database_sha256_after": "96a3680b4ba81cd6537cb8c8af4a141d19718c37401a89d64d58f6d518bdfc61",
+      "credential_files_unchanged": true
+    },
+    {
+      "test": "test_07_deferred_queue_freezes_task_parameters_model_and_output_limit",
+      "original_payload_preserved": true,
+      "frozen_max_tokens": 5400
+    },
+    {
+      "test": "test_09_unknown_completion_keeps_task_payload_and_refuses_both_retry_routes",
+      "unknown_retry_dispatches": 0,
+      "all_tables_and_schema_unchanged": true
+    },
+    {
+      "test": "test_10_planning_callbacks_use_task_overrides_and_explicit_output_priority",
+      "real_callback_jobs": 4,
+      "synthetic_later_stage_setup": true,
+      "provider_dispatches": 0
+    },
+    {
+      "test": "test_11_real_zip_roundtrip_preserves_task_preferences_without_credentials",
+      "known_task_preferences_preserved": true,
+      "restored_credentials_independent": true,
+      "archive_sha256": "e5fd4c438d5b22281258b6a59c7d6d40a54f4dac20d62589c15b6d483831fd84"
+    },
+    {
+      "test": "test_12_legacy_zip_removes_nested_secrets_unknown_tasks_and_unknown_parameters",
+      "synthetic_nested_secret_removed": true,
+      "supported_preferences_preserved": true,
+      "restored_credentials_independent": true
+    }
+  ],
+  "local_provider_calls": 5
+}

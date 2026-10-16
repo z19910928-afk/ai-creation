@@ -1,0 +1,16 @@
+.editor-reading-settings{position:relative;flex:none;color:var(--ink)}
+.editor-reading-settings>summary{display:grid;place-items:center;width:32px;height:30px;list-style:none;border:1px solid transparent;border-radius:4px;font:500 13px/1 Georgia,"Songti SC","SimSun",serif;cursor:pointer;color:var(--muted)}
+.editor-reading-settings>summary::-webkit-details-marker{display:none}
+.editor-reading-settings>summary:hover,.editor-reading-settings[open]>summary{border-color:var(--line);background:#edf3f1;color:var(--accent)}
+.editor-reading-settings>summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.editor-reading-panel{position:absolute;z-index:6;top:calc(100% + 7px);right:0;width:266px;max-width:calc(100vw - 40px);padding:14px 16px 16px;background:#fff;border:1px solid var(--line);border-radius:6px;box-shadow:0 8px 24px #1c34351f;font-size:12px;letter-spacing:0}
+.editor-reading-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.editor-reading-heading strong{font-size:12px;font-weight:600}
+.editor-reading-panel [data-editor-preferences-reset]{display:grid;place-items:center;padding:0;width:28px;height:28px;min-width:28px;min-height:28px;font-size:18px;border:0;border-radius:4px;background:transparent;color:var(--muted)}
+.editor-reading-panel>label{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px;line-height:1.6;color:var(--muted)}
+.editor-reading-panel output{font-variant-numeric:tabular-nums;color:var(--ink)}
+.editor-reading-panel>input[type="range"]{display:block;width:100%;height:22px;margin:5px 0 0;padding:0;accent-color:var(--accent);cursor:pointer}
+.editor-reading-panel [role="status"]{font-size:11px;line-height:1.65;color:#956620;margin:12px 0 0;overflow-wrap:anywhere}
+.editor-reading-panel [hidden]{display:none}
+.desktop-workbench .chapter-editor{font-size:var(--editor-font-size,16px);line-height:var(--editor-line-height,2.05);width:100%;max-width:var(--editor-content-width,880px);margin-inline:auto}
+.desktop-workbench .title-input{display:block;max-width:var(--editor-content-width,880px);margin-inline:auto}

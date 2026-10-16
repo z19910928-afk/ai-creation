@@ -1261,6 +1261,8 @@ def ai_job_public(row: sqlite3.Row | dict[str, Any], include_result: bool = True
                   conn: sqlite3.Connection | None = None) -> dict[str, Any]:
     """Return a stable queue projection without exposing the saved prompt."""
     item = dict(row)
+    for key in ("run_status", "retry_consent"):
+        item.pop(key, None)
     for key in ("cancel_requested",):
         item[key] = bool(item.get(key))
     for key in ("result_json",):
@@ -1286,10 +1288,11 @@ def ai_job_public(row: sqlite3.Row | dict[str, Any], include_result: bool = True
     latest_decision = None
     if conn is not None and item.get("ai_run_id"):
         saved = conn.execute(
-            "SELECT author_decision,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?",
+            "SELECT status,author_decision,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?",
             (item["ai_run_id"], item.get("project_id") or project_id(), item.get("branch_id") or branch_id()),
         ).fetchone()
         if saved is not None:
+            item["execution_status"] = saved["status"]
             decision = saved["author_decision"] or "pending"
             consent = _json_object(saved["consent_json"], {})
             latest_decision = consent.get("latest_decision")
@@ -3440,6 +3443,11 @@ def _json_object(value: Any, fallback: Any) -> Any:
     return parsed
 
 
+def source_evidence_matches(span: dict[str, Any], body: str, *declarations: Any) -> bool:
+    """Bind saved evidence to its exact current occurrence, including UTF-8 offsets."""
+    return not context_pipeline.source_evidence_reasons(span, body, *declarations)
+
+
 def assertion_detail(conn: sqlite3.Connection, assertion_id: str, *, include_conflicts: bool = True) -> dict[str, Any] | None:
     """Build a source-aware assertion record for author review.
 
@@ -3481,14 +3489,19 @@ def assertion_detail(conn: sqlite3.Connection, assertion_id: str, *, include_con
                           ss.start_utf8,ss.end_utf8,ss.quote,ss.quote_hash,ss.anchor_before,ss.anchor_after,
                           ss.status,ss.external_uri,ss.snapshot_hash,ss.snapshot_at,n.title chapter_title,
                           (SELECT r2.id FROM document_revision r2 WHERE r2.document_node_id=ss.document_node_id
-                             AND r2.branch_id=? ORDER BY r2.rowid DESC LIMIT 1) current_revision_id
+                             AND r2.branch_id=? ORDER BY r2.rowid DESC LIMIT 1) current_revision_id,
+                          (SELECT r2.canonical_text FROM document_revision r2 WHERE r2.document_node_id=ss.document_node_id
+                             AND r2.branch_id=? ORDER BY r2.rowid DESC LIMIT 1) source_text
                      FROM source_span ss JOIN document_node n ON n.id=ss.document_node_id
                     WHERE ss.id=? AND ss.project_id=? AND n.project_id=? AND n.branch_id=?
                       AND NOT EXISTS (SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=n.id)""",
-                (branch_id(), str(span_id), project_id(), project_id(), branch_id()),
+                (branch_id(), branch_id(), str(span_id), project_id(), project_id(), branch_id()),
             ).fetchone()
         memory_payload = _json_object(memory_row["payload_json"], {}) if memory_row else {}
         span = dict(span_row) if span_row else None
+        source_text = span.pop("source_text") if span else ""
+        if isinstance(source_text, bytes):
+            source_text = source_text.decode("utf-8", errors="replace")
         current = bool(span_row and span_row["status"] == "valid" and span_row["revision_id"] == span_row["current_revision_id"])
         reasons: list[str] = []
         if not memory_id and not span_id:
@@ -3503,6 +3516,10 @@ def assertion_detail(conn: sqlite3.Connection, assertion_id: str, *, include_con
             reasons.append(f"source_span_{span_row['status']}")
         elif span_row and span_row["revision_id"] != span_row["current_revision_id"]:
             reasons.append("source_revision_outdated")
+        if span and (not source_evidence_matches(span, str(source_text or ""), item, memory_payload)
+                     or memory_row and memory_row["source_span_id"] != span["id"]):
+            reasons.append("invalid_source_quote")
+            current = False
         if memory_row and memory_row["status"] != "accepted":
             reasons.append(f"memory_{memory_row['status']}")
         if reasons:
@@ -3641,6 +3658,56 @@ def memory_detail(conn: sqlite3.Connection, memory_id: str) -> dict[str, Any] | 
         "assertion_id": assertions[0]["id"] if assertions else None, "reviewed_by": row["reviewed_by"],
         "created_by": row["created_by"], "created_at": row["created_at"], "approved_at": row["reviewed_at"] if row["status"] == "accepted" else None,
     }
+
+
+def append_memory_source_evidence(conn: sqlite3.Connection, memory_id: str,
+                                  evidence: list[dict[str, Any]]) -> None:
+    """Expose a candidate's own source before it has a canon assertion."""
+    memory = conn.execute(
+        "SELECT * FROM candidate_memory WHERE id=? AND project_id=? AND branch_id=?",
+        (memory_id, project_id(), branch_id()),
+    ).fetchone()
+    if memory is None or any(item.get("candidate_memory_id") == memory_id
+                             and item.get("source_span_id") == memory["source_span_id"]
+                             for item in evidence):
+        return
+    row = conn.execute(
+        """SELECT ss.*,n.title chapter_title,r.id current_revision_id,r.canonical_text,
+                  EXISTS(SELECT 1 FROM app_deleted_node d WHERE d.chapter_id=n.id) deleted_source
+             FROM source_span ss JOIN document_node n ON n.id=ss.document_node_id
+             LEFT JOIN document_revision r ON r.id=(
+                 SELECT rr.id FROM document_revision rr WHERE rr.document_node_id=n.id
+                 AND rr.branch_id=? ORDER BY rr.rowid DESC LIMIT 1)
+            WHERE ss.id=? AND ss.project_id=? AND n.project_id=? AND n.branch_id=?""",
+        (branch_id(), memory["source_span_id"], project_id(), project_id(), branch_id()),
+    ).fetchone()
+    payload = _json_object(memory["payload_json"], {})
+    payload = payload if isinstance(payload, dict) else {}
+    reasons = []
+    span = dict(row) if row else None
+    if span is None:
+        reasons.append("source_span_missing")
+    else:
+        body = span.pop("canonical_text") or b""
+        body = body.decode("utf-8") if isinstance(body, bytes) else str(body)
+        if span.pop("deleted_source"):
+            reasons.append("source_chapter_deleted")
+        if span["status"] != "valid":
+            reasons.append("source_span_" + str(span["status"]))
+        if span["revision_id"] != span["current_revision_id"]:
+            reasons.append("source_revision_outdated")
+        if not source_evidence_matches(span, body, payload):
+            reasons.append("invalid_source_quote")
+        span["current"] = not reasons
+    evidence.append({
+        "candidate_memory_id": memory_id, "source_span_id": memory["source_span_id"],
+        "candidate_memory": {
+            "id": memory_id, "kind": memory["kind"], "status": memory["status"],
+            "confidence": memory["confidence"], "payload": payload,
+            "created_at": memory["created_at"], "reviewed_at": memory["reviewed_at"],
+        },
+        "source_span": span, "stale": bool(reasons), "stale_reasons": reasons,
+    })
 
 
 def require_memory_evidence(conn: sqlite3.Connection, status: str, source_span_id: str | None, entity_id: str | None) -> None:
@@ -5016,7 +5083,9 @@ def record_portable_restore(conn, key, receipt):
 
 class Handler(SimpleHTTPRequestHandler):
     server_version = "MoyuSQLite/1.0"
-    STATIC_FILES = {"/", "/index.html", "/app.js", "/editor-sync.js", "/author-workspace.js", "/styles.css"}
+    STATIC_FILES = {"/", "/index.html", "/app.js", "/editor-sync.js", "/author-workspace.js", "/styles.css",
+                    "/knowledge-workspace.js", "/writing-inbox.js", "/knowledge-workspace.css",
+                    "/editor-preferences.css"}
 
     def log_message(self, fmt: str, *args: Any) -> None:
         sys.stderr.write("%s - - [%s] %s\n" % (self.address_string(), now(), fmt % args))
@@ -5171,12 +5240,48 @@ class Handler(SimpleHTTPRequestHandler):
         try:
             with connect() as conn:
                 self._transaction_conn = conn
-                ensure_seed(conn)
+                read_only_workspace = (
+                    parsed.path == "/api/writing-inbox"
+                    or (parsed.path.startswith("/api/records/") and parsed.path.endswith("/knowledge"))
+                    or parsed.path.startswith("/api/memory/")
+                    or (parsed.path == "/api/writing-agent"
+                        and "session_id" in parse_qs(parsed.query, keep_blank_values=True))
+                )
+                if not read_only_workspace:
+                    ensure_seed(conn)
                 if parsed.path == "/api/projects":
                     return self.send_json(200, {"projects": workspace.project_rows(conn)})
+                if parsed.path == "/api/writing-inbox":
+                    from moyu_inbox import writing_inbox
+                    query = parse_qs(parsed.query, keep_blank_values=True)
+                    try:
+                        if any(len(values) != 1 for values in query.values()):
+                            raise ValueError("每个筛选条件只能填写一次。")
+                        limit = int((query.get("limit") or ["25"])[0])
+                        offset = int((query.get("offset") or ["0"])[0])
+                        result = writing_inbox(conn, project_id(), branch_id(), limit=limit, offset=offset,
+                                               kind=(query.get("kind") or ["all"])[0],
+                                               authorization_context=lambda chapter_id, **options:
+                                               ai_context(conn, chapter_id, **options)[0])
+                    except ValueError as exc:
+                        return self.send_json(400, {"error": str(exc)})
+                    return self.send_json(200, result)
                 if parsed.path == "/api/writing-agent":
-                    rows = conn.execute("SELECT * FROM app_agent_session WHERE project_id=? AND branch_id=? ORDER BY rowid DESC LIMIT 50",
-                                        (project_id(), branch_id())).fetchall()
+                    query = parse_qs(parsed.query, keep_blank_values=True)
+                    if "session_id" in query:
+                        try:
+                            if len(query["session_id"]) != 1:
+                                raise ValueError("一次只能打开一条写作任务。")
+                            session_id = checked_id(query["session_id"][0], "session id")
+                        except ValueError as exc:
+                            return self.send_json(400, {"error": str(exc)})
+                        rows = conn.execute("SELECT * FROM app_agent_session WHERE project_id=? AND branch_id=? AND id=?",
+                                            (project_id(), branch_id(), session_id)).fetchall()
+                        if not rows:
+                            return self.send_json(404, {"error": "当前作品中没有这条写作任务。"})
+                    else:
+                        rows = conn.execute("SELECT * FROM app_agent_session WHERE project_id=? AND branch_id=? ORDER BY rowid DESC LIMIT 50",
+                                            (project_id(), branch_id())).fetchall()
                     return self.send_json(200, {"sessions": [writing_agent.public_session(sys.modules[__name__], conn, row) for row in rows]})
                 if parsed.path == "/api/references":
                     import moyu_import
@@ -5378,6 +5483,27 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json(200, {"chapters": chapter_rows(conn)})
                 if parsed.path == "/api/records":
                     return self.send_json(200, {"records": state_from_db(conn)["records"]})
+                if parsed.path.startswith("/api/records/") and parsed.path.endswith("/knowledge"):
+                    from moyu_knowledge import KnowledgeNotFound, record_knowledge
+                    query = parse_qs(parsed.query, keep_blank_values=True)
+                    try:
+                        parts = parsed.path.split("/")
+                        if len(parts) != 5 or any(len(values) != 1 for values in query.values()):
+                            raise ValueError("资料地址或筛选条件不正确。")
+                        record_id = checked_id(parts[3], "record id")
+                        chapter_id = (query.get("chapter_id") or [None])[0]
+                        if chapter_id is not None:
+                            chapter_id = checked_id(chapter_id, "chapter id")
+                        result = record_knowledge(
+                            conn, project_id(), branch_id(), record_id, chapter_id,
+                            limit=int((query.get("limit") or ["50"])[0]),
+                            offset=int((query.get("offset") or ["0"])[0]),
+                        )
+                    except KnowledgeNotFound as exc:
+                        return self.send_json(404, {"error": str(exc)})
+                    except ValueError as exc:
+                        return self.send_json(400, {"error": str(exc)})
+                    return self.send_json(200, result)
                 if parsed.path == "/api/memory":
                     return self.send_json(200, {"memory": state_from_db(conn)["memory"]})
                 if parsed.path.startswith("/api/memory/") and parsed.path.endswith("/evidence"):
@@ -5390,8 +5516,6 @@ class Handler(SimpleHTTPRequestHandler):
                         "WHERE a.project_id=? AND a.branch_id=? ORDER BY a.reviewed_at DESC",
                         (memory_id, project_id(), branch_id()),
                     )]
-                    if not assertion_ids:
-                        return self.send_json(200, {"memory_id": memory_id, "assertions": [], "evidence": []})
                     assertion_cards = []
                     evidence = []
                     for assertion_id in assertion_ids:
@@ -5399,6 +5523,7 @@ class Handler(SimpleHTTPRequestHandler):
                         if detail:
                             assertion_cards.append({"id": detail["id"], "state": detail["state"], "stale": detail["stale"], "reviewed_at": detail["reviewed_at"]})
                             evidence.extend([{**item, "assertion_id": detail["id"]} for item in detail["evidence"]])
+                    append_memory_source_evidence(conn, memory_id, evidence)
                     return self.send_json(200, {"memory_id": memory_id, "assertions": assertion_cards, "evidence": evidence})
                 if parsed.path.startswith("/api/memory/"):
                     memory_id = checked_id(parsed.path.rsplit("/", 1)[-1], "memory id")
@@ -5411,6 +5536,7 @@ class Handler(SimpleHTTPRequestHandler):
                         detail = assertion_detail(conn, assertion_row["id"])
                         if detail:
                             evidence.extend([{**item, "assertion_id": detail["id"]} for item in detail["evidence"]])
+                    append_memory_source_evidence(conn, memory_id, evidence)
                     return self.send_json(200, {"memory": memory, "assertions": assertion_rows_for_memory, "evidence": evidence})
                 if parsed.path == "/api/plot":
                     return self.send_json(200, {"plot": state_from_db(conn)["plot"]})

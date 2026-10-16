@@ -1,0 +1,203 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-10-16T01:48:14.399Z",
+  "passed": true,
+  "scope": "Existing worktree database copy, restarted local preview and read-only desktop knowledge/inbox checks.",
+  "source_snapshot_tag": "knowledge-inbox-release-20261016-02",
+  "preview_port": 4174,
+  "original_service_port": 4173,
+  "database_tables": 68,
+  "database_dump_sha256_before": "6b389886d4be18dd524106c969c8ab835e06f18e6cc7bed5d23231950bca6446",
+  "database_dump_sha256_after": "6b389886d4be18dd524106c969c8ab835e06f18e6cc7bed5d23231950bca6446",
+  "database_rows_and_schema_unchanged": true,
+  "database_integrity": "ok",
+  "database_user_version": 11,
+  "model_configured": false,
+  "runtime_source_files_sha256": {
+    "server.py": "5d30604c2d2d822b325a5b5b0239f8515a7666f45029ff85bc8e478fca157940",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_inbox.py": "a74e108835d0ed5167aa83b0e2e8908e65fb30a217722276599465963d46d49a",
+    "moyu_knowledge.py": "b112df182d3448a2ffe454ecc3dfa028987a5d72131f0f03597fac6dc07f3492"
+  },
+  "served_assets": {
+    "index.html": {
+      "sha256": "75fa452a8364d41544d903350144633ec44c4904df9bf0b0c7a48e38da85520c",
+      "matched": true
+    },
+    "app.js": {
+      "sha256": "0c8981a3aa024ef2deefb1eafd6fad7b26ad40cfd663bb075b6d722e7f2f50a1",
+      "matched": true
+    },
+    "author-workspace.js": {
+      "sha256": "2cfc9663042df50629f09338f0194b361c1250ea60cd791bed5294089ad5c562",
+      "matched": true
+    },
+    "styles.css": {
+      "sha256": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+      "matched": true
+    },
+    "knowledge-workspace.js": {
+      "sha256": "8e097f4a0b2ab8844ee87f979d8babb17163c9eb776339460d52a055880fc953",
+      "matched": true
+    },
+    "writing-inbox.js": {
+      "sha256": "92b80a216f2849cb3ae2fc8a831cc9b3118349ff6a7620a7f9fd5c7af44e2dfd",
+      "matched": true
+    },
+    "knowledge-workspace.css": {
+      "sha256": "f933d46852a21eb4747482ad9683696d0123a07d039677918c71b76e5b9ce576",
+      "matched": true
+    },
+    "editor-preferences.css": {
+      "sha256": "4f9ccbefa0f98f2abf7072177c80e30b07d14880cacaa93535067e395f2b0472",
+      "matched": true
+    }
+  },
+  "desktop_cases": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "passed": true,
+      "knowledge_checked": true,
+      "geometry": {
+        "width": 1280,
+        "scrollWidth": 1280,
+        "buttons": [
+          {
+            "left": 252,
+            "right": 302.8125,
+            "top": 197,
+            "bottom": 236
+          },
+          {
+            "left": 306.8125,
+            "right": 384.015625,
+            "top": 197,
+            "bottom": 236
+          },
+          {
+            "left": 388.015625,
+            "right": 465.21875,
+            "top": 197,
+            "bottom": 236
+          },
+          {
+            "left": 469.21875,
+            "right": 546.421875,
+            "top": 197,
+            "bottom": 236
+          },
+          {
+            "left": 550.421875,
+            "right": 625.234375,
+            "top": 197,
+            "bottom": 236
+          }
+        ]
+      }
+    },
+    {
+      "viewport": {
+        "width": 1440,
+        "height": 1000
+      },
+      "passed": true,
+      "knowledge_checked": true,
+      "geometry": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "buttons": [
+          {
+            "left": 252,
+            "right": 320.421875,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 324.421875,
+            "right": 428.03125,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 432.03125,
+            "right": 535.640625,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 539.640625,
+            "right": 643.25,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 647.25,
+            "right": 747.671875,
+            "top": 197,
+            "bottom": 245
+          }
+        ]
+      }
+    },
+    {
+      "viewport": {
+        "width": 1920,
+        "height": 1080
+      },
+      "passed": true,
+      "knowledge_checked": true,
+      "geometry": {
+        "width": 1920,
+        "scrollWidth": 1920,
+        "buttons": [
+          {
+            "left": 442,
+            "right": 510.421875,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 514.421875,
+            "right": 618.03125,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 622.03125,
+            "right": 725.640625,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 729.640625,
+            "right": 833.25,
+            "top": 197,
+            "bottom": 245
+          },
+          {
+            "left": 837.25,
+            "right": 937.671875,
+            "top": 197,
+            "bottom": 245
+          }
+        ]
+      }
+    }
+  ],
+  "page_errors": 0,
+  "browser_writes": 0,
+  "external_requests": 0,
+  "model_requests": 0,
+  "private_manuscripts_or_screenshots_published": false,
+  "proves_release_passed": false,
+  "proves_remote_checks_passed": false,
+  "proves_literary_leadership": false,
+  "limitations": [
+    "Reading preferences and positions live in this browser; they are separate from the work database.",
+    "The preview has no generation model configured.",
+    "This record validates the local copy and cannot replace isolated release or remote checks."
+  ]
+}

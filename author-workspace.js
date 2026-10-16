@@ -42,6 +42,131 @@ let authorAgentBusy=false;
 let authorAgentSequence=0;
 let authorWorkbenchContextSequence=0;
 let authorWorkbenchLibraryTab='chapters';
+const authorEditorPreferenceKey=KEY+':editor-preferences:v1';
+const authorEditorPositionKey=KEY+':editor-positions:v1';
+const authorEditorPreferenceDefaults={font_size:16,line_height:2.05,content_width:880};
+const authorEditorPreferenceLimits={font_size:[14,24,1],line_height:[1.5,2.6,.05],content_width:[480,1000,40]};
+let authorEditorPreferences=authorReadEditorPreferences();
+const authorEditorPositions=authorReadEditorPositions();
+let authorEditorPositionTimer=null;
+let authorEditorPositionPending=null;
+let authorEditorStorageMessage='';
+
+function authorNormalizeEditorPreferences(raw){
+ const next={...authorEditorPreferenceDefaults};
+ for(const [key,[min,max,step]] of Object.entries(authorEditorPreferenceLimits)){
+  const value=Number(raw?.[key]);
+  if(Number.isFinite(value))next[key]=Number(Math.max(min,Math.min(max,min+Math.round((value-min)/step)*step)).toFixed(2));
+ }
+ return next;
+}
+function authorReadEditorPreferences(){
+ try{return authorNormalizeEditorPreferences(JSON.parse(storage.get(authorEditorPreferenceKey)||'null'))}
+ catch{return {...authorEditorPreferenceDefaults}}
+}
+function authorEditorPositionIdentity(binding){
+ return binding?.project_id&&binding?.branch_id&&binding?.chapter_id?
+  JSON.stringify([binding.project_id,binding.branch_id,binding.chapter_id]):null;
+}
+function authorReadEditorPositions(){
+ const positions=new Map();
+ try{
+  const rows=JSON.parse(storage.get(authorEditorPositionKey)||'[]');
+  if(!Array.isArray(rows))return positions;
+  for(const row of rows.slice(-1000)){
+   if(!Array.isArray(row)||row.length!==2||typeof row[0]!=='string'||!row[1]||typeof row[1]!=='object')continue;
+   const identity=JSON.parse(row[0]),position=row[1];
+   if(!Array.isArray(identity)||identity.length!==3||!identity.every(part=>typeof part==='string'&&part.length>0&&part.length<=200))continue;
+   if(typeof position.text!=='string'||!/^\d+:[a-f0-9]+$/.test(position.text)||
+    !['start','end','scroll_top','scroll_left','panel_top'].every(key=>Number.isFinite(position[key])&&position[key]>=0)||
+    !['forward','backward','none'].includes(position.direction))continue;
+   positions.set(row[0],position);
+  }
+ }catch{}
+ return positions;
+}
+function authorEditorTextIdentity(text){
+ // This local view signature only prevents restoring a caret into changed text.
+ let hash=2166136261;
+ for(let index=0;index<text.length;index++)hash=Math.imul(hash^text.charCodeAt(index),16777619);
+ return text.length+':'+(hash>>>0).toString(16);
+}
+function authorEditorStorageStatus(message=''){
+ authorEditorStorageMessage=message;
+ const status=document.querySelector('[data-editor-preferences-status]');
+ if(status){status.textContent=message;status.hidden=!message}
+}
+function authorRememberEditorPosition(input=document.querySelector('#chapterBody')){
+ clearTimeout(authorEditorPositionTimer);authorEditorPositionPending=null;
+ const binding=input&&editorInputBindings.get(input),identity=authorEditorPositionIdentity(binding);
+ if(!identity||input.id!=='chapterBody'||!input.isConnected||document.querySelector('#chapterBody')!==input)return;
+ const panel=input.closest('.workbench-manuscript');
+ authorEditorPositions.delete(identity);
+ authorEditorPositions.set(identity,{text:authorEditorTextIdentity(input.value),start:input.selectionStart,
+  end:input.selectionEnd,direction:input.selectionDirection||'none',scroll_top:input.scrollTop,
+  scroll_left:input.scrollLeft,panel_top:panel?.scrollTop||0,focused:document.activeElement===input});
+ while(authorEditorPositions.size>1000)authorEditorPositions.delete(authorEditorPositions.keys().next().value);
+ if(!storage.set(authorEditorPositionKey,JSON.stringify([...authorEditorPositions])))
+  authorEditorStorageStatus('浏览器未能记住阅读位置，当前窗口仍会保留位置');
+}
+function authorScheduleEditorPosition(input){
+ authorEditorPositionPending=input;clearTimeout(authorEditorPositionTimer);
+ authorEditorPositionTimer=setTimeout(()=>{
+  const pending=authorEditorPositionPending;
+  if(pending?.isConnected)authorRememberEditorPosition(pending);
+ },120);
+}
+function authorRestoreEditorPosition(){
+ const input=document.querySelector('#chapterBody'),binding=input&&editorInputBindings.get(input);
+ const position=authorEditorPositions.get(authorEditorPositionIdentity(binding));
+ if(!input||!position||position.text!==authorEditorTextIdentity(input.value))return;
+ if(position.focused)input.focus({preventScroll:true});
+ input.setSelectionRange(Math.min(input.value.length,position.start),Math.min(input.value.length,position.end),position.direction);
+ input.scrollTop=position.scroll_top;input.scrollLeft=position.scroll_left;
+ const panel=input.closest('.workbench-manuscript');if(panel)panel.scrollTop=position.panel_top;
+ captureSelection();
+}
+function authorEditorPreferenceControls(){
+ return `<details class="editor-reading-settings"><summary title="阅读设置" aria-label="阅读设置"><span aria-hidden="true">Aa</span></summary>
+ <div class="editor-reading-panel" aria-label="阅读设置">
+ <div class="editor-reading-heading"><strong>阅读设置</strong><button type="button" data-editor-preferences-reset title="恢复默认阅读设置" aria-label="恢复默认阅读设置">↺</button></div>
+ <label for="editorFontSize">字号<output data-editor-preference-value="font_size"></output></label><input id="editorFontSize" data-editor-preference="font_size" type="range" min="14" max="24" step="1" aria-label="正文字号">
+ <label for="editorLineHeight">行距<output data-editor-preference-value="line_height"></output></label><input id="editorLineHeight" data-editor-preference="line_height" type="range" min="1.5" max="2.6" step=".05" aria-label="正文行距">
+ <label for="editorContentWidth">正文宽度<output data-editor-preference-value="content_width"></output></label><input id="editorContentWidth" data-editor-preference="content_width" type="range" min="480" max="1000" step="40" aria-label="正文宽度">
+ <p data-editor-preferences-status role="status" ${authorEditorStorageMessage?'':'hidden'}>${esc(authorEditorStorageMessage)}</p></div></details>`;
+}
+function authorApplyEditorPreferences(){
+ const panel=document.querySelector('.workbench-manuscript');if(!panel)return;
+ const input=panel.querySelector('#chapterBody'),scroll=input?{top:input.scrollTop,left:input.scrollLeft,panel:panel.scrollTop}:null;
+ panel.style.setProperty('--editor-font-size',authorEditorPreferences.font_size+'px');
+ panel.style.setProperty('--editor-line-height',String(authorEditorPreferences.line_height));
+ panel.style.setProperty('--editor-content-width',authorEditorPreferences.content_width+'px');
+ for(const control of panel.querySelectorAll('[data-editor-preference]'))control.value=authorEditorPreferences[control.dataset.editorPreference];
+ for(const output of panel.querySelectorAll('[data-editor-preference-value]')){
+  const key=output.dataset.editorPreferenceValue;
+  output.value=authorEditorPreferences[key]+(key==='line_height'?' 倍':' px');
+ }
+ if(scroll){input.scrollTop=scroll.top;input.scrollLeft=scroll.left;panel.scrollTop=scroll.panel}
+}
+function authorSaveEditorPreferences(){
+ authorApplyEditorPreferences();
+ authorEditorStorageStatus(storage.set(authorEditorPreferenceKey,JSON.stringify(authorEditorPreferences))?'':'浏览器未能记住阅读设置，当前窗口已应用');
+ authorRememberEditorPosition();
+}
+function authorBindEditorPreferences(input){
+ authorApplyEditorPreferences();
+ document.querySelectorAll('[data-editor-preference]').forEach(control=>control.addEventListener('input',()=>{
+  authorEditorPreferences=authorNormalizeEditorPreferences({...authorEditorPreferences,[control.dataset.editorPreference]:control.value});
+  authorSaveEditorPreferences();
+ }));
+ document.querySelector('[data-editor-preferences-reset]')?.addEventListener('click',()=>{
+  authorEditorPreferences={...authorEditorPreferenceDefaults};authorSaveEditorPreferences();
+ });
+ if(!input)return;
+ for(const name of ['select','keyup','mouseup','input','scroll'])input.addEventListener(name,()=>authorScheduleEditorPosition(input));
+ input.addEventListener('blur',()=>authorScheduleEditorPosition(input));
+ input.closest('.workbench-manuscript')?.addEventListener('scroll',()=>authorScheduleEditorPosition(input));
+}
 
 function authorBlueprintLocked(){
  return authorBlueprintApply?.owner===requestedProject&&authorBlueprintApply.branch===(state.branch_id||'main');
@@ -116,7 +241,7 @@ function authorWorkbenchLibrary(){
  ${['人物',...new Set(records.map(r=>r.type).filter(type=>type!=='人物'))].map(type=>{
   const rows=records.filter(r=>r.type===type);if(!rows.length)return '';
   return `<div class="knowledge-group"><h3>${esc(type)} <span>${rows.length}</span></h3>${rows.map(r=>
-   `<button type="button" class="knowledge-select" data-record="${safeId(r.id)}"><strong>${esc(r.name)}</strong><small>${esc(r.description)}</small></button>`).join('')}</div>`;
+   `<div class="knowledge-item"><button type="button" class="knowledge-select" data-record="${safeId(r.id)}"><strong>${esc(r.name)}</strong><small>${esc(r.description)}</small></button><button type="button" class="icon-btn" data-record-knowledge="${safeId(r.id)}" title="查看关联与原文" aria-label="查看关联与原文">↗</button></div>`).join('')}</div>`;
  }).join('')||'<p class="workbench-empty">还没有人物或设定。</p>'}
  <button class="workbench-link" type="button" data-action="newRecord">＋ 新建人物或设定</button>
  <button class="workbench-link" type="button" data-workbench-view="memory">记忆中枢 · ${state.memory.filter(m=>['待确认','candidate'].includes(m.status)).length} 条待确认</button>
@@ -189,6 +314,7 @@ function authorRefreshWorkbenchKnowledge(){
  const template=document.createElement('template');template.innerHTML=authorWorkbenchLibrary();
  library.querySelector('#workbenchKnowledge').innerHTML=template.content.querySelector('#workbenchKnowledge').innerHTML;
  library.querySelectorAll('[data-record]').forEach(button=>button.onclick=()=>editRecord(button.dataset.record));
+ authorBindRecordKnowledgeLinks(library);
  library.querySelectorAll('#workbenchKnowledge [data-action]').forEach(button=>button.onclick=()=>actions[button.dataset.action]?.(button));
  library.querySelectorAll('#workbenchKnowledge [data-workbench-view]').forEach(button=>button.onclick=async()=>{
   if(authorBlueprintDirty&&!await authorSaveBlueprint())return;
@@ -229,6 +355,11 @@ async function authorLoadWorkbenchContext(saveFirst=false){
 }
 
 function authorBindWorkbench(){
+ authorBindRecordKnowledgeLinks(document.querySelector('.workbench-library'));
+ document.querySelectorAll('.workbench-library [data-chapter]').forEach(button=>button.onclick=()=>{
+  if(activeChapter!==button.dataset.chapter)aiDraft=null;
+  activeChapter=button.dataset.chapter;storage.set(cacheKey(':active'),activeChapter);view='editor';render();
+ });
  document.querySelectorAll('[data-workbench-view]').forEach(button=>button.onclick=async()=>{
   if(authorBlueprintDirty&&!await authorSaveBlueprint())return;
   view=button.dataset.workbenchView;render();
@@ -244,6 +375,7 @@ function authorBindWorkbench(){
  if(filter)filter.oninput=()=>{
   const term=filter.value.trim().toLocaleLowerCase(),panel=document.querySelector(authorWorkbenchLibraryTab==='chapters'?'#workbenchChapters':'#workbenchKnowledge');
   panel.querySelectorAll('.chapter-select,.knowledge-select').forEach(button=>button.hidden=!button.textContent.toLocaleLowerCase().includes(term));
+  panel.querySelectorAll('.knowledge-item').forEach(item=>item.hidden=!!item.querySelector('.knowledge-select')?.hidden);
   panel.querySelectorAll('.chapter-group,.knowledge-group').forEach(group=>group.hidden=![...group.querySelectorAll('.chapter-select,.knowledge-select')].some(button=>!button.hidden));
   document.querySelector('.workbench-filter-empty').hidden=!term||!!panel.querySelector('.chapter-select:not([hidden]),.knowledge-select:not([hidden])');
  };
@@ -263,6 +395,14 @@ function authorBindWorkbench(){
  if(aiDraft)authorRevealWorkbenchSection('workbenchCandidateSection');
 }
 
+function authorBindRecordKnowledgeLinks(host){
+ if(!host)return;
+ if(typeof bindRecordKnowledgeLinks==='function'){bindRecordKnowledgeLinks(host);return}
+ host.querySelectorAll('[data-record-knowledge]').forEach(button=>button.onclick=()=>{
+  if(typeof showRecordKnowledge==='function')showRecordKnowledge(button.dataset.recordKnowledge);
+ });
+}
+
 function authorEditorView(){
  const c=chapter();
  const previous=c?state.chapters[state.chapters.findIndex(item=>item.id===c.id)-1]:null;
@@ -274,7 +414,7 @@ function authorEditorView(){
  <button data-format="bold" title="粗体" aria-label="粗体"><b>B</b></button><button data-format="quote" title="引用" aria-label="引用">❞</button>
  <button data-format="scene" title="场景分隔" aria-label="场景分隔">***</button>
  <button class="ghost-btn" data-action="reviewChapter">本章审稿</button><button class="ghost-btn" data-action="chapterAnalysis">章后记忆</button>
- <button class="ghost-btn" data-action="revisionHistory">历史</button><span class="editor-meta" id="selectionState">未选文字</span></div>
+ <button class="ghost-btn" data-action="revisionHistory">历史</button>${authorEditorPreferenceControls()}<span class="editor-meta" id="selectionState">未选文字</span></div>
  <input class="title-input" id="chapterTitle" value="${esc(c.title)}" aria-label="章节标题">
  <textarea class="chapter-editor" id="chapterBody" aria-label="章节正文">${esc(c.body)}</textarea>
  <div class="editor-footer"><span id="liveCount">${Array.from(c.body.replace(/\s/g,'')).length} 字</span>
@@ -415,7 +555,8 @@ async function authorLoadAgent(){
  const scope=authorAgentScope(),host=document.querySelector('#agentSessions');if(!host)return;
  const sequence=++authorAgentSequence;
  try{
-  const data=await authorJSON('/api/writing-agent',{headers:{'X-Moyu-Project':scope.owner,'X-Moyu-Branch':scope.branch}});
+  const query=typeof writingInboxAgentQuery==='function'?writingInboxAgentQuery(scope):'';
+  const data=await authorJSON('/api/writing-agent'+query,{headers:{'X-Moyu-Project':scope.owner,'X-Moyu-Branch':scope.branch}});
   if(sequence!==authorAgentSequence||!authorAgentCurrent(scope,host))return;
   authorAgentRows=data.sessions||[];if(!authorAgentBusy)authorRenderAgent(scope,host);
  }catch(error){if(sequence===authorAgentSequence&&authorAgentCurrent(scope,host)){
@@ -1678,10 +1819,10 @@ function authorJumpToEvidence(item,wrap){
   if(c.body.indexOf(quote,position+1)>=0)return toast('原句重复，需要重新确认具体范围');
   start=MoyuSync.codepointOffset(c.body,position);end=start+Array.from(quote).length;
  }
- wrap?.remove();activeChapter=chapterId;view='editor';render();
+ wrap?.remove();activeChapter=chapterId;storage.set(cacheKey(':active'),chapterId);view='editor';render();
  const input=document.querySelector('#chapterBody');input.focus();
  input.setSelectionRange(MoyuSync.utf16Offset(c.body,start),MoyuSync.utf16Offset(c.body,end));
- input.scrollTop=Math.max(0,Math.floor(start/40)*26-100);captureSelection();input.scrollIntoView({block:'center'});
+ input.scrollTop=Math.max(0,Math.floor(start/40)*26-100);captureSelection();input.scrollIntoView({block:'center'});authorRememberEditorPosition(input);
 }
 
 function authorChapterReportScope(chapterId=activeChapter){
@@ -1850,7 +1991,7 @@ function authorReviewSelectSource(source,wrap){
  const c=chapter(source.chapter_id);wrap?.remove();activeChapter=c.id;storage.set(cacheKey(':active'),c.id);view='editor';render();
  const input=document.querySelector('#chapterBody');input.focus();
  input.setSelectionRange(MoyuSync.utf16Offset(c.body,source.range.start),MoyuSync.utf16Offset(c.body,source.range.end));
- input.scrollTop=Math.max(0,Math.floor(source.range.start/40)*26-100);captureSelection();input.scrollIntoView({block:'center'});
+ input.scrollTop=Math.max(0,Math.floor(source.range.start/40)*26-100);captureSelection();input.scrollIntoView({block:'center'});authorRememberEditorPosition(input);
 }
 function authorReviewRepairInstruction(item){
  const excerpt=(value,limit)=>{const chars=Array.from(String(value||''));return chars.length>limit?chars.slice(0,limit).join('')+'（节选）':chars.join('')};
@@ -2108,6 +2249,7 @@ function authorBind(){
     }
    });
   }
+  authorBindEditorPreferences(body);
   document.querySelectorAll('[data-format]').forEach(button=>{
    button.onmousedown=event=>event.preventDefault();button.onclick=()=>authorFormat(button.dataset.format);
   });
@@ -2163,6 +2305,7 @@ function authorCharacterStateForm(item){
 
 const authorOriginalRender=render;
 render=function(){
+ authorRememberEditorPosition();
  const library=document.querySelector('.workbench-library');
  const libraryScroll=library?.dataset.projectId===requestedProject&&library.dataset.branchId===(state.branch_id||'main')?library.scrollTop:0;
  document.querySelectorAll('[data-author-chapter-report]').forEach(dialog=>dialog.remove());
@@ -2171,7 +2314,7 @@ render=function(){
  document.body.classList.toggle('is-writing-workbench',view==='editor');
  document.body.classList.remove('workbench-focus');
  authorOriginalRender();authorBind();
- if(view==='editor')authorRestoreChapterNavigation(libraryScroll);
+ if(view==='editor'){authorRestoreChapterNavigation(libraryScroll);authorRestoreEditorPosition()}
  if(view==='editor')authorLoadEditorBlueprint();
  if(['library','blueprint','settings','backups','references'].includes(view))authorLoadPage();
 };
@@ -2184,4 +2327,14 @@ render();
 scheduleQueue(0);
 setInterval(()=>{if(!backendOnline&&!syncInFlight)reconnect()},5000);
 window.addEventListener('online',()=>reconnect());
-window.addEventListener('beforeunload',event=>{cacheDraft();authorCacheBlueprint();if(isDirty()||authorBlueprintDirty||authorBlueprintLocked()){event.preventDefault();event.returnValue=''}});
+document.addEventListener('pointerdown',event=>{
+ const settings=document.querySelector('.editor-reading-settings[open]');
+ if(settings&&!settings.contains(event.target))settings.open=false;
+});
+document.addEventListener('keydown',event=>{
+ const settings=document.querySelector('.editor-reading-settings[open]');
+ if(event.key==='Escape'&&settings){settings.open=false;settings.querySelector('summary').focus()}
+});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')authorRememberEditorPosition()});
+window.addEventListener('pagehide',()=>authorRememberEditorPosition());
+window.addEventListener('beforeunload',event=>{authorRememberEditorPosition();cacheDraft();authorCacheBlueprint();if(isDirty()||authorBlueprintDirty||authorBlueprintLocked()){event.preventDefault();event.returnValue=''}});

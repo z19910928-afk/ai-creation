@@ -1,0 +1,2821 @@
+{
+  "schema_version": 1,
+  "tag": "knowledge-inbox-release-20261016-02",
+  "passed": true,
+  "verified_at": "2026-10-16T01:59:02.421Z",
+  "scope": "Independent local evidence review; no application tests, models, browsers or production data were executed or accessed by this checker.",
+  "release_report": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-knowledge-inbox-release-20261016-02.json",
+  "release_report_sha256": "550ec062c21975f8b4bcbb866a4dfcdd57adb7a6ffe5bce157d96df715c52d19",
+  "checker_sha256": "5ca30cb1686805a6054dfcc392c777c593d17619c23662b8c7d82157b942396c",
+  "counts": {
+    "checks": 114,
+    "sources": 128,
+    "python_fixtures": 70,
+    "browser_suites": 16,
+    "browser_scenarios": 226,
+    "artifacts": 86,
+    "json_artifacts": 24,
+    "png_artifacts": 62
+  },
+  "source_before_after_current_match": true,
+  "source_inventory": {
+    "moyu_agent_checkpoint.py": "c7f5c9b693cab1808f495c610390c79b72a939fa7466ffa33fbe2ff80eeb0d14",
+    "moyu_agent_planning.py": "06894409fd21565ec118d273c742994f6bd32083bb88cd20854a3bd2d704ea54",
+    "moyu_agent_service.py": "d5e7bba7500e1d5cd6b439509de8ee3111cc4610dd410f1ebc27a8c788156749",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_assistant.py": "0fcf1c2d73d8b6b9384cd16fdcfec9803ed6f18081cbc86ab353f59474681a5f",
+    "moyu_backups.py": "34f57743ebcf9d009a9a954ceecb26a1d5f0513087269f6a26413dc7c1715882",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_inbox.py": "a74e108835d0ed5167aa83b0e2e8908e65fb30a217722276599465963d46d49a",
+    "moyu_knowledge.py": "b112df182d3448a2ffe454ecc3dfa028987a5d72131f0f03597fac6dc07f3492",
+    "moyu_materials.py": "168b7652fc2e7705ca720c1db7fb01432eac477c09e9d51f95f4e3ba8ddd7d5d",
+    "moyu_output.py": "898f42c6ca77e6e2899d4827bf306fe80cf5b4d76598a10ca0263613bfa19ec8",
+    "moyu_planning.py": "abc2d661fdc99b28f21b92b87b014c56d6714291a24790e005876ad9072b0317",
+    "moyu_portable.py": "7d3c20f5ce5954898af9bdbd4e37e2b8e3905ba66b56652fc4b48229c3dbf8fd",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_publication.py": "fa794ef0377cacb1d37b40d1395a0c604989be178fbe995f4cf15e0d6832edb4",
+    "moyu_records.py": "6abcad5cfe7f3761538e8cfa4572ef6a2c1db4e04a8bc2bbe6b023452ffba41e",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_settings.py": "d14266342540cf1c1aaf70685e676e8d77c084541b442a3e35ff7100489b7d81",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_writing_agent.py": "dc14204e8059077471cf0796d70d5a99c2ac4869170daee355a93c627e52cd27",
+    "server.py": "5d30604c2d2d822b325a5b5b0239f8515a7666f45029ff85bc8e478fca157940",
+    "scripts/apply_migration.py": "dd05512dfa69d7c8331b82c52a9af146f13a3921e9309f8a9616ead834044f14",
+    "scripts/evaluation_runner.py": "9f6554aee771bfcafe70e1e1e08e7259c8759efceeead4be4a342cabd7171af0",
+    "scripts/literary_evaluation.py": "746f30b47cd794e32c897d372b65d6bf6f7299b0df3bb4617a66dcc7f374c8c8",
+    "scripts/provider_shape_diagnostic.py": "9ee57e3d9c7bc22e3d97bbf974ae50654dcd30b2b08d966a909783c537bca23e",
+    "scripts/recovery_drill.py": "a4b567864328a35e1c2c94ecc97d9e4204bdc85e5b48e3339742f57ca8d0eadf",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "tests/ai_contract_fixtures.py": "2a61ae2944a17edbec96b20f5eb74e887ecc1e1d6df5217db58f2ca09cbd35c4",
+    "tests/ai_queue_fixtures.py": "0b1980bc030cfcb26ef031920c8f5dc4356b8b252b04adb42ae4bc7db371bda5",
+    "tests/analysis_candidate_reuse_http_fixtures.py": "c725eb5d847257006acd62ec04d9f357564a688fb07b8d1d303ffe45cd3329bd",
+    "tests/analysis_candidate_typed_http_fixtures.py": "4d2aacbf066fb938f0de7e36f36f5d0e183833cc4458f03fa68d2629b04c6943",
+    "tests/analysis_character_identity_http_fixtures.py": "9c78fa0b7e405a4f852bb381696d2c84d8cbfa7b4064f0bc401b16ba73f8cc31",
+    "tests/analysis_guidance_http_fixtures.py": "3aadb91914dbd7d05045bd5e2abfb2ae2f6c65482718e8fdc87bf731051e76a4",
+    "tests/analysis_partial_source_http_fixtures.py": "ee96de46002045e181c0279994d22b6b0c04677ba69670ace820921138a151d7",
+    "tests/assertion_workflow_fixtures.py": "d45d1cf0a64970759b025b9ce47f66efdb823f600f92b4b4f25e4b963fa17700",
+    "tests/author_resolution_material_http_fixtures.py": "759c969e482bd94b5cf3f6b1658715e0f1af09ced4b66eb2993de0812413e0b2",
+    "tests/backup_recovery_fixtures.py": "061ea33f60b160b70e8aaff75535b7b64a5faec098c49b81c6fa593c2c6b2152",
+    "tests/blueprint_guidance_http_fixtures.py": "1e307b84e8301d7df8a9e9845c14a38cb2e9f8ba4a4bbc17ff02760500953072",
+    "tests/branch_cas_fixtures.py": "21da9bcf4c91d2be0ce3ae99921b0bd06563adfa82993a0f5ceea747bf6e3cc7",
+    "tests/candidate_revision_fixtures.py": "d39b45e513977d06df4cf84b8fd07cc1108fd859c86c7ba86fcdf432b2b6372e",
+    "tests/chapter_analysis_workflow_fixtures.py": "bbb01527139c5455610dddffc22de3215081d1d9321a0c9325bfcafcfaba83ba",
+    "tests/chapter_commit_fixtures.py": "7c34c78a90573e053917f4af04677b386c75b8eb7173980ce263404de6026fea",
+    "tests/chapter_deletion_dependency_http_fixtures.py": "4def7a7a2c5caf8775651a33022d6374673429f6005b6f6d8271caf6fd119227",
+    "tests/character_state_fixtures.py": "3846f19bc3f685e65b81250934dabcad7e6567dbf2e74a6228d7cf1ed334a1c4",
+    "tests/context_http_fixtures.py": "add018506a3f25f1e0d8471e802f6444dd82cf6e60a0cce38c958b0bf6a68622",
+    "tests/context_pipeline_fixtures.py": "196f039ef3a6091b49f0373a12a67d946ea565d93ab7719a9089040f144b29a5",
+    "tests/context_scope_intersection_fixtures.py": "dd26d79da166adcd1e02f38acf82b7c41a352154832272b5f7a3243cee51f698",
+    "tests/corrupt_import_fixtures.py": "2271f184bad571d656a54342a6c6d437d25850c30ed97a19bb6661ca503f0ea4",
+    "tests/frontend_story_fixtures.py": "419e03d451c7b7b1e148e8651434b65cef947d3c976ee8c458a8b1885f12d1da",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/import_archive_lifecycle_fixtures.py": "ea142f2e57bf91c72a05e22c28b51a855ac1ea3a873903f477a8cbe5e1aaf410",
+    "tests/knowledge_inbox_http_fixtures.py": "bb92593394f83d58e2db46fa512d8684ac880e16af2ed930cefbe9548a4d1c3c",
+    "tests/legacy_deleted_dependency_http_fixtures.py": "974a995e880e9383ae50ac833cb9f2c83f5081866adcab10f0e86d9c7c0b1ce6",
+    "tests/literary_evaluation_fixtures.py": "e7ebdc1a5b770ed6c5c0308aae98e1367777280ccfc17a36f435418787f0a4aa",
+    "tests/longform_knowledge_scope_fixtures.py": "2a67c5e1f2283030bc75a78a60fca5564c501bff2ff2de82d56f521085f6b6fd",
+    "tests/manuscript_import_fixtures.py": "38f15132b33611befc1c9122a0e45afae20d5fda19047734bda74e7ee9e20eb5",
+    "tests/material_dependency_http_fixtures.py": "9adde0151beb532b49f34c744ad836b66d89cfb039864c97508dc031c28374a1",
+    "tests/material_evidence_compat_http_fixtures.py": "9d014df2073a7859104910edde119886a93528782eaa10ca581430ed1559d1f2",
+    "tests/material_legacy_http_fixtures.py": "d45cba5495c7eb0307d3d770653c7a338a441dfacc4709b8f9885e371b750578",
+    "tests/material_scope_order_http_fixtures.py": "1e0ffdca4cb1acaad93c5420b6a35177abe7c8a3e638f590fc1e3d26a150b55a",
+    "tests/memory_candidate_evidence_fixtures.py": "c014728623a2516aa071bbb1a5ad06182d8f810129ae51753d82a1de7d95f670",
+    "tests/model_settings_fixtures.py": "7d720c4d0b79d653a035594f6e701aac2f57a98b2faeea668be5a61482269763",
+    "tests/nested_record_scope_http_fixtures.py": "8407478ab51f19d8902bf4ca2b94c9182d216932876055a6f885fdf6596b4f16",
+    "tests/output_contract_fixtures.py": "e489776c512e197c3f6235e50af3d7896a57eff457929206f8bc0fc4f69fdf37",
+    "tests/planning_backup_fixtures.py": "ec7652e156eddd46f06447936057ee0073ce8b6ebd1ce680e06fef04f13f60d0",
+    "tests/planning_http_fixtures.py": "002aaca7a48b412431cf62f8f88de9ad683f93573bf88f7ba48ab3c30f5af4de",
+    "tests/planning_workflow_fixtures.py": "7cc7101ee5a943910de1c9110ad29e47329a36eac4abaa14d60988ce8edf1d6f",
+    "tests/portable_backup_fixtures.py": "72128bb3283ffbff45b59df840123af552c3b698f1dc6cf884044b88a1bbfc7f",
+    "tests/portable_backup_http_fixtures.py": "e24f4e1ca9c5950a39a142c0ae3c77a78a80b283cf27b64a53a247c04abd2c60",
+    "tests/projection_health_fixtures.py": "22a0d9a5fe00573e17b9865e988d4468296690940b85b3f0f1d0516744389214",
+    "tests/prose_output_http_fixtures.py": "34a97b91045291d32ed5cea99e8a6176138ddac6eb751380649055ee939c808c",
+    "tests/provider_protocol_fixtures.py": "d79bad2abf713cf1cd04a6163a76d2dd45b447fdbd32784b5c828bdaa3279015",
+    "tests/provider_queue_integration_fixtures.py": "c6a9b7cac696d1b625b2e48c61f2008ab78bb02efffba8b0f520dbb4992e2915",
+    "tests/publication_assistant_fixtures.py": "cc440251c4871338c4bab8876b8a1cac413ca03c3c816d1823aa756a41c6c6b9",
+    "tests/range_patch_fixtures.py": "6083a6a1b73465653f28986a26e805672adb4857f6f3b9c2815ca29a0f2c9a2b",
+    "tests/record_knowledge_fixtures.py": "651b6bb041ef317e8671d69602cf3e2c4f175c56c5cdf3256a01e2761c3fe3c7",
+    "tests/record_scope_http_fixtures.py": "2051bcdff3e15c249c5053267d0653efb46fb3cc593c4c459ee8c110a6a59c87",
+    "tests/reference_passages_http_fixtures.py": "4aa21b3a2c8bdd930be9eb2a9cd73ca8074e57d6e6b734c38183679043259c96",
+    "tests/reference_passages_integrity_http_fixtures.py": "8dbb29632703adbd9cad26a9f4a387149253018a3de177bf7729b35ad9233fa7",
+    "tests/repository_privacy_fixtures.py": "242b4be36da85653d07458b48a9a471db5e711723913e7bed13aa45479a2b272",
+    "tests/reversible_patch_fixtures.py": "b10c446a82bec642989cc2673df11600331bc5b780fdbeabb76c0f0d4a5d1f2c",
+    "tests/review_guidance_http_fixtures.py": "70e162fb310c8488eeeed5eb4e084647179aa0b8f04cf20fcce7fde5edaf6bb9",
+    "tests/runtime_continuity_fixtures.py": "a9fe62e7afa7e712181f6cd2d4c2795fe05b629a22ce82219a5c3d348ed6a0f5",
+    "tests/schema_negative_fixtures.py": "81f29f9425214dfd9e773e94fd29b8f18867f436318857927ee737e6a5083585",
+    "tests/search_fixtures.py": "a782b1ac09fdf2654a3da09c3946101541f74986c494491cff06e919ad753189",
+    "tests/story_review_publication_http_fixtures.py": "411587e9e4047c6e8d8a7ca1c803b31b1e645d5cea3f6510d4964d020bde51b0",
+    "tests/story_review_repair_http_fixtures.py": "76fba57168cafcae37680db38a93983b7bd78e4386bde4e25e0fe8e4a987845a",
+    "tests/story_structure_fixtures.py": "7803c9248361b148902ad2577f285db2242d437a1314c0571c0b0ae60458f7bc",
+    "tests/stream_resume_fixtures.py": "2340b44603602e7ff66d1c5c53cf80be89843eb3c57bb3f90af191d8f5ab3bcf",
+    "tests/strict_feature_fixtures.py": "e1380922b77fd3064fef9b814bb97f83959da8b3937cb280f098f9e49918fb61",
+    "tests/task_parameter_http_fixtures.py": "fec9b79e582ae2496ce37e596910b036fcc1c854b62872123e089e5f44f98b61",
+    "tests/workspace_workflow_fixtures.py": "d69f627af1002f50acd386e49c300a84500f93082e928ce8416d41fcf8f71f75",
+    "tests/writing_agent_fixtures.py": "b56ed93a47e81458e26bd57b6b35e995b8f76c4dad61f171b74dddf322b473dd",
+    "tests/writing_agent_planning_fixtures.py": "8407665bdbee5807b32bd9bbb099a172a84a47c24c64e41a129ee2c9c84116ee",
+    "tests/writing_agent_service_fixtures.py": "ae308fd7d65641023874ec27a9213fb5b667f07d7dc382f506804328021c58b0",
+    "tests/writing_inbox_fixtures.py": "c1d9b26fc73ac0ea7c807783f12d328136d9d1ae5debf3376c9d5015c25064e5",
+    "app.js": "0c8981a3aa024ef2deefb1eafd6fad7b26ad40cfd663bb075b6d722e7f2f50a1",
+    "author-workspace.js": "2cfc9663042df50629f09338f0194b361c1250ea60cd791bed5294089ad5c562",
+    "editor-sync.js": "0ef99584040e717d6a04f3c9087874e3c971372260d8937ccd59d4d23da35ea7",
+    "knowledge-workspace.js": "8e097f4a0b2ab8844ee87f979d8babb17163c9eb776339460d52a055880fc953",
+    "writing-inbox.js": "92b80a216f2849cb3ae2fc8a831cc9b3118349ff6a7620a7f9fd5c7af44e2dfd",
+    "scripts/publish_audit_archive.cjs": "a84c20d4e467697d4774f869cec72d8571642b34ac29aa279469cea85c6e5fc4",
+    "scripts/release_verification.cjs": "4e292537d9579cbd7243a19ddab4eec0efdd65b7223975a576d4943375c51019",
+    "tests/analysis_guidance_browser_regressions.cjs": "a0d7ea66457bb77060e2c990a428d7af1931df8fc603918bf63e8171b677db62",
+    "tests/author_workspace_lifecycle_browser_regressions.cjs": "b4da23063bbb46a4e2db7b22c723361bdbe11aef31f9fc8286556d669a78796e",
+    "tests/desktop_author_flow_regressions.cjs": "42469ec378744f01531db7c26fb4c9e59ba2919b6a252b68c714fabbb74397b4",
+    "tests/editor_preferences_browser_regressions.cjs": "a3fc5b4dacbc41ca14b6b8d14b75e54050b09f3fb9750b0e4d5544c9018f95b7",
+    "tests/editor_sync_fixtures.cjs": "e63c47079c73ec3859ac2f429da02d7ac8944f4d081047a57b98357233625525",
+    "tests/export_override_browser_regressions.cjs": "40b3296307aab830a02ad3b01eaafaf6c72910a556c296c91951bbc28382c619",
+    "tests/frontend_browser_regressions.cjs": "a3819807c34fe524827e961d4d2f494fde1b8883511cd4b88394c81f1299b11b",
+    "tests/instruction_draft_browser_regressions.cjs": "dfb7cefe4c3bd13fe753034a07635bba4e9b98752151d43ec41124b87fd8026d",
+    "tests/knowledge_inbox_browser_regressions.cjs": "bbb69087619acd4192f588fabf8f34b67bc7c02ff1ae4fa240359b30af7fdd07",
+    "tests/material_dependency_browser_regressions.cjs": "33c399187be991aef38d1c7631cbcb3f3c17ac4b63400af7981392d914a9d6c3",
+    "tests/model_settings_browser_regressions.cjs": "d7318e1251e206ef149fcbc59497860369c7eee428143478d5ffb81b58c02bbf",
+    "tests/planning_browser_regressions.cjs": "4e6bb2546e262de8b5ff9b383891011394a02fd3de7111514b5e9923e137cff5",
+    "tests/portable_backup_browser_regressions.cjs": "48c1a6fbbe5ab26e1d66b43f7f4379ce2c1d5cc215c589a6e037c8cb2f614a91",
+    "tests/reference_passages_browser_regressions.cjs": "cd228addd05bc02bfbe727a3d75572a2ea739d07408be600fb3b1f54d3253bda",
+    "tests/search_browser_regressions.cjs": "2cb2ffeaf0140684229abfb7b4c9c19921b2c328a3ad9e519c2c376c7cf1240f",
+    "tests/workbench_scope_browser_regressions.cjs": "9273e113f8175981a8ff699bdd736a3390d45f4bb7b1f4e4dbf73d2cd569867e",
+    "tests/writing_agent_browser_regressions.cjs": "d8b08d3d6e51ff75b12c2e4ad3b72e200903fc31c6fe39f845ddd903bf9b8671",
+    "editor-preferences.css": "4f9ccbefa0f98f2abf7072177c80e30b07d14880cacaa93535067e395f2b0472",
+    "knowledge-workspace.css": "f933d46852a21eb4747482ad9683696d0123a07d039677918c71b76e5b9ce576",
+    "styles.css": "035fcf9efba8709d5ccdf540d9cbdb800d6e698e6b9ffa64e1a14a7ce2c20add",
+    ".github/workflows/ci.yml": "6d0b9a4efa0fae09ff29e86d76f03044076e8fe46adb60dc48179173a6614a3b",
+    "requirements.txt": "cfdc1c5a6c68f7b6736219d00ff4d84b12ae6829754717591b537c838a24bfd7",
+    "index.html": "75fa452a8364d41544d903350144633ec44c4904df9bf0b0c7a48e38da85520c"
+  },
+  "auxiliary_schema_sha256": {
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0"
+  },
+  "commands": [
+    {
+      "name": "Python runtime",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/01.log",
+      "sha256": "686560bcd94a5a3fe8187b7c4fc49beaff41c87eccb79908cd3da863ec30e52e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python syntax",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/02.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: app.js",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/03.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: author-workspace.js",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/04.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: editor-sync.js",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/05.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: knowledge-workspace.js",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/06.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: writing-inbox.js",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/07.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: scripts/publish_audit_archive.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/08.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: scripts/release_verification.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/09.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/analysis_guidance_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/10.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/author_workspace_lifecycle_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/11.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/desktop_author_flow_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/12.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/editor_preferences_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/13.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/editor_sync_fixtures.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/14.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/export_override_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/15.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/frontend_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/16.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/instruction_draft_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/17.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/knowledge_inbox_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/18.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/material_dependency_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/19.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/model_settings_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/20.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/planning_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/21.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/portable_backup_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/22.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/reference_passages_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/23.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/search_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/24.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/workbench_scope_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/25.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "JavaScript syntax: tests/writing_agent_browser_regressions.cjs",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/26.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/ai_contract_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/27.log",
+      "sha256": "8b75c2bc56cbf983b7765a5c2ad4114b5b8a10b57fe78ef14b53ab2cf7e52c14",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/ai_queue_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/28.log",
+      "sha256": "4a04916669647c48e92b565af674062ef8fbdbf97574f914006d0cd621d17abd",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_candidate_reuse_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/29.log",
+      "sha256": "fc7314b15bb4f103d69d0b2ed2026b225a48b4d8043e379ca9d7e46e780be1e5",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_candidate_typed_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/30.log",
+      "sha256": "1804a1b3e16285bed2e0e711b225ee4c401ca9c3000d2af1991142327732913f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_character_identity_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/31.log",
+      "sha256": "9e341081396569178275abac4dfbc65529715fff40f0df92f30533232cc6bc76",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_guidance_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/32.log",
+      "sha256": "0554cde770a7879642ecca73c8ca774595bbed6316d56493ffa6d5ae68c9e700",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/analysis_partial_source_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/33.log",
+      "sha256": "0d91845f23c812e3889135a894cd45170ae297cec602fc12a6e79ba072561710",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/assertion_workflow_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/34.log",
+      "sha256": "f928a0f9b810b27e694e8cf54d596b092dca1ca2f6b67ce67c4ab888a1f9ed49",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/author_resolution_material_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/35.log",
+      "sha256": "18bbed290adfebb75bdebd841bb5ab14c05bc32c950fa98bea3d338548ac2978",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/backup_recovery_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/36.log",
+      "sha256": "08e98b224e529713c14d782f45fe918d3191f3c3a0725bfac9916a9593a48669",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/blueprint_guidance_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/37.log",
+      "sha256": "e52e32309e38a9d222fda7934c1f9942e47ce01b5e915f1ab5af53e13b094311",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/branch_cas_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/38.log",
+      "sha256": "0359306c74cfbbde209dee76b360600ed8949eae0b394084054dbb661706a3e8",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/candidate_revision_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/39.log",
+      "sha256": "c7fbdc270b69ca8a0eeacd79a62a596654230104a9504ba36602c217e21dc9e0",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_analysis_workflow_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/40.log",
+      "sha256": "5d042e17832f25e204368e8d5ea666f11c806a88d0a520358a27d59cbc378eea",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_commit_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/41.log",
+      "sha256": "39ef8effec3e3616523d9b6fc1b34eac94276444a1a8b6c34d0171d47825bdb7",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/chapter_deletion_dependency_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/42.log",
+      "sha256": "761012286ceb611ad6a1de2c8ac23ad4fe537b712a75da4cde1fd5ffb9d925da",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/character_state_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/43.log",
+      "sha256": "b52a87e64f051b4197009a8027a72822d96c6c21b808ca1ace30c021d189e39f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/context_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/44.log",
+      "sha256": "efc884478275bd6db98984b421fa8ca7cee202ac5d26ebcfcacaba4cf980cc31",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/context_pipeline_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/45.log",
+      "sha256": "2e55b2e982e3a75f594864baea5c1d0e33fbad13f0019d95b2644f674fa04e67",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/context_scope_intersection_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/46.log",
+      "sha256": "0db434da367e71e99bf3254e1f125e02d4e00078ce4a497b7dd2947bd1239b77",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/corrupt_import_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/47.log",
+      "sha256": "eefafcc9e77e8f31048a5e06f3fdffad5cf4be2390706cb695db50d96a2512e8",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/frontend_story_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/48.log",
+      "sha256": "f3b5a383a38b5df89b8a5a741d134caf2865968a83ee801f9d56e71783f9370d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/guidance_alias_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/49.log",
+      "sha256": "28f51410e51f8f6354aabd1d29928ad5c055213ed2bfa6e2659a3f866bc8d310",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/guidance_scope_change_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/50.log",
+      "sha256": "2d5e4b6fdcb73aa7bf46e54b8903d71bd97a43adcc91d9aa197b9b21aa24ea12",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/import_archive_lifecycle_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/51.log",
+      "sha256": "bfb97e074d5a5f4c205be5ae14f95e617db2d73b6c10dbbc4d0a4e82da18a5cd",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/knowledge_inbox_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/52.log",
+      "sha256": "8f730ceff0b0b6d8265296bb9963e83fdca34d79280081fd3547d739008c9f84",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/legacy_deleted_dependency_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/53.log",
+      "sha256": "2a7c0e9715377af7f3aecebc71ca259e6847c1d63976402f0ff24e0faf751160",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/literary_evaluation_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/54.log",
+      "sha256": "95c3b48252918e2be2089cb152d44a303d7985eac2fa39806947434cb65c94be",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/longform_knowledge_scope_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/55.log",
+      "sha256": "debeb762ed918ac104a48ef89b105b4ba6e02d87ac98774b4f02e05792549b52",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/manuscript_import_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/56.log",
+      "sha256": "fe2903df874e55b4893c5d3666452e7717c16f2da70ddc21302cbfc2e551075a",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_dependency_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/57.log",
+      "sha256": "ea68c061dfab496b771704b24c84b909ae0aabab7d060d7b8f5d2db285b4c75f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_evidence_compat_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/58.log",
+      "sha256": "4e0b6a6face95faedfd394ff769af73948389449668ad1166801646c116bdb9d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_legacy_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/59.log",
+      "sha256": "3a854a3c5d509d2de8dadeb12da5cc60c4ed0c908d8dfb7a602a28a87f2745c2",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/material_scope_order_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/60.log",
+      "sha256": "e38c62672e891b59fc84d4dd0ebc4ba26ee6b6dd10a7882dba8896c9043f5c43",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/memory_candidate_evidence_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/61.log",
+      "sha256": "652e946dcfa91d0f16ac2ec285bd9ee0c29a88b42fcf28df84bc36b24847fc97",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/model_settings_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/62.log",
+      "sha256": "4c4c0e39b7eb2de119b81b0e4b4f0f9e2b7c4d477dcddc354bffc1a95032a33f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/nested_record_scope_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/63.log",
+      "sha256": "794979ae691b7f8b2301b3a0b934ccfab9b8214cdd5ca87cc8ac3f78e3d24a8e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/output_contract_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/64.log",
+      "sha256": "bf7c525d87dfe7479980e18a04462e55e7b8edf300c9514cce109bdeb921793e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_backup_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/65.log",
+      "sha256": "15da8751ffefa1aea38900608e887607a90ca998b9770e6da7933803aa2c9330",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/66.log",
+      "sha256": "8a6eda151345bad9a6c12fc81d64487a9659e15762ec72deb19a860f5d7eabd9",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/planning_workflow_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/67.log",
+      "sha256": "c8a25252695ac9d97c1245c67fec9bba8f936ce1c49afcf89d64ba7377294135",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/portable_backup_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/68.log",
+      "sha256": "79610c794775e397ea6fa34cdda7b0a2e4f71b9ae704b7bd5800ea92205483f5",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/portable_backup_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/69.log",
+      "sha256": "ae4560640194934f0621cdefb9e727a768e029dcf9ea8f7f90d6281a6c37419f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/projection_health_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/70.log",
+      "sha256": "550514b638212ebfd4eb80cef917ce41bd0328c781aade68095067731cf3d836",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/prose_output_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/71.log",
+      "sha256": "b9d0101f674da9b8a82d4e850c88660462600370f6ed79b23f18959267b1e467",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/provider_protocol_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/72.log",
+      "sha256": "6c03b2d9e2f65fc7ee58ca9607272974baca55997b4c9211018829aef2224f6e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/provider_queue_integration_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/73.log",
+      "sha256": "fd8d7a2e8bb8c4df8a19362f4201b9f08b58f5bab1acc5ffb8f6d42a55da81a2",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/publication_assistant_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/74.log",
+      "sha256": "dc53ef7627dde7f4df3918a2d0204d2a1c037241a9ef4c3c9cb564707f51e6e5",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/range_patch_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/75.log",
+      "sha256": "2d535c74805d2a0cba75fa371d385af5fd28a86206a7e2a38eda3a0cf4f90875",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/record_knowledge_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/76.log",
+      "sha256": "14fd96a23d4064e9e4d71ad94843cf7d4b3ae106e2f7472e2f435b8f251c172f",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/record_scope_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/77.log",
+      "sha256": "781146c2691ac2d3dc17a21887c7f0362fe6d4194ed1ae443dac9e6e515ceb5a",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/reference_passages_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/78.log",
+      "sha256": "b3d405e954df77bf5438272889601f85a22dfff7b93991073f8ea049be8ede71",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/reference_passages_integrity_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/79.log",
+      "sha256": "5b5884c5476e045a700faf77eb64852c7a58065c38eb54208d40e8a09015630b",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/repository_privacy_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/80.log",
+      "sha256": "ea6a4509f9eff4bb309eb062b05fe8c049edd0dd8a0ab4299747b153cb5a9eba",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/reversible_patch_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/81.log",
+      "sha256": "ec094ec2b2e12c111c52a560acef190fcc8c297de506fe165bae7fba690ecdb1",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/review_guidance_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/82.log",
+      "sha256": "696ab3e375fde459efacc369412d410ccf356637200d097dabc1342bac84ae2d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/runtime_continuity_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/83.log",
+      "sha256": "e133fc381e951f5ea451dd0417f4fd798a829e74cbe8756fc4596513b3d4cc05",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/schema_negative_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/84.log",
+      "sha256": "7f379a12412c05812f19c88576f9da7d44b61daee8bdb5c9c3f106c025f62eb1",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/search_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/85.log",
+      "sha256": "8963a51eb95503945d83097fb3fa7c5f47c2b5f0b57e06516c369ca68593417d",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/story_review_publication_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/86.log",
+      "sha256": "9f382852bd49f77d8ad52ed9594f0ef332189eb615f226f93aca0a1d63f74d38",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/story_review_repair_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/87.log",
+      "sha256": "31a7ca8ac6da4ab3301ee13b9601c7245ccfe59031c55372c16bf058aff2e593",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/story_structure_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/88.log",
+      "sha256": "cf449612fca44712c1cff369a93427009ed1d958ef7cd3e0a2ebedbbbcb194ab",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/stream_resume_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/89.log",
+      "sha256": "4d0ca061e7493233ce0a6fea78a5bbcaffc1bba5434f0ef56adcf62cc504bb3e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/strict_feature_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/90.log",
+      "sha256": "71e19fd5b5e061097a4940fa3952f9d0ce8a505c10557d57098da57abdc3c02b",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/task_parameter_http_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/91.log",
+      "sha256": "01c1154cdbd8fdafd697a2de5b6753a7a7a880a67c00ba5f8952d8ec561ec5bc",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/workspace_workflow_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/92.log",
+      "sha256": "ad07624d436b4413743f04f58b11b2290adee81cf3bf6003298451d2a8cb9c5b",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_agent_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/93.log",
+      "sha256": "e2f062762dbea0e266fb94b4562a483b0ec8549a62d24d68adcb5c90bb719fce",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_agent_planning_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/94.log",
+      "sha256": "8d18339b0cc54ce316ba721c18e718844e520a5894e243bc679fbafd872d68df",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_agent_service_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/95.log",
+      "sha256": "24d6cf704fbe1bca578697112c945cff30de7d07fd294ed52df3601dfd13ecf2",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Python fixtures: tests/writing_inbox_fixtures.py",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/96.log",
+      "sha256": "be6403a6bdf6bdf4c1444321904d088a39df2b425764eb511310c0b25a1fb7bb",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Fixed evaluation",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/97.log",
+      "sha256": "f7b6eac76fd9791d57e252dc464b29c22532cdf1ec5c92ed9e955d06c792010c",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Editor merge regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/98.log",
+      "sha256": "5ea90e71073f2cca49d0b5326ad68391752df3abea950f668f24b6204b5b4c57",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: analysis_guidance_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/99.log",
+      "sha256": "75886a11f68b77eb7fe1d7bdbc72cf0f9225bdae7c144d1e516abef6ad657235",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: author_workspace_lifecycle_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/100.log",
+      "sha256": "015aa82b5ecdc044716a41409e71f1badfeaf5e6b6c0715e293cf6b12c014134",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: desktop_author_flow_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/101.log",
+      "sha256": "a482a4967f4e4cb876c618bb9f10cbb377ad3e96f46d563351f6f090dfc07c52",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: editor_preferences_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/102.log",
+      "sha256": "395addfef37e6c017ed91fe21348196fd2cd871bb20ad4ec29eb80d03688a5f5",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: export_override_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/103.log",
+      "sha256": "c7415a59e9337fabbe73ce34a026a8473d3d0e303981d83103ecb9808790d220",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: frontend_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/104.log",
+      "sha256": "5bc384c670c6842b754fe9796c2bb3c752a8d76f1d3783ec27d98b02603705b3",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: instruction_draft_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/105.log",
+      "sha256": "92544ba75d599182e0c76bbd6f207d6e1019476a407c4969b100df63726d2466",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: knowledge_inbox_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/106.log",
+      "sha256": "53e93e393bbd3225c7aea6ed731f6e6716cf4bec88a687fedfdc6112f0cb5fc0",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: material_dependency_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/107.log",
+      "sha256": "14cf99e5ba6ea8fa71a50ecb74056e0f03b0ca7a9db06017308d7177d2b12186",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: model_settings_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/108.log",
+      "sha256": "9d678b51d081501f58f0e113b7e8dcb495e6ca7446c3e6e088c7c1232fc691d6",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: planning_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/109.log",
+      "sha256": "bef4423e579107ff283a909a6cc3838bb7445e89806ca18afa11ed8eb82681b1",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: portable_backup_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/110.log",
+      "sha256": "8ed685910033a07f7833d5fec0e9dcb03ff4105b3e6cc0746b57eca4becd9e65",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: reference_passages_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/111.log",
+      "sha256": "5528ad2bf73f1b200c992d84ce3b7fbf3a88ba4c8623753f2c18ba2ed50f4f5b",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: search_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/112.log",
+      "sha256": "d099f7338fc7f95a1950973b60afb072a12c48cdd93ddf87764a98bc3a4438f0",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: workbench_scope_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/113.log",
+      "sha256": "62af2f62aaeffccd8757275f2740dcd599c14bfdc060f45d55b65df1a495ddc2",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    },
+    {
+      "name": "Browser: writing_agent_browser_regressions",
+      "file": "artifacts/release-verification-knowledge-inbox-release-20261016-02/114.log",
+      "sha256": "eb43ed7e24c93762586c2129560aa63da1d8316e2000b6a069991ab06680ec8e",
+      "exit_code": 0,
+      "timeout": false,
+      "signal": null,
+      "exact_sanitized_tail_matches": true
+    }
+  ],
+  "structured_fixtures": [
+    {
+      "name": "chapter-deletion-dependencies-http",
+      "count": 5,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/chapter-deletion-dependencies-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "17d209a760f1bc7c32996ae5e123eb1cda3f78709ff8418d237d50b08ee99396",
+      "local_sha256": "17d209a760f1bc7c32996ae5e123eb1cda3f78709ff8418d237d50b08ee99396",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "legacy-deleted-dependencies-http",
+      "count": 49,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/legacy-deleted-dependencies-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "56d7dbf7dd392088b6ec851bd816c49eb878cdc97cc15eb08dc9b5467c978415",
+      "local_sha256": "037cbe84b0a1ffcb255241b66f7d9561e0003444082a907c08865cfb5ab1dd1d",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "portable-backup-helpers",
+      "count": 39,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-helpers-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "738a3d8e43546f1cf9310b07031ad39d8fd4ed4f507c5c99d098e297714b19ab",
+      "local_sha256": "738a3d8e43546f1cf9310b07031ad39d8fd4ed4f507c5c99d098e297714b19ab",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "portable-backup-http",
+      "count": 41,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "641ab14cac01e1645494b6b85c83d9606077a4c12c112066095649281c0446a7",
+      "local_sha256": "e6101163a4f3bc8ff3a0194f7a778501806d083d8a21266ba2e520b266a86e68",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "reference-passages-http",
+      "count": 36,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "9d94e491dc7d88f88e52f13afbd1d483ec478f2afa43219b30661c640bb3fa5f",
+      "local_sha256": "9d94e491dc7d88f88e52f13afbd1d483ec478f2afa43219b30661c640bb3fa5f",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "reference-passages-integrity-http",
+      "count": 13,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-integrity-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "924a6f010e35cb1b93e6c7813aa92e0c6a1b9676f2febe3dfc4fd921b7386422",
+      "local_sha256": "924a6f010e35cb1b93e6c7813aa92e0c6a1b9676f2febe3dfc4fd921b7386422",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    },
+    {
+      "name": "task-parameters-http",
+      "count": 12,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/task-parameters-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "d42ea59948406bf342fbc9cf2cf87d5f8a3c9a7aa9ea8b88bafa41aba12f0912",
+      "local_sha256": "d42ea59948406bf342fbc9cf2cf87d5f8a3c9a7aa9ea8b88bafa41aba12f0912",
+      "exact_public_bytes_match": true,
+      "stdout_matches": true
+    }
+  ],
+  "browsers": [
+    {
+      "name": "analysis_guidance_browser_regressions",
+      "cases": 3,
+      "case_names": [
+        "1440电脑窗口只改蓝图前提，旧章后分析只读且强制确认409无写入",
+        "1280乘900电脑窗口只改创作约定，旧分析禁用保存并允许重新提取",
+        "当前分析通过实际页面依次确认回顾交接和记忆，自身保存不使报告过期"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/analysis_guidance_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "4b31376378bb72c7ffaeaeaf7440cec71949f5b03337554b0a2350d6a4512e3a",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "cases": 17,
+      "case_names": [
+        "五章规划归档首章仍五章，已有正文目标场景视角卷身份完整保留",
+        "归档跳过已完成后续章，刷新重复归档不会追加空章",
+        "无后续章仅新建一次，保存失败恢复复用身份且新章目标不覆盖交接",
+        "归档新章保存等待切章，迟到成功回应不强行切回",
+        "new保存后的origin读取失败重开不重复提交",
+        "new保存后的target读取失败重开不重复提交",
+        "new保存后的both读取失败重开不重复提交",
+        "copy保存后的origin读取失败重开不重复提交",
+        "copy保存后的target读取失败重开不重复提交",
+        "copy保存后的both读取失败重开不重复提交",
+        "import保存后的origin读取失败重开不重复提交",
+        "import保存后的target读取失败重开不重复提交",
+        "import保存后的both读取失败重开不重复提交",
+        "参考导入保存后回读失败，重试只打开参考库",
+        "导入名称200和章名500完整字符可键盘编辑，201和501在保存前拒绝",
+        "新建作品200完整字符名称可保存，超限不会发出创建请求",
+        "已确认修订的问题可免费改解释，改稿后的旧问题也可结合当前稿解释归档"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/author_workspace_lifecycle_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "c5fa60f12d7e1cbe538f36f158a327f1a192e2f6cff3801fc49ed2f597290ab6",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "desktop_author_flow_regressions",
+      "cases": 7,
+      "case_names": [
+        "作者通过书架创建作品并真实填写五章、记忆确认、审稿和归档",
+        "第1章埋、第3章推进、第5章回收原句可定位且刷新后原稿完整",
+        "删除回收原句后真实终稿和导出拒绝，其他四章逐字保留",
+        "恢复原句仍需作者重新确认原链接，不能靠恢复文字自动放行",
+        "1280电脑窗口保留五章原稿与终稿入口，编辑区没有横向溢出",
+        "终稿通过后完稿状态持久保存，完稿期间不能再归档创建章节",
+        "真实下载Markdown和EPUB均含五章原稿，空白交接章不进入出版文件"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/desktop_author_flow_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "e0ac8c7f4cfdadff8923d94ce09c3158b6f295eb216e9a66d94051e4bd01fabf",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "editor_preferences_browser_regressions",
+      "cases": 10,
+      "case_names": [
+        "1440x1000 与 1280x800 阅读偏好即时应用，不替换正文节点或修改稿件",
+        "切章分别恢复选区方向、正文滚动和编辑区滚动，按旧编辑框身份保存",
+        "同章重新绘制保留光标、选区与滚动，刷新后恢复本机偏好与位置",
+        "切换真实作品后各自恢复位置，切换前的位置不会写到另一作品",
+        "同一章节编号在不同前端分支隔离，恢复主线不套用另一分支位置",
+        "删除身份或同名新章不继承其他章位置，正文变化不恢复旧选区",
+        "证据、审稿和全文搜索的明确原句定位优先于历史阅读位置",
+        "存储写入失败时设置与切章仍可用，并明确提示未能记住",
+        "存储读取和写入都被禁止时能够打开稿件并调整阅读设置",
+        "阅读操作不产生正文版本、写接口或模型调用"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/editor_preferences_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "7e038edbe23e15ccd49eed440ebce7a717c849df6c809aab328fd8f1f8ddee58",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "export_override_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "没有作者理由时真实页面和下载接口都阻断未审稿文稿",
+        "七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算",
+        "从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留",
+        "同一中文理由可实际下载EPUB，包内原稿及审计与Markdown一致",
+        "导出后改稿会使旧中文理由失效，两种格式重新要求作者确认"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/export_override_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "c13cead806d7c330a5c9534f3db03ac4b669d61b55b415098dade2c00fdd7e8c",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "frontend_browser_regressions",
+      "cases": 53,
+      "case_names": [
+        "慢保存继续输入，新文字落库且版本连续推进",
+        "断网不会假报已保存，恢复后保留并保存草稿",
+        "粗体、引用、场景分隔和撤销真正修改并保存正文",
+        "请求等待时切章，迟到候选保持来源身份且单次采纳",
+        "emoji选区润色只替换选中范围",
+        "连续20轮写作、切章、实际生成与单次采纳保持完整",
+        "已采纳候选在无缓存的新浏览器中不会再次出现可采纳状态",
+        "结构候选更新场景计划并保持正文与作者决定",
+        "真实流式任务停止后刷新仍为已停止且迟到内容不落正文",
+        "截断任务在无缓存窗口完整恢复只读片段，已知用量可手动重试",
+        "缺少流式结束标记的未知结果可回看片段，不显示重发且拒绝过期来源",
+        "只有本机分片账本时只读恢复未知结果，读取中断可续读且不会再次调用模型",
+        "未完成的结构分析和JSON正文保留原始片段，只读复制且无法整理或采纳",
+        "长章无选区润色不会全文覆盖",
+        "两窗口同句冲突展示双方并可手工合并",
+        "两窗口非重叠改稿同步可见正文，保留emoji选区并继续写而不丢远端段",
+        "两窗口合并后撤销本页改稿并重做，两次都保留另一页新增段落",
+        "同起点插入与删除双方向显示双方稿件，选择后保存及撤销重做不丢字",
+        "重做插入遇到另一页同起点删字时保留正文和重做记录，恢复后可继续重做",
+        "粗体撤销后接收另一页新改稿，快捷键重做和撤销仅变化粗体",
+        "另一页覆盖本页撤销位置时拒绝操作，保留正文和可重试的撤销记录",
+        "真实中文组合输入遇到远端合并保持候选字，确认后两页改稿完整保存",
+        "自动合并回应迟到时切换章节，只更新来源稿且当前编辑框保持另一章",
+        "拒绝记忆后新浏览器仍回读真实作品",
+        "完整普通正文提取、作者确认摘要交接、原句定位与改稿失效",
+        "语义审稿显示原句并保存作者解释，改稿后报告过期",
+        "多问题审稿明确选择原句，精确修订第二重复句并重新审稿",
+        "超限完整候选保留并阻止采纳，手工整理合限后才能进入原稿",
+        "整理超限候选保留父原文，双击仅一次调用且合限子候选等待明确采纳",
+        "手工编辑过的父候选禁止模型整理，正文和原候选均继续保留",
+        "整理确认期间原稿变化会阻止发送，过期候选保留供阅读",
+        "整理回应丢失后刷新只读取已有任务，保持请求身份且不重复模型调用",
+        "模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用",
+        "关闭思考设置遇到非空思考字段，正文保留且采纳和整理均禁用",
+        "队列先完成后人工编辑，迟到流式分片不覆盖候选、缓存或原稿",
+        "1280×800电脑窗口无横向溢出，编辑和生成控件可用",
+        "复制作品的完整历史候选同步只读标记，旧完整缓存也不能整理或采纳",
+        "两作品切换隔离，卷章场景保存后建立目录",
+        "电脑端四阶段规划中途刷新和失败重做，最终采用蓝图不改变已写正文",
+        "同一时刻连续点击打开两书，最终作品与缓存完全隔离",
+        "旧作品读取成功与错误迟到，均不改变当前正文、缓存和保存状态",
+        "旧作品模型设置迟到，当前模型身份保持正确",
+        "服务回应作品身份错误时拒绝覆盖，恢复后仍为原书",
+        "设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型",
+        "电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关",
+        "旧书预览拆分合并导入独立作品，原作品保持原稿",
+        "作为参考来源导入、阅读和按原句搜索不改变本书正文",
+        "完整备份下载与恢复副本保留正文和参考来源",
+        "200字作品名恢复可读写，读取失败后只重开已建立副本且不提前报成功",
+        "恢复成功回复后原作和副本读取同时失败，重开仍只有一次恢复写入",
+        "含emoji的名称按完整字符恢复，刷新与默认复制都能打开且保留原稿",
+        "200字作品名在大小电脑窗口中保留写作入口，导航独立滚动且不遮挡正文",
+        "设定的揭晓章节和知情人物经页面保存刷新后仍限制实际写作材料"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/frontend_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "ef59d10dfb5b5528acc9e9ab69cfa1a1e6720ca6ada9a136638dd02d59366e93",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "instruction_draft_browser_regressions",
+      "cases": 11,
+      "case_names": [
+        "切页查看设定与刷新后保留当前章任务及完整要求",
+        "不同章节任务草稿互相隔离，刷新仍回到该章草稿",
+        "两部作品各自保留要求，离开再回来不会串用",
+        "同作品同章的合成分支身份具有独立草稿",
+        "旧作品已卸载控件的迟到输入和清空事件不会改写任一作品草稿",
+        "程序写入要求后重新渲染或立即刷新仍保存原控件身份",
+        "显式清空恢复续写，刷新不复活旧要求且其他章节和作品不受影响",
+        "损坏或不支持的草稿被忽略，不影响编辑器和原稿",
+        "浏览器存储失败时同页保留要求并提示，恢复存储后无需重新输入即可补存",
+        "已保存生成任务继续使用原冻结要求，后改草稿和刷新不重发模型",
+        "两种电脑尺寸下清空与生成控件可见且互不遮挡"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/instruction_draft_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "704f9c5511eb205db51367187ef3a9907c5f24b5883e12d836a308beb65bc2e2",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "knowledge_inbox_browser_regressions",
+      "cases": 17,
+      "case_names": [
+        "打开知识关联保留正文 DOM、选区方向与两层滚动",
+        "知识独立分页、出入链跳转与未来秘密范围清楚可见",
+        "候选和已确认来源显示完整 emoji 原句，定位按 Unicode 字符验证",
+        "点击定位前重新读取来源，已变原句阻止跳转且保留当前选区",
+        "原句复核期间切标签、刷新、关闭或切页后，迟到结果不能继续导航",
+        "知识读取失败显示未核实与重试，不伪装为零条来源",
+        "知识迟到响应在关闭、切章和切作品后不复活",
+        "关系删除导致页码越界时回到最后有效页，不留下虚假的空页",
+        "全书待办完整分类计数、三页任务无重漏，桌面布局无横向溢出",
+        "超过最近五十条的旧写作任务能从待办精确打开且刷新仍只展示目标",
+        "章后记忆按选中分析编号打开，独立记忆和审稿均有真实入口",
+        "执行结果未知只可查看和打开章节，不自动重试或产生模型请求",
+        "待办读取失败和坏计数显示尚未核实，恢复后重新呈现完整数量",
+        "较早的顶部待办摘要迟到，不能覆盖已经读到的新列表数量",
+        "离开待办或切作品后迟到列表不会覆盖新页面或另一本书的计数",
+        "各类待办详情请求未完成时离开页面，迟到结果不能导航或弹出旧记录",
+        "浏览只读操作不修改正文版本，也不派发模型请求或报浏览器错误"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge_inbox_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "0ace197a64d591c78f549c942fc4e969eec1732101d5fa73950c1c049575fb9d",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "material_dependency_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "1440电脑端生成完整候选，尚未采纳时原稿保持不变",
+        "资料变化后真实任务回读只读原因，禁止采纳整理但可复制并刷新保留",
+        "1280乘900电脑窗口回看相同旧候选，禁用动作和可复制原文均保留",
+        "旧章后分析仍可读报告，资料变化后确认禁用且直接确认接口拒绝写入",
+        "真实材料窗口排除设定后该设定变化不阻断新候选，仍可比较并单次采纳"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_snapshot_and_release_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/material_dependency_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "0593d17a4a4beac35fe3764d1b3f13f836fbf8ad74c9e0171a106eb58b827130",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "model_settings_browser_regressions",
+      "cases": 20,
+      "case_names": [
+        "只保存设置不调用模型，电脑两种宽度表单均无横向遮挡",
+        "合格默认模型检测即刻更新设置和助手状态，刷新保留同次结果",
+        "最近失败替换旧成功，跨页和刷新均显示失败且不重发模型",
+        "回传模型不一致保留双方名称，不能显示所选模型检测成功",
+        "只有一字的完整stop回复保留完成证据，但页面持续显示不合格",
+        "关闭思考仍返回思考字段时不通过，页面和记录不展示思考内容",
+        "另一窗口修改设置使旧检测失效，页面回读当前模型且不报成功",
+        "同一作品保存新设置后，迟到旧检测不能覆盖页面内存或后续保存",
+        "同一作品迟到旧保存响应不能覆盖新读取，后续保存不回写旧模型或调用模型",
+        "设置与助手状态同时读完才显示新表单，等待期间切页不会写回旧设置",
+        "已发出的旧保存响应在离开设置页后不写回全局设置或状态",
+        "设置PUT和检测在队列等待期间变旧时不发送旧操作",
+        "保存后的状态读取等待期间切换作品，不向另一作品发送检测",
+        "检测完成后的状态读取迟到，不向另一作品页面回写旧成功",
+        "九种用途模型与原始参数逐项保存，两种电脑尺寸全部控件互不遮挡",
+        "用途温度零保留，空白删除数值覆盖，刷新后隐藏支持参数保持",
+        "回顾与检查按整对象供分析审稿继承，显式子用途只覆盖全局且空白不制造对象",
+        "单用途恢复图标清除整个参数对象，模型及其余八用途保留且刷新不复活隐藏字段",
+        "用途思考开关与强度互换仅保存一种形式，空白继承且其他参数不改",
+        "用途数值不合格时表单拒绝发送，任意有效小数温度可以保存"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/model_settings_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "9282904a250a7520f59d36a4124e277fbabff97b8f37f477279b7a6f6352f162",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "planning_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "同一规划输入框连续两次自动保存不会丢第二次修改",
+        "采用规划等待期间切页返回仍锁定输入，结束后新输入正常保存",
+        "规划保存失败后刷新仍能恢复本地规划草稿并阻止静默离开",
+        "两标签同字段规划冲突保留双方并按作者选择保存",
+        "第二套规划物化只新增章节并保留第一轮章节全部内容"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/planning_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "bdb9326a647d49fcdea33866ce96e5b9e11c13d9ab8d058e921cb085a862c604",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "portable_backup_browser_regressions",
+      "cases": 21,
+      "case_names": [
+        "57表合成源服务真实下载完整ZIP后关闭，目标目录启动前为空",
+        "1440×1000文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+        "1280×900文件选择恢复副本、编辑保存、真实再备份与再次恢复",
+        "1280×800长文件名及200字作品名无横向溢出且确认控件可点击",
+        "损坏ZIP只显示错误且数据库零写入，随后正常文件可预览取消",
+        "取消和已知预览重新选择只释放服务器文件，不建立作品",
+        "迟到A预览不能替换B，A与B服务器文件最终都释放",
+        "预览响应迟到时close使窗口失效，不能应用原文件",
+        "预览响应迟到时project使窗口失效，不能应用原文件",
+        "预览响应迟到时branch使窗口失效，不能应用原文件",
+        "双击确认只发一次恢复，正在保存时不能修改标题或重复提交",
+        "保存响应丢失后同一身份重试只返回原副本，浏览器不保存ZIP内容",
+        "页面刷新且服务重启后重新选择先取消再读回执，只能打开已保存副本",
+        "副本已保存后origin读取失败只重开同一身份且不再次建立",
+        "副本已保存后target读取失败只重开同一身份且不再次建立",
+        "副本已保存后both读取失败只重开同一身份且不再次建立",
+        "重新打开已保存副本时保留另一页真实编辑的离线草稿，不把旧稿写到新作品",
+        "过期预览失败零写入，先取消并确认未保存后重新选择ZIP恢复",
+        "连续两次未确认预览刷新均释放身份，第三次仍能选择恢复取消",
+        "预览响应尚未到达时刷新仍释放上传前身份，迟到响应不能占用服务器槽",
+        "取消请求网络失败后刷新保留身份，恢复连接能释放并再次选择"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/portable_backup_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "e3edff7352148d065a992243bb77833d7675e66827c5a83e4c976fe8cb044c2f",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "reference_passages_browser_regressions",
+      "cases": 15,
+      "case_names": [
+        "选择和两种预览只读取参考原句且不写持久存储或数据库",
+        "单段替换撤回保持完整原句900字符表情边界可选且901字符合成响应禁选",
+        "刷新与换作品分支章节清空同章重绘保留且没有跨书引用",
+        "参考库搜索结果可直接选用并返回原写作章",
+        "旧搜索迟到不能覆盖新查询关闭弹窗或切走再返回不能复活",
+        "参考预览失效不会落到离线材料或发送模型任务并保留选择",
+        "旧完整预览迟到不能覆盖后来新选择或重新弹出旧材料",
+        "不支持的写作任务阻止引用提交网络失败保留本次引用",
+        "续写预览与模型完整参考一致202成功清本次引用原稿仅确认后增加",
+        "先选正文再选参考返回仍保留润色选区三个入口一致且仅替换选区",
+        "长整章润色材料预览避免请求地址超限且完整提示保留全部原稿和参考",
+        "202后状态读取失败仍清当次参考并恢复已保存候选",
+        "迟到202仅消费发送快照而不清后来新选参考",
+        "切章再返回后迟到202不会重开旧候选或消费新参考",
+        "两种电脑尺寸引用工具和原生成清空控件完整可见互不遮挡"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "child_before_after_current",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/reference_passages_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "ba3d48e57ad966ec144db3c3d9a69ef884fe75e25f5192c1403c490ae1d7ea20",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "search_browser_regressions",
+      "cases": 5,
+      "case_names": [
+        "后端搜索失败时实际回退到本地草稿并可搜别名",
+        "后端返回损坏响应时回退到本地草稿",
+        "较早的搜索响应不会覆盖后来提交的关键词",
+        "搜索结果显示精确原文并按 Unicode 字符范围定位到章节",
+        "章节正文改变后，旧搜索证据不能定位到错误位置"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/search_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "e5cd977405b6eb2e72a7015ce22e90d331e2ea08509ab54661d825a4aacbda0f",
+      "retained_original_sidecar": false,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "workbench_scope_browser_regressions",
+      "cases": 13,
+      "case_names": [
+        "1440 与 1280 电脑设定保存只刷新资料，保留正文节点、选区、滚动和专注状态",
+        "设定在知识库页面保存后仍刷新列表",
+        "先后查看两次证据时只显示最新请求，关闭后不重建正文",
+        "证据迟到时 page 切换使旧结果失效",
+        "证据迟到时 chapter 切换使旧结果失效",
+        "证据迟到时 project 切换使旧结果失效",
+        "证据迟到时 branch 切换使旧结果失效",
+        "已经打开的旧作品证据失效后不能通过遗留按钮修改正典",
+        "同一作品正常证据审查仍保存且只保留一个新弹窗，取消理由不提交",
+        "持久化请求排队期间切版本时不发送到新版本",
+        "持久化 mutation 响应迟到时不合并进另一版本",
+        "持久化 state-read 响应迟到时不合并进另一版本",
+        "长篇目录切到后章和前章后保持当前章可见，规划回读保留目录位置"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/workbench_scope_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "281ff37af60ab0b06f656b688f5bc542c80bab596c192800a04052c6f8f27d60",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    },
+    {
+      "name": "writing_agent_browser_regressions",
+      "cases": 19,
+      "case_names": [
+        "桌面三栏工作台接入真实章节、人物资料、上下文和专注模式",
+        "在正文旁直接创建总管计划不调用模型，刷新后保留同一进度",
+        "启动后后台生成正文，重复确认只复用原任务",
+        "现有比较采纳接通总管，自动整理记忆与审稿共三次",
+        "检查模式仅调用两次，服务重启后沿已存计划继续",
+        "已启动任务停止后不追加调用，迟到内容不进入正文",
+        "模型连接断开后保留任务，不自动重发",
+        "计划请求完成时不清除用户后来输入的草稿",
+        "旧计划请求失败后新草稿使用新身份并可保存",
+        "网络失败保留创作要求，重试不会创建两条计划",
+        "紧凑电脑宽度和长文本无溢出，页面没有脚本错误",
+        "1280电脑正文、资料和总管仍保持三栏，当前稿改动使依据过期",
+        "章后记忆和审稿延迟回应在页面或作品切换后不弹出旧报告",
+        "作品切换后迟到的旧任务列表不能覆盖新作品",
+        "整章修订忽略编辑选区，明确采纳后替换全章并继续记忆审稿",
+        "全书规划模式草稿刷新可恢复，任务不依赖当前打开的章节",
+        "四阶段规划逐次确认，完整采用前不改变蓝图或正文",
+        "蓝图变化后旧规划停止执行，恢复只读任务没有启动或采纳按钮",
+        "全书完稿后工作台和空章节状态均隐藏新建入口，直接操作也不新增"
+      ],
+      "independent_case_inventory_matches": true,
+      "case_events_match": true,
+      "source_guard": "release_before_after_current_only",
+      "public_file": "docs/audits/2026-10-14/comprehensive/evidence/writing_agent_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "public_sha256": "6fbba6ba5938cc00aa8f1ca0f84cf1405cb706376b4b3f4ce49713c4855c9521",
+      "retained_original_sidecar": true,
+      "exact_public_bytes_match": true
+    }
+  ],
+  "screenshots": [
+    {
+      "suite": "analysis_guidance_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-analysis-guidance-stale-desktop.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "1ff763196515211969afb5ce04c0ff7c30f69b7832b54359925108fbb661201a",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "analysis_guidance_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-analysis-guidance-stale-1280x900.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "b507b6e56e35b68a7218e3608c4388ecf42ab8e5a6ec0f8371a00e61d90e3b5c",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-planned-next-chapter.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "4ef06da3ddfca0ce3dc9cce71e528850d838ae5d5d40fa7c35f1308c39f96c83",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-planned-next-chapter-1280x900.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "5c3ad603781cfb1d4f263a5bd8a921f2863c1d0e2ef9fbc4e0c43b7fb92178f9",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "author_workspace_lifecycle_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-stale-review-author-explanation.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "b834e75e69222eb8ec40ef988f35397abb4677dea659d720f26734a717637e0a",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "8ece341652555d90faf8a7a8f03505fe218dc53df5fefdb8bc33cd87abc2ccd1",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-compact-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "8ec4fdd4220522b2596a9776a72f6d6a3232901df98b868547077dad3537d1c8",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-stale-payoff-blocked.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "b457025e4e67246e62c18eace03621a6cc2f4cd0f464ed9dd376858aacad2d9e",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "desktop_author_flow_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-final-complete.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "bffcfc5bfef90c3115916b6c01666fd5ac6f53c01c0cacf7d58813eaedb9ebd1",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "editor_preferences_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-editor-preferences-1440x1000.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "b48032363f8c37c3b0897bb8a9f50a18676a7335d0cb64a82253ae2d5c089e54",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "editor_preferences_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-editor-preferences-1280x800.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "98befad2800cebb8721df089088ed28a735a4b3874787ce179b628e7bdb8877c",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "export_override_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-export-override-desktop.png",
+      "name": "export_override_browser_regressions",
+      "sha256": "c729a091584e339a26160f2373cf798a39c626562bc30af81b9f9a3c442fb040",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "b15bb6b619552710abfcb3646249b1d5e31fd527f7a9afdcf8abcbcdc69865df",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-compact-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "bd35175238c15adcbeaa5df499ae95c2a5dfae6b387a660e66afd329668151ef",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-planning.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "b92a22d4d92ebbf6ec03c68545f46f56210991e1e9169347d58d9105df153363",
+      "width": 1440,
+      "height": 1732,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-revised-candidate.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "8f07319df0772071d7127401bf349fe8702b4e553fb47a99c5dcf4d4f2d4ccaf",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-interrupted-fragment.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "72e9cf923df62d53ef9e822e00d5dac15aaf74068692dbe69865a55dc3d1baf4",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-interrupted-task.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "292a0555d4c05a8d6ca894c7848e08189717c12fdfe9ee1db7be6544d3ef6406",
+      "width": 1440,
+      "height": 3418,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-backup-open-failure.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "72db6770f8b488e1f41e1b4f92460d031f165143996e36305b4530a34ea2aa33",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-backup-restored.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "db67b1f21065f97698b9cef0c9c5dc5fd7b96ea14d34d8fad438b0851b7e6471",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "f18445d22b0d45e26b5c0c339bf91b3283cbb2a4026dd3dc70900b993a1a4bc0",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-compact-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "fe6cde26895bab9c5bf58834e2bf39c7a67f00e22bb570bce4b215cb65bb7662",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-short-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "68a9f43eaa9ddce5cc9abb226522a38279e5ccdc463901f147f4ec16c69aecb7",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-record-knowledge-scope.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "8f1c4ba01184a10ee19cc36e58b1e9ff9fab4f7671c9cbc65adec5372d55628d",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "frontend_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-review-repair.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "dc2549da263241951718542b7adf669ca7413629e480ba6f4f352ab98088ca67",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "instruction_draft_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-instruction-draft-desktop.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "e7430e00e0e95d0de809a1a006e5954b061fd9025dbf06119ba35a674a079f0f",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "instruction_draft_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-instruction-draft-desktop-1280x900.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "a6077245de9656a02b6f8b498169a0320e1d4de9efae8b4f3c6556fa2ae65b3e",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-knowledge-links-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "efee9162f1980fbf0a5354876086b0f900f605a54549d70ab382a62c6935ad00",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-knowledge-sources-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "579cedb9ccf587760c9cfc2c631d4890ddf8cf6907af89f2efd286e2b0a89bf9",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-inbox-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "13d084e2f6d47e53b5d451cd1bea05fd6d24b88cd568383047270a89a7fdf5f9",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "knowledge_inbox_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-inbox-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "b04aabf99dadcc8d91b121e826684ce11edd60510f9673c9f4c744207f946ea7",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "material_dependency_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-material-stale-candidate-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "57a6165a939615259f1b3dbb665535a5678424aa98b05b18228613f886a2d385",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "material_dependency_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-material-stale-candidate-1280x900.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "0a4c6a59ea9c44fef2619835de0e28a8d5aefeec6e73ac754014b0ca4533cfd8",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "material_dependency_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-material-stale-analysis-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "6ccaf5fff68b890752417e8a0703326b14d35edefcb6b3365022aceeea56e25e",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-model-settings-failed.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "35cee6bb4658dfe4efe9e6df5ac098871d138c941112e052287c6e6b4355de62",
+      "width": 1440,
+      "height": 1366,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-model-settings-success.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "5fcecf42a26b39b1f44dac12975f2a500bc906c2b15eb8bfdcd2a7fbf6832e4e",
+      "width": 1440,
+      "height": 1366,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-settings.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "270bbebb0396ad7816ab28c82830b66ee66487e1695b97541d337a2bb19cd08e",
+      "width": 1440,
+      "height": 1366,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-task-settings-1440x1000.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "f41a6e835abf553671317f85a3fe7f26c2fa7e0528520d81cd2b300a5ddd22fa",
+      "width": 1440,
+      "height": 1366,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-task-settings-1280x900.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "0fefb0f043ecf05249ce573f748c9e382ad237cc77cd3f209a7689169b7d3deb",
+      "width": 1280,
+      "height": 1366,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "model_settings_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-task-settings-alias-inheritance.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "afb73456b9cb8a6b4113fb81638d4af013cf8dc159635457c9025f23b926286e",
+      "width": 1440,
+      "height": 1366,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "planning_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-planning-second-round.png",
+      "name": "planning_browser_regressions",
+      "sha256": "566a95009af66665d9f154ffb645a2f5e065043e19de6e118cab4d9d5a63b724",
+      "width": 1440,
+      "height": 1449,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-preview-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "5decbdf99ad16cfec4ae3aaaa737a742d884b1e918faf73154d09f76c1751c1a",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-editor-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "d02ceacb293c927a608cfba05ed5f9c25d80fd2f0f1377136e7c4e3613b9351f",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-preview-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "2607440713866bfc3e4ecaec28f9935fbe5f1c56987980cb7e3624f33928e968",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-editor-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "793ee39d28cb1c0523b2473a97ff4bf31c98a934f42e51774cba6fb08b4a361a",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-long-title-1280x800.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "b34a4d66fab230d202f36cacaeb18cf031f4c9a08d758def0826f87d58a1ea42",
+      "width": 1280,
+      "height": 800,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-saved-reopen.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "7cd4d5492d051f1b12ba895245bd6c6aefa12ed94286f1781599ad06f7a9e2b4",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-pending-reloaded.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "36a79e09e0dfb28a6d128cde0601a522c58b96b3b5c7d1f5585afe33ef64e3a9",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "portable_backup_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-status-saved.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "c6c8342d0099288b03930bd5344ccae1ce08038780d1906b0b769c782304928e",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "5516f271e8ef1bbcf0c82f830ce8a8ea94859952f1e9cb9dc2fba4ab370bb7b6",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "fb200d5adbb0686d2bc8a2da874a76d8e6e2d3794df0e381d06d24f92bbd0102",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-original-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "e25b6f03a0ae8de62c6fa463f880028c209297552fe8ba7582d96940a0dfd68d",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "reference_passages_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-original-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "a903e422b3425e721f11958a9b64a57e04c259de51105eaa35329824d642f150",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-plan-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "ceecebca4c48183b6e7889fa8e454031a3913ff317d37dd8f15a1cb028c41997",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-complete-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "0bf8da235a7f6d486dca0e7321d32de11b23ff994c1112f26393cd42caefffe1",
+      "width": 1440,
+      "height": 1141,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "02edacf864a2302e1314adc2e45a748deb1f99cb340bd17544593ade8869476a",
+      "width": 1280,
+      "height": 3696,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-workbench-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "374b1aaead60497641b0a4e4ca21ae2aaa9ebd4c9aad480ec2e18604bb6d5b72",
+      "width": 1440,
+      "height": 1000,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-workbench-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "09214bf2554d047d09700902af2ab3c46deda8ad3fc15d3a79bcaf55f5787ccb",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-polish-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "058ddc9b14e4577ecb95e7857543518c7000fc0cd4b999b7f4c8c6541f078bfc",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-polish-compare-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "abe3d3767ef86de7161756f92925568d208f0652bbc937bd4a341111e0bf0914",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-overview-confirm-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "49cf870fd86429424fca43d7fd0391c0a96055e74b06058f5fe6f7347da4b9f2",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    },
+    {
+      "suite": "writing_agent_browser_regressions",
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-full-plan-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "37917f066840aca6c5d6f30f52ed3ec3cca6dc62e3d76e84ef8ea6f0f393ba8a",
+      "width": 1280,
+      "height": 900,
+      "original_bytes_match": true
+    }
+  ],
+  "attachment_inventory": [
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/chapter-deletion-dependencies-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "chapter-deletion-dependencies-http",
+      "sha256": "17d209a760f1bc7c32996ae5e123eb1cda3f78709ff8418d237d50b08ee99396"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/legacy-deleted-dependencies-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "legacy-deleted-dependencies-http",
+      "sha256": "56d7dbf7dd392088b6ec851bd816c49eb878cdc97cc15eb08dc9b5467c978415"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-helpers-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "portable-backup-helpers",
+      "sha256": "738a3d8e43546f1cf9310b07031ad39d8fd4ed4f507c5c99d098e297714b19ab"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/portable-backup-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "portable-backup-http",
+      "sha256": "641ab14cac01e1645494b6b85c83d9606077a4c12c112066095649281c0446a7"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "reference-passages-http",
+      "sha256": "9d94e491dc7d88f88e52f13afbd1d483ec478f2afa43219b30661c640bb3fa5f"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/reference-passages-integrity-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "reference-passages-integrity-http",
+      "sha256": "924a6f010e35cb1b93e6c7813aa92e0c6a1b9676f2febe3dfc4fd921b7386422"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/task-parameters-http-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "task-parameters-http",
+      "sha256": "d42ea59948406bf342fbc9cf2cf87d5f8a3c9a7aa9ea8b88bafa41aba12f0912"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/fixed-evaluation-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "Fixed evaluation",
+      "sha256": "6d13ef526a865c6bd0474ccaff3b828c7e5f5d8ae0d40ea5f6ace1704b6da041"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/analysis_guidance_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "4b31376378bb72c7ffaeaeaf7440cec71949f5b03337554b0a2350d6a4512e3a"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-analysis-guidance-stale-desktop.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "1ff763196515211969afb5ce04c0ff7c30f69b7832b54359925108fbb661201a",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-analysis-guidance-stale-1280x900.png",
+      "name": "analysis_guidance_browser_regressions",
+      "sha256": "b507b6e56e35b68a7218e3608c4388ecf42ab8e5a6ec0f8371a00e61d90e3b5c",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/author_workspace_lifecycle_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "c5fa60f12d7e1cbe538f36f158a327f1a192e2f6cff3801fc49ed2f597290ab6"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-planned-next-chapter.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "4ef06da3ddfca0ce3dc9cce71e528850d838ae5d5d40fa7c35f1308c39f96c83",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-planned-next-chapter-1280x900.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "5c3ad603781cfb1d4f263a5bd8a921f2863c1d0e2ef9fbc4e0c43b7fb92178f9",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-stale-review-author-explanation.png",
+      "name": "author_workspace_lifecycle_browser_regressions",
+      "sha256": "b834e75e69222eb8ec40ef988f35397abb4677dea659d720f26734a717637e0a",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/desktop_author_flow_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "e0ac8c7f4cfdadff8923d94ce09c3158b6f295eb216e9a66d94051e4bd01fabf"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "8ece341652555d90faf8a7a8f03505fe218dc53df5fefdb8bc33cd87abc2ccd1",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-compact-desktop-five-chapter-author.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "8ec4fdd4220522b2596a9776a72f6d6a3232901df98b868547077dad3537d1c8",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-stale-payoff-blocked.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "b457025e4e67246e62c18eace03621a6cc2f4cd0f464ed9dd376858aacad2d9e",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-final-complete.png",
+      "name": "desktop_author_flow_regressions",
+      "sha256": "bffcfc5bfef90c3115916b6c01666fd5ac6f53c01c0cacf7d58813eaedb9ebd1",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/editor_preferences_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "7e038edbe23e15ccd49eed440ebce7a717c849df6c809aab328fd8f1f8ddee58"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-editor-preferences-1440x1000.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "b48032363f8c37c3b0897bb8a9f50a18676a7335d0cb64a82253ae2d5c089e54",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-editor-preferences-1280x800.png",
+      "name": "editor_preferences_browser_regressions",
+      "sha256": "98befad2800cebb8721df089088ed28a735a4b3874787ce179b628e7bdb8877c",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/export_override_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "export_override_browser_regressions",
+      "sha256": "c13cead806d7c330a5c9534f3db03ac4b669d61b55b415098dade2c00fdd7e8c"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-export-override-desktop.png",
+      "name": "export_override_browser_regressions",
+      "sha256": "c729a091584e339a26160f2373cf798a39c626562bc30af81b9f9a3c442fb040",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/frontend_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "frontend_browser_regressions",
+      "sha256": "ef59d10dfb5b5528acc9e9ab69cfa1a1e6720ca6ada9a136638dd02d59366e93"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "b15bb6b619552710abfcb3646249b1d5e31fd527f7a9afdcf8abcbcdc69865df",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-compact-desktop-editor.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "bd35175238c15adcbeaa5df499ae95c2a5dfae6b387a660e66afd329668151ef",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-planning.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "b92a22d4d92ebbf6ec03c68545f46f56210991e1e9169347d58d9105df153363",
+      "width": 1440,
+      "height": 1732
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-revised-candidate.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "8f07319df0772071d7127401bf349fe8702b4e553fb47a99c5dcf4d4f2d4ccaf",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-interrupted-fragment.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "72e9cf923df62d53ef9e822e00d5dac15aaf74068692dbe69865a55dc3d1baf4",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-interrupted-task.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "292a0555d4c05a8d6ca894c7848e08189717c12fdfe9ee1db7be6544d3ef6406",
+      "width": 1440,
+      "height": 3418
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-backup-open-failure.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "72db6770f8b488e1f41e1b4f92460d031f165143996e36305b4530a34ea2aa33",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-backup-restored.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "db67b1f21065f97698b9cef0c9c5dc5fd7b96ea14d34d8fad438b0851b7e6471",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "f18445d22b0d45e26b5c0c339bf91b3283cbb2a4026dd3dc70900b993a1a4bc0",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-compact-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "fe6cde26895bab9c5bf58834e2bf39c7a67f00e22bb570bce4b215cb65bb7662",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-short-desktop-long-title-navigation.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "68a9f43eaa9ddce5cc9abb226522a38279e5ccdc463901f147f4ec16c69aecb7",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-record-knowledge-scope.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "8f1c4ba01184a10ee19cc36e58b1e9ff9fab4f7671c9cbc65adec5372d55628d",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-review-repair.png",
+      "name": "frontend_browser_regressions",
+      "sha256": "dc2549da263241951718542b7adf669ca7413629e480ba6f4f352ab98088ca67",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/instruction_draft_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "704f9c5511eb205db51367187ef3a9907c5f24b5883e12d836a308beb65bc2e2"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-instruction-draft-desktop.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "e7430e00e0e95d0de809a1a006e5954b061fd9025dbf06119ba35a674a079f0f",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-instruction-draft-desktop-1280x900.png",
+      "name": "instruction_draft_browser_regressions",
+      "sha256": "a6077245de9656a02b6f8b498169a0320e1d4de9efae8b4f3c6556fa2ae65b3e",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge_inbox_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "0ace197a64d591c78f549c942fc4e969eec1732101d5fa73950c1c049575fb9d"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-knowledge-links-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "efee9162f1980fbf0a5354876086b0f900f605a54549d70ab382a62c6935ad00",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-knowledge-sources-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "579cedb9ccf587760c9cfc2c631d4890ddf8cf6907af89f2efd286e2b0a89bf9",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-inbox-1440x1000.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "13d084e2f6d47e53b5d451cd1bea05fd6d24b88cd568383047270a89a7fdf5f9",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-inbox-1280x800.png",
+      "name": "knowledge_inbox_browser_regressions",
+      "sha256": "b04aabf99dadcc8d91b121e826684ce11edd60510f9673c9f4c744207f946ea7",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/material_dependency_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "0593d17a4a4beac35fe3764d1b3f13f836fbf8ad74c9e0171a106eb58b827130"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-material-stale-candidate-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "57a6165a939615259f1b3dbb665535a5678424aa98b05b18228613f886a2d385",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-material-stale-candidate-1280x900.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "0a4c6a59ea9c44fef2619835de0e28a8d5aefeec6e73ac754014b0ca4533cfd8",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-material-stale-analysis-desktop.png",
+      "name": "material_dependency_browser_regressions",
+      "sha256": "6ccaf5fff68b890752417e8a0703326b14d35edefcb6b3365022aceeea56e25e",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/model_settings_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "model_settings_browser_regressions",
+      "sha256": "9282904a250a7520f59d36a4124e277fbabff97b8f37f477279b7a6f6352f162"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-model-settings-failed.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "35cee6bb4658dfe4efe9e6df5ac098871d138c941112e052287c6e6b4355de62",
+      "width": 1440,
+      "height": 1366
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-model-settings-success.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "5fcecf42a26b39b1f44dac12975f2a500bc906c2b15eb8bfdcd2a7fbf6832e4e",
+      "width": 1440,
+      "height": 1366
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-desktop-settings.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "270bbebb0396ad7816ab28c82830b66ee66487e1695b97541d337a2bb19cd08e",
+      "width": 1440,
+      "height": 1366
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-task-settings-1440x1000.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "f41a6e835abf553671317f85a3fe7f26c2fa7e0528520d81cd2b300a5ddd22fa",
+      "width": 1440,
+      "height": 1366
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-task-settings-1280x900.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "0fefb0f043ecf05249ce573f748c9e382ad237cc77cd3f209a7689169b7d3deb",
+      "width": 1280,
+      "height": 1366
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-task-settings-alias-inheritance.png",
+      "name": "model_settings_browser_regressions",
+      "sha256": "afb73456b9cb8a6b4113fb81638d4af013cf8dc159635457c9025f23b926286e",
+      "width": 1440,
+      "height": 1366
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/planning_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "planning_browser_regressions",
+      "sha256": "bdb9326a647d49fcdea33866ce96e5b9e11c13d9ab8d058e921cb085a862c604"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-planning-second-round.png",
+      "name": "planning_browser_regressions",
+      "sha256": "566a95009af66665d9f154ffb645a2f5e065043e19de6e118cab4d9d5a63b724",
+      "width": 1440,
+      "height": 1449
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/portable_backup_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "e3edff7352148d065a992243bb77833d7675e66827c5a83e4c976fe8cb044c2f"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-preview-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "5decbdf99ad16cfec4ae3aaaa737a742d884b1e918faf73154d09f76c1751c1a",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-editor-1440x1000.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "d02ceacb293c927a608cfba05ed5f9c25d80fd2f0f1377136e7c4e3613b9351f",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-preview-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "2607440713866bfc3e4ecaec28f9935fbe5f1c56987980cb7e3624f33928e968",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-editor-1280x900.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "793ee39d28cb1c0523b2473a97ff4bf31c98a934f42e51774cba6fb08b4a361a",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-long-title-1280x800.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "b34a4d66fab230d202f36cacaeb18cf031f4c9a08d758def0826f87d58a1ea42",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-saved-reopen.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "7cd4d5492d051f1b12ba895245bd6c6aefa12ed94286f1781599ad06f7a9e2b4",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-pending-reloaded.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "36a79e09e0dfb28a6d128cde0601a522c58b96b3b5c7d1f5585afe33ef64e3a9",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-portable-status-saved.png",
+      "name": "portable_backup_browser_regressions",
+      "sha256": "c6c8342d0099288b03930bd5344ccae1ce08038780d1906b0b769c782304928e",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/reference_passages_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "ba3d48e57ad966ec144db3c3d9a69ef884fe75e25f5192c1403c490ae1d7ea20"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "5516f271e8ef1bbcf0c82f830ce8a8ea94859952f1e9cb9dc2fba4ab370bb7b6",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "fb200d5adbb0686d2bc8a2da874a76d8e6e2d3794df0e381d06d24f92bbd0102",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-original-1440x1000.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "e25b6f03a0ae8de62c6fa463f880028c209297552fe8ba7582d96940a0dfd68d",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-reference-passages-original-1280x900.png",
+      "name": "reference_passages_browser_regressions",
+      "sha256": "a903e422b3425e721f11958a9b64a57e04c259de51105eaa35329824d642f150",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/search_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "search_browser_regressions",
+      "sha256": "e5cd977405b6eb2e72a7015ce22e90d331e2ea08509ab54661d825a4aacbda0f"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/workbench_scope_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "workbench_scope_browser_regressions",
+      "sha256": "281ff37af60ab0b06f656b688f5bc542c80bab596c192800a04052c6f8f27d60"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/writing_agent_browser_regressions-python311-node24-knowledge-inbox-release-20261016-02.json",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "6fbba6ba5938cc00aa8f1ca0f84cf1405cb706376b4b3f4ce49713c4855c9521"
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-plan-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "ceecebca4c48183b6e7889fa8e454031a3913ff317d37dd8f15a1cb028c41997",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-complete-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "0bf8da235a7f6d486dca0e7321d32de11b23ff994c1112f26393cd42caefffe1",
+      "width": 1440,
+      "height": 1141
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "02edacf864a2302e1314adc2e45a748deb1f99cb340bd17544593ade8869476a",
+      "width": 1280,
+      "height": 3696
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-workbench-1440x1000.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "374b1aaead60497641b0a4e4ca21ae2aaa9ebd4c9aad480ec2e18604bb6d5b72",
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-workbench-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "09214bf2554d047d09700902af2ab3c46deda8ad3fc15d3a79bcaf55f5787ccb",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-polish-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "058ddc9b14e4577ecb95e7857543518c7000fc0cd4b999b7f4c8c6541f078bfc",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-polish-compare-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "abe3d3767ef86de7161756f92925568d208f0652bbc937bd4a341111e0bf0914",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-overview-confirm-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "49cf870fd86429424fca43d7fd0391c0a96055e74b06058f5fe6f7347da4b9f2",
+      "width": 1280,
+      "height": 900
+    },
+    {
+      "file": "docs/audits/2026-10-14/comprehensive/evidence/knowledge-inbox-release-20261016-02-writing-agent-full-plan-1280x900.png",
+      "name": "writing_agent_browser_regressions",
+      "sha256": "37917f066840aca6c5d6f30f52ed3ec3cca6dc62e3d76e84ef8ea6f0f393ba8a",
+      "width": 1280,
+      "height": 900
+    }
+  ],
+  "review_provider_calls": 0,
+  "review_paid_calls": 0,
+  "review_production_database_reads": 0,
+  "privacy": {
+    "private_absolute_paths_included": false,
+    "credential_patterns_found": false
+  },
+  "limitations": [
+    "This verifies retained engineering evidence; literary quality, first-tier ranking, production deployment and GitHub CI are not established.",
+    "Some older browser reports retain a single source snapshot or no individual source hashes; every such source remains covered by the complete release before/after/current guard. Each child guard type is recorded.",
+    "The runner does not retain actual child argv; the complete ordered check names, script inventory, exit results, original logs and exact redacted tails are cross-checked.",
+    "PNG bytes and dimensions were checked programmatically. Human visual inspection is recorded separately.",
+    "Privacy scans cover public JSON text and known credential patterns; no credential files were read."
+  ]
+}

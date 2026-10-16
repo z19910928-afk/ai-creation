@@ -6,6 +6,8 @@
   <meta name="theme-color" content="#f4f6f7" />
   <title>墨屿 · 小说创作台</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="knowledge-workspace.css" />
+  <link rel="stylesheet" href="editor-preferences.css" />
 </head>
 <body>
   <div class="app-shell">
@@ -27,6 +29,7 @@
           <button class="nav-item" data-view="story"><span>⌘</span>故事结构</button>
           <button class="nav-item" data-view="search"><span>⌕</span>全文搜索</button>
           <button class="nav-item" data-view="assistant"><span>⌕</span>写作总管</button>
+          <button class="nav-item" data-view="inbox"><span>☷</span>全书待办<span id="writingInboxCount" class="task-count"></span></button>
           <button class="nav-item" data-view="tasks"><span>☰</span>生成任务<span id="taskCount" class="task-count"></span></button>
           <button class="nav-item" data-view="settings"><span>⚙</span>模型与风格</button>
           <button class="nav-item" data-view="backups"><span>▣</span>备份中心</button>
@@ -44,5 +47,7 @@
   <script src="editor-sync.js"></script>
   <script src="app.js"></script>
   <script src="author-workspace.js"></script>
+  <script src="knowledge-workspace.js"></script>
+  <script src="writing-inbox.js"></script>
 </body>
 </html>

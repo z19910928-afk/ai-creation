@@ -170,19 +170,21 @@ def scope_decision(
     ordinal = chapter_number(item.get("chapter_number") or item.get("chapter_ordinal"))
     if source_chapter is not None:
         ordinal = chapter_number(source_chapter.get("chapter_number") or source_chapter.get("chapter_ordinal")) or ordinal
-    available = chapter_number(scope.get("available_from") or item.get("available_from"))
-    valid_start = chapter_number(item.get("valid_start") or scope.get("valid_start"))
-    valid_end = chapter_number(item.get("valid_end") or scope.get("valid_end"))
     upper = policy.chapter_upper
     if upper is not None:
         if ordinal is not None and (ordinal > upper or (ordinal == upper and not policy.include_current)):
             reasons.append("future_source")
-        if available is not None and available > upper:
-            reasons.append("future_reveal")
-        if valid_start is not None and valid_start > upper:
-            reasons.append("future_state")
-        if valid_end is not None and valid_end < upper:
-            reasons.append("expired_state")
+        # Each saved declaration narrows availability; neither can widen the other.
+        for declaration in (item, scope):
+            available = chapter_number(declaration.get("available_from"))
+            valid_start = chapter_number(declaration.get("valid_start"))
+            valid_end = chapter_number(declaration.get("valid_end"))
+            if available is not None and available > upper:
+                reasons.append("future_reveal")
+            if valid_start is not None and valid_start > upper:
+                reasons.append("future_state")
+            if valid_end is not None and valid_end < upper:
+                reasons.append("expired_state")
         declared_chapters = _strings(scope.get("chapters"))
         if declared_chapters and upper not in {chapter_number(value) for value in declared_chapters}:
             reasons.append("chapter_scope")
@@ -193,10 +195,13 @@ def scope_decision(
             reasons.append("future_story_time")
         if time_end and time_end < policy.story_time:
             reasons.append("expired_story_time")
-    mode = str(item.get("epistemic_mode") or scope.get("epistemic_mode") or "world_truth")
-    if mode not in EPISTEMIC_MODES:
+    modes = [str(declaration["epistemic_mode"]) for declaration in (item, scope)
+             if declaration.get("epistemic_mode") not in (None, "")] or ["world_truth"]
+    if any(mode not in EPISTEMIC_MODES for mode in modes):
         reasons.append("invalid_epistemic_mode")
-    plan = mode == "author_plan" or kind == "plan" or status in {"planned", "plan", "计划", "待发生"}
+    mode = ("author_plan" if "author_plan" in modes else
+            "character_belief" if "character_belief" in modes else modes[0])
+    plan = "author_plan" in modes or kind == "plan" or status in {"planned", "plan", "计划", "待发生"}
     if plan and not policy.allow_plans:
         reasons.append("author_plan")
     known_by = _knowledge_owners(item, scope)
@@ -206,7 +211,7 @@ def scope_decision(
             reasons.append("unbounded_private_material")
         if known_by is not None and not pov.intersection(known_by):
             reasons.append("pov_knowledge")
-        elif mode == "character_belief":
+        elif "character_belief" in modes:
             subject = str(item.get("entity_id") or item.get("subject_entity_id") or scope.get("subject_entity_id") or "")
             if known_by is None and subject not in pov:
                 reasons.append("other_character_belief")
@@ -867,6 +872,55 @@ def validate_source_quote(
         "source_start_utf8": len(body[:left].encode("utf-8")), "source_end_utf8": len(body[:right].encode("utf-8")),
         "source_hash": text_hash(quote), "chapter_hash": text_hash(body), "offset_unit": "unicode_codepoint",
     }
+
+
+def source_evidence_reasons(span: Mapping[str, Any], body: str, *declarations: Any) -> list[str]:
+    """Check a saved span and every declared binding against its current text."""
+    try:
+        identifier = span["id"]
+        checked = validate_source_quote({
+            "source_chapter_id": span["document_node_id"],
+            "source_revision_id": span["revision_id"], "source_quote": span["quote"],
+            "source_start": span["start_codepoint"], "source_end": span["end_codepoint"],
+            "source_hash": span["quote_hash"],
+        }, {"id": span["document_node_id"], "body": body}, span["current_revision_id"])
+        if (span["quote_hash"] != checked["source_hash"]
+                or type(span["start_utf8"]) is not int or type(span["end_utf8"]) is not int
+                or span["start_utf8"] != checked["source_start_utf8"]
+                or span["end_utf8"] != checked["source_end_utf8"]):
+            return ["invalid_source_quote"]
+    except (KeyError, TypeError, ValueError):
+        return ["invalid_source_quote"]
+    reasons = []
+    for declaration in declarations:
+        if not isinstance(declaration, Mapping):
+            reasons.append("source_binding_mismatch")
+            continue
+        for field in ("source_chapter_id", "source_revision_id", "source_quote", "source_hash"):
+            if declaration.get(field) not in (None, "") and declaration[field] != checked[field]:
+                reasons.append("source_binding_mismatch")
+        if declaration.get("chapter_hash") not in (None, "", checked["chapter_hash"]):
+            reasons.append("invalid_source_quote")
+        if declaration.get("source_span_id") not in (None, "", identifier):
+            reasons.append("source_binding_mismatch")
+        for field, aliases in (
+            ("source_start", ("source_start", "source_start_codepoint")),
+            ("source_end", ("source_end", "source_end_codepoint")),
+            ("source_start_utf8", ("source_start_utf8",)),
+            ("source_end_utf8", ("source_end_utf8",)),
+        ):
+            for alias in aliases:
+                value = declaration.get(alias)
+                if value in (None, ""):
+                    continue
+                try:
+                    valid = (not isinstance(value, bool) and isinstance(value, (int, str))
+                             and int(value) == checked[field])
+                except ValueError:
+                    valid = False
+                if not valid:
+                    reasons.append("source_binding_mismatch")
+    return list(dict.fromkeys(reasons))
 
 
 EVIDENCE_SCHEMA = {
