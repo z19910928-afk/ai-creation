@@ -1,0 +1,702 @@
+{
+  "schema_version": 1,
+  "scope": "Independent immutable evidence for a failed exact-commit GitHub Actions attempt.",
+  "evidence_verified": true,
+  "passed": false,
+  "status": "completed",
+  "conclusion": "failure",
+  "original_failure_preserved": true,
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "commit": "54a3bdda60f5a8245d627ec13563d7c3a7f15ada",
+  "branch": "codex/portable-complete-backup",
+  "event": "push",
+  "workflow": {
+    "id": 382641279,
+    "name": "墨屿检查",
+    "path": ".github/workflows/ci.yml",
+    "sha256": "8f5c3a7e50b07a5ef219544a33667ca82f64a8264cdb1a9850280a590a2db023"
+  },
+  "run_id": 38909536763,
+  "run_attempt": 1,
+  "job_id": 117001581191,
+  "check_run_id": 117001581191,
+  "check_suite_id": 105446542234,
+  "run_url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/38909536763/attempts/1",
+  "job_url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/38909536763/job/117001581191",
+  "run_started_at": "2026-10-16T13:39:28Z",
+  "run_updated_at": "2026-10-16T13:53:43Z",
+  "job_started_at": "2026-10-16T13:39:31Z",
+  "job_completed_at": "2026-10-16T13:53:42Z",
+  "capture_started_at": "2026-10-16T13:57:20.262Z",
+  "capture_finished_at": "2026-10-16T14:01:49.667Z",
+  "remote_commit_tree_matches_local_commit": true,
+  "commit_tree_sha": "411ca63efa2dd74ee46e20cdc727c6a79ed62183",
+  "source_verification": {
+    "release_file": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-memory-confirmation-release-20261016-01.json",
+    "release_sha256": "6b831df6ef82f48b188ed0bedaf6ede23969364e66b8e51f133f42bbda2419bd",
+    "source_count": 146,
+    "all_146_committed_sources_match_local_release_before_and_after_hashes": true,
+    "inventory_sha256": "7c29879522ebc06be9a2af2a2e2fc17bf16de52b792a4122a3783c70a8997fde",
+    "basis": "git show of the failed commit; later worktree edits do not alter this result."
+  },
+  "local_worktree_snapshots": {
+    "before_capture": {
+      "captured_at": "2026-10-16T13:57:20.262Z",
+      "head": "54a3bdda60f5a8245d627ec13563d7c3a7f15ada",
+      "tracked_worktree_clean": true,
+      "all_146_sources_match_failed_commit": true,
+      "source_mismatches_to_failed_commit": []
+    },
+    "after_capture": {
+      "captured_at": "2026-10-16T14:01:49.666Z",
+      "head": "54a3bdda60f5a8245d627ec13563d7c3a7f15ada",
+      "tracked_worktree_clean": false,
+      "all_146_sources_match_failed_commit": false,
+      "source_mismatches_to_failed_commit": [
+        "tests/frontend_browser_regressions.cjs"
+      ]
+    },
+    "interpretation": "All 146 sources matched at capture start. Later race-test edits are recorded separately."
+  },
+  "job_step_counts": {
+    "total": 34,
+    "successful": 12,
+    "failed": 1,
+    "skipped": 21,
+    "declared_workflow_steps": 29,
+    "downstream_declared_steps_skipped": 19
+  },
+  "failed_step": {
+    "number": 11,
+    "name": "Real browser regressions",
+    "command": "node tests/frontend_browser_regressions.cjs",
+    "status": "completed",
+    "conclusion": "failure",
+    "started_at": "2026-10-16T13:52:20Z",
+    "completed_at": "2026-10-16T13:53:39Z"
+  },
+  "failure": {
+    "test": "旧作品模型设置迟到，当前模型身份保持正确",
+    "file": "tests/frontend_browser_regressions.cjs",
+    "line": 1335,
+    "column": 10,
+    "error_type": "AssertionError",
+    "code": "ERR_ASSERTION",
+    "message": "Expected values to be strictly equal:\n+ actual - expected\n\n+ 'browser-race-甲'\n- 'browser-race-乙'\n                ^\n",
+    "actual_model": "browser-race-甲",
+    "expected_model": "browser-race-乙",
+    "passed_prior_cases": 41,
+    "suite_passed": false,
+    "raw_job_json_lines": {
+      "start": 3394,
+      "end": 3765
+    },
+    "raw_failed_step_json_lines": {
+      "start": 97,
+      "end": 468
+    }
+  },
+  "downstream_skipped_steps": [
+    {
+      "number": 12,
+      "name": "Search browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 13,
+      "name": "Planning browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 14,
+      "name": "Model settings browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 15,
+      "name": "Five chapter author flow",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 16,
+      "name": "Writing agent browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 17,
+      "name": "Persistent writing chat browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 18,
+      "name": "Writing chat workflow browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 19,
+      "name": "Chapter transition browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 20,
+      "name": "Writing chat settings browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 21,
+      "name": "Workbench scope browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 22,
+      "name": "Knowledge and writing inbox browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 23,
+      "name": "Editor position and reading preferences",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 24,
+      "name": "Instruction draft browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 25,
+      "name": "Reference passage browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 26,
+      "name": "Portable complete backup browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 27,
+      "name": "Author lifecycle browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 28,
+      "name": "Export override browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 29,
+      "name": "Material dependency browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "number": 30,
+      "name": "Analysis guidance browser regressions",
+      "status": "completed",
+      "conclusion": "skipped"
+    }
+  ],
+  "job_steps": [
+    {
+      "number": 1,
+      "name": "Set up job",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:39:32Z",
+      "completed_at": "2026-10-16T13:39:33Z"
+    },
+    {
+      "number": 2,
+      "name": "Checkout",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:39:33Z",
+      "completed_at": "2026-10-16T13:39:42Z"
+    },
+    {
+      "number": 3,
+      "name": "Set up Python",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:39:42Z",
+      "completed_at": "2026-10-16T13:39:43Z"
+    },
+    {
+      "number": 4,
+      "name": "Set up Node",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:39:43Z",
+      "completed_at": "2026-10-16T13:39:44Z"
+    },
+    {
+      "number": 5,
+      "name": "Install Python runtime",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:39:44Z",
+      "completed_at": "2026-10-16T13:39:53Z"
+    },
+    {
+      "number": 6,
+      "name": "Syntax checks",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:39:53Z",
+      "completed_at": "2026-10-16T13:39:55Z"
+    },
+    {
+      "number": 7,
+      "name": "Contract fixtures",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:39:55Z",
+      "completed_at": "2026-10-16T13:51:54Z"
+    },
+    {
+      "number": 8,
+      "name": "Evaluation fixtures",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:51:54Z",
+      "completed_at": "2026-10-16T13:51:54Z"
+    },
+    {
+      "number": 9,
+      "name": "Editor merge regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:51:54Z",
+      "completed_at": "2026-10-16T13:51:54Z"
+    },
+    {
+      "number": 10,
+      "name": "Install browser regression runtime",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:51:54Z",
+      "completed_at": "2026-10-16T13:52:20Z"
+    },
+    {
+      "number": 11,
+      "name": "Real browser regressions",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-16T13:52:20Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 12,
+      "name": "Search browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 13,
+      "name": "Planning browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 14,
+      "name": "Model settings browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 15,
+      "name": "Five chapter author flow",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 16,
+      "name": "Writing agent browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 17,
+      "name": "Persistent writing chat browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 18,
+      "name": "Writing chat workflow browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 19,
+      "name": "Chapter transition browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 20,
+      "name": "Writing chat settings browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 21,
+      "name": "Workbench scope browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 22,
+      "name": "Knowledge and writing inbox browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 23,
+      "name": "Editor position and reading preferences",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 24,
+      "name": "Instruction draft browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 25,
+      "name": "Reference passage browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 26,
+      "name": "Portable complete backup browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 27,
+      "name": "Author lifecycle browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 28,
+      "name": "Export override browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 29,
+      "name": "Material dependency browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 30,
+      "name": "Analysis guidance browser regressions",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 58,
+      "name": "Post Set up Node",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 59,
+      "name": "Post Set up Python",
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 60,
+      "name": "Post Checkout",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    },
+    {
+      "number": 61,
+      "name": "Complete job",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-16T13:53:39Z",
+      "completed_at": "2026-10-16T13:53:39Z"
+    }
+  ],
+  "annotations": {
+    "total": 3,
+    "failures": [
+      {
+        "path": ".github",
+        "start_line": 469,
+        "end_line": 469,
+        "level": "failure",
+        "message": "Process completed with exit code 1."
+      }
+    ],
+    "other_levels": [
+      {
+        "path": ".github",
+        "start_line": 2,
+        "end_line": 2,
+        "level": "warning",
+        "original_message_sha256": "541959d24e0f13a4b19efe3361c9dc0fcb592df35865c1b1e7b5275df3d4ecc2"
+      },
+      {
+        "path": ".github",
+        "start_line": 1,
+        "end_line": 1,
+        "level": "notice",
+        "original_message_sha256": "f8ad47234b9fbce6ba7a513bccbccc02847158f52c59aa0bbea1b988541847ed"
+      }
+    ]
+  },
+  "original_logs": {
+    "ignored_directory": "artifacts/github-memory-confirmation-failure-20261016-215539",
+    "raw_inventory": {
+      "file": "artifacts/github-memory-confirmation-failure-20261016-215539/capture-inventory.json",
+      "sha256": "05658902357ac6adcb34fcb125f931dd64a1cfd3b1619dd588cb56066aa66341"
+    },
+    "files": [
+      {
+        "file": "release-at-failed-commit.json",
+        "bytes": 448853,
+        "sha256": "6b831df6ef82f48b188ed0bedaf6ede23969364e66b8e51f133f42bbda2419bd"
+      },
+      {
+        "file": "local-before.json",
+        "bytes": 16088,
+        "sha256": "8b36ff658e590081d84b0e7d838d9ae180a1c201b63fe4f2eaf9d2b4f98b3dae"
+      },
+      {
+        "file": "source-verification.json",
+        "bytes": 30764,
+        "sha256": "cf95e5ad6e353fc5c3f943dce55e22a8d2e5f2ba4ea6ac3ca2bcfef8769b871a"
+      },
+      {
+        "file": "run.json",
+        "bytes": 14080,
+        "sha256": "94b2dd5aeac8acc93fe7caf7ff3562aff6eb39ac44e25795ea014e0ce26ce3e3"
+      },
+      {
+        "file": "run-attempt-1.json",
+        "bytes": 14102,
+        "sha256": "cc3c66af81feb16443bfe3139fc8a01850f24c6319c6cb81c91d67f29d57de20"
+      },
+      {
+        "file": "workflow.json",
+        "bytes": 555,
+        "sha256": "cdd91347b61384f267fb10fc0b6ba3f90b8a1bd7b8ea2aad4b842535a9807fe7"
+      },
+      {
+        "file": "jobs-1.json",
+        "bytes": 6787,
+        "sha256": "9ce14ea6e689acbd0b8b5a0927b52bcbddcd8bc4cdca40ddf8f2b26d791b1073"
+      },
+      {
+        "file": "job.json",
+        "bytes": 6760,
+        "sha256": "04d5291175e3678fcd98b1eb631c7d5f59161d1d36a0429fb805658bcc960bf0"
+      },
+      {
+        "file": "remote-git-commit.json",
+        "bytes": 1236,
+        "sha256": "464834a83bea706a546ce5de5ac8629b867781dc8316a7139800537f0fe152e2"
+      },
+      {
+        "file": "check-suite.json",
+        "bytes": 8324,
+        "sha256": "dd4bcce814d69a5132522bd043942ee66b427c70f45770cb4e01208ffcc4cdca"
+      },
+      {
+        "file": "check-runs-1.json",
+        "bytes": 3169,
+        "sha256": "2ea8d52a925996849673b0be92832e3ab32d3507710f92352f55c2f7b9790daa"
+      },
+      {
+        "file": "check-117001581191.json",
+        "bytes": 3136,
+        "sha256": "4123662280db6538d27c60afb0f1e0fdcd7f9388bc401f4d68d8a6fac9d4f65c"
+      },
+      {
+        "file": "annotations-117001581191-1.json",
+        "bytes": 1343,
+        "sha256": "a0b9274057098b06b84737467c1e2210fc4c579b25c225103840e32d70424c71"
+      },
+      {
+        "file": "job-117001581191.log",
+        "bytes": 547271,
+        "sha256": "9a6e8f15e45fc7e44e1272b8e4603be2531bb63d802fb592693d621acf9c6440"
+      },
+      {
+        "file": "run-38909536763-attempt-1.zip",
+        "bytes": 173855,
+        "sha256": "a4cbc820ad315febdf92b8c8758354f74ce080477320c61376057b560b0a79c4"
+      },
+      {
+        "file": "local-after.json",
+        "bytes": 16181,
+        "sha256": "17ae2a8489eee100d470c54aeaa8452a94fe9d9241470c193c19f3975f01fc1a"
+      }
+    ],
+    "run_log_archive_members": [
+      {
+        "name": "0_checks.txt",
+        "bytes": 547271,
+        "sha256": "9a6e8f15e45fc7e44e1272b8e4603be2531bb63d802fb592693d621acf9c6440"
+      },
+      {
+        "name": "checks/system.txt",
+        "bytes": 616,
+        "sha256": "ac1779705f73ad10ad544466ffbba3e8a2e4f263e6795f484b621465a8142b82"
+      },
+      {
+        "name": "checks/1_Set up job.txt",
+        "bytes": 2193,
+        "sha256": "d001c6b7d420f1af5312e1009d782476e30d41777296fecd52631a07108b92e9"
+      },
+      {
+        "name": "checks/2_Checkout.txt",
+        "bytes": 6201,
+        "sha256": "44e114b581d1454f5b5e4337bfe9d421b9c01fd5333c1eb5a319496b47354af5"
+      },
+      {
+        "name": "checks/3_Set up Python.txt",
+        "bytes": 875,
+        "sha256": "f22b7562356ad9abbb24aa72379d2a867837f29f1dd6edd4fcddcbe046ced643"
+      },
+      {
+        "name": "checks/4_Set up Node.txt",
+        "bytes": 1484,
+        "sha256": "c08543195ab1b56197e1e444276f843fb4289871bdc777f88af5e8f8bcb2c46d"
+      },
+      {
+        "name": "checks/5_Install Python runtime.txt",
+        "bytes": 16251,
+        "sha256": "4fd96ae86d350c8fdf82b6d8929ef797fb2e88471c4f0b87f4d3449a00d4e46c"
+      },
+      {
+        "name": "checks/6_Syntax checks.txt",
+        "bytes": 1064,
+        "sha256": "5a48dcc5f104f116f0c0a5fece5ac6dfeae09aa37dec55edb3f06791aae2ceb5"
+      },
+      {
+        "name": "checks/7_Contract fixtures.txt",
+        "bytes": 412212,
+        "sha256": "c857c84dac94bcea0579e6b2651f7a3d09ad441e8d033edcf699a2e11cc30f99"
+      },
+      {
+        "name": "checks/8_Evaluation fixtures.txt",
+        "bytes": 39745,
+        "sha256": "82e4d73d1f9d005cf23fd9bb85165b2eb275ca6ff5918ec1a7e708c39bbf2b7b"
+      },
+      {
+        "name": "checks/9_Editor merge regressions.txt",
+        "bytes": 2147,
+        "sha256": "df96ff10a1be501115a6ce2479283832e28fd5de0d4d35c067007ab618072191"
+      },
+      {
+        "name": "checks/10_Install browser regression runtime.txt",
+        "bytes": 23592,
+        "sha256": "8f012cdd1ba448fe18e47ccd50d253720e92112ac9ce38e320aaae5d0d4990a5"
+      },
+      {
+        "name": "checks/11_Real browser regressions.txt",
+        "bytes": 39400,
+        "sha256": "db0748aa3b7d9fc21513efd70e259cdbf5724f831139030fd9789c4b1e78462e"
+      },
+      {
+        "name": "checks/60_Post Checkout.txt",
+        "bytes": 1747,
+        "sha256": "7b73b0602fd7bc97a3a67e4383e67e13fead7a7aa7b4c4c2124b57e669f82db2"
+      },
+      {
+        "name": "checks/61_Complete job.txt",
+        "bytes": 396,
+        "sha256": "de29c1615b1ea57c03d219a7b3d6cdc1d2c0bb4badfe0401929fac7ab8c73d79"
+      }
+    ],
+    "job_log_identical_to_archive_full_job_log": true,
+    "failed_step_result_identical_to_job_result": true
+  },
+  "public_redaction": {
+    "raw_api_bodies_and_logs_ignored": true,
+    "only_allowlisted_failure_fields_published": true,
+    "raw_runner_paths_and_server_log_omitted": true,
+    "raw_annotations_preserved_with_only_failure_message_published": true,
+    "credentials_or_manuscript_not_published": true
+  },
+  "operations": {
+    "product_or_test_or_runner_or_workflow_files_modified_by_this_capture": false,
+    "database_opened": false,
+    "preview_changed": false,
+    "model_called": false,
+    "tests_run": false,
+    "git_index_changed": false,
+    "commit_created": false
+  },
+  "replacement_full_release_and_exact_commit_ci": "pending"
+}

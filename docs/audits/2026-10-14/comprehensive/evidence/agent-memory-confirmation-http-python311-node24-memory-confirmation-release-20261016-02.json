@@ -1,0 +1,407 @@
+{
+  "passed": true,
+  "source_unchanged": true,
+  "checks": 21,
+  "methods": [
+    {
+      "method": "test_author_confirmation_before_worker_callback_preserves_original_seals",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "a7c7fb1c83ab2f33ae96770ccfcab3b2fe303cc43188e855daf97b0b6dbbf749",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "31f56ebbecfea10dc1367de97770f03798a24bf5867d7bd8f2381a7174773fd8",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_cancelled_memory_wait_never_starts_review_after_author_decision",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "16c1fecc0313049651d5aad611b7edcf634d1dc0bbdfc063f3d8a1d1f6728ef2",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_changed_blueprint_cannot_start_review",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "9cdca0e087e3e98a1fc66d2448effc58073b14a7dfd182d58ca129f13f6ed698",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_changed_body_cannot_start_review",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "2d73baf2dc9eee31f75e790d595e33628fefb46748c7615ad2beb9e861328e35",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_changed_chapter_plan_cannot_start_review",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "b310ce5ce23d232b8a436ebb7a528fe50e44cb6423d3b979c813609d67f65ba2",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_changed_character_material_cannot_start_review",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "807cd8e9bc47c2b48199fac6d500679cb4f075747303d89c985e059a77efc2e6",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_changed_model_cannot_start_review",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "cbfe26f24e6dbe61ccccba9f1c01888b75caded3db560d8b3721073c85eb920c",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_concurrent_confirmation_and_old_checkpoint_do_not_repeat_review",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "70a95d6fbdf31e0169b918872f48009675b1abd3704d3ac7b2a752e7432820ad",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "c76bcb40ee46b06da7d052257e8e67490b11d2f5ed00af83ff5a5da5bac41ac4",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_empty_analysis_still_waits_for_explicit_author_completion",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "bc1a53c41cc6ee6b0865ecf9b0074152f2ef34ab74a320c3279b2cf2409e55e1",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "d9d533ff5ce0afe5b2a4b89c418ce0fdd6b9ed48dc6b5472c5b8db60b7e39d9c",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_foreign_project_decision_cannot_wake_waiting_task",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "9a32249cd3f4ce9baeddde937fa350dcd1d11438bc4419c85811e1cbf73de04c",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_missing_original_analysis_seal_cannot_be_replaced_by_current_materials",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "d6c6f20305ce7f909b50e81c837b48d8418582d10dfed3224f217384b3998d53",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_missing_original_guidance_seal_cannot_be_replaced_by_current_plan",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "574084abbe9dbb2521d4cc85f8e35caab653eb4577615f9c2c357d7bbe246b60",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_partial_decisions_wait_then_review_uses_current_confirmed_memory",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "e7bb9187c3408d9dfd5e8346c9a552123a18c1747cdbba511ea38c6eed2af16e",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "1175a46be5a45c6f7fd5940fc29d214c2ecafaa5688cbcf2f2ac519b3746e3f6",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_real_continuation_adoption_checks_the_adopted_revision",
+      "synthetic_only": true,
+      "free_local_provider_calls": 3,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "continue",
+          "model": "memory-confirmation-local",
+          "request_sha256": "df3e5b9c165638d75ded4bb5fb52e3fbfae2f5937fcee56d5f71aab4dd663d69",
+          "authorization_present": false
+        },
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "2c7d203c1c11edbd82a77ae2b73c7fe98d28c988c13b1c6202e6d75a27b5525e",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "2c7a274c2d269e7ccee30087bdcb14aaf78ae6b1cf9adec61fd7c4f7712df8e7",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_rejecting_all_items_preserves_formal_memory_and_still_reviews",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "ce7fc11bd916f7ccec6a48cd0cf0dce8e9bde8b0e39e774104a0e66d56466443",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "d378ea9b53b7f2501f218e299af909953adcadad9532fa82c5a1c32475ab0a93",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_restart_after_committed_decision_before_notification_enqueues_review_once",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "ac7999939d001105b5b83344bbd93c0368a30db14ccb3dcc5021a7aac0baf4b7",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "0ce4a413eef0baef8d84f2900e5082a1f6554486750068e872224876dad37119",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_restart_while_awaiting_memory_never_regenerates_analysis",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "aaa827b9306a8c4e0e7e2da18b45e7b152609114e8286709862e411f84dd3970",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "c48a263d1b6ed98705b691a39d26a9d6ba72a30ce24debefaa49dbe68e4ae72e",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_restored_waiting_task_remains_read_only_across_restart",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "a6bc3d7b21609593002c4fafc42ec0f2aeaf7ab910124862952ef729e5bef5b8",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_shared_analysis_with_original_run_id_can_advance_each_authorized_task_once",
+      "synthetic_only": true,
+      "free_local_provider_calls": 4,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "25e12f9724c659340fa4a8b7bc3073943d24c56f86db25c96cdf9c3f32ac6251",
+          "authorization_present": false
+        },
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "25e12f9724c659340fa4a8b7bc3073943d24c56f86db25c96cdf9c3f32ac6251",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "92205d719429f05b57f354a6e2b32ffa7aa8001a98a028a5df16c85587d635c2",
+          "authorization_present": false
+        },
+        {
+          "task": "semantic_review",
+          "model": "memory-confirmation-local",
+          "request_sha256": "92205d719429f05b57f354a6e2b32ffa7aa8001a98a028a5df16c85587d635c2",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_tampered_request_audit_cannot_authorize_a_followup_without_references",
+      "synthetic_only": true,
+      "free_local_provider_calls": 1,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "8aa2a1fafdc3f1beffed029f01cae3cbad3dcef71e24ff30c4d631438e38cca0",
+          "authorization_present": false
+        }
+      ]
+    },
+    {
+      "method": "test_wrong_analysis_reference_cannot_resume_another_chapter",
+      "synthetic_only": true,
+      "free_local_provider_calls": 2,
+      "paid_provider_calls": 0,
+      "requests": [
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "40e79bb92a16e6ea6a36c27fb89161d53947e9b3a80be8145b9725631dd9666b",
+          "authorization_present": false
+        },
+        {
+          "task": "chapter_analysis",
+          "model": "memory-confirmation-local",
+          "request_sha256": "9740dab6b644091fe95b4cb926a6fd9d656dd3955a8f288e8bdb4a7a09ef025e",
+          "authorization_present": false
+        }
+      ]
+    }
+  ],
+  "source_files_sha256_before": {
+    "server.py": "4820a63cd1493cd0be1219b21068719cbaa5c1fab3faf740eb6339e17db1b6d8",
+    "moyu_agent_service.py": "befa422315d239cdb33499f5ce2f06907c2834d32228cee1df349074bc31a6de",
+    "moyu_writing_agent.py": "053ed5b72383008a7fbf8f1266d58408ee548bc42f6c52b1b2081d478e65a9a9",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_materials.py": "7d3f7b9e2ff05484e15d924b1d898c5e3efb557303d7654cac8198cf6af36a38",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_backups.py": "ed81e951c56f6087e98efdd268fa53c0e7d7b08e70a97bb9b78efb8c909748cf",
+    "tests/agent_memory_confirmation_http_fixtures.py": "2a2b389a1263c23db96e1c3af71479528725142554eb6f59c23b6ebc515fd00f"
+  },
+  "source_files_sha256_after": {
+    "server.py": "4820a63cd1493cd0be1219b21068719cbaa5c1fab3faf740eb6339e17db1b6d8",
+    "moyu_agent_service.py": "befa422315d239cdb33499f5ce2f06907c2834d32228cee1df349074bc31a6de",
+    "moyu_writing_agent.py": "053ed5b72383008a7fbf8f1266d58408ee548bc42f6c52b1b2081d478e65a9a9",
+    "moyu_analysis.py": "d99da4324269af6acb260b56a8f94515733b0b13f658b69393615c964e6e0330",
+    "moyu_materials.py": "7d3f7b9e2ff05484e15d924b1d898c5e3efb557303d7654cac8198cf6af36a38",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_backups.py": "ed81e951c56f6087e98efdd268fa53c0e7d7b08e70a97bb9b78efb8c909748cf",
+    "tests/agent_memory_confirmation_http_fixtures.py": "2a2b389a1263c23db96e1c3af71479528725142554eb6f59c23b6ebc515fd00f"
+  },
+  "free_local_provider_calls": 34,
+  "paid_provider_calls": 0,
+  "synthetic_only": true,
+  "scope": "Real isolated HTTP application subprocesses, temporary SQLite and unauthenticated loopback SSE model.",
+  "failures": [],
+  "errors": []
+}

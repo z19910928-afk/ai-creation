@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "scope": "真实桌面 Chrome、隔离数据库、免费本机模拟模型；通过真实接口建立任务，再由页面验证启动、候选采纳、章后逐项决定、恢复和规划确认。持续聊天入口另由聊天专项覆盖。",
+  "cases": [
+    {
+      "name": "桌面三栏工作台接入真实章节、人物资料、上下文和专注模式",
+      "passed": true
+    },
+    {
+      "name": "已保存总管计划在正文旁恢复，不调用模型，刷新后保留同一进度",
+      "passed": true
+    },
+    {
+      "name": "启动后后台生成正文，重复确认只复用原任务",
+      "passed": true
+    },
+    {
+      "name": "正文采纳后等待作者决定章后资料，再继续审稿共三次",
+      "passed": true
+    },
+    {
+      "name": "检查模式仅调用两次，服务重启后沿已存计划继续",
+      "passed": true
+    },
+    {
+      "name": "已启动任务停止后不追加调用，迟到内容不进入正文",
+      "passed": true
+    },
+    {
+      "name": "模型连接断开后保留任务，不自动重发",
+      "passed": true
+    },
+    {
+      "name": "紧凑电脑宽度和长文本无溢出，页面没有脚本错误",
+      "passed": true
+    },
+    {
+      "name": "1280电脑正文、资料和总管仍保持三栏，当前稿改动使依据过期",
+      "passed": true
+    },
+    {
+      "name": "章后记忆和审稿延迟回应在页面或作品切换后不弹出旧报告",
+      "passed": true
+    },
+    {
+      "name": "作品切换后迟到的旧任务列表不能覆盖新作品",
+      "passed": true
+    },
+    {
+      "name": "整章修订忽略编辑选区，明确采纳后替换全章并继续记忆审稿",
+      "passed": true
+    },
+    {
+      "name": "全书规划任务刷新可恢复，不依赖当前打开的章节",
+      "passed": true
+    },
+    {
+      "name": "四阶段规划逐次确认，完整采用前不改变蓝图或正文",
+      "passed": true
+    },
+    {
+      "name": "蓝图变化后旧规划停止执行，恢复只读任务没有启动或采纳按钮",
+      "passed": true
+    },
+    {
+      "name": "1440电脑章后逐项决定、部分保存和拒绝均绑定本次资料，处理后才审稿",
+      "passed": true
+    },
+    {
+      "name": "1280电脑章后逐项决定、部分保存和拒绝均绑定本次资料，处理后才审稿",
+      "passed": true
+    },
+    {
+      "name": "等待章后决定时可从页面停止，后续手动处理资料不再触发该任务审稿",
+      "passed": true
+    },
+    {
+      "name": "全书完稿后工作台和空章节状态均隐藏新建入口，直接操作也不新增",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-workbench-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-plan-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-complete-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-workbench-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-polish-compare-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-polish-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-overview-confirm-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-full-plan-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-memory-waiting-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-memory-partial-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-memory-rejected-1440x1000.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-memory-waiting-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-memory-partial-1280x900.png",
+    "<temporary-root>/moyu-agent-browser-7FUNfJ/writing-agent-memory-rejected-1280x900.png"
+  ],
+  "page_errors": [],
+  "paid_provider_calls": 0,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "provider_calls": 21
+}

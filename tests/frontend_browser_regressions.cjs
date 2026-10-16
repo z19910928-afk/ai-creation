@@ -1284,6 +1284,7 @@ async function main(){
   await workspace.page.locator('[data-view="library"]').click();
   await workspace.page.locator(`[data-project-open="${project.id}"]`).waitFor();
   await workspace.page.locator(`[data-project-open="${project.id}"]`).click();
+  await workspace.page.evaluate(()=>authorSwitchChain);
   await workspace.page.waitForFunction(id=>backendOnline&&requestedProject===id&&state.project.id===id,project.id);
   await waitSaved(workspace.page);
  }
@@ -1322,18 +1323,93 @@ async function main(){
    await workspace.page.unroute('**/api/state');
   }
  });
- await test('旧作品模型设置迟到，当前模型身份保持正确',async()=>{
-  await switchThroughLibrary(raceProjects[0]);
-  let release,ready;const observed=new Promise(resolve=>ready=resolve);let captured=false;
-  await workspace.page.route('**/api/ai/status',async route=>{
-   if(captured||route.request().headers()['x-moyu-project']!==raceProjects[0].id)return route.continue();
-   captured=true;const response=await route.fetch();
-   await new Promise(resolve=>{release=resolve;ready()});await route.fulfill({response});
+ await test('旧作品模型设置成功、错误和断连迟到，当前模型身份保持正确',async()=>{
+  const providerBefore=providerRequests.length,pattern='**/api/ai/status';
+  results.model_status_races=[];
+  const bounded=(promise,label)=>new Promise((resolve,reject)=>{
+   const timeout=setTimeout(()=>reject(new Error(`模型状态门控超时：${label}`)),15000);
+   promise.then(value=>{clearTimeout(timeout);resolve(value)},error=>{clearTimeout(timeout);reject(error)});
   });
-  await workspace.page.evaluate(()=>{window.raceStatus=loadAIStatus()});await observed;
-  await switchThroughLibrary(raceProjects[1]);release();await workspace.page.evaluate(()=>window.raceStatus);
-  assert.equal(await workspace.page.evaluate(()=>aiStatus.model),raceProjects[1].model);
-  await assertProject(raceProjects[1]);await workspace.page.unroute('**/api/ai/status');
+  const makeGate=(project,label)=>{
+   let enter,release,finish;
+   const ready=new Promise(resolve=>enter=resolve),open=new Promise(resolve=>release=resolve),done=new Promise(resolve=>finish=resolve);
+   return {project,label,ready,open,done,enter,release,finish,seen:false,released:false,error:null};
+  };
+  for(const outcome of ['success','503','abort']){
+   await switchThroughLibrary(raceProjects[0]);
+   assert.equal(await workspace.page.evaluate(()=>aiStatus.model),raceProjects[0].model);
+   const trace={old_response:outcome,events:[],requests:[],provider_calls_before:providerRequests.length};
+   results.model_status_races.push(trace);
+   const gates=[makeGate(raceProjects[0],'old'),makeGate(raceProjects[1],'current')];
+   const handler=async route=>{
+    const request=route.request(),owner=request.headers()['x-moyu-project'];
+    const gate=gates.find(item=>item.project.id===owner);
+    if(request.method()!=='GET'||!gate)return route.continue();
+    trace.requests.push({project:owner,method:request.method()});
+    if(gate.seen)return route.continue();
+    gate.seen=true;trace.events.push({event:gate.label+'_requested',project:owner});
+    try{
+     const response=await route.fetch({timeout:15000});
+     assert.equal(response.status(),200);
+     const body=await response.json();assert.equal(body.model,gate.project.model);
+     trace.events.push({event:gate.label+'_held',model:body.model});gate.enter();
+     await gate.open;gate.released=true;
+     trace.events.push({event:gate.label+'_released',outcome:gate.label==='old'?outcome:'success'});
+     if(gate.label==='old'&&outcome==='abort')await route.abort('failed');
+     else if(gate.label==='old'&&outcome==='503')await route.fulfill({status:503,contentType:'application/json',
+      body:JSON.stringify({error:'旧作品模型设置迟到错误哨兵'})});
+     else await route.fulfill({response});
+    }catch(error){gate.error=error;gate.enter();await route.abort('failed').catch(()=>{})}
+    finally{gate.finish()}
+   };
+   await workspace.page.route(pattern,handler);
+   try{
+    await workspace.page.evaluate(()=>{
+     window.raceStatusSettled=false;window.raceStatus=loadAIStatus();
+     void window.raceStatus.then(()=>{window.raceStatusSettled=true},()=>{window.raceStatusSettled=true});
+    });
+    await bounded(gates[0].ready,'甲显式刷新已扣住');if(gates[0].error)throw gates[0].error;
+    // The complete switch helper would wait on the deliberately held status response.
+    await workspace.page.locator('[data-view="library"]').click();
+    await workspace.page.locator(`[data-project-open="${raceProjects[1].id}"]`).click();
+    await workspace.page.evaluate(()=>{
+     window.raceSwitchSettled=false;window.raceSwitch=authorSwitchChain;
+     void window.raceSwitch.then(()=>{window.raceSwitchSettled=true},()=>{window.raceSwitchSettled=true});
+    });
+    await bounded(gates[1].ready,'乙切换状态已扣住');if(gates[1].error)throw gates[1].error;
+    await workspace.page.waitForFunction(id=>backendOnline&&requestedProject===id&&state.project.id===id,raceProjects[1].id);
+    await waitSaved(workspace.page);
+    const pending=await workspace.page.evaluate(()=>({project:requestedProject,state_id:state.project.id,model:aiStatus.model,
+     switch_settled:window.raceSwitchSettled,old_refresh_settled:window.raceStatusSettled}));
+    assert.equal(pending.project,raceProjects[1].id);assert.equal(pending.state_id,raceProjects[1].id);
+    assert.equal(pending.switch_settled,false);assert.equal(pending.old_refresh_settled,false);
+    assert.equal(gates[1].released,false);
+    trace.events.push({event:'current_state_ready_status_pending',...pending});
+    gates[1].release();
+    await bounded(workspace.page.evaluate(()=>window.raceSwitch),'乙完整切换结束');
+    await bounded(gates[1].done,'乙回应已放行');if(gates[1].error)throw gates[1].error;
+    const current=await workspace.page.evaluate(()=>({model:aiStatus.model,switch_settled:window.raceSwitchSettled,
+     old_refresh_settled:window.raceStatusSettled}));
+    assert.equal(current.model,raceProjects[1].model);assert.equal(current.switch_settled,true);
+    assert.equal(current.old_refresh_settled,false);await assertProject(raceProjects[1]);
+    trace.events.push({event:'current_switch_settled',...current});
+    gates[0].release();
+    await bounded(workspace.page.evaluate(()=>window.raceStatus),'甲原刷新结束');
+    await bounded(gates[0].done,'甲迟到回应已放行');if(gates[0].error)throw gates[0].error;
+    const settled=await workspace.page.evaluate(()=>({model:aiStatus.model,old_refresh_settled:window.raceStatusSettled}));
+    assert.equal(settled.model,raceProjects[1].model);assert.equal(settled.old_refresh_settled,true);
+    await assertProject(raceProjects[1]);trace.events.push({event:'old_refresh_settled',...settled});
+    assert.deepEqual(trace.requests.map(request=>request.project),raceProjects.map(project=>project.id));
+    assert.deepEqual(trace.events.map(event=>event.event),['old_requested','old_held','current_requested','current_held',
+     'current_state_ready_status_pending','current_released','current_switch_settled','old_released','old_refresh_settled']);
+    trace.provider_calls_added=providerRequests.length-trace.provider_calls_before;assert.equal(trace.provider_calls_added,0);
+   }finally{
+    gates.forEach(gate=>gate.release());
+    try{await bounded(Promise.all(gates.filter(gate=>gate.seen).map(gate=>gate.done)),'清理已截获回应')}
+    finally{await workspace.page.unroute(pattern,handler)}
+   }
+  }
+  assert.equal(providerRequests.length,providerBefore);
  });
  await test('服务回应作品身份错误时拒绝覆盖，恢复后仍为原书',async()=>{
   const wrong=await api('/api/state','GET',undefined,raceProjects[0].id);let captured=false;

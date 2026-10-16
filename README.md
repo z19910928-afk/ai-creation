@@ -4,9 +4,11 @@
 
 ## 当前状态
 
-连续写作本批已接入主聊天：总管可提出“完成本章，打开下一章”，作者确认后检查记忆、审稿和任务卡，在同一次保存中归档本章并打开后续章；已有正文与规划保留，目录末尾只创建一个空章。“承接上章，准备本章”可带入上章交接，作者编辑确认后保存本章任务。旧聊天结果能准确打开原任务，中断确认后可找回已建立的任务。[连续写作记录](docs/audits/2026-10-14/comprehensive/chapter-flow-agent.md)说明操作与边界。
+章后资料确认已接入写作总管：正文采纳并提取资料后，总管等待作者逐项决定，再以已确认资料接续审稿。支持分次保存、全部不采用、空分析明确确认、进程中断恢复和重复确认去重；按任务保存的分析编号打开结果。正文、规划和正式事实仍由作者决定，检查最多两次、续写或整章修订最多三次模型调用。[章后确认记录](docs/audits/2026-10-14/comprehensive/agent-memory-confirmation.md)说明流程和保护边界。
 
-本批[01完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-chapter-flow-release-20261016-01.json)通过129个执行项、20套电脑浏览器248个场景，145份源码前后不变；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/chapter-flow-release-independent-review-20261016.json)核对107份附件，[五张章节流程截图](docs/audits/2026-10-14/comprehensive/chapter-flow-visual-review-20261016.md)逐张目视。当前4174预览已更新，[本机验收](docs/audits/2026-10-14/comprehensive/evidence/local-chapter-flow-preview-chapter-flow-release-20261016-01.json)通过三个电脑尺寸156项检查，更新与检查前后双库全部表内容、结构和版本保持。本批没有新增收费模型调用，GitHub结果需另按实际新提交核对；工程结果不证明文学第一梯队。
+本批[02完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-memory-confirmation-release-20261016-02.json)于上海2026-10-16 22:05:28至22:18:23通过130个执行项、76份Python专项和20套电脑浏览器251个场景，146份源码前后不变；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/memory-confirmation-release-02-independent-review-20261016.json)核对31份JSON与83张合成数据截图共114份附件。上一提交 `54a3bdd` 的[GitHub失败记录](docs/audits/2026-10-14/comprehensive/evidence/github-memory-confirmation-54a3bdd-failure-20261016.json)保留；本轮仅修正切换作品测试未等待完整切换的问题，并增加旧请求成功、报错和断连三种迟到检查，没有修改产品代码或增加收费调用。GitHub通过状态须再核对本次新提交，工程验收不证明文学第一梯队。
+
+此前连续写作已接入主聊天：总管可提出“完成本章，打开下一章”，作者确认后检查记忆、审稿和任务卡，在同一次保存中归档本章并打开后续章；已有正文与规划保留，目录末尾只创建一个空章。“承接上章，准备本章”可带入上章交接，作者编辑确认后保存本章任务。旧聊天结果能准确打开原任务，中断确认后可找回已建立的任务。[连续写作记录](docs/audits/2026-10-14/comprehensive/chapter-flow-agent.md)说明操作与边界。其[01完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-chapter-flow-release-20261016-01.json)通过129个执行项和248个电脑场景，[独立复核](docs/audits/2026-10-14/comprehensive/evidence/chapter-flow-release-independent-review-20261016.json)与[五张截图目视](docs/audits/2026-10-14/comprehensive/chapter-flow-visual-review-20261016.md)保留为历史证据。
 
 2026-10-16 持续对话版已接通：右侧“写作总管”在切换创作、资料和设置页面时持续保留，可带着当前章或最多三处原文讨论；确认建议后接入真实续写、修订、规划、章后记忆与审稿，结果回到原章比较与处理。连接集中到“模型与风格”，可沿用主连接或独立设置聊天连接；聊天历史随完整作品备份保存，恢复副本中的旧对话只读。[NovelForge流程与界面研究](docs/research/novelforge-writing-flow-and-interface-2026-10-16.md)明确研究与实现范围，完整开书到全书完稿的自动编排尚未完成。
 
@@ -16,7 +18,7 @@
 
 此前的[电脑创作工作台与写作总管](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)已接通目录/知识库、正文和任务三栏。总管基于 LangGraph（负责保存多步骤任务并在中断后接续的框架），协调续写、整章修订、章节检查和四阶段全书规划；正文采纳、规划确认和正式事实继续由作者决定。该历史版本的[05完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)通过103个执行项、199个电脑场景，115份来源前后相同、78附件逐份匹配；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-workbench-release-independent-review-20261016.json)及九张截图目视检查通过。历史代码提交 `e9fe9eac15896c5aeda2cf9672003a0ed4433967` 已正常推送，[对应GitHub检查38776837992](docs/audits/2026-10-14/comprehensive/evidence/github-agent-workbench-e9fe9ea-success-20261016.json)于上海2026-10-16 01:37:40完成，28步全部成功；[对应本机服务](docs/audits/2026-10-14/comprehensive/evidence/local-workbench-preview-20261016.json)也已独立验收。这些工程结果不作为文学第一梯队成绩。
 
-本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。[章节流程服务更新](docs/audits/2026-10-14/comprehensive/evidence/local-chapter-flow-service-chapter-flow-release-20261016-01.json)已核对启动身份与145份固定源码，更新前后预览72张表及原库65张表内容、结构和版本保持；[13份页面资源](docs/audits/2026-10-14/comprehensive/evidence/local-chapter-flow-resources-chapter-flow-release-20261016-01.json)通过14次GET匹配本轮。[三种电脑尺寸只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-chapter-flow-browser-chapter-flow-release-20261016-01.json)156项断言全部通过，135次GET，没有写入、外联、发送聊天或连接实测。预览远程模型未配置，本批新增收费调用0；数据库、原稿、30张私有截图和密钥不随源码上传，完整Obsidian双向同步尚未实现。
+本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。[章后确认服务更新](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-service-memory-confirmation-release-20261016-01.json)及[三种电脑尺寸只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-browser-memory-confirmation-release-20261016-01.json)已完成，156项检查和135次GET通过。本轮仅测试文件变化，[02最小只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-preview-minimal-memory-confirmation-release-20261016-02.json)确认13份实际页面资源匹配新整轮，两个服务身份、预览72张表和原库65张表内容、结构及版本不变；本轮未重启或重复运行预览浏览器整套检查。预览远程模型未配置，本批新增收费调用0；数据库、原稿、30张私有截图和密钥不随源码上传，完整Obsidian双向同步尚未实现。
 
 历史完整备份恢复版本 `1552104` 已正常推送，[GitHub检查](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)全部成功，并已[更新到本机](docs/audits/2026-10-14/comprehensive/evidence/local-service-portable-1552104-20261015.md)。更新前后65张表完整内容和结构保持，两个电脑尺寸共8个只读页面检查通过，没有模型调用或新增收费。
 
@@ -85,7 +87,7 @@ python -m pip install -r requirements.txt
 python server.py
 ```
 
-自行启动时默认在电脑浏览器打开 `http://127.0.0.1:4173`；新版预览使用 `http://127.0.0.1:4174`，具体加载范围见上方独立服务记录。旧版工作台验收见[历史专项](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)，本批验收状态见[连续写作记录](docs/audits/2026-10-14/comprehensive/chapter-flow-agent.md)。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
+自行启动时默认在电脑浏览器打开 `http://127.0.0.1:4173`；新版预览使用 `http://127.0.0.1:4174`，具体加载范围见上方独立服务记录。旧版工作台验收见[历史专项](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)，本批验收状态见[章后确认记录](docs/audits/2026-10-14/comprehensive/agent-memory-confirmation.md)。作品保存于下文的本机数据库，模型凭据保存在本机私有文件，不随源码上传。
 
 以后进入项目目录后执行 `source .venv/bin/activate`、`python server.py` 即可。下文的开发检查命令也应在同一环境中运行；浏览器检查可通过 `MOYU_TEST_PYTHON="$PWD/.venv/bin/python"` 使用已安装依赖的解释器。
 

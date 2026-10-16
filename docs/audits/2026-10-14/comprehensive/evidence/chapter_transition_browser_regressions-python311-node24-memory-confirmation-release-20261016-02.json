@@ -1,0 +1,136 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "聊天确认归档后打开已有下一章，原稿与全部任务字段保持一致",
+      "passed": true
+    },
+    {
+      "name": "目录末章只建立一个空白新章，重复查看结果不重复归档或建章",
+      "passed": true
+    },
+    {
+      "name": "本章记忆仍待决定时明确阻断，零半归档和零额外模型调用",
+      "passed": true
+    },
+    {
+      "name": "聊天建议后改稿会阻断旧步骤，原稿保留且不产生归档记录",
+      "passed": true
+    },
+    {
+      "name": "承接上章只补空字段，作者可编辑确认，取消与过期提交均保留原稿",
+      "passed": true
+    },
+    {
+      "name": "同章超过三项任务后，旧聊天准确打开原任务，任务不存在时显示明确错误",
+      "passed": true
+    },
+    {
+      "name": "打开旧聊天结果期间切换章节或作品，不带入旧任务焦点",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-chapter-transition-browser-0B9P0F/chapter-transition-1440x1000.png",
+    "<temporary-root>/moyu-chapter-transition-browser-0B9P0F/chapter-transition-new-1280x900.png",
+    "<temporary-root>/moyu-chapter-transition-browser-0B9P0F/chapter-handoff-confirm-1440x1000.png",
+    "<temporary-root>/moyu-chapter-transition-browser-0B9P0F/chapter-handoff-1280x900.png",
+    "<temporary-root>/moyu-chapter-transition-browser-0B9P0F/chapter-chat-precise-result-1440x1000.png"
+  ],
+  "desktop_layout": [
+    {
+      "screenshot": "chapter-transition-1440x1000.png",
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 1090,
+          "y": 64,
+          "width": 350,
+          "height": 936
+        }
+      ]
+    },
+    {
+      "screenshot": "chapter-transition-new-1280x900.png",
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 930,
+          "y": 64,
+          "width": 350,
+          "height": 836
+        }
+      ]
+    },
+    {
+      "screenshot": "chapter-handoff-confirm-1440x1000.png",
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 1090,
+          "y": 64,
+          "width": 350,
+          "height": 936
+        },
+        {
+          "kind": "dialog",
+          "x": 440,
+          "y": 165.796875,
+          "width": 560,
+          "height": 668.390625
+        }
+      ]
+    },
+    {
+      "screenshot": "chapter-handoff-1280x900.png",
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 930,
+          "y": 64,
+          "width": 350,
+          "height": 836
+        },
+        {
+          "kind": "dialog",
+          "x": 360,
+          "y": 115.796875,
+          "width": 560,
+          "height": 668.390625
+        }
+      ]
+    },
+    {
+      "screenshot": "chapter-chat-precise-result-1440x1000.png",
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 1090,
+          "y": 64,
+          "width": 350,
+          "height": 936
+        }
+      ]
+    }
+  ],
+  "page_errors": [],
+  "scope": "真实电脑Chrome、真实聊天及章节接口、隔离数据库和免费回环模型；不评价文学质量。",
+  "paid_provider_calls": 0,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "provider_calls": 5
+}

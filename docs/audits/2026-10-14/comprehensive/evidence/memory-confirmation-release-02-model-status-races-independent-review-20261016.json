@@ -1,0 +1,253 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "tag": "memory-confirmation-release-20261016-02",
+  "review_started_at": "2026-10-16T14:22:31.666Z",
+  "review_finished_at": "2026-10-16T14:22:31.697Z",
+  "release_started_at": "2026-10-16T14:05:28.812Z",
+  "release_finished_at": "2026-10-16T14:18:23.519Z",
+  "scope": "Independent retained-source and evidence review. No application, test, browser, model or production database was started.",
+  "checker_sha256": "0b368a46df2a35c534e3752c480bcfacb5960a8beddf337957f87fcf034a9aff",
+  "release_report": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-memory-confirmation-release-20261016-02.json",
+  "release_report_sha256": "7233bc8abbf7ddab77bfcf13c4c0206f42f1f4e407d5fdbb9235e36ea327d730",
+  "full_independent_report": "docs/audits/2026-10-14/comprehensive/evidence/memory-confirmation-release-02-independent-review-20261016.json",
+  "full_independent_report_sha256": "0cd17a8bfe2b5a9c7d2879238fe7e283e44b68494b360f885eccceaee0d26e7a",
+  "baseline_release_sha256": "6b831df6ef82f48b188ed0bedaf6ede23969364e66b8e51f133f42bbda2419bd",
+  "previous_independent_report_preserved_sha256": "85cf427a12895ce0b1323ffd7e59272d56a9ee551dc3b7ade700e895795b1d3c",
+  "frontend_report": "docs/audits/2026-10-14/comprehensive/evidence/frontend_browser_regressions-python311-node24-memory-confirmation-release-20261016-02.json",
+  "frontend_report_sha256": "7501e144feb8ad2d25ca6aa5578e7bb9753d709f042cbcc8481dfbdb2706602e",
+  "retained_log_sha256": "123ce3cf3a01e6d11bea0ae85c983883672f07c200855e45465a1ac9b47fc704",
+  "retained_original_results_match": true,
+  "exact_public_serialization_matches": true,
+  "source_files_before_after_current_match": true,
+  "source_count": 146,
+  "unchanged_from_01": 145,
+  "unique_source_change": {
+    "file": "tests/frontend_browser_regressions.cjs",
+    "before_sha256": "8846d20857c9798b1865886e43da802d867ca824ec560165538cb6a31de2a062",
+    "after_sha256": "2c834c41f4ead4d6d8b9520d73a0bce6399f101a471f1447410d37b8a6b43471"
+  },
+  "release_counts": {
+    "checks": 130,
+    "sources": 146,
+    "python_fixtures": 76,
+    "structured_fixtures": 10,
+    "added_python_method_suites": 3,
+    "memory_confirmation_method_suites": 5,
+    "memory_confirmation_http_methods": 21,
+    "browser_suites": 20,
+    "browser_scenarios": 251,
+    "artifacts": 114,
+    "json_artifacts": 31,
+    "png_artifacts": 83
+  },
+  "assertions": 105,
+  "outcome_count": 3,
+  "synthetic_project_hashes": [
+    "5d435f31d06f374a767237fea123eff0cc3569cc1c758a2b549185f96667417e",
+    "d5c844d30453583f37ea531f7128cb7369d6b1986ec46bf8fa7ff7af8886a780"
+  ],
+  "outcome_observations": [
+    {
+      "old_response": "success",
+      "trace_sha256": "ad225660b7236b2d18804b598d65df999bb098d8b549d5550b3dc1302de67376",
+      "status_gets": 2,
+      "ordered_events": 9,
+      "actual_response_model_identities_checked": true,
+      "current_state_ready_while_both_statuses_pending": true,
+      "original_current_switch_awaited_before_old_response_release": true,
+      "original_old_status_refresh_awaited_after_release": true,
+      "current_model_survives_late_old_response": true,
+      "provider_calls_added": 0
+    },
+    {
+      "old_response": "503",
+      "trace_sha256": "a6bb09495d79cf3af94f42d44cfe640e07277474034589f1b36e497d831c4c33",
+      "status_gets": 2,
+      "ordered_events": 9,
+      "actual_response_model_identities_checked": true,
+      "current_state_ready_while_both_statuses_pending": true,
+      "original_current_switch_awaited_before_old_response_release": true,
+      "original_old_status_refresh_awaited_after_release": true,
+      "current_model_survives_late_old_response": true,
+      "provider_calls_added": 0
+    },
+    {
+      "old_response": "abort",
+      "trace_sha256": "3edb5e32366c4f700bca3a6a729c11a5b8a076b1cd0d3cc84de16a6ba0d0ca96",
+      "status_gets": 2,
+      "ordered_events": 9,
+      "actual_response_model_identities_checked": true,
+      "current_state_ready_while_both_statuses_pending": true,
+      "original_current_switch_awaited_before_old_response_release": true,
+      "original_old_status_refresh_awaited_after_release": true,
+      "current_model_survives_late_old_response": true,
+      "provider_calls_added": 0
+    }
+  ],
+  "event_order": [
+    "old_requested",
+    "old_held",
+    "current_requested",
+    "current_held",
+    "current_state_ready_status_pending",
+    "current_released",
+    "current_switch_settled",
+    "old_released",
+    "old_refresh_settled"
+  ],
+  "race_status_gets": 6,
+  "race_provider_calls_added": 0,
+  "memory_confirmation_http_methods": 21,
+  "memory_confirmation_free_local_provider_calls": 34,
+  "memory_confirmation_paid_provider_calls": 0,
+  "reported_paid_external_counters": [
+    {
+      "artifact_sha256": "634faae88c0ca7513dcc94d85b830c266e5e87865513b01edd4f2611afa64297",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "4a0d98fe9c11dd310b52ee7a733bb1c83bbfe1d9925b9c02585baa7e2e8473e4",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "e235f92d4b0766ad0cb2c535332245938e617c579e6da9224ce89380af668d77",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "0495c8d1e5a1fc08999d8f506972faee8952b89424cc49522fe8c2064f3bd904",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "38d6a143f2478471df452f293b2e988bfc344c225cbab3d223ed1b74972ceae3",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "4df524d2d1af1d03419098893a2c1218375a5435f18e021ce2677061485c6da5",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "5f2b6cdefb3d8419ef37f490c4e9dc847a1074da66e4fc96adef57821243a3e6",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "5f2b6cdefb3d8419ef37f490c4e9dc847a1074da66e4fc96adef57821243a3e6",
+      "field": "external_model_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "0b6de6101f9f2d3c173bfe98f8022a3a86cebb4fc866e130b7e6d754e9588be0",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "734212050714356fa949a0bb98a74570e82bfb934d719e4190fa989e7522d14d",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "734212050714356fa949a0bb98a74570e82bfb934d719e4190fa989e7522d14d",
+      "field": "external_model_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "af9ec3a063a9772c24dde0492b327baac1affed4a40aee918c7f67945d739d1b",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "af9ec3a063a9772c24dde0492b327baac1affed4a40aee918c7f67945d739d1b",
+      "field": "external_model_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "fabbec5531bd8654f88a77e6079c93859cc0ed7966f44c5f564fec36e4457a72",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "ac3a84f9e832ad700a7d54bb3b2fc67c329db776df3422de3a0d52d2b93ffcfe",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "09a5f8fcda7b97541968ca464ae5e760ce6bd9bc6716d034f13eb967b5eec218",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "5dab432e6df2ff676423c491abf09cf4fc8a0c7cd07898996ad8ea993d96d711",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "1c8724c81fd97170ffb3af710bb782c6b0b96bd8564bbf9b1493baa46b768bf4",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "f126e398b7f119af91277f7010fe89f7f85cf01f75c9cb20418d67e5576727a9",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "13aa90614833b0e4a53ec4c694d93035f4821435146c27ec315ef71870a3a5a6",
+      "field": "external_model_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "b166d94d3f96aa588549b2ac9b5d28c3330ee495367726658d4c77e3127561bb",
+      "field": "external_model_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "965500e0b1d562de9c16315c34e2fd064c075d0476cafe43335d0422c858ed09",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "9ff180f4a328687448f12f853285ded4f80f1faf847ae1a60e9097baff56da66",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "70a1b5b926901a562e77653fb5fc0ac16703398f8c9263f22ec1e6613d31db5f",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "b8ca284f2d33a644e31858d787d44c063c8fb957d7d63065a42efd8202f9b266",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "281ff37af60ab0b06f656b688f5bc542c80bab596c192800a04052c6f8f27d60",
+      "field": "paid_provider_calls",
+      "value": 0
+    },
+    {
+      "artifact_sha256": "35226a57bedd7e4c8a660ff34ae9ba1c6dac0337e25c3eff0fb8061f3f27a595",
+      "field": "paid_provider_calls",
+      "value": 0
+    }
+  ],
+  "review_model_calls": 0,
+  "review_external_calls": 0,
+  "review_production_database_reads": 0,
+  "privacy": {
+    "private_paths_included": false,
+    "manuscripts_included": false,
+    "credentials_included": false
+  },
+  "limitations": [
+    "Paid and external counters are checked where reported and scoped local setup is reviewed; network traffic is not captured.",
+    "Retained engineering evidence does not establish literary quality, first-tier rank or GitHub CI success."
+  ]
+}
