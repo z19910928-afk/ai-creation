@@ -39,8 +39,15 @@
 .agent-chat-action h4{margin:0 0 5px;font-size:12px;font-weight:600}
 .agent-chat-action p{margin:0;font-size:11px;line-height:1.8;color:#657880;white-space:pre-wrap}
 .agent-chat-action small{font-size:10px;display:block;color:#7a898f;margin-top:6px;line-height:1.7}
+.agent-chat-task{border-top:1px solid #e1e8e9;margin-top:9px;padding-top:8px;min-width:0}
+.agent-chat-action .agent-chat-task-source{color:#64727e;margin-bottom:3px;overflow-wrap:anywhere}
+.agent-chat-action .agent-chat-task-state{color:#245d57;font-weight:600}
+.agent-chat-action .agent-chat-task-budget{font-variant-numeric:tabular-nums;color:#64727e}
+.agent-chat-action .form-error{color:#9c4a37;overflow-wrap:anywhere}
+.agent-chat-action .form-error:empty{display:none}
 .agent-chat-action-buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
 .agent-chat-action-buttons button{font-size:11px;min-height:30px;padding:5px 9px}
+.agent-chat-action-buttons .primary-btn{color:#fff}
 .agent-chat-running{display:flex;align-items:flex-start;gap:8px;font-size:11px;line-height:1.8;color:#687c83;padding:2px 0 14px}
 .agent-chat-running>span:first-child{width:7px;height:7px;flex-shrink:0;border-radius:50%;background:#367b72;margin-top:7px;animation:agent-chat-pulse 1.3s ease-in-out infinite}
 .agent-chat-composer{flex-shrink:0;padding:11px 13px 12px;border-top:1px solid var(--chat-border);background:#fff}

@@ -1,0 +1,2699 @@
+{
+  "fixtures": [
+    {
+      "default_k": 5,
+      "errors": [],
+      "executable": {
+        "command": [
+          "<private-home>/.codex/worktrees/portable-complete-backup/神经网络写作/.audit-cache/security-py311-fixed-runtime/bin/python",
+          "tests/corrupt_import_fixtures.py"
+        ],
+        "passed": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "corrupt import fixtures passed: 5 rejected\n"
+      },
+      "fixture_file": "tests/fixtures/corrupt_import.json",
+      "fixture_id": "corrupt_import",
+      "fixture_passed": true,
+      "k": [
+        1,
+        5,
+        10
+      ],
+      "metric_values": {
+        "branch_leakage": 0,
+        "conflict_recall_hard": 1,
+        "corrupt_import_acceptance_rate": 0,
+        "freshness_p50_ms": 2000,
+        "freshness_p95_ms": 5600,
+        "recovery_success_rate": 1,
+        "reversible_patch_rate": 1,
+        "rpo_p95_seconds": 117,
+        "rto_p95_seconds": 585,
+        "stale_citation_rate": 0,
+        "unsupported_canon_rate": 0
+      },
+      "metrics": {
+        "branch_leakage": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "citation_precision": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "conflict_recall": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "conflict_recall_hard": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "corrupt_import_acceptance_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "evidence": {
+          "1": {
+            "gold_count": 3,
+            "hits": 1,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 1,
+            "recall": 0.3333333333333333,
+            "returned_count": 1,
+            "sample_count": 3
+          },
+          "5": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          },
+          "10": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          }
+        },
+        "freshness": {
+          "p50_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 2000
+          },
+          "p95_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 5600
+          }
+        },
+        "knowledge_scope": {
+          "leakage_rate": null,
+          "measured": false,
+          "na": true,
+          "precision": null,
+          "recall": null,
+          "required_count": 0,
+          "returned_count": 0,
+          "sample_count": 0,
+          "violations": []
+        },
+        "merge_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "precision_at_1": 1,
+        "precision_at_10": 0.75,
+        "precision_at_5": 0.75,
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_10": 1,
+        "recall_at_5": 1,
+        "recovery": {
+          "rpo_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 90
+          },
+          "rpo_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 117
+          },
+          "rto_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 450
+          },
+          "rto_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 585
+          },
+          "success_rate": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 1
+          }
+        },
+        "reversible_patch_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "revision_distance": {
+          "median": 6,
+          "na": false,
+          "p95": 9.7,
+          "sample_count": 4
+        },
+        "split_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "stale_citation_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "unsupported_canon_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 1,
+          "status": "measured",
+          "value": 0
+        }
+      },
+      "model": "fixture-model",
+      "na_count": 0,
+      "passed": true,
+      "prompt_version": "eval-v1",
+      "sample_count": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "samples": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "schema_version": "1.1",
+      "seed": 42,
+      "threshold_results": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "thresholds": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "tolerance": {
+        "epsilon": 1e-9
+      }
+    },
+    {
+      "default_k": 5,
+      "errors": [],
+      "fixture_file": "tests/fixtures/evaluation_pass.json",
+      "fixture_id": "evaluation_pass",
+      "fixture_passed": true,
+      "k": [
+        1,
+        5,
+        10
+      ],
+      "metric_values": {
+        "branch_leakage": 0,
+        "conflict_recall_hard": 1,
+        "corrupt_import_acceptance_rate": 0,
+        "freshness_p50_ms": 2000,
+        "freshness_p95_ms": 5600,
+        "recovery_success_rate": 1,
+        "reversible_patch_rate": 1,
+        "rpo_p95_seconds": 117,
+        "rto_p95_seconds": 585,
+        "stale_citation_rate": 0,
+        "unsupported_canon_rate": 0
+      },
+      "metrics": {
+        "branch_leakage": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "citation_precision": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "conflict_recall": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "conflict_recall_hard": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "corrupt_import_acceptance_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "evidence": {
+          "1": {
+            "gold_count": 3,
+            "hits": 1,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 1,
+            "recall": 0.3333333333333333,
+            "returned_count": 1,
+            "sample_count": 3
+          },
+          "5": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          },
+          "10": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          }
+        },
+        "freshness": {
+          "p50_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 2000
+          },
+          "p95_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 5600
+          }
+        },
+        "knowledge_scope": {
+          "leakage_rate": null,
+          "measured": false,
+          "na": true,
+          "precision": null,
+          "recall": null,
+          "required_count": 0,
+          "returned_count": 0,
+          "sample_count": 0,
+          "violations": []
+        },
+        "merge_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "precision_at_1": 1,
+        "precision_at_10": 0.75,
+        "precision_at_5": 0.75,
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_10": 1,
+        "recall_at_5": 1,
+        "recovery": {
+          "rpo_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 90
+          },
+          "rpo_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 117
+          },
+          "rto_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 450
+          },
+          "rto_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 585
+          },
+          "success_rate": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 1
+          }
+        },
+        "reversible_patch_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "revision_distance": {
+          "median": 6,
+          "na": false,
+          "p95": 9.7,
+          "sample_count": 4
+        },
+        "split_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "stale_citation_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "unsupported_canon_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 1,
+          "status": "measured",
+          "value": 0
+        }
+      },
+      "model": "fixture-model",
+      "na_count": 0,
+      "passed": true,
+      "prompt_version": "eval-v1",
+      "sample_count": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "samples": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "schema_version": "1.1",
+      "seed": 42,
+      "threshold_results": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "thresholds": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "tolerance": {
+        "epsilon": 1e-9
+      }
+    },
+    {
+      "default_k": 5,
+      "errors": [],
+      "executable": {
+        "command": [
+          "<private-home>/.codex/worktrees/portable-complete-backup/神经网络写作/.audit-cache/security-py311-fixed-runtime/bin/python",
+          "tests/longform_knowledge_scope_fixtures.py"
+        ],
+        "passed": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "longform knowledge-scope fixtures: ok\n"
+      },
+      "fixture_file": "tests/fixtures/longform_knowledge_scope.json",
+      "fixture_id": "longform_knowledge_scope",
+      "fixture_passed": true,
+      "k": [
+        1,
+        5,
+        10
+      ],
+      "metric_values": {
+        "branch_leakage": 0,
+        "conflict_recall_hard": 1,
+        "corrupt_import_acceptance_rate": 0,
+        "freshness_p50_ms": 2000,
+        "freshness_p95_ms": 5600,
+        "knowledge_scope_leakage": 0,
+        "knowledge_scope_precision": 1,
+        "knowledge_scope_recall": 1,
+        "recovery_success_rate": 1,
+        "reversible_patch_rate": 1,
+        "rpo_p95_seconds": 117,
+        "rto_p95_seconds": 585,
+        "stale_citation_rate": 0,
+        "unsupported_canon_rate": 0
+      },
+      "metrics": {
+        "branch_leakage": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "citation_precision": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "conflict_recall": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "conflict_recall_hard": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "corrupt_import_acceptance_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "evidence": {
+          "1": {
+            "gold_count": 3,
+            "hits": 1,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 1,
+            "recall": 0.3333333333333333,
+            "returned_count": 1,
+            "sample_count": 3
+          },
+          "5": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          },
+          "10": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          }
+        },
+        "freshness": {
+          "p50_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 2000
+          },
+          "p95_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 5600
+          }
+        },
+        "knowledge_scope": {
+          "current_chapter": 3,
+          "hits": 2,
+          "leakage_rate": 0,
+          "measured": true,
+          "na": false,
+          "precision": 1,
+          "recall": 1,
+          "required": [
+            "lan_key",
+            "storm_signal"
+          ],
+          "required_count": 2,
+          "returned_count": 2,
+          "sample_count": 2,
+          "valid_count": 2,
+          "violations": []
+        },
+        "merge_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "precision_at_1": 1,
+        "precision_at_10": 0.75,
+        "precision_at_5": 0.75,
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_10": 1,
+        "recall_at_5": 1,
+        "recovery": {
+          "rpo_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 90
+          },
+          "rpo_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 117
+          },
+          "rto_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 450
+          },
+          "rto_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 585
+          },
+          "success_rate": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 1
+          }
+        },
+        "reversible_patch_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "revision_distance": {
+          "median": 6,
+          "na": false,
+          "p95": 9.7,
+          "sample_count": 4
+        },
+        "split_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "stale_citation_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "unsupported_canon_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 1,
+          "status": "measured",
+          "value": 0
+        }
+      },
+      "model": "fixture-model",
+      "na_count": 0,
+      "passed": true,
+      "prompt_version": "eval-v1",
+      "sample_count": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 2,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "samples": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 2,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "schema_version": "1.1",
+      "seed": 42,
+      "threshold_results": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "knowledge_scope_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "knowledge_scope_precision": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "knowledge_scope_recall": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "thresholds": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "knowledge_scope_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "knowledge_scope_precision": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "knowledge_scope_recall": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "tolerance": {
+        "epsilon": 1e-9
+      }
+    },
+    {
+      "default_k": 5,
+      "errors": [],
+      "executable": {
+        "command": [
+          "<private-home>/.codex/worktrees/portable-complete-backup/神经网络写作/.audit-cache/security-py311-fixed-runtime/bin/python",
+          "tests/backup_recovery_fixtures.py"
+        ],
+        "passed": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "backup/recovery fixtures passed: online backup, digest, corruption rejection, restore, generic drill, RPO/RTO\n"
+      },
+      "fixture_file": "tests/fixtures/recovery_drill.json",
+      "fixture_id": "recovery_drill",
+      "fixture_passed": true,
+      "k": [
+        1,
+        5,
+        10
+      ],
+      "metric_values": {
+        "branch_leakage": 0,
+        "conflict_recall_hard": 1,
+        "corrupt_import_acceptance_rate": 0,
+        "freshness_p50_ms": 2000,
+        "freshness_p95_ms": 5600,
+        "recovery_success_rate": 1,
+        "reversible_patch_rate": 1,
+        "rpo_p95_seconds": 117,
+        "rto_p95_seconds": 585,
+        "stale_citation_rate": 0,
+        "unsupported_canon_rate": 0
+      },
+      "metrics": {
+        "branch_leakage": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "citation_precision": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "conflict_recall": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "conflict_recall_hard": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "corrupt_import_acceptance_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "evidence": {
+          "1": {
+            "gold_count": 3,
+            "hits": 1,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 1,
+            "recall": 0.3333333333333333,
+            "returned_count": 1,
+            "sample_count": 3
+          },
+          "5": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          },
+          "10": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          }
+        },
+        "freshness": {
+          "p50_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 2000
+          },
+          "p95_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 5600
+          }
+        },
+        "knowledge_scope": {
+          "leakage_rate": null,
+          "measured": false,
+          "na": true,
+          "precision": null,
+          "recall": null,
+          "required_count": 0,
+          "returned_count": 0,
+          "sample_count": 0,
+          "violations": []
+        },
+        "merge_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "precision_at_1": 1,
+        "precision_at_10": 0.75,
+        "precision_at_5": 0.75,
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_10": 1,
+        "recall_at_5": 1,
+        "recovery": {
+          "rpo_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 90
+          },
+          "rpo_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 117
+          },
+          "rto_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 450
+          },
+          "rto_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 585
+          },
+          "success_rate": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 1
+          }
+        },
+        "reversible_patch_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "revision_distance": {
+          "median": 6,
+          "na": false,
+          "p95": 9.7,
+          "sample_count": 4
+        },
+        "split_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "stale_citation_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "unsupported_canon_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 1,
+          "status": "measured",
+          "value": 0
+        }
+      },
+      "model": "fixture-model",
+      "na_count": 0,
+      "passed": true,
+      "prompt_version": "eval-v1",
+      "sample_count": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "samples": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "schema_version": "1.1",
+      "seed": 42,
+      "threshold_results": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "thresholds": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "tolerance": {
+        "epsilon": 1e-9
+      }
+    },
+    {
+      "default_k": 5,
+      "errors": [],
+      "executable": {
+        "command": [
+          "<private-home>/.codex/worktrees/portable-complete-backup/神经网络写作/.audit-cache/security-py311-fixed-runtime/bin/python",
+          "tests/reversible_patch_fixtures.py"
+        ],
+        "passed": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "reversible patch fixtures passed: 2 restored\n"
+      },
+      "fixture_file": "tests/fixtures/reversible_patch.json",
+      "fixture_id": "reversible_patch",
+      "fixture_passed": true,
+      "k": [
+        1,
+        5,
+        10
+      ],
+      "metric_values": {
+        "branch_leakage": 0,
+        "conflict_recall_hard": 1,
+        "corrupt_import_acceptance_rate": 0,
+        "freshness_p50_ms": 2000,
+        "freshness_p95_ms": 5600,
+        "recovery_success_rate": 1,
+        "reversible_patch_rate": 1,
+        "rpo_p95_seconds": 117,
+        "rto_p95_seconds": 585,
+        "stale_citation_rate": 0,
+        "unsupported_canon_rate": 0
+      },
+      "metrics": {
+        "branch_leakage": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "citation_precision": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "conflict_recall": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "conflict_recall_hard": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "corrupt_import_acceptance_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "evidence": {
+          "1": {
+            "gold_count": 3,
+            "hits": 1,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 1,
+            "recall": 0.3333333333333333,
+            "returned_count": 1,
+            "sample_count": 3
+          },
+          "5": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          },
+          "10": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          }
+        },
+        "freshness": {
+          "p50_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 2000
+          },
+          "p95_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 5600
+          }
+        },
+        "knowledge_scope": {
+          "leakage_rate": null,
+          "measured": false,
+          "na": true,
+          "precision": null,
+          "recall": null,
+          "required_count": 0,
+          "returned_count": 0,
+          "sample_count": 0,
+          "violations": []
+        },
+        "merge_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "precision_at_1": 1,
+        "precision_at_10": 0.75,
+        "precision_at_5": 0.75,
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_10": 1,
+        "recall_at_5": 1,
+        "recovery": {
+          "rpo_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 90
+          },
+          "rpo_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 117
+          },
+          "rto_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 450
+          },
+          "rto_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 585
+          },
+          "success_rate": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 1
+          }
+        },
+        "reversible_patch_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "revision_distance": {
+          "median": 6,
+          "na": false,
+          "p95": 9.7,
+          "sample_count": 4
+        },
+        "split_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "stale_citation_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "unsupported_canon_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 1,
+          "status": "measured",
+          "value": 0
+        }
+      },
+      "model": "fixture-model",
+      "na_count": 0,
+      "passed": true,
+      "prompt_version": "eval-v1",
+      "sample_count": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "samples": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "schema_version": "1.1",
+      "seed": 42,
+      "threshold_results": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "thresholds": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "tolerance": {
+        "epsilon": 1e-9
+      }
+    },
+    {
+      "default_k": 5,
+      "errors": [],
+      "executable": {
+        "command": [
+          "<private-home>/.codex/worktrees/portable-complete-backup/神经网络写作/.audit-cache/security-py311-fixed-runtime/bin/python",
+          "tests/schema_negative_fixtures.py"
+        ],
+        "passed": true,
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "schema regression fixtures passed: scope, append-only, canon evidence, export confirmation, migration ledger\n"
+      },
+      "fixture_file": "tests/fixtures/schema_scope.json",
+      "fixture_id": "schema_scope",
+      "fixture_passed": true,
+      "k": [
+        1,
+        5,
+        10
+      ],
+      "metric_values": {
+        "branch_leakage": 0,
+        "conflict_recall_hard": 1,
+        "corrupt_import_acceptance_rate": 0,
+        "freshness_p50_ms": 2000,
+        "freshness_p95_ms": 5600,
+        "recovery_success_rate": 1,
+        "reversible_patch_rate": 1,
+        "rpo_p95_seconds": 117,
+        "rto_p95_seconds": 585,
+        "stale_citation_rate": 0,
+        "unsupported_canon_rate": 0
+      },
+      "metrics": {
+        "branch_leakage": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "citation_precision": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "conflict_recall": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "conflict_recall_hard": {
+          "f1": 1,
+          "hits": 2,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 2,
+          "recall": 1,
+          "sample_count": 2
+        },
+        "corrupt_import_acceptance_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "evidence": {
+          "1": {
+            "gold_count": 3,
+            "hits": 1,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 1,
+            "recall": 0.3333333333333333,
+            "returned_count": 1,
+            "sample_count": 3
+          },
+          "5": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          },
+          "10": {
+            "gold_count": 3,
+            "hits": 3,
+            "na_count": 0,
+            "na_precision": false,
+            "na_recall": false,
+            "precision": 0.75,
+            "recall": 1,
+            "returned_count": 4,
+            "sample_count": 3
+          }
+        },
+        "freshness": {
+          "p50_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 2000
+          },
+          "p95_ms": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 3,
+            "status": "measured",
+            "value": 5600
+          }
+        },
+        "knowledge_scope": {
+          "leakage_rate": null,
+          "measured": false,
+          "na": true,
+          "precision": null,
+          "recall": null,
+          "required_count": 0,
+          "returned_count": 0,
+          "sample_count": 0,
+          "violations": []
+        },
+        "merge_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "precision_at_1": 1,
+        "precision_at_10": 0.75,
+        "precision_at_5": 0.75,
+        "recall_at_1": 0.3333333333333333,
+        "recall_at_10": 1,
+        "recall_at_5": 1,
+        "recovery": {
+          "rpo_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 90
+          },
+          "rpo_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 117
+          },
+          "rto_p50_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 450
+          },
+          "rto_p95_seconds": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 585
+          },
+          "success_rate": {
+            "na": false,
+            "na_count": 0,
+            "sample_count": 2,
+            "status": "measured",
+            "value": 1
+          }
+        },
+        "reversible_patch_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 1
+        },
+        "revision_distance": {
+          "median": 6,
+          "na": false,
+          "p95": 9.7,
+          "sample_count": 4
+        },
+        "split_f1": {
+          "f1": 1,
+          "hits": 1,
+          "na": false,
+          "precision": 1,
+          "predicted_count": 1,
+          "recall": 1,
+          "sample_count": 1
+        },
+        "stale_citation_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 2,
+          "status": "measured",
+          "value": 0
+        },
+        "unsupported_canon_rate": {
+          "na": false,
+          "na_count": 0,
+          "sample_count": 1,
+          "status": "measured",
+          "value": 0
+        }
+      },
+      "model": "fixture-model",
+      "na_count": 0,
+      "passed": true,
+      "prompt_version": "eval-v1",
+      "sample_count": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "samples": {
+        "citations": 2,
+        "conflicts": 2,
+        "corrupt_imports": 2,
+        "evidence_gold": 3,
+        "evidence_returned": 4,
+        "facts": 2,
+        "freshness": 3,
+        "knowledge_claims": 0,
+        "patches": 2,
+        "recoveries": 2,
+        "revisions": 4
+      },
+      "schema_version": "1.1",
+      "seed": 42,
+      "threshold_results": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "thresholds": {
+        "branch_leakage": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "conflict_recall_hard": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 0.95
+          },
+          "status": "pass"
+        },
+        "corrupt_import_acceptance_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "freshness_p50_ms": {
+          "actual": 2000,
+          "passed": true,
+          "rule": {
+            "max": 5000
+          },
+          "status": "pass"
+        },
+        "freshness_p95_ms": {
+          "actual": 5600,
+          "passed": true,
+          "rule": {
+            "max": 30000
+          },
+          "status": "pass"
+        },
+        "recovery_success_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "reversible_patch_rate": {
+          "actual": 1,
+          "passed": true,
+          "rule": {
+            "min": 1
+          },
+          "status": "pass"
+        },
+        "rpo_p95_seconds": {
+          "actual": 117,
+          "passed": true,
+          "rule": {
+            "max": 300
+          },
+          "status": "pass"
+        },
+        "rto_p95_seconds": {
+          "actual": 585,
+          "passed": true,
+          "rule": {
+            "max": 900
+          },
+          "status": "pass"
+        },
+        "stale_citation_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        },
+        "unsupported_canon_rate": {
+          "actual": 0,
+          "passed": true,
+          "rule": {
+            "max": 0
+          },
+          "status": "pass"
+        }
+      },
+      "tolerance": {
+        "epsilon": 1e-9
+      }
+    }
+  ],
+  "passed": true
+}

@@ -35,6 +35,17 @@ async function waitSaved(page){
   throw new Error(`${error.message}; save details: ${JSON.stringify(details)}`);
  }
 }
+async function rejectCandidate(page){
+ const identity=await page.evaluate(()=>({run_id:aiDraft?.ai_run_id,complete:aiDraft?.complete,
+  decision:aiDraft?.decision,project:requestedProject}));
+ assert.ok(identity.run_id);assert.equal(identity.complete,true);assert.equal(identity.decision,'pending');
+ await page.locator('#aiClear').click();
+ await page.waitForFunction(run=>candidateStore.get(run)?.decision==='rejected'&&!independentWrite,
+  identity.run_id,{timeout:15000});
+ await waitSaved(page);
+ const job=(await api('/api/ai/queue','GET',undefined,identity.project)).jobs.find(item=>item.ai_run_id===identity.run_id);
+ assert.equal(job?.author_decision,'rejected');
+}
 async function open(viewport={width:1440,height:1000}){
  const context=await browser.newContext({viewport});const page=await context.newPage();const errors=[];
  page.on('pageerror',error=>errors.push(error.message));await page.goto(base);
@@ -971,7 +982,7 @@ async function main(){
   assert.equal(providerRequests.length,calls);assert.equal(await currentBody(firstId),body);
   assert.equal(await desktop.page.evaluate(()=>aiDraft.originalText),original);
   assert.equal(await desktop.page.locator('#aiOutput').inputValue(),edited);
-  await desktop.page.locator('#aiClear').click();
+  await rejectCandidate(desktop.page);
  });
  await test('整理确认期间原稿变化会阻止发送，过期候选保留供阅读',async()=>{
   providerText='林岚把钥匙压在掌心，望向空船。';
@@ -990,7 +1001,7 @@ async function main(){
   assert.equal(await desktop.page.locator('#aiRevise').isEnabled(),false);
   await desktop.page.evaluate(()=>reviseAI());assert.equal(providerRequests.length,calls);
   assert.equal(await desktop.page.locator('[data-revise-dialog]').count(),0);
-  await desktop.page.locator('#aiClear').click();
+  await rejectCandidate(desktop.page);
  });
  await test('整理回应丢失后刷新只读取已有任务，保持请求身份且不重复模型调用',async()=>{
   const body=await currentBody(firstId),original='林岚守住钥匙，候选尚未整理。'.repeat(5);
@@ -1025,7 +1036,7 @@ async function main(){
   assert.equal(await desktop.page.locator('[data-original-text]').innerText(),original);
   await desktop.page.locator('[data-original-candidate] [data-close]').click();
   await desktop.page.unroute('**/api/ai/runs/*/revise');
-  await desktop.page.locator('#aiClear').click();
+  await rejectCandidate(desktop.page);
   await desktop.page.locator('#aiInstruction').fill('');
  });
  await test('模型写作思考完整保留且不能采纳，普通对白和独白可整理后使用',async()=>{
@@ -1051,7 +1062,7 @@ async function main(){
    assert.equal(await desktop.page.locator('#aiAdopt').isEnabled(),true);
   }
   assert.equal(await currentBody(firstId),before);
-  await desktop.page.locator('#aiClear').click();
+  await rejectCandidate(desktop.page);
  });
  await test('关闭思考设置遇到非空思考字段，正文保留且采纳和整理均禁用',async()=>{
   const before=await currentBody(firstId),calls=providerRequests.length,settings=await api('/api/ai/settings');
@@ -1076,7 +1087,7 @@ async function main(){
    assert.equal(await currentBody(firstId),before);
    assert.equal(await desktop.page.evaluate(()=>JSON.stringify([...candidateStore.values()]).includes('私密思考正文不能保存或显示')),false);
    assert.equal((await desktop.page.locator('body').innerText()).includes(providerReasoning),false);
-   await desktop.page.locator('#aiClear').click();
+   await rejectCandidate(desktop.page);
   }finally{
    providerReasoning=null;await api('/api/ai/settings','PUT',{parameters:settings.parameters});
    await desktop.page.locator('#aiInstruction').fill('');
@@ -1132,7 +1143,7 @@ async function main(){
    await desktop.page.evaluate(()=>refreshQueue());
    assert.equal(await desktop.page.locator('#aiOutput').inputValue(),edited);
    assert.equal(await desktop.page.evaluate(()=>aiDraft.complete),true);
-   await desktop.page.locator('#aiClear').click();
+   await rejectCandidate(desktop.page);
   }finally{
    releaseProvider();providerStreamGate=null;
    if(held)await held.route.abort();
@@ -1450,7 +1461,7 @@ async function main(){
   const actual=providerRequests.at(-1);assert.equal(actual.model,'browser-special-continue');
   assert.equal(actual.max_tokens,4096);assert.equal(actual.reasoning_effort,'none');
   assert.match(actual.messages[0].content,/克制、动作具体/);
-  await workspace.page.locator('#aiClear').click();
+  await rejectCandidate(workspace.page);
  });
  await test('电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关',async()=>{
   await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
@@ -1469,7 +1480,7 @@ async function main(){
   await workspace.page.waitForFunction(()=>aiDraft?.complete&&aiDraft?.text==='明确思考开关测试候选。',null,{timeout:15000});
   const actual=providerRequests.at(-1);
   assert.deepEqual(actual.thinking,{type:'disabled'});assert.equal(actual.reasoning_effort,undefined);
-  await workspace.page.locator('#aiClear').click();
+  await rejectCandidate(workspace.page);
   await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
   await workspace.page.locator('#modelReasoning').selectOption('');
   await workspace.page.locator('#modelSettings [type="submit"]').click();

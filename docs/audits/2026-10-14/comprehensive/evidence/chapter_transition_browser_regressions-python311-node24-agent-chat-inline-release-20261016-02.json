@@ -1,0 +1,113 @@
+{
+  "passed": false,
+  "cases": [
+    {
+      "name": "聊天确认归档后打开已有下一章，原稿与全部任务字段保持一致",
+      "passed": true
+    },
+    {
+      "name": "目录末章只建立一个空白新章，重复查看结果不重复归档或建章",
+      "passed": true
+    },
+    {
+      "name": "本章记忆仍待决定时明确阻断，零半归档和零额外模型调用",
+      "passed": true
+    },
+    {
+      "name": "聊天建议后改稿会阻断旧步骤，原稿保留且不产生归档记录",
+      "passed": true
+    },
+    {
+      "name": "承接上章只补空字段，作者可编辑确认，取消与过期提交均保留原稿",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-chapter-transition-browser-HeRW3X/chapter-transition-1440x1000.png",
+    "<temporary-root>/moyu-chapter-transition-browser-HeRW3X/chapter-transition-new-1280x900.png",
+    "<temporary-root>/moyu-chapter-transition-browser-HeRW3X/chapter-handoff-confirm-1440x1000.png",
+    "<temporary-root>/moyu-chapter-transition-browser-HeRW3X/chapter-handoff-1280x900.png"
+  ],
+  "desktop_layout": [
+    {
+      "screenshot": "chapter-transition-1440x1000.png",
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 1090,
+          "y": 64,
+          "width": 350,
+          "height": 936
+        }
+      ]
+    },
+    {
+      "screenshot": "chapter-transition-new-1280x900.png",
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 930,
+          "y": 64,
+          "width": 350,
+          "height": 836
+        }
+      ]
+    },
+    {
+      "screenshot": "chapter-handoff-confirm-1440x1000.png",
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 1090,
+          "y": 64,
+          "width": 350,
+          "height": 936
+        },
+        {
+          "kind": "dialog",
+          "x": 440,
+          "y": 165.796875,
+          "width": 560,
+          "height": 668.390625
+        }
+      ]
+    },
+    {
+      "screenshot": "chapter-handoff-1280x900.png",
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "panels": [
+        {
+          "kind": "chat",
+          "x": 930,
+          "y": 64,
+          "width": 350,
+          "height": 836
+        },
+        {
+          "kind": "dialog",
+          "x": 360,
+          "y": 115.796875,
+          "width": 560,
+          "height": 668.390625
+        }
+      ]
+    }
+  ],
+  "page_errors": [],
+  "scope": "真实电脑Chrome、真实聊天及章节接口、隔离数据库和免费回环模型；不评价文学质量。",
+  "paid_provider_calls": 0,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "error": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-agent-session]') to be visible\u001b[22m\n\u001b[2m    56 × locator resolved to hidden <article class=\"agent-session\" data-agent-mode=\"continue\" data-agent-status=\"awaiting_authorization\" data-agent-session=\"agent_c4a36c5a402a44beb6b8a61cc821e2fb\">…</article>\u001b[22m\n\n    at ./tests/chapter_transition_browser_regressions.cjs:341:48\n    at async test (./tests/chapter_transition_browser_regressions.cjs:129:3)\n    at async main (./tests/chapter_transition_browser_regressions.cjs:337:3)",
+  "server_log": "GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:48+00:00] \"POST /api/agent-chat/sessions HTTP/1.1\" 201 -\n127.0.0.1 - - [2026-10-16T15:24:48+00:00] \"POST /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646/messages HTTP/1.1\" 202 -\n127.0.0.1 - - [2026-10-16T15:24:48+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:48+00:00] \"GET /api/agent-chat/runs/aijob_a4c195fadf9b482bb47c2b6b7f7b11ae HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:48+00:00] \"GET /api/writing-inbox?limit=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:49+00:00] \"GET /api/agent-chat/runs/aijob_a4c195fadf9b482bb47c2b6b7f7b11ae HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:49+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:49+00:00] \"POST /api/agent-chat/actions/chatact_e985e06926a842a6aea824a8d120f006/confirm HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:49+00:00] \"GET /api/writing-agent?session_id=agent_c4a36c5a402a44beb6b8a61cc821e2fb HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:49+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:49+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:51+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:52+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:53+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:53+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:53+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:56+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:56+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:56+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:56+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:24:58+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:00+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:00+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:00+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:01+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:03+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:03+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:03+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:04+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:04+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:04+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:04+00:00] \"GET /api/writing-agent?session_id=agent_c4a36c5a402a44beb6b8a61cc821e2fb HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:06+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:08+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:08+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:08+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:08+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:11+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:11+00:00] \"GET /api/writing-inbox?limit=1 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:11+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:11+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:12+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:13+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:15+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:15+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:16+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:16+00:00] \"GET /api/ai/queue?limit=100 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:18+00:00] \"GET /api/agent-chat/sessions/chat_4cb523b929f34921a10fde13e8fe4646 HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:18+00:00] \"GET /api/agent-chat/sessions HTTP/1.1\" 200 -\n127.0.0.1 - - [2026-10-16T15:25:18+00:00] \"GET /api/writing-agent HTTP/1.1\" 200 -\n"
+}

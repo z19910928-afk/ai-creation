@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "scope": "真实桌面 Chrome、真实聊天和写作接口、隔离数据库、免费回环模拟模型；验证作者操作链路，不评价文学质量。",
+  "cases": [
+    {
+      "name": "持续对话通过真实聊天服务保存，普通讨论不创建写作任务",
+      "passed": true
+    },
+    {
+      "name": "聊天原卡显示准确任务与调用上限，作者手动启动和采纳后再接续章后流程",
+      "passed": true
+    },
+    {
+      "name": "选区修订回到原章比较，仅替换引用内容并保留其余正文",
+      "passed": true
+    },
+    {
+      "name": "作者改稿后旧聊天建议被拒绝，不产生额外写作任务",
+      "passed": true
+    },
+    {
+      "name": "停止迟到回复、重启会话恢复与切作品隔离均由真实服务处理",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-agent-chat-flow-btVEIS/agent-chat-discussion-1440x1000.png",
+    "<temporary-root>/moyu-agent-chat-flow-btVEIS/agent-chat-inline-task-1440x1000.png",
+    "<temporary-root>/moyu-agent-chat-flow-btVEIS/agent-chat-inline-task-1280x900.png",
+    "<temporary-root>/moyu-agent-chat-flow-btVEIS/agent-chat-compare-1440x1000.png",
+    "<temporary-root>/moyu-agent-chat-flow-btVEIS/agent-chat-selection-applied-1440x1000.png"
+  ],
+  "page_errors": [],
+  "paid_provider_calls": 0,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "provider_calls": 9,
+  "chat_calls": 5
+}

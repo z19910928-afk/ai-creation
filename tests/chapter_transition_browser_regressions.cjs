@@ -55,6 +55,28 @@ async function saved(page) {
   await page.waitForFunction(() => backendOnline && !isDirty() && !syncInFlight && !saveError && !mergePending);
 }
 
+async function observeNavigationRead(page, token) {
+  await page.evaluate(token => {
+    const previous = Response.prototype.json;
+    globalThis.__moyuNavigationOriginalJson = previous;
+    globalThis.__moyuNavigationRead = null;
+    Response.prototype.json = async function (...args) {
+      const value = await previous.apply(this, args);
+      if (this.headers.get('X-Moyu-Navigation-Test') === token)
+        setTimeout(() => globalThis.__moyuNavigationRead = token, 0);
+      return value;
+    };
+  }, token);
+}
+
+async function restoreNavigationRead(page) {
+  await page.evaluate(() => {
+    Response.prototype.json = globalThis.__moyuNavigationOriginalJson;
+    delete globalThis.__moyuNavigationOriginalJson;
+    delete globalThis.__moyuNavigationRead;
+  });
+}
+
 async function selectChapter(page, id) {
   await page.locator('[data-view="editor"]').click();
   await page.locator(`.workbench-library [data-chapter="${id}"]`).click();
@@ -82,7 +104,8 @@ async function bootstrap(page, chapters, title) {
   }, created.project || created.state.project);
   await page.waitForFunction(project => backendOnline && requestedProject === project, project);
   await selectChapter(page, state.chapters[0].id);
-  return {project, chapters: (await api('/api/state', 'GET', undefined, project)).chapters};
+  const loaded = await api('/api/state', 'GET', undefined, project);
+  return {project, branch: loaded.branch_id, chapters: loaded.chapters};
 }
 
 async function proposal(page, kind = 'next_chapter') {
@@ -337,9 +360,18 @@ async function main() {
   await test('同章超过三项任务后，旧聊天准确打开原任务，任务不存在时显示明确错误', async () => {
     focusFixture = await bootstrap(page, [{}, {body: '其他章节。'}], '聊天任务精确定位');
     focusAction = await proposal(page, 'continue');
+    const initialCalls = providerRequests.length;
     await focusAction.element.locator('[data-chat-confirm]').click();
-    await page.locator('[data-agent-session]').waitFor();
-    focusedTask = (await api('/api/writing-agent', 'GET', undefined, focusFixture.project)).sessions[0].id;
+    const card = page.locator(`[data-chat-action="${focusAction.id}"]`);
+    await card.locator('[data-chat-writing-session][data-chat-task-status="awaiting_authorization"]').waitFor();
+    focusedTask = await card.locator('[data-chat-writing-session]').getAttribute('data-chat-writing-session');
+    assert.equal(await page.locator('[data-agent-session]:visible').count(), 0,
+      '确认建议后保留原聊天卡，不自动展开任务管理');
+    assert.equal(providerRequests.length, initialCalls);
+    assert.equal((await api('/api/writing-agent?session_id=' + focusedTask, 'GET', undefined,
+      focusFixture.project)).sessions[0].id, focusedTask);
+    await card.locator('[data-chat-open-result]').click();
+    await page.locator(`[data-agent-session="${focusedTask}"]`).waitFor();
     for (let index = 0; index < 3; index += 1) {
       await api('/api/writing-agent', 'POST', {request_id: `newer_browser_task_${index}`,
         chapter_id: focusFixture.chapters[0].id, mode: 'continue', query: `更晚任务${index}`
@@ -373,35 +405,113 @@ async function main() {
 
   await test('打开旧聊天结果期间切换章节或作品，不带入旧任务焦点', async () => {
     const targetUrl = `**/api/writing-agent?session_id=${focusedTask}`;
-    let release, started;
-    let gate = new Promise(resolve => {release = resolve;});
-    let captured = new Promise(resolve => {started = resolve;});
-    const delayed = async route => {started(); await gate; await route.continue();};
-    await page.route(targetUrl, delayed);
-    await page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-open-result]`).click();
-    await captured;
-    await selectChapter(page, focusFixture.chapters[1].id);
-    release(); await pause(350);
-    assert.equal(await page.evaluate(() => activeChapter), focusFixture.chapters[1].id);
-    assert.equal(await page.evaluate(() => authorAgentFocus), null);
-    assert.equal(await page.locator(`[data-agent-session="${focusedTask}"]`).count(), 0);
-    await page.unroute(targetUrl, delayed);
-    await selectChapter(page, focusFixture.chapters[0].id);
-    gate = new Promise(resolve => {release = resolve;});
-    captured = new Promise(resolve => {started = resolve;});
-    await page.route(targetUrl, delayed);
-    await page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-open-result]`).click();
-    await captured;
-    const created = await api('/api/projects', 'POST', {title: '焦点切换目标作品'});
-    const other = created.project?.id || created.state?.project?.id;
+    report.result_navigation_races = [];
+    for (const readNumber of [1, 2]) for (const transition of ['chapter', 'project']) {
+      await page.evaluate(async metadata => {
+        authorRememberProject(metadata); await authorSwitchProject(metadata.id); view = 'editor'; render();
+      }, {id: focusFixture.project, branch_id: focusFixture.branch});
+      await selectChapter(page, focusFixture.chapters[0].id);
+      const openButton = page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-open-result]`);
+      await openButton.waitFor();
+      await page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-task-refresh]`).click();
+      await page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-task-refresh]:enabled`).waitFor();
+      let release, started, observed = 0, consumed;
+      const gate = new Promise(resolve => {release = resolve;});
+      const captured = new Promise(resolve => {started = resolve;});
+      const finished = new Promise(resolve => {consumed = resolve;});
+      const token = `result-navigation-${readNumber}-${transition}`;
+      await observeNavigationRead(page, token);
+      const delayed = async route => {
+        observed += 1;
+        if (observed !== readNumber) return route.continue();
+        const response = await route.fetch();
+        started();
+        await gate;
+        await route.fulfill({response, headers: {...response.headers(), 'X-Moyu-Navigation-Test': token}});
+        consumed();
+      };
+      await page.route(targetUrl, delayed);
+      try {
+        await openButton.click();
+        await Promise.race([captured, pause(5000).then(() => {throw new Error('Navigation read not observed');})]);
+        if (transition === 'chapter') {
+          await selectChapter(page, focusFixture.chapters[1].id);
+        } else {
+          const created = await api('/api/projects', 'POST', {title: `焦点切换目标作品${readNumber}`});
+          await page.evaluate(async metadata => {
+            authorRememberProject(metadata); await authorSwitchProject(metadata.id); view = 'editor'; render();
+          }, created.project || created.state.project);
+          const other = created.project?.id || created.state?.project?.id;
+          assert.equal(await page.evaluate(() => requestedProject), other);
+        }
+        const expected = await page.evaluate(() => ({project: requestedProject, chapter: activeChapter, view}));
+        release();
+        await finished;
+        await page.waitForFunction(token => globalThis.__moyuNavigationRead === token, token);
+        assert.ok(observed >= readNumber);
+        assert.deepEqual(await page.evaluate(() => ({project: requestedProject, chapter: activeChapter, view})), expected);
+        assert.equal(await page.evaluate(() => authorAgentFocus), null);
+        assert.equal(await page.locator(`[data-agent-session="${focusedTask}"]`).count(), 0);
+        report.result_navigation_races.push({read_number: readNumber, transition,
+          response_consumed: true, navigation_unchanged: true, task_focus: null});
+      } finally {
+        release();
+        await page.unroute(targetUrl, delayed);
+        await restoreNavigationRead(page);
+      }
+    }
+
     await page.evaluate(async metadata => {
       authorRememberProject(metadata); await authorSwitchProject(metadata.id); view = 'editor'; render();
-    }, created.project || created.state.project);
-    release(); await pause(350);
-    assert.equal(await page.evaluate(() => requestedProject), other);
-    assert.equal(await page.evaluate(() => authorAgentFocus), null);
-    assert.equal(await page.locator(`[data-agent-session="${focusedTask}"]`).count(), 0);
-    await page.unroute(targetUrl, delayed);
+    }, {id: focusFixture.project, branch_id: focusFixture.branch});
+    await selectChapter(page, focusFixture.chapters[0].id);
+    const openButton = page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-open-result]`);
+    await openButton.waitFor();
+    await page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-task-refresh]`).click();
+    await page.locator(`[data-chat-action="${focusAction.id}"] [data-chat-task-refresh]:enabled`).waitFor();
+    const token = 'result-navigation-save-chapter';
+    await observeNavigationRead(page, token);
+    let release, started, consumed, taskReads = 0;
+    const gate = new Promise(resolve => {release = resolve;});
+    const captured = new Promise(resolve => {started = resolve;});
+    const finished = new Promise(resolve => {consumed = resolve;});
+    const delayedSave = async route => {
+      if (route.request().method() !== 'PUT') return route.continue();
+      const response = await route.fetch();
+      started();
+      await gate;
+      await route.fulfill({response, headers: {...response.headers(), 'X-Moyu-Navigation-Test': token}});
+      consumed();
+    };
+    const countTaskRead = request => {
+      if (new URL(request.url()).pathname === '/api/writing-agent' &&
+          new URL(request.url()).searchParams.get('session_id') === focusedTask) taskReads += 1;
+    };
+    await page.route('**/api/state', delayedSave);
+    page.on('request', countTaskRead);
+    try {
+      await page.locator('#chapterBody').fill(body + '\n保存等待期间作者切换章节。');
+      await openButton.click();
+      await Promise.race([captured, pause(5000).then(() => {throw new Error('Navigation save not observed');})]);
+      await page.locator(`.workbench-library [data-chapter="${focusFixture.chapters[1].id}"]`).click();
+      await page.waitForFunction(id => activeChapter === id, focusFixture.chapters[1].id);
+      const expected = await page.evaluate(() => ({project: requestedProject, chapter: activeChapter, view}));
+      release();
+      await finished;
+      await page.waitForFunction(token => globalThis.__moyuNavigationRead === token, token);
+      await saved(page);
+      assert.deepEqual(await page.evaluate(() => ({project: requestedProject, chapter: activeChapter, view})), expected);
+      assert.equal(await page.evaluate(() => authorAgentFocus), null);
+      assert.equal(taskReads, 0, '切章后结束旧查看操作，不继续读取旧任务');
+      assert.equal(await page.locator(`[data-agent-session="${focusedTask}"]`).count(), 0);
+      report.result_navigation_save_race = {stage: 'save', transition: 'chapter',
+        response_consumed: true, navigation_unchanged: true, task_reads: taskReads};
+    } finally {
+      release();
+      page.off('request', countTaskRead);
+      await page.unroute('**/api/state', delayedSave);
+      await restoreNavigationRead(page);
+    }
   });
 
   assert.deepEqual(report.page_errors, []);

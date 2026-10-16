@@ -196,19 +196,48 @@ async function main() {
     assert.equal((await api('/api/state')).chapters[0].body, initialBody);
   });
 
-  await test('聊天步骤确认后建立写作任务，正文比较采纳再接续记忆与审稿', async () => {
+  await test('聊天原卡显示准确任务与调用上限，作者手动启动和采纳后再接续章后流程', async () => {
     await page.locator('[data-view="editor"]').click();
     const proposal = await action(page, 'continue');
     assert.equal((await api('/api/writing-agent')).sessions.length, 0);
+    await page.locator('[data-view="memory"]').click();
+    const callsBefore = providerRequests.length;
     await proposal.element.locator('[data-chat-confirm]').click();
-    await page.locator('#workbenchAgentSection:visible [data-agent-action="authorize"]').waitFor();
+    const card = page.locator('[data-chat-action="' + proposal.id + '"]');
+    await card.locator('[data-chat-start]:not([disabled])').waitFor();
     const row = (await api('/api/writing-agent')).sessions[0];
     assert.equal(row.mode, 'continue'); assert.equal(row.status, 'awaiting_authorization');
-    await page.locator('[data-chat-action="' + proposal.id + '"]').getByText('已确认，处理结果已保存').waitFor();
-    await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).click();
+    assert.equal(await page.evaluate(() => view), 'memory');
+    assert.equal(await card.locator('[data-chat-writing-session]').getAttribute('data-chat-writing-session'), row.id);
+    assert.equal(await card.locator('[data-chat-task-status]').getAttribute('data-chat-task-status'), 'awaiting_authorization');
+    assert.equal(await card.locator('[data-chat-task-source]').textContent(), '来源章 · ' + initial.chapters[0].title);
+    assert.match(await card.locator('.agent-chat-task-budget').textContent(), /0\s*\/\s*上限 3 次/);
+    assert.equal(providerRequests.length, callsBefore, '确认与读取状态不会调用模型');
+    assert.equal(await page.locator('#workbenchAgentSection').count(), 0, '确认后保留原页面');
+    for (const viewport of [{width: 1440, height: 1000}, {width: 1280, height: 900}]) {
+      await page.setViewportSize(viewport);
+      await card.locator('[data-chat-start]').scrollIntoViewIfNeeded();
+      const dimensions = await card.evaluate(element => {
+        const rect = element.getBoundingClientRect();
+        return {width: innerWidth, scroll: document.documentElement.scrollWidth, left: rect.left, right: rect.right,
+          content: element.scrollWidth, available: element.clientWidth};
+      });
+      assert.ok(dimensions.scroll <= dimensions.width && dimensions.left >= 0 && dimensions.right <= dimensions.width &&
+        dimensions.content <= dimensions.available, JSON.stringify(dimensions));
+      await screenshot(page, `agent-chat-inline-task-${viewport.width}x${viewport.height}.png`);
+    }
+    await page.setViewportSize({width: 1440, height: 1000});
+    await card.locator('[data-chat-start]').click();
+    assert.equal(await page.evaluate(() => view), 'memory', '手动启动后继续留在聊天');
     await until(async () => (await api('/api/writing-agent')).sessions.find(item => item.id === row.id)?.status ===
       'awaiting_adoption', 'prose candidate');
+    await card.locator('[data-chat-task-status="awaiting_adoption"]').waitFor();
+    assert.equal(providerRequests.length, callsBefore + 1, '手动启动仅生成当前正文候选');
     assert.equal((await api('/api/state')).chapters[0].body, initialBody);
+    await card.locator('[data-chat-open-result]').click();
+    await page.locator('#workbenchAgentSection:visible').waitFor();
+    assert.equal(await page.locator('#agentSessions [data-agent-session]').count(), 1);
+    assert.equal(await page.locator('#agentSessions [data-agent-session]').getAttribute('data-agent-session'), row.id);
     await page.locator(`[data-agent-session="${row.id}"] [data-agent-open]`).click();
     await page.locator('#aiAdopt:not([disabled])').waitFor(); await page.locator('#aiAdopt').click();
     await page.locator('.candidate-columns').waitFor(); await screenshot(page, 'agent-chat-compare-1440x1000.png');

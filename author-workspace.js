@@ -530,9 +530,10 @@ function authorAgentCurrentFocus(){
  if(authorAgentFocus&&!authorAgentEditorScopeCurrent(authorAgentFocus))authorAgentFocus=null;
  return authorAgentFocus;
 }
-async function authorOpenAgentSession(sessionId,chapterId){
+async function authorOpenAgentSession(sessionId,chapterId,chatCurrent=()=>true){
  const scope=authorAgentScope(),startingChapter=activeChapter;
- const current=()=>scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&activeChapter===startingChapter;
+ const current=()=>scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&activeChapter===startingChapter&&chatCurrent();
+ if(!current())return false;
  if(!chapter(chapterId))throw new Error('来源章节已不存在，请从当前作品重新选择任务。');
  if(!await syncBackend())throw new Error('请先保存或合并当前稿件。');
  if(!current())return false;

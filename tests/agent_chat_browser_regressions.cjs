@@ -13,13 +13,60 @@ const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'moyu-agent-chat-ui-'));
 const report = {passed: false, cases: [], screenshots: [], page_errors: [], paid_provider_calls: 0,
   artifacts: temporary,
-  scope: '真实桌面 Chrome 与隔离作品数据库；聊天响应由本机受控接口模拟，仅验证前端交互、请求身份与隔离，不证明模型或聊天后端可用。',
+  scope: '真实桌面 Chrome 与隔离作品数据库；聊天与写作任务响应由本机受控接口模拟，仅验证前端交互、请求身份与隔离，不证明模型或聊天后端可用。',
   branch_identity_test: 'Synthetic frontend branch identity; no branch-management UI claim.'};
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const timestamp = () => new Date().toISOString();
-const store = new Map(), requests = [];
+const store = new Map(), requests = [], writingRequests = [], routeGates = [];
 let app, browser, base, log = '', interruptCreation = false, interruptMessage = false;
 let holdMessage = null, delayedReply = false, failAction = false;
+let interruptAction = '', interruptStart = '';
+const copy = value => JSON.parse(JSON.stringify(value));
+
+function gateOnce(matches, outcome = 'success') {
+  let entered, release, finished;
+  const gate = {id: crypto.randomUUID(), matches, outcome, used: false,
+    entered: new Promise(resolve => {entered = resolve;}),
+    waiting: new Promise(resolve => {release = resolve;}),
+    finished: new Promise(resolve => {finished = resolve;})};
+  gate.enter = entered; gate.release = release; gate.finish = finished;
+  routeGates.push(gate);
+  return gate;
+}
+async function respond(route, observation, value, status = 200) {
+  const snapshot = copy(value);
+  const gate = routeGates.find(item => !item.used && item.matches(observation));
+  const headers = {};
+  if (gate) {
+    gate.used = true; gate.observation = copy(observation); gate.snapshot = snapshot;
+    gate.enter(gate.observation);
+    await gate.waiting;
+    headers['X-Moyu-UI-Gate'] = gate.id;
+  }
+  try {
+    if (gate?.outcome === 'abort') await route.abort('failed');
+    else await route.fulfill({status: gate?.outcome === '503' ? 503 : status,
+      contentType: 'application/json', headers,
+      body: JSON.stringify(gate?.outcome === '503' ? {error: '旧对话读取失败。'} : snapshot)});
+  } finally {
+    if (gate) gate.finish();
+  }
+}
+async function bounded(promise, label) {
+  let timer;
+  try {
+    return await Promise.race([promise, new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error('Timed out: ' + label)), 12000);
+    })]);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+async function releaseGate(page, gate) {
+  gate.release();
+  await bounded(gate.finished, 'held route finished');
+  await page.waitForFunction(id => globalThis.__moyuConsumedRequests?.includes(id), gate.observation.request_id);
+}
 
 async function freePort() {
   const socket = net.createServer();
@@ -48,7 +95,7 @@ async function api(route, method = 'GET', body, project = 'default-project') {
 function workspace(project, branch) {
   const key = JSON.stringify([project, branch]);
   if (!store.has(key)) store.set(key, {sessions: [], messages: new Map(), runs: new Map(),
-    creations: new Map(), sends: new Map()});
+    creations: new Map(), sends: new Map(), writing: new Map(), writingFaults: new Map()});
   return store.get(key);
 }
 function bundle(data, session) {
@@ -62,12 +109,11 @@ async function chatRoute(route) {
   const data = workspace(project, branch), pathname = new URL(request.url()).pathname;
   const suffix = pathname.slice('/api/agent-chat'.length), method = request.method();
   const body = method === 'GET' ? null : request.postDataJSON();
-  const observation = {project, branch, suffix, method, body};
+  const observation = {project, branch, suffix, method, body, request_id: headers['x-moyu-ui-request']};
   requests.push(observation);
-  const respond = value => route.fulfill({status: 200, contentType: 'application/json',
-    body: JSON.stringify(value)});
-  if (suffix === '/settings') return respond({settings: {mode: 'inherit'}});
-  if (suffix === '/sessions' && method === 'GET') return respond({sessions: data.sessions});
+  const reply = value => respond(route, observation, value);
+  if (suffix === '/settings') return reply({settings: {mode: 'inherit'}});
+  if (suffix === '/sessions' && method === 'GET') return reply({sessions: data.sessions});
   if (suffix === '/sessions' && method === 'POST') {
     let session = data.creations.get(body.request_id);
     if (!session) {
@@ -77,13 +123,13 @@ async function chatRoute(route) {
       data.creations.set(body.request_id, session);
     }
     if (interruptCreation) {interruptCreation = false; return route.abort('failed');}
-    return respond({session});
+    return reply({session});
   }
   const segments = suffix.split('/').filter(Boolean);
   if (segments[0] === 'sessions') {
     const session = data.sessions.find(row => row.id === segments[1]);
     assert.ok(session, suffix);
-    if (segments.length === 2 && method === 'GET') return respond(bundle(data, session));
+    if (segments.length === 2 && method === 'GET') return reply(bundle(data, session));
     if (segments[2] === 'messages' && method === 'POST') {
       let result = data.sends.get(body.request_id);
       if (!result) {
@@ -101,7 +147,7 @@ async function chatRoute(route) {
       observation.session_id = session.id; observation.run_id = result.run.id;
       if (holdMessage) {const wait = holdMessage; holdMessage = null; await wait;}
       if (interruptMessage) {interruptMessage = false; return route.abort('failed');}
-      return respond(bundle(data, session));
+      return reply(bundle(data, session));
     }
   }
   if (segments[0] === 'runs') {
@@ -113,7 +159,7 @@ async function chatRoute(route) {
       data.messages.get(session.id).push({id: crypto.randomUUID(), role: 'assistant',
         content: '', status: 'canceled', created_at: timestamp()});
     }
-    return respond(bundle(data, session));
+    return reply(bundle(data, session));
   }
   if (segments[0] === 'actions') {
     const message = [...data.messages.values()].flat().find(row =>
@@ -123,10 +169,82 @@ async function chatRoute(route) {
     if (failAction) return route.fulfill({status: 503, contentType: 'application/json',
       body: JSON.stringify({error: '本次操作尚未保存，请重试。'})});
     action.status = segments[2] === 'dismiss' ? 'dismissed' : 'confirmed';
-    return respond({action});
+    let writingSession;
+    if (segments[2] === 'confirm' && ['continue', 'polish', 'inspect', 'plan'].includes(action.kind)) {
+      writingSession = writingTask(data, action);
+      if (interruptAction === action.id) {interruptAction = ''; return route.abort('failed');}
+    }
+    return reply({action, writing_session: writingSession});
   }
   throw new Error('Unexpected simulated chat route: ' + suffix);
 }
+function writingTask(data, action, patch = {}) {
+  assert.ok(action.chapter_id, '模拟写作建议必须绑定真实来源章节');
+  assert.equal(typeof action.instruction, 'string', '模拟写作建议必须包含独立指令');
+  const id = action.result?.writing_session_id || 'ui_task_' + action.id;
+  action.result = {...action.result, writing_session_id: id, chapter_id: action.chapter_id};
+  if (!data.writing.has(id)) data.writing.set(id, {
+    id, chapter_id: action.chapter_id, mode: action.kind, query: action.instruction.trim(),
+    status: 'awaiting_authorization', calls_used: 0, max_calls: action.kind === 'plan' ? 4 :
+      action.kind === 'inspect' ? 2 : 3, checkpoint_id: 'checkpoint_' + crypto.randomUUID(),
+    stage: 'preflight', steps: [], current_job: null, result_refs: {}, context_evidence: {},
+    source_stale: false, restored_read_only: false, error: '', created_at: timestamp(), updated_at: timestamp(),
+  });
+  const row = data.writing.get(id); Object.assign(row, patch); return row;
+}
+async function writingRoute(route) {
+  const request = route.request(), headers = request.headers(), url = new URL(request.url());
+  const project = headers['x-moyu-project'] || 'default-project', branch = headers['x-moyu-branch'] || 'main';
+  const data = workspace(project, branch), method = request.method();
+  const body = method === 'GET' ? null : request.postDataJSON();
+  const id = url.searchParams.get('session_id') ||
+    (url.pathname.endsWith('/resume') ? url.pathname.split('/').at(-2) : null);
+  const observation = {project, branch, method, id, body, pathname: url.pathname, request_id: headers['x-moyu-ui-request'],
+    exact: method === 'GET' && url.searchParams.has('session_id')};
+  writingRequests.push(observation);
+  if (method === 'GET' && url.pathname === '/api/writing-agent') {
+    if (!observation.exact) return respond(route, observation, {sessions: [...data.writing.values()].reverse().slice(0, 50)});
+    assert.deepEqual(url.searchParams.getAll('session_id'), [id]);
+    const fault = data.writingFaults.get(id), row = data.writing.get(id);
+    if (fault?.status) return respond(route, observation, {error: '任务读取暂时不可用。'}, fault.status);
+    if (!row) return respond(route, observation, {error: '当前作品中没有这条写作任务。'}, 404);
+    return respond(route, observation, {sessions: [{...row, ...fault?.patch}]});
+  }
+  if (method === 'POST' && url.pathname === '/api/writing-agent/' + id + '/resume') {
+    const row = data.writing.get(id);
+    assert.ok(row, '启动必须命中当前作品及分支中的原任务');
+    assert.equal(body.action, 'authorize');
+    assert.equal(body.checkpoint_id, row.checkpoint_id, '启动必须使用最近一次精确读取的检查点');
+    if (row.status === 'awaiting_authorization') Object.assign(row, {
+      status: 'awaiting_job', calls_used: 1, checkpoint_id: 'started_' + crypto.randomUUID(), updated_at: timestamp(),
+    });
+    if (interruptStart === id) {interruptStart = ''; return route.abort('failed');}
+    return respond(route, observation, {session: row});
+  }
+  throw new Error('Unexpected simulated writing route: ' + method + ' ' + url.pathname);
+}
+function fixtureSession(data, chapterId, name, options = {}) {
+  const session = {id: crypto.randomUUID(), project_id: options.project || 'default-project',
+    branch_id: options.branch || 'main', title: name, created_at: timestamp(), updated_at: timestamp(),
+    restored_read_only: !!options.readOnly};
+  const action = {id: crypto.randomUUID(), kind: options.mode || 'continue', label: name,
+    instruction: '按本次建议处理门外冲突：' + name, chapter_id: chapterId,
+    status: options.proposed ? 'proposed' : 'confirmed', result: {}};
+  data.sessions.unshift(session);
+  data.messages.set(session.id, [{id: crypto.randomUUID(), role: 'assistant', content: name,
+    created_at: timestamp(), actions: [action]}]);
+  const row = options.proposed ? null : writingTask(data, action, options.task || {});
+  return {session, action, row};
+}
+async function selectChat(page, fixture) {
+  await page.locator('[data-chat-history]').click();
+  await page.locator('[data-chat-session="' + fixture.session.id + '"]').waitFor();
+  await page.locator('[data-chat-session="' + fixture.session.id + '"]').click();
+  await page.locator('[data-chat-action="' + fixture.action.id + '"]').waitFor();
+  return page.locator('[data-chat-action="' + fixture.action.id + '"]');
+}
+const exactReads = id => writingRequests.filter(row => row.exact && row.id === id);
+const starts = id => writingRequests.filter(row => row.method === 'POST' && row.id === id);
 async function test(name, fn) {
   console.log(JSON.stringify({test: name, state: 'running'}));
   await fn(); report.cases.push({name, passed: true});
@@ -150,16 +268,54 @@ async function main() {
   await until(async () => {try {return (await fetch(base + '/api/health')).ok;} catch {return false;}}, 'startup');
   const initial = await api('/api/state');
   const firstId = initial.chapters[0].id;
+  const firstTitle = initial.chapters[0].title, secondId = 'chat_inline_other_chapter', secondTitle = '第二章 渡口的灯';
   initial.chapters[0].body = '林岚站在门外。😀她把铜钥匙留在门槛上。\n\n守卫没有回答。';
+  initial.chapters.push({...initial.chapters[0], id: secondId, title: secondTitle, body: '船工正在渡口收起灯笼。'});
   await api('/api/state', 'PUT', initial);
   const created = await api('/api/projects', 'POST', {title: '常驻聊天隔离作品'});
   const otherId = created.project?.id || created.state?.project?.id;
+  const otherState = await api('/api/state', 'GET', undefined, otherId);
+  const otherBranch = otherState.branch_id || otherState.project.branch_id;
   const baseline = await api('/api/state');
   browser = await chromium.launch({headless: true, executablePath: process.env.MOYU_CHROME_PATH || undefined});
   const context = await browser.newContext({viewport: {width: 1440, height: 1000}});
   const page = await context.newPage();
   page.on('pageerror', error => report.page_errors.push(error.message));
+  await page.addInitScript(() => {
+    const originalFetch = globalThis.fetch;
+    globalThis.__moyuConsumedRequests = [];
+    let sequence = 0;
+    globalThis.fetch = async function(...args) {
+      const url = new URL(typeof args[0] === 'string' ? args[0] : args[0].url, location.href);
+      const token = String(++sequence), options = {...args[1],
+        headers: new Headers(args[1]?.headers || (typeof args[0] === 'object' ? args[0].headers : undefined))};
+      if (url.pathname.startsWith('/api/agent-chat') || url.pathname.startsWith('/api/writing-agent')) {
+        options.headers.set('X-Moyu-UI-Request', token); args[1] = options;
+      }
+      if (globalThis.__moyuInlineOrderId && url.pathname.startsWith('/api/writing-agent') &&
+          (url.searchParams.get('session_id') === globalThis.__moyuInlineOrderId ||
+           url.pathname === '/api/writing-agent/' + globalThis.__moyuInlineOrderId + '/resume')) {
+        globalThis.__moyuInlineOrder.push(args[1]?.method === 'POST' ? 'post' : 'get');
+      }
+      let response;
+      try {
+        response = await originalFetch.apply(this, args);
+      } catch (error) {
+        setTimeout(() => globalThis.__moyuConsumedRequests.push(token), 0);
+        throw error;
+      }
+      const originalJSON = response.json.bind(response);
+      response.json = async function(...jsonArgs) {
+        const result = await originalJSON(...jsonArgs);
+        // Mark the next task so the application's JSON continuation settles first.
+        setTimeout(() => globalThis.__moyuConsumedRequests.push(token), 0);
+        return result;
+      };
+      return response;
+    };
+  });
   await page.route('**/api/agent-chat/**', chatRoute);
+  await page.route('**/api/writing-agent**', writingRoute);
   await page.goto(base); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
   await page.evaluate(() => authorSwitchProject('default-project'));
 
@@ -356,7 +512,8 @@ async function main() {
     [...data.runs.values()].at(-1).status = 'unknown';
     messages.push({id: crypto.randomUUID(), role: 'assistant', content: '', status: 'unknown',
       created_at: timestamp(), actions: [{id: 'ui-recover-confirmation', kind: 'continue',
-        label: '恢复已确认的续写步骤', status: 'confirming', result: {}}]});
+        label: '恢复已确认的续写步骤', instruction: '继续描写门外的冲突。',
+        chapter_id: firstId, status: 'confirming', result: {}}]});
     const before = requests.filter(row => row.suffix.endsWith('/confirm')).length;
     await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
     const row = page.locator('[data-chat-action="ui-recover-confirmation"]');
@@ -371,12 +528,351 @@ async function main() {
     assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
     assert.deepEqual(report.page_errors, []);
   });
+
+  await test('原卡精确绑定任务，迟到聊天和任务读取不回滚确认或手动启动结果', async () => {
+    delayedReply = false;
+    const data = workspace('default-project', 'main'), observations = [];
+    for (const outcome of ['success', '503', 'abort']) {
+      await page.locator('[data-view="memory"]').click();
+      const fixture = fixtureSession(data, firstId, '原卡继续门外冲突 ' + outcome, {proposed: true});
+      const card = await selectChat(page, fixture);
+      const oldBundle = gateOnce(row => row.method === 'GET' && row.suffix === '/sessions/' + fixture.session.id, outcome);
+      let oldTask;
+      try {
+        await bounded(oldBundle.entered, 'chat bundle held before confirmation: ' + outcome);
+        const draft = '旧读取结束后仍保留的问题 ' + outcome;
+        await page.locator('#agentChatInput').fill(draft);
+        await card.locator('[data-chat-confirm]').click();
+        await card.locator('[data-chat-start]:not([disabled])').waitFor();
+        const id = fixture.action.result.writing_session_id, row = data.writing.get(id);
+        assert.ok(id);
+        assert.equal(await page.evaluate(() => view), 'memory');
+        assert.equal(starts(id).length, 0, '确认建议不得自动启动任务');
+        assert.equal(await card.locator('[data-chat-writing-session]').getAttribute('data-chat-writing-session'), id);
+        assert.equal(await card.locator('[data-chat-task-source]').textContent(), '来源章 · ' + firstTitle);
+        assert.equal(await card.locator('.agent-chat-task-budget').textContent(), '模型调用 0 / 上限 3 次');
+        await releaseGate(page, oldBundle);
+        assert.equal(await card.locator('[data-chat-confirm]').count(), 0);
+        assert.equal(await card.locator('[data-chat-task-status]').getAttribute('data-chat-task-status'), 'awaiting_authorization');
+        assert.equal(await card.locator('[data-chat-start]').isEnabled(), true);
+        assert.equal(await page.locator('#agentChatNotice').textContent(), '');
+        assert.equal(await page.locator('#agentChatSaveState').textContent(), '对话已保存在本机');
+        assert.equal(await page.locator('#agentChatInput').inputValue(), draft);
+        const observation = {outcome, task_id: id,
+          confirmation_snapshot: oldBundle.snapshot.messages[0].actions[0].status};
+        if (outcome === 'success') {
+          oldTask = gateOnce(item => item.exact && item.id === id);
+          await card.locator('[data-chat-task-refresh]').click();
+          await bounded(oldTask.entered, 'old task progress held');
+          row.checkpoint_id = 'fresh_' + crypto.randomUUID();
+          const checkpoint = row.checkpoint_id;
+          await card.locator('[data-chat-start]').evaluate(button => {button.click(); button.click();});
+          await card.locator('[data-chat-task-status="awaiting_job"]').waitFor();
+          assert.equal(starts(id).length, 1, '双击只允许一次明确启动');
+          assert.equal(starts(id)[0].body.checkpoint_id, checkpoint);
+          await releaseGate(page, oldTask);
+          assert.equal(await card.locator('[data-chat-task-status]').getAttribute('data-chat-task-status'), 'awaiting_job');
+          assert.equal(await card.locator('.agent-chat-task-budget').textContent(), '模型调用 1 / 上限 3 次');
+          assert.equal(await card.locator('[data-chat-start]').count(), 0);
+          assert.equal(await page.evaluate(() => view), 'memory');
+
+          for (let index = 0; index < 51; index += 1) writingTask(data, {
+            id: 'distractor_' + index + '_' + crypto.randomUUID(), chapter_id: index % 2 ? firstId : secondId,
+            kind: index % 2 ? 'inspect' : 'continue', instruction: '其他任务 ' + index, result: {},
+          });
+          assert.ok(![...data.writing.keys()].reverse().slice(0, 50).includes(id));
+          const reads = exactReads(id).length;
+          await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+          await card.locator('[data-chat-writing-session="' + id + '"][data-chat-task-status="awaiting_job"]').waitFor();
+          assert.ok(exactReads(id).length > reads, '刷新后按准确编号读取，不能使用最近五十条猜测');
+          assert.equal(starts(id).length, 1, '刷新不能自动重新启动');
+          observation.stale_task_status = oldTask.snapshot.sessions[0].status;
+        }
+        assert.ok(exactReads(id).every(item => item.project === 'default-project' && item.branch === 'main'));
+        observations.push({...observation, start_requests: starts(id).length, exact_reads: exactReads(id).length});
+      } finally {
+        oldBundle.release(); oldTask?.release();
+      }
+    }
+    report.inline_task_races = observations;
+  });
+
+  await test('确认和启动回应丢失后读取原绑定，不自动重发或清除作者草稿', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const fixture = fixtureSession(data, firstId, '回应丢失的原任务', {proposed: true});
+    const card = await selectChat(page, fixture), draft = '回应丢失期间仍保留的问题。';
+    await page.locator('#agentChatInput').fill(draft);
+    interruptAction = fixture.action.id;
+    await card.locator('[data-chat-confirm]').click();
+    await card.locator('[data-chat-start]:not([disabled])').waitFor();
+    const id = fixture.action.result.writing_session_id;
+    assert.equal(requests.filter(row => row.suffix === '/actions/' + fixture.action.id + '/confirm').length, 1);
+    assert.equal([...data.writing.values()].filter(row => row.id === id).length, 1);
+    assert.equal(starts(id).length, 0);
+    assert.equal(await page.locator('#agentChatInput').inputValue(), draft);
+    const reads = exactReads(id).length;
+    interruptStart = id;
+    await card.locator('[data-chat-start]').click();
+    await card.locator('[data-chat-task-status="awaiting_job"]').waitFor();
+    assert.ok(exactReads(id).length >= reads + 2, '启动前和丢失回应后都精确核对原任务');
+    await until(() => exactReads(id).length > reads + 2, 'a progress poll after lost startup reply');
+    assert.equal(starts(id).length, 1, '恢复核对与后续轮询不得自动再次POST');
+    assert.equal(await card.locator('[data-chat-start]').count(), 0);
+    assert.equal(await page.locator('#agentChatInput').inputValue(), draft);
+    assert.equal(await page.evaluate(() => view), 'memory');
+    const recoveredReads = exactReads(id).length;
+    await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+    await card.locator('[data-chat-task-status="awaiting_job"]').waitFor();
+    assert.ok(exactReads(id).length > recoveredReads);
+    assert.equal(starts(id).length, 1);
+    assert.equal(await page.locator('#agentChatInput').inputValue(), draft);
+  });
+
+  await test('任务读取失败或编号章节方式指令不符时撤销启动资格，恢复后重新核实', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const fixture = fixtureSession(data, firstId, '严格核对来源的任务');
+    const card = await selectChat(page, fixture), id = fixture.row.id, observations = [];
+    await card.locator('[data-chat-start]:not([disabled])').waitFor();
+    const faults = [{name: '503', status: 503}, {name: 'id', patch: {id: 'another_task'}},
+      {name: 'chapter', patch: {chapter_id: secondId}}, {name: 'mode', patch: {mode: 'inspect'}},
+      {name: 'query', patch: {query: '另一条不相关的创作要求'}}];
+    for (const fault of faults) {
+      data.writingFaults.set(id, fault);
+      await card.locator('[data-chat-task-refresh]:not([disabled])').click();
+      await card.locator('[data-chat-task-status="unverified"]').waitFor();
+      await until(() => card.locator('[data-chat-task-error]').textContent(), 'failed task identity: ' + fault.name);
+      assert.equal(await card.locator('[data-chat-start]').count(), 0, fault.name);
+      assert.equal(starts(id).length, 0, fault.name);
+      assert.equal(await card.locator('[data-chat-task-source]').textContent(), '来源章 · ' + firstTitle);
+      observations.push({fault: fault.name, status: await card.locator('[data-chat-task-status]').getAttribute('data-chat-task-status')});
+      data.writingFaults.delete(id);
+      await card.locator('[data-chat-task-refresh]:not([disabled])').click();
+      await card.locator('[data-chat-start]:not([disabled])').waitFor();
+      assert.equal(await card.locator('[data-chat-task-error]').count(), 0);
+    }
+    assert.equal(await page.evaluate(() => view), 'memory');
+    try {
+      const renamed = await page.evaluate(({chapterId, actionId}) => {
+        globalThis.__moyuInlineOriginalChapters = state.chapters;
+        state.chapters = state.chapters.map(row => row.id === chapterId ? {...row, title: '当前来源章新标题'} : row);
+        MoyuAgentChat.sync();
+        const card = document.querySelector('[data-chat-action="' + actionId + '"]');
+        return {source: card.querySelector('[data-chat-task-source]').textContent,
+          starts: card.querySelectorAll('[data-chat-start]').length};
+      }, {chapterId: firstId, actionId: fixture.action.id});
+      assert.deepEqual(renamed, {source: '来源章 · 当前来源章新标题', starts: 1});
+      const missing = await page.evaluate(({chapterId, actionId}) => {
+        state.chapters = state.chapters.filter(row => row.id !== chapterId);
+        MoyuAgentChat.sync();
+        const card = document.querySelector('[data-chat-action="' + actionId + '"]');
+        return {source: card.querySelector('[data-chat-task-source]').textContent,
+          starts: card.querySelectorAll('[data-chat-start]').length};
+      }, {chapterId: firstId, actionId: fixture.action.id});
+      assert.deepEqual(missing, {source: '来源章节已不存在', starts: 0});
+      assert.equal(starts(id).length, 0);
+    } finally {
+      await page.evaluate(() => {
+        if (globalThis.__moyuInlineOriginalChapters) state.chapters = globalThis.__moyuInlineOriginalChapters;
+        delete globalThis.__moyuInlineOriginalChapters; MoyuAgentChat.sync();
+      });
+    }
+    assert.equal(await card.locator('[data-chat-task-source]').textContent(), '来源章 · ' + firstTitle);
+    assert.equal(await card.locator('[data-chat-start]').isEnabled(), true);
+    const otherChapter = fixtureSession(data, secondId, '另一章的独立任务');
+    const otherCard = await selectChat(page, otherChapter);
+    await otherCard.locator('[data-chat-start]:not([disabled])').waitFor();
+    assert.equal(await otherCard.locator('[data-chat-task-source]').textContent(), '来源章 · ' + secondTitle);
+    assert.equal(await otherCard.locator('[data-chat-writing-session]').getAttribute('data-chat-writing-session'), otherChapter.row.id);
+    assert.equal(await page.locator('[data-chat-writing-session="' + id + '"]').count(), 0);
+    assert.equal(starts(id).length + starts(otherChapter.row.id).length, 0);
+    report.inline_task_identity_failures = observations;
+  });
+
+  await test('续写先保存稿件和未保存规划，保存失败不读取或启动，成功使用最新检查点', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const fixture = fixtureSession(data, firstId, '续写前保留作者规划');
+    const card = await selectChat(page, fixture), id = fixture.row.id;
+    await card.locator('[data-chat-start]:not([disabled])').waitFor();
+    const reads = exactReads(id).length;
+    await page.evaluate(taskId => {
+      globalThis.__moyuInlineOriginalSave = authorSaveBlueprint;
+      globalThis.__moyuInlineOriginalSync = syncBackend;
+      globalThis.__moyuInlineOriginalDirty = authorBlueprintDirty;
+      globalThis.__moyuInlineOrderId = taskId; globalThis.__moyuInlineOrder = [];
+      syncBackend = async function(...args) {
+        globalThis.__moyuInlineOrder.push('sync');
+        return globalThis.__moyuInlineOriginalSync.apply(this, args);
+      };
+      authorBlueprintDirty = true;
+      authorSaveBlueprint = async function() {globalThis.__moyuInlineOrder.push('save-failed'); return false;};
+    }, id);
+    try {
+      await card.locator('[data-chat-start]').click();
+      await until(() => card.locator('[data-chat-action-error]').textContent(), 'unsaved blueprint refusal');
+      assert.deepEqual(await page.evaluate(() => globalThis.__moyuInlineOrder), ['sync', 'save-failed']);
+      assert.equal(exactReads(id).length, reads);
+      assert.equal(starts(id).length, 0);
+      const checkpoint = 'after_save_' + crypto.randomUUID();
+      fixture.row.checkpoint_id = checkpoint;
+      await page.evaluate(() => {
+        globalThis.__moyuInlineOrder = [];
+        authorSaveBlueprint = async function() {
+          globalThis.__moyuInlineOrder.push('save'); authorBlueprintDirty = false; return true;
+        };
+      });
+      await card.locator('[data-chat-start]:not([disabled])').click();
+      await card.locator('[data-chat-task-status="awaiting_job"]').waitFor();
+      assert.deepEqual(await page.evaluate(() => globalThis.__moyuInlineOrder), ['sync', 'save', 'get', 'post']);
+      assert.equal(starts(id).length, 1);
+      assert.equal(starts(id)[0].body.checkpoint_id, checkpoint);
+    } finally {
+      await page.evaluate(() => {
+        authorSaveBlueprint = globalThis.__moyuInlineOriginalSave;
+        syncBackend = globalThis.__moyuInlineOriginalSync;
+        authorBlueprintDirty = globalThis.__moyuInlineOriginalDirty;
+        delete globalThis.__moyuInlineOrderId; delete globalThis.__moyuInlineOrder;
+        delete globalThis.__moyuInlineOriginalSave; delete globalThis.__moyuInlineOriginalSync;
+        delete globalThis.__moyuInlineOriginalDirty;
+      });
+    }
+  });
+
+  await test('历史只读未知结果和待处理任务不能启动，终态经过聊天轮询仍不高频读取', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const fixture = fixtureSession(data, firstId, '保留终态任务', {task: {status: 'unknown'}});
+    const variants = [
+      {name: '需要处理', status: 'requires_action', error: '原任务费用状态未知，未重新发送。'},
+      {name: '历史任务', status: 'restored', restored_read_only: true, checkpoint_id: ''},
+      {name: '只读任务', status: 'awaiting_authorization', restored_read_only: true, checkpoint_id: ''},
+      {name: '已停止', status: 'canceled'}, {name: '审稿就绪', status: 'review_ready'},
+      {name: '来源变化', status: 'awaiting_authorization', source_stale: true},
+    ];
+    const actions = data.messages.get(fixture.session.id)[0].actions, ids = [fixture.row.id];
+    for (const variant of variants) {
+      const action = {id: crypto.randomUUID(), kind: 'continue', label: variant.name,
+        chapter_id: firstId, instruction: '核对原任务：' + variant.name, status: 'confirmed', result: {}};
+      actions.push(action); ids.push(writingTask(data, action, variant).id);
+    }
+    await selectChat(page, fixture);
+    for (const id of ids) {
+      await page.locator('[data-chat-writing-session="' + id + '"]:not([data-chat-task-status="unverified"])').waitFor();
+    }
+    assert.equal(await page.locator('[data-chat-start]').count(), 0);
+    const counts = ids.map(id => exactReads(id).length);
+    const chatReads = () => requests.filter(row => row.method === 'GET' && row.suffix === '/sessions/' + fixture.session.id).length;
+    const previous = chatReads();
+    await until(() => chatReads() >= previous + 2, 'two chat polls with terminal tasks');
+    assert.deepEqual(ids.map(id => exactReads(id).length), counts);
+    assert.ok(ids.every(id => starts(id).length === 0));
+
+    const restored = fixtureSession(data, firstId, '备份中的只读聊天', {readOnly: true});
+    const card = await selectChat(page, restored);
+    await card.locator('[data-chat-task-status="awaiting_authorization"]').waitFor();
+    assert.equal(await card.locator('[data-chat-start]').count(), 0);
+    assert.equal(await page.locator('#agentChatInput').isDisabled(), true);
+    assert.equal(starts(restored.row.id).length, 0);
+    const missing = fixtureSession(data, 'ui_missing_chapter', '来源章节缺失的保留任务');
+    const missingCard = await selectChat(page, missing);
+    await missingCard.locator('[data-chat-task-status="awaiting_authorization"]').waitFor();
+    assert.equal(await missingCard.locator('[data-chat-task-source]').textContent(), '来源章节已不存在');
+    assert.equal(await missingCard.locator('[data-chat-start]').count(), 0);
+    assert.equal(starts(missing.row.id).length, 0);
+    report.inline_task_terminal_reads = ids.map((id, index) => ({id, reads_before: counts[index], reads_after: exactReads(id).length}));
+  });
+
+  await test('任务与查看结果的迟到读取跨聊天作品分支均不串线或导航', async () => {
+    const observations = [];
+    report.inline_task_scope_races = observations;
+    await page.locator('[data-view="library"]').click();
+    await page.locator('[data-project-open="' + otherId + '"]').waitFor();
+    const syntheticBranch = 'inline-task-synthetic';
+    const syntheticState = async route => {
+      const request = route.request(), headers = request.headers();
+      if (headers['x-moyu-branch'] !== syntheticBranch) return route.continue();
+      assert.equal(request.method(), 'GET', '合成分支只用于读取身份隔离，不允许写入正式作品');
+      const value = await api('/api/state', 'GET', undefined, headers['x-moyu-project']);
+      value.branch_id = syntheticBranch; value.project.branch_id = syntheticBranch;
+      return route.fulfill({status: 200, contentType: 'application/json', body: JSON.stringify(value)});
+    };
+    await page.route('**/api/state', syntheticState);
+    try {
+    for (const kind of ['refresh', 'result']) for (const transition of ['chat', 'project', 'branch']) {
+      await page.evaluate(() => authorSwitchProject('default-project'));
+      await page.locator('[data-view="memory"]').click();
+      const data = workspace('default-project', 'main');
+      const source = fixtureSession(data, firstId, '迟到来源 ' + kind + ' ' + transition);
+      const sourceCard = await selectChat(page, source);
+      await sourceCard.locator('[data-chat-start]:not([disabled])').waitFor();
+      let reads = 0;
+      const gate = gateOnce(row => row.exact && row.id === source.row.id &&
+        ++reads === (kind === 'result' ? 2 : 1));
+      try {
+        await sourceCard.locator(kind === 'result' ? '[data-chat-open-result]' : '[data-chat-task-refresh]').click();
+        await bounded(gate.entered, 'late ' + kind + ' request before ' + transition);
+        let target;
+        if (transition === 'project') {
+          target = fixtureSession(workspace(otherId, otherBranch), otherState.chapters[0].id,
+            '目标作品聊天', {project: otherId, branch: otherBranch, task: {status: 'requires_action'}});
+          const switched = await page.evaluate(id => authorSwitchProject(id), otherId);
+          assert.equal(switched, true, JSON.stringify(await page.evaluate(() => ({
+            project: requestedProject, branch: state.branch_id, backendOnline, saveError,
+          }))));
+        } else if (transition === 'branch') {
+          target = fixtureSession(workspace('default-project', syntheticBranch), firstId,
+            '目标分支聊天', {branch: syntheticBranch, task: {status: 'requires_action'}});
+          await page.evaluate(value => {
+            state.branch_id = value; state.project.branch_id = value;
+            confirmedState = MoyuSync.copy(state); render();
+          }, syntheticBranch);
+        } else target = fixtureSession(data, firstId, '目标聊天', {task: {status: 'requires_action'}});
+        const targetCard = await selectChat(page, target);
+        await page.locator('[data-view="memory"]').click();
+        const draft = '保留目标输入 ' + kind + ' ' + transition;
+        await page.locator('#agentChatInput').fill(draft);
+        const identity = () => page.evaluate(() => ({project: requestedProject, branch: state.branch_id || 'main',
+          view, chapter: activeChapter, focus: authorAgentFocus?.id || null}));
+        const before = await identity();
+        await releaseGate(page, gate);
+        await targetCard.locator('[data-chat-task-status="requires_action"]').waitFor();
+        assert.deepEqual(await identity(), before, kind + ' / ' + transition);
+        assert.equal(await page.locator('[data-chat-action="' + source.action.id + '"]').count(), 0);
+        assert.equal(await targetCard.locator('[data-chat-task-error]').count(), 0);
+        assert.equal(await page.locator('#agentChatInput').inputValue(), draft);
+        assert.equal(starts(source.row.id).length, 0);
+        assert.ok(exactReads(target.row.id).every(row => row.project === target.session.project_id && row.branch === target.session.branch_id));
+        observations.push({kind, transition, source_task: source.row.id, target_task: target.row.id,
+          source_reads_before_switch: reads, final_identity: before});
+      } finally {
+        gate.release();
+        await page.evaluate(() => {
+          if(requestedProject==='default-project'&&state.branch_id==='inline-task-synthetic'){
+            state.branch_id = 'main'; state.project.branch_id = 'main';
+            confirmedState = MoyuSync.copy(state); render();
+          }
+        });
+        await page.evaluate(() => authorSwitchProject('default-project'));
+      }
+    }
+    } finally {
+      await page.unroute('**/api/state', syntheticState);
+    }
+    report.inline_task_scope_races = observations;
+    assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
+    assert.deepEqual(report.page_errors, []);
+  });
   report.passed = true;
   await context.close();
 }
 main().catch(error => {
   report.error = error.stack; report.server_log = log.slice(-3000); process.exitCode = 1;
 }).finally(async () => {
+  for (const gate of routeGates) gate.release();
+  await bounded(Promise.allSettled(routeGates.filter(gate => gate.used).map(gate => gate.finished)),
+    'held route cleanup').catch(() => {});
   if (browser) await browser.close();
   if (app && app.exitCode === null) {
     const exited = new Promise(resolve => app.once('exit', resolve)); app.kill('SIGTERM'); await exited;

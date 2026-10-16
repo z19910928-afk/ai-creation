@@ -58,15 +58,23 @@
   <div class="agent-chat-send-row"><span id="agentChatSaveState" class="agent-chat-save-state">正在连接本机…</span><button class="agent-chat-send" id="agentChatSend" type="submit" title="发送消息" aria-label="发送消息">${icon('send')}</button></div></form>`;
  const $=selector=>host.querySelector(selector),feed=$('#agentChatFeed'),input=$('#agentChatInput');
  let observed='',observedScope=null,epoch=0,sessionEpoch=0,session=null,sessions=[],messages=[],activeRun=null,settings=null;
- let timer=null,loading=false,sendOperation=null,actionOperation=null,creating=false,polling=false;
+ let timer=null,loading=false,sendOperation=null,actionOperation=null,creating=false,polling=false,bundleRevision=0;
  let references=[],draftRevision=0,pendingSend=null,pendingCreation=null,historyOpen=false,messageSignature='',notice='',loadError='';
+ const writingTasks=new Map(),actionErrors=new Map();
+ const writingLabels={awaiting_authorization:'等待启动',awaiting_job:'正在执行',awaiting_adoption:'正文候选待采纳',
+  awaiting_memory:'等待章后确认',awaiting_plan_confirmation:'本阶段候选待确认',awaiting_plan_application:'完整规划待采用',
+  requires_action:'需要处理',review_ready:'记忆与审稿已就绪',canceled:'已停止',restored:'历史记录',unknown:'任务结果尚未确认'};
  const terminal=new Set(['success','failed','canceled','cancelled','interrupted','unknown','complete','completed']);
  const running=()=>activeRun&&!terminal.has(activeRun.status);
  const scope=()=>({project:requestedProject||state.project?.id||'',branch:state.branch_id||state.project?.branch_id||'main'});
  const scopeKey=(value=scope())=>JSON.stringify([value.project,value.branch]);
- const capture=()=>({...scope(),epoch,sessionEpoch,sessionId:session?.id||null});
- const current=value=>value.epoch===epoch&&value.sessionEpoch===sessionEpoch&&scopeKey(value)===observed&&
+ const capture=()=>({...scope(),epoch,sessionEpoch,bundleRevision,sessionId:session?.id||null});
+ const current=value=>value.epoch===epoch&&value.sessionEpoch===sessionEpoch&&scopeKey(value)===observed&&scopeKey(value)===scopeKey()&&
   value.sessionId===(session?.id||null);
+ const allActions=()=>messages.flatMap(message=>message.actions||[]);
+ const boundAction=action=>allActions().find(item=>item.id===action.id&&item.kind===action.kind&&
+  item.chapter_id===action.chapter_id&&item.instruction===action.instruction&&item.result?.writing_session_id===action.result?.writing_session_id);
+ const taskCurrent=(action,captured,entry)=>current(captured)&&!!boundAction(action)&&writingTasks.get(action.result?.writing_session_id)===entry;
  const localKey=suffix=>{
   const saved=observedScope||scope();
   return `${KEY}:${saved.project||'default-project'}${suffix}`;
@@ -113,7 +121,7 @@
   const send=$('#agentChatSend');
   send.innerHTML=icon(active?'stop':'send');send.type=active?'button':'submit';
   send.dataset.stopping=String(active);send.title=active?'停止本次回复':'发送消息';send.setAttribute('aria-label',send.title);
-  send.disabled=!backendOnline||!!sendOperation||creating||readOnly||(!active&&!input.value.trim());
+  send.disabled=!backendOnline||!!sendOperation||!!actionOperation||creating||readOnly||(!active&&!input.value.trim());
   input.disabled=readOnly;
   input.placeholder=readOnly?'这是恢复的历史对话，请新建对话继续。':'想写什么，或哪里需要调整？';
   $('#agentChatSaveState').textContent=savedState();
@@ -128,16 +136,58 @@
  function relativeDate(value){
   const date=new Date(value);return Number.isNaN(date.getTime())?'':date.toLocaleString('zh-CN',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
  }
+ function taskEntry(action){
+  const id=action.result?.writing_session_id;if(!id)return null;
+  if(!writingTasks.has(id))writingTasks.set(id,{row:null,verified:false,error:'',sequence:0,nextRead:0,pending:null,uncertain:false});
+  return writingTasks.get(id);
+ }
+ function taskMatches(action,row){
+  return row?.id===action.result?.writing_session_id&&row.chapter_id===action.chapter_id&&row.mode===action.kind&&
+   (typeof action.instruction!=='string'||row.query===action.instruction.trim());
+ }
+ function taskDelay(row){
+  if(session?.restored_read_only||row?.restored_read_only)return Infinity;
+  if(row?.status==='awaiting_job')return 850;
+  return ['awaiting_authorization','awaiting_adoption','awaiting_memory','awaiting_plan_confirmation','awaiting_plan_application']
+   .includes(row?.status)?15000:Infinity;
+ }
+ function taskCanStart(entry,action){
+  const row=entry?.row;
+  return entry?.verified&&taskMatches(action,row)&&!!chapter(action.chapter_id)&&!entry.uncertain&&!session?.restored_read_only&&!row?.restored_read_only&&!row?.source_stale&&
+   row?.status==='awaiting_authorization'&&typeof row.checkpoint_id==='string'&&!!row.checkpoint_id&&
+   Number.isInteger(row.calls_used)&&Number.isInteger(row.max_calls)&&row.calls_used>=0&&row.max_calls>row.calls_used;
+ }
+ function taskMarkup(action){
+  const entry=taskEntry(action);if(!entry)return '';
+  const row=entry.row,readOnly=session?.restored_read_only||row?.restored_read_only,source=chapter(action.chapter_id);
+  const verified=entry.verified&&taskMatches(action,row);
+  const label=row?.mode==='plan'&&row.status==='review_ready'?'完整规划已采用':writingLabels[row?.status]||'任务状态尚未核实';
+  return `<div class="agent-chat-task" data-chat-writing-session="${esc(action.result.writing_session_id)}" data-chat-task-status="${esc(verified?row.status:'unverified')}">
+   <p class="agent-chat-task-source" data-chat-task-source>${source?'来源章 · '+esc(source.title):'来源章节已不存在'}</p>
+   <p class="agent-chat-task-state">${esc(entry.uncertain?'启动结果待核对':verified?label:row?label+' · 状态尚未核实':'正在核对任务状态…')}</p>
+   ${Number.isInteger(row?.calls_used)&&Number.isInteger(row?.max_calls)?`<p class="agent-chat-task-budget">模型调用 ${row.calls_used} / 上限 ${row.max_calls} 次</p>`:''}
+   ${readOnly?'<small>历史只读，保留本次任务记录。</small>':!source?'<small>请在当前作品重新选择章节并讨论。</small>':
+    row?.source_stale?'<small>任务依据已变化，请按当前内容重新讨论。</small>':
+    taskCanStart(entry,action)?'<small>启动后按当前模型额度计费。</small>':''}
+   ${row?.error?`<p class="form-error">${esc(row.error)}</p>`:''}
+   ${entry.error?`<p class="form-error" data-chat-task-error>${esc(entry.error)}</p>`:''}</div>`;
+ }
  function actionMarkup(action){
   const done=['confirmed','executed','completed','applied'].includes(action.status),dismissed=['dismissed','rejected','canceled'].includes(action.status);
   const confirming=action.status==='confirming',canConfirm=!done&&!dismissed&&!session?.restored_read_only;
+  const entry=taskEntry(action),disabled=!!actionOperation||!!sendOperation||creating||!backendOnline;
   return `<section class="agent-chat-action" data-chat-action="${esc(action.id)}"><h4>${esc(action.label||'创作建议')}</h4>
    ${action.instruction?`<p>${esc(action.instruction)}</p>`:''}<small>${dismissed?'已放弃':done?'已确认，处理结果已保存':confirming?'确认结果待恢复，请恢复此步骤后查看进度':action.kind==='open'?'查看当前作品内容':action.kind==='next_chapter'?'检查通过后归档本章，打开下一章；本步骤不生成正文':'确认后进入相应创作流程'}</small>
-   <div class="agent-chat-action-buttons">${canConfirm?`<button type="button" class="primary-btn" data-chat-confirm>${confirming?'恢复此步骤':action.kind==='open'?'打开':'确认此步骤'}</button>${action.kind!=='open'&&!confirming?'<button type="button" class="ghost-btn" data-chat-dismiss>放弃</button>':''}`:''}
-   ${done?`<button type="button" class="ghost-btn" data-chat-open-result>${action.kind==='open'?'再次打开':'查看结果'}</button>`:''}</div><p class="form-error" data-chat-action-error role="alert"></p></section>`;
+   ${taskMarkup(action)}<div class="agent-chat-action-buttons">${canConfirm?`<button type="button" class="primary-btn" data-chat-confirm ${disabled?'disabled':''}>${confirming?'恢复此步骤':action.kind==='open'?'打开':'确认此步骤'}</button>${action.kind!=='open'&&!confirming?`<button type="button" class="ghost-btn" data-chat-dismiss ${disabled?'disabled':''}>放弃</button>`:''}`:''}
+   ${done&&taskCanStart(entry,action)?`<button type="button" class="primary-btn" data-chat-start ${disabled?'disabled':''}>启动本次任务</button>`:''}
+   ${done?`<button type="button" class="ghost-btn" data-chat-open-result ${disabled?'disabled':''}>${action.kind==='open'?'再次打开':entry?'查看本次结果':'查看结果'}</button>`:''}
+   ${entry?`<button type="button" class="ghost-btn" data-chat-task-refresh ${disabled||entry.pending?'disabled':''}>核对进度</button>`:''}</div><p class="form-error" data-chat-action-error role="alert">${esc(actionErrors.get(action.id)?.message||'')}</p></section>`;
  }
  function renderMessages(force=false){
-  const signature=JSON.stringify([messages,activeRun?.id,activeRun?.status,activeRun?.error,session?.restored_read_only,loadError,loading]);
+  const signature=JSON.stringify([messages,activeRun?.id,activeRun?.status,activeRun?.error,session?.restored_read_only,loadError,loading,
+   [...writingTasks].map(([id,entry])=>[id,entry.row,entry.verified,entry.error,entry.uncertain,!!entry.pending]),
+   [...actionErrors],actionOperation?.actionId,!!sendOperation,!!creating,backendOnline,
+   allActions().map(action=>[action.id,chapter(action.chapter_id)?.title])]);
   if(!force&&signature===messageSignature){updateControls();return}
   messageSignature=signature;
   const nearBottom=feed.scrollHeight-feed.scrollTop-feed.clientHeight<70,scroll=feed.scrollTop;
@@ -154,34 +204,52 @@
   if(activeRun?.error)feed.insertAdjacentHTML('beforeend',`<p class="agent-chat-message-state">${esc(activeRun.error)}</p>`);
   feed.querySelector('[data-chat-retry]')?.addEventListener('click',()=>loadSessions(true));
   feed.querySelectorAll('[data-chat-action]').forEach(element=>{
-   const action=messages.flatMap(message=>message.actions||[]).find(item=>item.id===element.dataset.chatAction);
-   element.querySelector('[data-chat-confirm]')?.addEventListener('click',()=>performAction(action,'confirm',element));
-   element.querySelector('[data-chat-dismiss]')?.addEventListener('click',()=>performAction(action,'dismiss',element));
-   element.querySelector('[data-chat-open-result]')?.addEventListener('click',()=>performAction(action,'result',element));
+   const action=allActions().find(item=>item.id===element.dataset.chatAction);
+   element.querySelector('[data-chat-confirm]')?.addEventListener('click',()=>performAction(action,'confirm'));
+   element.querySelector('[data-chat-dismiss]')?.addEventListener('click',()=>performAction(action,'dismiss'));
+   element.querySelector('[data-chat-open-result]')?.addEventListener('click',()=>performAction(action,'result'));
+   element.querySelector('[data-chat-start]')?.addEventListener('click',()=>performAction(action,'start'));
+   element.querySelector('[data-chat-task-refresh]')?.addEventListener('click',()=>readWritingTask(action,{force:true}));
   });
   if(nearBottom||force)feed.scrollTop=feed.scrollHeight;else feed.scrollTop=scroll;
   updateControls();
  }
  function applyBundle(data,captured){
-  if(!current(captured))return false;
+  if(!current(captured)||captured.bundleRevision!==bundleRevision)return false;
   if(data.session&&(data.session.project_id!==captured.project||data.session.branch_id!==captured.branch))return false;
+  if(data.session&&data.session.id!==captured.sessionId)return false;
   if(data.session){session=data.session;storage.set(lastKey(),session.id)}
   if(Array.isArray(data.messages))messages=data.messages;
+  for(const action of allActions())if(action.status==='confirmed'&&actionErrors.get(action.id)?.kind==='confirm')actionErrors.delete(action.id);
   activeRun=data.active_run||null;settings=data.settings||settings;loadError='';loading=false;
   $('#agentChatTitle').textContent=session?.title||'新对话';
   renderMessages();schedule();return true;
  }
- function schedule(delay=running()?850:3500){
+ function schedule(delay){
+  if(delay===undefined){
+   delay=running()?850:3500;
+   for(const action of allActions()){
+    const entry=taskEntry(action);if(entry&&!entry.pending)delay=Math.min(delay,Math.max(100,entry.nextRead-Date.now()));
+   }
+  }
   clearTimeout(timer);timer=setTimeout(poll,delay);
  }
  async function poll(){
-  if(polling||!session||!backendOnline)return schedule();
+  if(polling||!session||!backendOnline||sendOperation||actionOperation)return schedule(850);
   const captured=capture(),previous=activeRun?.id;polling=true;
   try{
    const path=running()?'/runs/'+encodeURIComponent(activeRun.id):'/sessions/'+encodeURIComponent(session.id);
    const data=await request(path,{},captured);
    if(applyBundle(data,captured)&&previous&&!running())loadSessions(false);
-  }catch(error){if(current(captured)){loadError=publicError(error);notify(loadError);updateControls()}}
+   if(current(captured)&&captured.bundleRevision===bundleRevision&&!actionOperation){
+    const due=new Map();
+    for(const action of allActions()){
+     const entry=taskEntry(action);
+     if(entry&&!entry.pending&&entry.nextRead<=Date.now())due.set(action.result.writing_session_id,action);
+    }
+    await Promise.all([...due.values()].map(action=>readWritingTask(action,{captured})));
+   }
+  }catch(error){if(current(captured)&&captured.bundleRevision===bundleRevision){loadError=publicError(error);notify(loadError);updateControls()}}
   finally{polling=false;if(current(captured))schedule()}
  }
  async function loadSessions(selectLast=false){
@@ -200,6 +268,7 @@
  }
  async function selectSession(id){
   rememberDraft();++sessionEpoch;clearTimeout(timer);session=sessions.find(item=>item.id===id)||{id};
+  writingTasks.clear();actionErrors.clear();actionOperation=null;++bundleRevision;
   messages=[];activeRun=null;pendingSend=null;pendingCreation=null;loadError='';loading=true;notify('');historyOpen=false;
   $('.agent-chat-history').hidden=true;restoreDraft();renderMessages(true);
   const captured=capture();
@@ -209,6 +278,7 @@
  async function newSession(){
   if(creating||sendOperation)return;
   rememberDraft();++sessionEpoch;clearTimeout(timer);session=null;messages=[];activeRun=null;pendingSend=null;pendingCreation=null;
+  writingTasks.clear();actionErrors.clear();actionOperation=null;++bundleRevision;
   loading=false;loadError='';historyOpen=false;$('.agent-chat-history').hidden=true;notify('');
   references=[];input.value='';++draftRevision;renderReferences();renderMessages(true);
   storage.set(lastKey(),'__new__');rememberDraft();input.focus();
@@ -264,10 +334,10 @@
  }
  async function send(event){
   event?.preventDefault();if(running())return cancel();
-  if(sendOperation||creating||!input.value.trim()||session?.restored_read_only)return;
+  if(sendOperation||actionOperation||creating||!input.value.trim()||session?.restored_read_only)return;
   const operation={},captured=capture(),content=input.value.trim(),revision=draftRevision;
   const refs=references.map(ref=>MoyuSync.copy(ref)),include=$('#agentChatIncludeChapter').checked,cid=chapter()?.id||null;
-  sendOperation=operation;notify('');updateControls();
+  sendOperation=operation;captured.bundleRevision=++bundleRevision;notify('');renderMessages();
   try{
    if(!backendOnline)throw new Error('请先连接本机服务。');
    if(!await syncBackend())throw new Error('请先保存或合并当前稿件。');
@@ -284,45 +354,121 @@
    if(draftRevision===revision&&input.value.trim()===content){input.value='';references=[];++draftRevision;renderReferences()}
    rememberDraft();notify('');renderMessages();loadSessions(false);
   }catch(error){if(current(captured)){notify(publicError(error));rememberDraft()}}
-  finally{if(sendOperation===operation){sendOperation=null;updateControls()}}
+  finally{if(sendOperation===operation){sendOperation=null;renderMessages();schedule(0)}}
  }
  async function cancel(){
-  if(!running()||sendOperation)return;
-  const captured=capture(),operation={};sendOperation=operation;updateControls();
+  if(!running()||sendOperation||actionOperation)return;
+  const captured=capture(),operation={};sendOperation=operation;captured.bundleRevision=++bundleRevision;renderMessages();
   try{applyBundle(await request('/runs/'+encodeURIComponent(activeRun.id)+'/cancel',{method:'POST',body:'{}'},captured),captured)}
   catch(error){if(current(captured))notify(publicError(error))}
-  finally{if(sendOperation===operation){sendOperation=null;updateControls()}}
+  finally{if(sendOperation===operation){sendOperation=null;renderMessages();schedule(0)}}
  }
- async function performAction(action,kind,element){
-  if(!action||actionOperation||session?.restored_read_only&&kind!=='result')return;
-  const captured=capture(),operation={};actionOperation=operation;
-  element.querySelectorAll('button').forEach(item=>item.disabled=true);element.querySelector('[data-chat-action-error]').textContent='';
+ async function writingRequest(path,options,captured){
+  const response=await fetch('/api/writing-agent'+path,{signal:AbortSignal.timeout(20000),...options,headers:{'Content-Type':'application/json',
+   'X-Moyu-Project':captured.project,'X-Moyu-Branch':captured.branch}});
+  const data=await response.json().catch(()=>({}));
+  if(!response.ok){const error=new Error(data.error||`任务状态尚未读取（${response.status}）`);error.status=response.status;throw error}
+  return data;
+ }
+ async function readWritingTask(action,{force=false,captured=capture()}={}){
+  const entry=taskEntry(action);if(!entry||!taskCurrent(action,captured,entry)||!backendOnline)return null;
+  if(entry.pending&&!force)return entry.pending;
+  const sequence=++entry.sequence;
+  const valid=()=>taskCurrent(action,captured,entry)&&sequence===entry.sequence;
+  const pending=(async()=>{
+   try{
+    const data=await writingRequest('?session_id='+encodeURIComponent(action.result.writing_session_id),{},captured);
+    if(!valid())return null;
+    const row=data.sessions?.find(item=>item.id===action.result.writing_session_id);
+    if(!taskMatches(action,row))throw new Error('写作任务与这条建议不一致，请重新核对。');
+    entry.row=row;entry.verified=true;entry.error='';entry.nextRead=Date.now()+taskDelay(row);
+    if(row.status!=='awaiting_authorization')entry.uncertain=false;
+    return row;
+   }catch(error){
+    if(valid()){entry.verified=false;entry.error='任务状态尚未核实：'+publicError(error);entry.nextRead=Date.now()+15000}
+    return null;
+   }finally{
+    if(valid()){entry.pending=null;renderMessages();schedule()}
+   }
+  })();
+  entry.pending=pending;renderMessages();return pending;
+ }
+ function mergeAction(action,result){
+  const updated={...action,...result.action,result:{...action.result,...result.action?.result}};
+  if(result.writing_session?.id&&!updated.result.writing_session_id)updated.result.writing_session_id=result.writing_session.id;
+  if(result.job?.id&&!updated.result.job_id)updated.result.job_id=result.job.id;
+  messages=messages.map(message=>({...message,actions:message.actions?.map(item=>item.id===action.id?updated:item)}));
+  return updated;
+ }
+ async function startWritingTask(action,captured){
+  const entry=taskEntry(action);if(!taskCurrent(action,captured,entry)||!taskCanStart(entry,action))return;
+  if(authorBlueprintDirty&&!await authorSaveBlueprint())throw new Error('当前规划需要先保存。');
+  if(!taskCurrent(action,captured,entry)||session?.restored_read_only)return;
+  const row=await readWritingTask(action,{force:true,captured});
+  if(!taskCurrent(action,captured,entry)||!row)return;
+  if(!taskCanStart(entry,action))throw new Error('任务进度已变化，请按卡片中的当前状态继续。');
+  // A fresh read invalidates older progress requests before an authorized write.
+  ++entry.sequence;entry.pending=null;entry.verified=false;entry.error='';entry.nextRead=Infinity;renderMessages();
+  try{
+   const data=await writingRequest('/'+encodeURIComponent(row.id)+'/resume',{method:'POST',
+    body:JSON.stringify({action:'authorize',checkpoint_id:row.checkpoint_id})},captured);
+   if(!taskCurrent(action,captured,entry))return;
+   if(!taskMatches(action,data.session))throw new Error('启动回应与这条建议不一致，请核对本次任务。');
+   entry.row=data.session;entry.verified=true;entry.uncertain=false;entry.nextRead=Date.now()+taskDelay(data.session);
+   scheduleQueue(0);
+  }catch(error){
+   if(!taskCurrent(action,captured,entry))return;
+   entry.uncertain=!error.status||error.status>=500;
+   entry.error=entry.uncertain?'启动结果待核对，正在读取原任务；请勿重复启动。':publicError(error);
+   entry.verified=false;renderMessages();
+   const problem=entry.error;
+   const latest=await readWritingTask(action,{force:true,captured});
+   if(taskCurrent(action,captured,entry)&&(!latest||latest.status==='awaiting_authorization'||entry.uncertain))
+    entry.error=problem+(entry.error?' '+entry.error:'');
+  }
+ }
+ async function performAction(action,kind){
+  if(!action||actionOperation||sendOperation||creating||session?.restored_read_only&&kind!=='result')return;
+  const captured=capture(),startingChapter=activeChapter,operation={actionId:action.id};actionOperation=operation;
+  captured.bundleRevision=++bundleRevision;actionErrors.delete(action.id);renderMessages();
   try{
    if(!await syncBackend())throw new Error('请先保存或合并当前稿件。');
    if(!current(captured))return;
-   if(kind==='result'){await openActionResult(action);return}
+   if(kind==='result'){
+    if(activeChapter!==startingChapter)return;
+    await openActionResult(action,captured,startingChapter);return;
+   }
+   if(kind==='start'){await startWritingTask(action,captured);return}
    const path='/actions/'+encodeURIComponent(action.id)+'/'+kind;
    const result=action.kind==='next_chapter'&&kind==='confirm'?
     await durableOperation('/api/agent-chat'+path,'POST',{confirm:true},()=>current(captured)):
     await request(path,{method:'POST',body:JSON.stringify({confirm:true})},captured);
    if(!current(captured))return;
+   ++bundleRevision;
+   const updated=mergeAction(action,result);
    if(kind==='confirm'){
-    const updated=result.action||action;
     if(result.job?.id){jobSources.set(result.job.id,result.job.source);scheduleQueue(0)}
-    await openActionResult({...updated,result:{...action.result,...updated.result,
-     writing_session_id:result.writing_session?.id||updated.result?.writing_session_id,job_id:result.job?.id||updated.result?.job_id}});
+    if(updated.result.writing_session_id){
+     const entry=taskEntry(updated);
+     if(result.writing_session&&taskMatches(updated,result.writing_session))entry.row=result.writing_session;
+     renderMessages();await readWritingTask(updated,{force:true,captured});
+    }else await openActionResult(updated,captured);
    }
-   if(current(captured))await poll();
-  }catch(error){if(current(captured)&&element.isConnected)element.querySelector('[data-chat-action-error]').textContent=publicError(error)}
-  finally{if(actionOperation===operation)actionOperation=null;if(element.isConnected)element.querySelectorAll('button').forEach(item=>item.disabled=false)}
+  }catch(error){if(current(captured))actionErrors.set(action.id,{kind,message:publicError(error)})}
+  finally{
+   if(actionOperation===operation){actionOperation=null;if(current(captured)){++bundleRevision;renderMessages();schedule(0)}}
+  }
  }
- async function openActionResult(action){
+ async function openActionResult(action,captured=capture(),startingChapter=activeChapter){
   const result=action.result||{},cid=action.chapter_id;
   if(result.writing_session_id){
-   await authorOpenAgentSession(result.writing_session_id,cid);return;
+   const resultCurrent=()=>current(captured)&&activeChapter===startingChapter&&!!boundAction(action);
+   const row=await readWritingTask(action,{force:true,captured});
+   if(!resultCurrent())return;
+   if(!row)throw new Error(taskEntry(action)?.error||'任务状态尚未核实，请先核对进度。');
+   await authorOpenAgentSession(result.writing_session_id,cid,resultCurrent);return;
   }
   if(action.kind==='next_chapter'&&result.chapter_id){
-   const captured=capture();
    if(!await hydrate())throw new Error('章节交接已保存，页面暂未读到。恢复连接后可再查看结果。');
    if(!current(captured))return;
    if(mergePending)throw new Error('交接已保存，请先合并当前稿件，再打开下一章。');
@@ -349,13 +495,14 @@
   if(next!==observed){
    if(observed)rememberDraft();
    observed=next;observedScope={...scope()};++epoch;++sessionEpoch;clearTimeout(timer);session=null;sessions=[];messages=[];activeRun=null;settings=null;
+   writingTasks.clear();actionErrors.clear();++bundleRevision;
    loading=backendOnline;loadError='';sendOperation=null;actionOperation=null;creating=false;references=[];pendingSend=null;pendingCreation=null;
    historyOpen=false;$('.agent-chat-history').hidden=true;notify('');restoreDraft();renderMessages(true);loadSessions(true);
   }else if(backendOnline&&!session&&!loading&&!sessions.length){loading=true;loadSessions(true)}
   $('#agentChatProject').textContent=state.project.title;
   $('#agentChatProject').title=state.project.title;
   $('#agentChatBranch').textContent=scope().branch==='main'?'主线':scope().branch;
-  $('.agent-chat-results').hidden=view!=='editor';updateControls();
+  $('.agent-chat-results').hidden=view!=='editor';renderMessages();
  }
  $('#agentChatForm').addEventListener('submit',send);
  $('#agentChatSend').addEventListener('click',event=>{if(running()){event.preventDefault();cancel()}});
