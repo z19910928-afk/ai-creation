@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "verified_at": "2026-10-16T16:11:53.108513+00:00",
+  "verification_scope": "frontend_static_hot_update_read_only_recheck_without_browser",
+  "release_tag": "agent-chat-inline-release-20261016-03",
+  "release_report_sha256": "51d5df0200642afee0e24db07ee507d69e7afa792b2e1a75195eb1808f86b36a",
+  "integrated_head_sha256": "db78e076f8b331cf6237a6dc61b43062de99352b9a8d9999087af911aabaf196",
+  "release_source_count": 146,
+  "release_sources_match_before_and_after": true,
+  "changed_frontend_source_count": 3,
+  "changed_frontend_sources_sha256": "6e9771820484689597743fd4c2bc37b9a97ea2f1e4575c8b7abe1d2e7eedb1c9",
+  "changed_auxiliary_source_count": 5,
+  "changed_source_count": 8,
+  "exact_parent_pinned_changed_source_set_verified": true,
+  "changed_sources_sha256": "d707a38684bc8e7c83bd844a39960c2d8b211a7f5b10a93742407b104e6b8dd5",
+  "frontend_test_sha256": "e3d8b6426c1251182df24a004a872034f9d193fbbd65ec112404dfd660d7df2e",
+  "backend_sources_unchanged": true,
+  "static_resource_count": 13,
+  "http_get_count": 13,
+  "static_resources_match_local_and_release": true,
+  "static_resources_sha256": "4c629d7a4593c443a9b9e78835bd7deb44a43da1ac464ff477af6d0b487775d4",
+  "process_count": 2,
+  "process_ports": [
+    4174,
+    4173
+  ],
+  "processes_unchanged_from_previous_baseline": true,
+  "processes_sha256": "52f5ed668affae0bd2062a59fe194ef59383accae694e071aa8be782446b5966",
+  "all_tables_content_schema_and_versions_unchanged": true,
+  "databases": {
+    "preview": {
+      "table_count": 72,
+      "row_count": 50,
+      "schema_sha256": "055b29f67aee06a63ae1b7eb9b8d5c68e604176eb77fa47eeca129c532bca99a",
+      "tables_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+      "schema_version": 10,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    },
+    "original": {
+      "table_count": 65,
+      "row_count": 32,
+      "schema_sha256": "972d3c69e6dca70cd48da60d563953dbb6b64acfd6c044d863d3a45d8e2e893f",
+      "tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+      "schema_version": 174,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    }
+  },
+  "previous_baseline_sha256": "c847b87bc46048972506e0ada19c131c46f2397ef4f1e6d6a082bba6dc5508f8",
+  "private_evidence_sha256": {
+    "inputs": "b63433ae63bf61abfb4aec88be879b704dcfee4371c5f172f9977f6b61387d70",
+    "before": "8a1497dce4fb34cf9f02e3d0dece819d9ecb1f8f5529ff79cf8149936e2c0e6b",
+    "resources": "d42c8e3cfc39ed181d0953b0e02886cbf62cdcd6320b78833c1fae0651a44b56",
+    "after": "a7d514f59b0efc0e1161139f3ec2ee2d35f53612076f4485a47e95f25a8dc524"
+  },
+  "full_browser_suite_run": false,
+  "new_browser_session_started": false,
+  "open_user_tab_refreshed": false,
+  "user_tabs_touched": false,
+  "server_restarted": false,
+  "model_calls": 0,
+  "messages_sent": 0,
+  "application_writes": 0,
+  "http_write_requests": 0,
+  "manuscript_requests": 0,
+  "privacy": {
+    "manuscripts_included": false,
+    "credentials_included": false,
+    "private_paths_included": false,
+    "screenshots_published": false,
+    "database_files_published": false,
+    "table_names_published": false
+  }
+}

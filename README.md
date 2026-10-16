@@ -4,9 +4,13 @@
 
 ## 当前状态
 
+写作总管的续写、整章修订、章节检查和全书规划建议，确认后留在原聊天卡片，显示来源章、任务状态和“模型调用 已用 / 上限”。作者点击“启动本次任务”才授权执行；确认计划和核对进度不调用这次写作模型，聊天回复另计。需要比较候选、决定章后资料或处理规划时，点击“查看本次结果”打开对应原章和准确任务。流程与限制见[聊天原卡管理写作任务](docs/audits/2026-10-14/comprehensive/chat-inline-tasks-20261016.md)。
+
+本批原卡功能的真实服务作者流程5项、电脑聊天交互15项、章间导航7项和完整前端定向53项分别通过，均未新增收费调用。[完整整轮02](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-inline-release-20261016-02.json)执行130项，128项通过、2项失败，原失败保留；修正后的[完整整轮03](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-chat-inline-release-20261016-03.json)于上海2026-10-16 23:45:59至23:59:24执行完，130项全部通过、20套电脑浏览器257个场景，146份源码前后不变，附件116份（31份JSON、85张合成截图）。[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-chat-inline-release-20261016-03-independent-review.json)通过，文档于10月17日整合；本批[静态资源核对](docs/audits/2026-10-14/comprehensive/evidence/local-chat-inline-preview-agent-chat-inline-release-20261016-03.json)与[两尺寸只读预览](docs/audits/2026-10-14/comprehensive/evidence/local-chat-inline-browser-agent-chat-inline-release-20261016-03.json)已通过。两个模型连接均未配置，真实预览没有任务卡，也未确认作者原有标签已加载新版。GitHub状态以本次最终提交对应的实际运行结果为准，本机通过不代替云端检查。
+
 章后资料确认已接入写作总管：正文采纳并提取资料后，总管等待作者逐项决定，再以已确认资料接续审稿。支持分次保存、全部不采用、空分析明确确认、进程中断恢复和重复确认去重；按任务保存的分析编号打开结果。正文、规划和正式事实仍由作者决定，检查最多两次、续写或整章修订最多三次模型调用。[章后确认记录](docs/audits/2026-10-14/comprehensive/agent-memory-confirmation.md)说明流程和保护边界。
 
-本批[02完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-memory-confirmation-release-20261016-02.json)于上海2026-10-16 22:05:28至22:18:23通过130个执行项、76份Python专项和20套电脑浏览器251个场景，146份源码前后不变；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/memory-confirmation-release-02-independent-review-20261016.json)核对31份JSON与83张合成数据截图共114份附件。上一提交 `54a3bdd` 的[GitHub失败记录](docs/audits/2026-10-14/comprehensive/evidence/github-memory-confirmation-54a3bdd-failure-20261016.json)保留；本轮仅修正切换作品测试未等待完整切换的问题，并增加旧请求成功、报错和断连三种迟到检查，没有修改产品代码或增加收费调用。GitHub通过状态须再核对本次新提交，工程验收不证明文学第一梯队。
+章后确认的[02完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-memory-confirmation-release-20261016-02.json)于上海2026-10-16 22:05:28至22:18:23通过130个执行项、76份Python专项和20套电脑浏览器251个场景，146份源码前后不变；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/memory-confirmation-release-02-independent-review-20261016.json)核对31份JSON与83张合成数据截图共114份附件。上一提交 `54a3bdd` 的[GitHub失败记录](docs/audits/2026-10-14/comprehensive/evidence/github-memory-confirmation-54a3bdd-failure-20261016.json)保留；修正仅涉及切换作品测试的完整等待及旧请求成功、报错和断连三种迟到检查，没有修改产品代码或增加收费调用。修正提交 `5e18f65` 的[GitHub运行38916906449](docs/audits/2026-10-14/comprehensive/evidence/github-memory-confirmation-5e18f65-success-20261016.json)于上海2026-10-16 22:53:16完成，29个必需步骤和34个实际步骤全部成功。此历史成绩不代替后续聊天原卡版本的独立验收，也不证明文学第一梯队。
 
 此前连续写作已接入主聊天：总管可提出“完成本章，打开下一章”，作者确认后检查记忆、审稿和任务卡，在同一次保存中归档本章并打开后续章；已有正文与规划保留，目录末尾只创建一个空章。“承接上章，准备本章”可带入上章交接，作者编辑确认后保存本章任务。旧聊天结果能准确打开原任务，中断确认后可找回已建立的任务。[连续写作记录](docs/audits/2026-10-14/comprehensive/chapter-flow-agent.md)说明操作与边界。其[01完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-chapter-flow-release-20261016-01.json)通过129个执行项和248个电脑场景，[独立复核](docs/audits/2026-10-14/comprehensive/evidence/chapter-flow-release-independent-review-20261016.json)与[五张截图目视](docs/audits/2026-10-14/comprehensive/chapter-flow-visual-review-20261016.md)保留为历史证据。
 
@@ -18,7 +22,7 @@
 
 此前的[电脑创作工作台与写作总管](docs/audits/2026-10-14/comprehensive/writing-workbench-agent.md)已接通目录/知识库、正文和任务三栏。总管基于 LangGraph（负责保存多步骤任务并在中断后接续的框架），协调续写、整章修订、章节检查和四阶段全书规划；正文采纳、规划确认和正式事实继续由作者决定。该历史版本的[05完整验收](docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-agent-workbench-release-20261016-05.json)通过103个执行项、199个电脑场景，115份来源前后相同、78附件逐份匹配；[独立复核](docs/audits/2026-10-14/comprehensive/evidence/agent-workbench-release-independent-review-20261016.json)及九张截图目视检查通过。历史代码提交 `e9fe9eac15896c5aeda2cf9672003a0ed4433967` 已正常推送，[对应GitHub检查38776837992](docs/audits/2026-10-14/comprehensive/evidence/github-agent-workbench-e9fe9ea-success-20261016.json)于上海2026-10-16 01:37:40完成，28步全部成功；[对应本机服务](docs/audits/2026-10-14/comprehensive/evidence/local-workbench-preview-20261016.json)也已独立验收。这些工程结果不作为文学第一梯队成绩。
 
-本机新版预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。[章后确认服务更新](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-service-memory-confirmation-release-20261016-01.json)及[三种电脑尺寸只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-browser-memory-confirmation-release-20261016-01.json)已完成，156项检查和135次GET通过。本轮仅测试文件变化，[02最小只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-preview-minimal-memory-confirmation-release-20261016-02.json)确认13份实际页面资源匹配新整轮，两个服务身份、预览72张表和原库65张表内容、结构及版本不变；本轮未重启或重复运行预览浏览器整套检查。预览远程模型未配置，本批新增收费调用0；数据库、原稿、30张私有截图和密钥不随源码上传，完整Obsidian双向同步尚未实现。
+此前章后确认版本的本机预览入口为 `http://127.0.0.1:4174`，使用当前工作树中的 `moyu.sqlite3` 副本；原 `4173` 服务和原库保留。[章后确认服务更新](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-service-memory-confirmation-release-20261016-01.json)及[三种电脑尺寸只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-browser-memory-confirmation-release-20261016-01.json)已完成，156项检查和135次GET通过。该版本02仅测试文件变化，[02最小只读复核](docs/audits/2026-10-14/comprehensive/evidence/local-memory-confirmation-preview-minimal-memory-confirmation-release-20261016-02.json)确认13份实际页面资源匹配当时整轮，两个服务身份、预览72张表和原库65张表内容、结构及版本不变；当次未重启或重复运行预览浏览器整套检查。本批聊天原卡预览另见上方两份独立记录，不混用历史版本证据。预览远程模型未配置，历史核对未新增收费调用；数据库、原稿、30张私有截图和密钥不随源码上传，完整Obsidian双向同步尚未实现。
 
 历史完整备份恢复版本 `1552104` 已正常推送，[GitHub检查](docs/audits/2026-10-14/comprehensive/evidence/github-portable-1552104-success-20261015.json)全部成功，并已[更新到本机](docs/audits/2026-10-14/comprehensive/evidence/local-service-portable-1552104-20261015.md)。更新前后65张表完整内容和结构保持，两个电脑尺寸共8个只读页面检查通过，没有模型调用或新增收费。
 
@@ -225,9 +229,11 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 
 页面右侧“写作总管”提供持续对话。可以直接讨论人物、情节和写法，也可勾选带入当前章；选中正文后点击“引用选区”，能够回看原文并请总管提出局部修改。每次最多引用三处；引用和本次材料保留来源版本，原稿或资料已变时，旧建议会要求重新讨论。切换功能页、刷新或服务重启后可继续查看已保存对话；切换作品与分支时各自隔离。
 
-总管认为需要创作操作时，会给出可确认或放弃的步骤。点击确认后，续写、整章修订、章节检查和规划进入现有流程；选区修订进入当前章的正文候选，比较并采纳后才替换原文。聊天中的普通回答不会直接修改正文，也不会自动建立写作任务。“任务进度”“正文候选”“本章依据”从聊天顶部打开，在正文下方查看和处理，可随时收起。
+总管认为需要创作操作时，会给出可确认或放弃的建议。确认续写、整章修订、章节检查或全书规划后，页面留在原聊天卡片，显示本次任务的来源章、状态和调用上限。核实任务身份、来源和进度后，才提供“启动本次任务”；启动前先保存正文与未保存的规划，保存失败不发送写作请求。“核对进度”只读取原任务；“查看本次结果”打开它绑定的准确任务和来源章，供作者比较候选或继续决定。详见[聊天原卡说明](docs/audits/2026-10-14/comprehensive/chat-inline-tasks-20261016.md)。
 
-多步写作先保存计划并等待确认启动；也可从“写作总管”管理页直接建立计划。下列次数只计写作流程，聊天回复另计调用并共用每日额度。“续写”最多调用三次模型，依次生成正文候选、整理章后记忆、执行故事审稿。正文候选仍需作者比较并采纳；章后资料生成后，总管等待作者逐项决定，再继续审稿。“整章修订”先提供整章修订候选，采纳后同样接续记忆、作者决定与审稿，最多三次；整章超过12000字时先选段使用局部修订。12000字为整章修订硬上限，当前材料容量不足时也会在发送前拒绝，可选段修订或调整容量。“章节检查”只执行章后记忆和故事审稿，最多两次。
+选区修订仍进入引用原文对应章节的正文候选，比较并采纳后才替换原范围。普通回答不会直接修改正文或自动建立写作任务。“任务进度”“正文候选”“本章依据”仍从聊天顶部打开，在正文下方查看和处理，可随时收起。
+
+多步写作先在原卡保存并核实计划，由作者单独启动；也可从“写作总管”管理页直接建立计划。下列次数只计写作流程，聊天回复另计调用并共用每日额度，次数上限不是金额保证。“续写”最多调用三次模型，依次生成正文候选、整理章后记忆、执行故事审稿。正文候选仍需作者比较并采纳；章后资料生成后，总管等待作者逐项决定，再继续审稿。“整章修订”先提供整章修订候选，采纳后同样接续记忆、作者决定与审稿，最多三次；整章超过12000字时先选段使用局部修订。12000字为整章修订硬上限，当前材料容量不足时也会在发送前拒绝，可选段修订或调整容量。“章节检查”只执行章后记忆和故事审稿，最多两次。
 
 总管显示“等待章后确认”时，点击“确认章后资料”，为事实、章节回顾和下一章任务选择采用或不采用。可以分次保存，尚未处理完时不会启动审稿；全部保存后自动继续。刷新或重启后沿用原进度；若最后一次保存后进度尚未更新，可点击“核对确认结果”。总管始终打开本次任务对应的分析，保留原始生成依据；正文、资料或规划另有变化时会阻止继续，不会静默重新生成。完整备份恢复的旧任务仍仅供回看。专项说明见 [章后确认与总管接续](docs/audits/2026-10-14/comprehensive/agent-memory-confirmation.md)。
 

@@ -1,0 +1,266 @@
+{
+  "verified_at": "2026-10-16T14:58:11.311Z",
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "branch": "codex/portable-complete-backup",
+  "commit": "5e18f6558523a13b91c556ce1857d4c050c29d04",
+  "release_tag": "memory-confirmation-release-20261016-02",
+  "found": true,
+  "passed": true,
+  "state": "success",
+  "remote_head_matches": true,
+  "committed_source_count": 146,
+  "expected_source_count": 146,
+  "source_inventory_sha256": "997c49cabff3eb8483c81f86a61046fa6c709c26c7a8e3992e6ea2ddcf272cce",
+  "committed_and_local_sources_match_release": true,
+  "release_report_sha256": "7233bc8abbf7ddab77bfcf13c4c0206f42f1f4e407d5fdbb9235e36ea327d730",
+  "workflow_sha256": "8f5c3a7e50b07a5ef219544a33667ca82f64a8264cdb1a9850280a590a2db023",
+  "memory_http_report_sha256": "e235f92d4b0766ad0cb2c535332245938e617c579e6da9224ce89380af668d77",
+  "memory_http_checks": 21,
+  "memory_http_free_local_calls": 34,
+  "required_job_count": 1,
+  "required_step_count": 29,
+  "model_calls": 0,
+  "application_data_access": 0,
+  "run": {
+    "id": 38916906449,
+    "attempt": 1,
+    "workflow_id": 382641279,
+    "status": "completed",
+    "conclusion": "success",
+    "event": "push",
+    "created_at": "2026-10-16T14:34:50Z",
+    "updated_at": "2026-10-16T14:53:16Z"
+  },
+  "commit_tree_sha": "ce12d6b902cdd9b4cdb65ee1d06e4830217bcc39",
+  "remote_tree_matches_commit": true,
+  "jobs": [
+    {
+      "id": 117026598731,
+      "name": "checks",
+      "status": "completed",
+      "conclusion": "success",
+      "required_steps_present_in_order": true,
+      "required_step_count": 29,
+      "actual_step_count": 34,
+      "completed_step_count": 34,
+      "steps": [
+        {
+          "number": 1,
+          "name": "Set up job",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 2,
+          "name": "Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 3,
+          "name": "Set up Python",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 4,
+          "name": "Set up Node",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 5,
+          "name": "Install Python runtime",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 6,
+          "name": "Syntax checks",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 7,
+          "name": "Contract fixtures",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 8,
+          "name": "Evaluation fixtures",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 9,
+          "name": "Editor merge regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 10,
+          "name": "Install browser regression runtime",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 11,
+          "name": "Real browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 12,
+          "name": "Search browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 13,
+          "name": "Planning browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 14,
+          "name": "Model settings browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 15,
+          "name": "Five chapter author flow",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 16,
+          "name": "Writing agent browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 17,
+          "name": "Persistent writing chat browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 18,
+          "name": "Writing chat workflow browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 19,
+          "name": "Chapter transition browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 20,
+          "name": "Writing chat settings browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 21,
+          "name": "Workbench scope browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 22,
+          "name": "Knowledge and writing inbox browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 23,
+          "name": "Editor position and reading preferences",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 24,
+          "name": "Instruction draft browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 25,
+          "name": "Reference passage browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 26,
+          "name": "Portable complete backup browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 27,
+          "name": "Author lifecycle browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 28,
+          "name": "Export override browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 29,
+          "name": "Material dependency browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 30,
+          "name": "Analysis guidance browser regressions",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 58,
+          "name": "Post Set up Node",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 59,
+          "name": "Post Set up Python",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 60,
+          "name": "Post Checkout",
+          "status": "completed",
+          "conclusion": "success"
+        },
+        {
+          "number": 61,
+          "name": "Complete job",
+          "status": "completed",
+          "conclusion": "success"
+        }
+      ],
+      "annotations": {
+        "queried": true,
+        "count": 2,
+        "levels": {
+          "warning": 1,
+          "notice": 1
+        },
+        "sha256": "21dbb9a01c9d2c35df0ea9d9aab3d98b0ab2bb5cc805423bc05c7ccfcbca97bc"
+      },
+      "passed": true
+    }
+  ],
+  "release_report": "docs/audits/2026-10-14/comprehensive/evidence/compatibility-python311-node24-memory-confirmation-release-20261016-02.json",
+  "scope": "Exact pushed commit and tree, 146 release sources including memory receipts, 21-case synthetic memory HTTP evidence, workflow, jobs, steps, check annotations, and remote branch head. No model calls or application data access."
+}

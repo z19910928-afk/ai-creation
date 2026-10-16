@@ -1,0 +1,2334 @@
+{
+  "passed": true,
+  "verification_scope": "independent_read_only_desktop_preview",
+  "counts": {
+    "checks_passed": 215,
+    "checks_failed": 0,
+    "screenshots": 20,
+    "inspected_viewports": 2,
+    "local_gets": 92,
+    "local_heads": 0,
+    "page_errors": 0,
+    "console_errors": 0,
+    "exceptions": 0,
+    "failed_local_responses": 0,
+    "blocked_write_requests": 0,
+    "blocked_external_requests": 0,
+    "blocked_unapproved_reads": 0,
+    "blocked_sockets": 0,
+    "inline_task_cards_observed": 0,
+    "unconfigured_connections_passed": 2,
+    "horizontal_bounds_passed": 20,
+    "persistent_chat_bounds_passed": 20,
+    "persistent_chat_identity_passed": 20,
+    "main_chat_separate_passed": 20,
+    "chat_vertical_regions_separate_passed": 20,
+    "composer_controls_separate_passed": 20,
+    "composer_controls_uncovered_passed": 20,
+    "existing_task_cards_separate_passed": 20,
+    "editor_columns_passed": 8,
+    "empty_private_key_input_passed": 2,
+    "honest_unconfigured_connection_passed": 2,
+    "disabled_empty_send_passed": 2,
+    "history_keeps_composer_passed": 2,
+    "one_visible_result_passed": 6,
+    "results_below_editor_passed": 6,
+    "chapter_summary_uncovered_passed": 6,
+    "story_unchanged_passed": 2,
+    "chats_unchanged_passed": 2,
+    "scope_unchanged_passed": 2,
+    "all_database_tables_unchanged_passed": 1,
+    "original_processes_unchanged_passed": 1,
+    "release_sources_unchanged_passed": 1,
+    "integrated_commit_unchanged_passed": 1,
+    "release_report_unchanged_passed": 1,
+    "static_evidence_unchanged_passed": 1,
+    "no_write_attempts_passed": 1,
+    "no_external_attempts_passed": 1,
+    "only_permitted_reads_passed": 1,
+    "no_socket_attempts_passed": 1,
+    "no_page_or_console_errors_passed": 1,
+    "no_failed_local_responses_passed": 1,
+    "all_desktop_sizes_passed": 1
+  },
+  "hashes": {
+    "screenshots": {
+      "89e12d593a2110889ca389c32c30926fc5198cc4dbdd2d6d2625e29e2a2bd999": "e86f9772be81a3ee3bad89f275f7e0d0858518c572a5f669769abdc2c4ea9873",
+      "158c918585c8c895d87a52dd7074ccba9e186cb9b6cd95134f1ed726cee5cb0d": "af54d0f073ca360326e2df2d3abe6f5dfbeb97213ee2ea722752ef000393a0a5",
+      "540c93ebeb7469f69cf0b5b54828c605d51db50072e88734832d07bc96e477e6": "25d9f54588a052522de4368ff1ef8100991357ddac9e3476be9a6e1c12054c31",
+      "83ab82233ba909323313d45f46f6acdc278ec3e9f8bff7e54f877860b41ecbd4": "bac3a6d19e02d99a9803081ad3c5e0400c7495bda3fab0856aa3289ea49f4d8e",
+      "fe937a05738841edb82b80de6dbfc1438b980735de7dc12056fab472f98249dd": "4a95cb0b43acf93b64a211eae428d691d363dbb3374a1b01ee62476d157fe261",
+      "d60d4de4319e0acdfddf6083b0c47413b141eaaa9ea02c4da6c33da708e8db41": "86a2a91e1dade064233e76f7642adedf3355201c52d7052ac4472edeaf08cdfd",
+      "d05b7d87b5318c82823f3fa9bb7291b10dc3e90869ec8aea4b79f69fe0ce8a2e": "ed9c06290c2bf209ed1ebdc64e65488e74c7d6e6a8e348e4606bce2f240135a1",
+      "7f52c5e8f37d50bcfd457b7e3f8dd36533f87e928a6eb71a65654b90c96907a2": "0396b122fa30fb727d523058d8d8572b76953c99ba5392eb52e3f4a89b09eec0",
+      "52d0d1c3ed6cc329f27e9360758ea73a0f39135d12f5d63c0c34440fd9290531": "ac851ff1469333f524d7ebc3837ba4a4d78ed7ae8eb665ec75d0c707adfe5508",
+      "e75d0961c8cff9d5feaa3692d1af7f5367cdfad5b2fd5ca5323040c3a91efa9d": "d2bcf4f4561fe619f60b45cd2e6ef4dd3d630cc99b2ff88c87a1068877abdd1a",
+      "af1b05bda1cfb66467d0f5700323815ab5287e2cc9507f32aafdd0ae34439455": "96c364bdd1d5ca2953c69a82dfe702a8f1e45351ab9b9cf943932e720e45f205",
+      "347be523dc6211b07fcaa402694f15a95c4617897c6b778392f7e5ec45655245": "8d931823c16fb425f350b04cfb2a0ee395d1319b8f776c6acc3b738a93028292",
+      "04f02f2be73e7b02cbf4180ed2d2573330dd1d6103e40393151d901ef14a1990": "ea682ff96d811881f732af7777c5f2467ca088c18acb4496d3bc7b2bb900897c",
+      "be7e206ec1f0f3c012e53b2767147d1aa25aeb245d1f393f554aef44e5bd0bfd": "3dc1d474dc1f86b2dbc6c3ef8f6505033b98b9fc1a8936fdb0669533c4b1c7cc",
+      "5639228e57fada0d2b1bb31dca2919a2b7f5b928f784a120523975cefe3097a7": "8fbca83dfed5dca3ee7ce50ddc1fc0d8c73a5ebd0e33ae562c09b2cf0c5d94f1",
+      "76a5352cba66349f4e30b514ad2b349fa536ef4ff45a3847465dd969481863c2": "f2c7ed71af6b0ab4ee502aa631a78493bede155c098cc02f771c2e8d49a422ee",
+      "7cac54e367d7550719402ebfbfd8d524c2bc6ef86b16bfe475165dded45b6ffc": "3cadb5b11283daf62dc81051cda661a8b9a85e9ed3f9faa5cc89192f5bdcba46",
+      "d3300a9218884da2645c6fe5676d114a06001b42dceb62564d5bf20a30d5de16": "de20c4a4b3cc14b84771edf26ecf5952e6b022d180600336d60d3f1472be3ff1",
+      "75c2e281f02d01c086d844cb4cdc310ff18ab8ba48ec2dd75f40ec9947899f07": "d8ad643eb9627153ca0112f57b3e73280ef5bfefaff623286672cd7036b02610",
+      "0ec77198c48c552b7e3face6471dc24ce515834d2ac63ebb394dcf5e4b53e972": "aec36c7a850c50337db13578c5cd89c0e3792c1b537bc2452dd571a81ad9609d"
+    },
+    "page_errors": [],
+    "console_errors": [],
+    "exceptions": [],
+    "blocked_requests": [],
+    "responses": [],
+    "state_snapshots": [
+      {
+        "size_index": 0,
+        "phase": 0,
+        "state_sha256": "f7758549aec412295e66a1afd808c026e8420378b622b7188646077a79141d8f",
+        "chats_sha256": "1f7b805cd9949a7da29676efc4264bdfa7aa44070bd2a099401649ffe36ba512",
+        "scope_sha256": "28c4a7550e206c815021e139ad8489178b11ddd4f4ef65ec0dcf94c2adff1b12",
+        "chapter_count": 1,
+        "chat_count": 0,
+        "agent_configured_count": 0,
+        "agent_key_count": 0,
+        "main_configured_count": 0,
+        "main_key_count": 0
+      },
+      {
+        "size_index": 0,
+        "phase": 1,
+        "state_sha256": "f7758549aec412295e66a1afd808c026e8420378b622b7188646077a79141d8f",
+        "chats_sha256": "1f7b805cd9949a7da29676efc4264bdfa7aa44070bd2a099401649ffe36ba512",
+        "scope_sha256": "28c4a7550e206c815021e139ad8489178b11ddd4f4ef65ec0dcf94c2adff1b12",
+        "chapter_count": 1,
+        "chat_count": 0,
+        "agent_configured_count": 0,
+        "agent_key_count": 0,
+        "main_configured_count": 0,
+        "main_key_count": 0
+      },
+      {
+        "size_index": 1,
+        "phase": 0,
+        "state_sha256": "f7758549aec412295e66a1afd808c026e8420378b622b7188646077a79141d8f",
+        "chats_sha256": "1f7b805cd9949a7da29676efc4264bdfa7aa44070bd2a099401649ffe36ba512",
+        "scope_sha256": "28c4a7550e206c815021e139ad8489178b11ddd4f4ef65ec0dcf94c2adff1b12",
+        "chapter_count": 1,
+        "chat_count": 0,
+        "agent_configured_count": 0,
+        "agent_key_count": 0,
+        "main_configured_count": 0,
+        "main_key_count": 0
+      },
+      {
+        "size_index": 1,
+        "phase": 1,
+        "state_sha256": "f7758549aec412295e66a1afd808c026e8420378b622b7188646077a79141d8f",
+        "chats_sha256": "1f7b805cd9949a7da29676efc4264bdfa7aa44070bd2a099401649ffe36ba512",
+        "scope_sha256": "28c4a7550e206c815021e139ad8489178b11ddd4f4ef65ec0dcf94c2adff1b12",
+        "chapter_count": 1,
+        "chat_count": 0,
+        "agent_configured_count": 0,
+        "agent_key_count": 0,
+        "main_configured_count": 0,
+        "main_key_count": 0
+      }
+    ],
+    "private_before": "c934e3ea3ed6ee634bec33cb753b8572e1be56b0868e87edaacaffc9cb4f7a0c",
+    "private_after": "da930f3fe2e6bbb0982fac4f410b5d3c8cb76f9ce5033bd84b266f70355f2198"
+  },
+  "geometry": [
+    {
+      "size_index": 0,
+      "view_index": 0,
+      "section_index": -1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 1024,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 936,
+        "right": 66,
+        "bottom": 1000
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 818,
+        "height": 888,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 888,
+        "right": 272,
+        "bottom": 1000
+      },
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1440,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 1091,
+        "y": 194.59375,
+        "width": 349,
+        "height": 598.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": null,
+      "chapter_summary": {
+        "x": 294,
+        "y": 983.5,
+        "width": 774,
+        "height": 39,
+        "right": 1068,
+        "bottom": 1022.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 1,
+      "section_index": -1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 868,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 936,
+        "right": 222,
+        "bottom": 1000
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 637.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 2,
+      "section_index": -1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 868,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 936,
+        "right": 222,
+        "bottom": 1000
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 637.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 3,
+      "section_index": -1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 868,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 936,
+        "right": 222,
+        "bottom": 1000
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 637.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 4,
+      "section_index": -1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 868,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 936,
+        "right": 222,
+        "bottom": 1000
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 637.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 5,
+      "section_index": -1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 868,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 936,
+        "right": 222,
+        "bottom": 1000
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 637.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 6,
+      "section_index": -1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 868,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 936,
+        "right": 222,
+        "bottom": 1000
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 637.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 0,
+      "section_index": 0,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 1024,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 936,
+        "right": 66,
+        "bottom": 1000
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 818,
+        "height": 408,
+        "right": 1090,
+        "bottom": 520
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 888,
+        "right": 272,
+        "bottom": 1000
+      },
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1440,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 1091,
+        "y": 194.59375,
+        "width": 349,
+        "height": 598.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": {
+        "x": 272,
+        "y": 520,
+        "width": 818,
+        "height": 480,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "chapter_summary": {
+        "x": 294,
+        "y": 450.5,
+        "width": 774,
+        "height": 39,
+        "right": 1068,
+        "bottom": 489.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": true,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 0,
+      "section_index": 1,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 1024,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 936,
+        "right": 66,
+        "bottom": 1000
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 818,
+        "height": 408,
+        "right": 1090,
+        "bottom": 520
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 888,
+        "right": 272,
+        "bottom": 1000
+      },
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1440,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 1091,
+        "y": 194.59375,
+        "width": 349,
+        "height": 598.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": {
+        "x": 272,
+        "y": 520,
+        "width": 818,
+        "height": 480,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "chapter_summary": {
+        "x": 294,
+        "y": 450.5,
+        "width": 774,
+        "height": 39,
+        "right": 1068,
+        "bottom": 489.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": true,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 0,
+      "view_index": 0,
+      "section_index": 2,
+      "width": 1440,
+      "height": 1000,
+      "scroll_width": 1440,
+      "chat": {
+        "x": 1090,
+        "y": 64,
+        "width": 350,
+        "height": 936,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 1024,
+        "height": 936,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 936,
+        "right": 66,
+        "bottom": 1000
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 818,
+        "height": 408,
+        "right": 1090,
+        "bottom": 520
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 888,
+        "right": 272,
+        "bottom": 1000
+      },
+      "header": {
+        "x": 1091,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1440,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 1091,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1440,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 1091,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1440,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 1091,
+        "y": 194.59375,
+        "width": 349,
+        "height": 598.40625,
+        "right": 1440,
+        "bottom": 793
+      },
+      "composer": {
+        "x": 1091,
+        "y": 793,
+        "width": 349,
+        "height": 207,
+        "right": 1440,
+        "bottom": 1000
+      },
+      "input": {
+        "x": 1104,
+        "y": 848,
+        "width": 323,
+        "height": 100,
+        "right": 1427,
+        "bottom": 948
+      },
+      "send": {
+        "x": 1393,
+        "y": 956,
+        "width": 34,
+        "height": 32,
+        "right": 1427,
+        "bottom": 988
+      },
+      "results": {
+        "x": 272,
+        "y": 520,
+        "width": 818,
+        "height": 480,
+        "right": 1090,
+        "bottom": 1000
+      },
+      "chapter_summary": {
+        "x": 294,
+        "y": 450.5,
+        "width": 774,
+        "height": 39,
+        "right": 1068,
+        "bottom": 489.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": true,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 0,
+      "section_index": -1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 864,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 836,
+        "right": 66,
+        "bottom": 900
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 658,
+        "height": 788,
+        "right": 930,
+        "bottom": 900
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 788,
+        "right": 272,
+        "bottom": 900
+      },
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1280,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 931,
+        "y": 194.59375,
+        "width": 349,
+        "height": 498.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": null,
+      "chapter_summary": {
+        "x": 294,
+        "y": 883.5,
+        "width": 614,
+        "height": 39,
+        "right": 908,
+        "bottom": 922.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 1,
+      "section_index": -1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 708,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 836,
+        "right": 222,
+        "bottom": 900
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 537.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 2,
+      "section_index": -1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 708,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 836,
+        "right": 222,
+        "bottom": 900
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 537.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 3,
+      "section_index": -1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 708,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 836,
+        "right": 222,
+        "bottom": 900
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 537.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 4,
+      "section_index": -1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 708,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 836,
+        "right": 222,
+        "bottom": 900
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 537.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 5,
+      "section_index": -1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 708,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 836,
+        "right": 222,
+        "bottom": 900
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 537.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 6,
+      "section_index": -1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 222,
+        "y": 64,
+        "width": 708,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 222,
+        "height": 836,
+        "right": 222,
+        "bottom": 900
+      },
+      "editor": null,
+      "library": null,
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": null,
+      "feed": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 537.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": null,
+      "chapter_summary": null,
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": false,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 0,
+      "section_index": 0,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 864,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 836,
+        "right": 66,
+        "bottom": 900
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 658,
+        "height": 356,
+        "right": 930,
+        "bottom": 468
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 788,
+        "right": 272,
+        "bottom": 900
+      },
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1280,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 931,
+        "y": 194.59375,
+        "width": 349,
+        "height": 498.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": {
+        "x": 272,
+        "y": 468,
+        "width": 658,
+        "height": 432,
+        "right": 930,
+        "bottom": 900
+      },
+      "chapter_summary": {
+        "x": 294,
+        "y": 398.5,
+        "width": 614,
+        "height": 39,
+        "right": 908,
+        "bottom": 437.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": true,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 0,
+      "section_index": 1,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 864,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 836,
+        "right": 66,
+        "bottom": 900
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 658,
+        "height": 356,
+        "right": 930,
+        "bottom": 468
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 788,
+        "right": 272,
+        "bottom": 900
+      },
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1280,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 931,
+        "y": 194.59375,
+        "width": 349,
+        "height": 498.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": {
+        "x": 272,
+        "y": 468,
+        "width": 658,
+        "height": 432,
+        "right": 930,
+        "bottom": 900
+      },
+      "chapter_summary": {
+        "x": 294,
+        "y": 398.5,
+        "width": 614,
+        "height": 39,
+        "right": 908,
+        "bottom": 437.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": true,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    },
+    {
+      "size_index": 1,
+      "view_index": 0,
+      "section_index": 2,
+      "width": 1280,
+      "height": 900,
+      "scroll_width": 1280,
+      "chat": {
+        "x": 930,
+        "y": 64,
+        "width": 350,
+        "height": 836,
+        "right": 1280,
+        "bottom": 900
+      },
+      "main": {
+        "x": 66,
+        "y": 64,
+        "width": 864,
+        "height": 836,
+        "right": 930,
+        "bottom": 900
+      },
+      "sidebar": {
+        "x": 0,
+        "y": 64,
+        "width": 66,
+        "height": 836,
+        "right": 66,
+        "bottom": 900
+      },
+      "editor": {
+        "x": 272,
+        "y": 112,
+        "width": 658,
+        "height": 356,
+        "right": 930,
+        "bottom": 468
+      },
+      "library": {
+        "x": 66,
+        "y": 112,
+        "width": 206,
+        "height": 788,
+        "right": 272,
+        "bottom": 900
+      },
+      "header": {
+        "x": 931,
+        "y": 64,
+        "width": 349,
+        "height": 62,
+        "right": 1280,
+        "bottom": 126
+      },
+      "scope": {
+        "x": 931,
+        "y": 126,
+        "width": 349,
+        "height": 29.59375,
+        "right": 1280,
+        "bottom": 155.59375
+      },
+      "result_nav": {
+        "x": 931,
+        "y": 155.59375,
+        "width": 349,
+        "height": 39,
+        "right": 1280,
+        "bottom": 194.59375
+      },
+      "feed": {
+        "x": 931,
+        "y": 194.59375,
+        "width": 349,
+        "height": 498.40625,
+        "right": 1280,
+        "bottom": 693
+      },
+      "composer": {
+        "x": 931,
+        "y": 693,
+        "width": 349,
+        "height": 207,
+        "right": 1280,
+        "bottom": 900
+      },
+      "input": {
+        "x": 944,
+        "y": 748,
+        "width": 323,
+        "height": 100,
+        "right": 1267,
+        "bottom": 848
+      },
+      "send": {
+        "x": 1233,
+        "y": 856,
+        "width": 34,
+        "height": 32,
+        "right": 1267,
+        "bottom": 888
+      },
+      "results": {
+        "x": 272,
+        "y": 468,
+        "width": 658,
+        "height": 432,
+        "right": 930,
+        "bottom": 900
+      },
+      "chapter_summary": {
+        "x": 294,
+        "y": 398.5,
+        "width": 614,
+        "height": 39,
+        "right": 908,
+        "bottom": 437.5
+      },
+      "input_uncovered": true,
+      "send_uncovered": true,
+      "chapter_summary_uncovered": true,
+      "same_chat_node": true,
+      "same_input_node": true,
+      "task_card_count": 0,
+      "task_bounds_valid": true,
+      "task_buttons_separate": true
+    }
+  ],
+  "desktop_sizes": [
+    {
+      "width": 1440,
+      "height": 1000
+    },
+    {
+      "width": 1280,
+      "height": 900
+    }
+  ],
+  "full_browser_suite_run": false,
+  "user_tabs_touched": false,
+  "open_user_tab_refreshed": false,
+  "new_isolated_browser_started": true,
+  "server_restarted": false,
+  "application_writes": 0,
+  "model_calls": 0,
+  "messages_sent": 0,
+  "privacy": {
+    "manuscripts_included": false,
+    "credentials_included": false,
+    "private_paths_included": false,
+    "table_names_included": false,
+    "screenshots_published": false,
+    "database_files_published": false
+  },
+  "release_report_sha256": "51d5df0200642afee0e24db07ee507d69e7afa792b2e1a75195eb1808f86b36a",
+  "release_tag": "agent-chat-inline-release-20261016-03",
+  "integrated_head_sha256": "db78e076f8b331cf6237a6dc61b43062de99352b9a8d9999087af911aabaf196",
+  "static_preview_summary_sha256": "b79ce172cdfc2448169de0e87811d1e74639cc09a6521ef955fa1490d47bca9c",
+  "helper_sha256": "d9c9c98c34c86a7b7b487386c443c746727820701899704068a902a0d6c9022f",
+  "release_source_count": 146,
+  "changed_source_count": 8,
+  "exact_parent_pinned_changed_source_set_verified": true,
+  "frontend_test_sha256": "e3d8b6426c1251182df24a004a872034f9d193fbbd65ec112404dfd660d7df2e",
+  "source_inventory_sha256_before": "1503d414cda932f84944d8e725f985934c5724a78c33c8a2d1a569392c5d9fa3",
+  "databases": {
+    "preview": {
+      "table_count": 72,
+      "row_count": 50,
+      "schema_sha256": "055b29f67aee06a63ae1b7eb9b8d5c68e604176eb77fa47eeca129c532bca99a",
+      "tables_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+      "schema_version": 10,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    },
+    "original": {
+      "table_count": 65,
+      "row_count": 32,
+      "schema_sha256": "972d3c69e6dca70cd48da60d563953dbb6b64acfd6c044d863d3a45d8e2e893f",
+      "tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+      "schema_version": 174,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    }
+  },
+  "processes_sha256": "52f5ed668affae0bd2062a59fe194ef59383accae694e071aa8be782446b5966",
+  "source_inventory_sha256_after": "1503d414cda932f84944d8e725f985934c5724a78c33c8a2d1a569392c5d9fa3",
+  "all_tables_content_schema_and_versions_unchanged": true,
+  "original_processes_unchanged": true,
+  "existing_task_card_previewed": false,
+  "verified_at": "2026-10-16T16:12:26.674Z",
+  "postflight_completed": true
+}
