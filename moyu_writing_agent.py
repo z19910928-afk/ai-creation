@@ -56,6 +56,7 @@ class WritingAgentState(TypedDict, total=False):
     current_job_id: str
     current_ai_run_id: str
     current_candidate_hash: str
+    analysis_id: str
     adoption_run_id: str
     last_result_ref: str
     preflight_status: str
@@ -68,6 +69,7 @@ SAFE_STATUS = {
     "awaiting_authorization",
     "awaiting_job",
     "awaiting_adoption",
+    "awaiting_memory",
     "requires_action",
     "review_ready",
     "canceled",
@@ -119,6 +121,7 @@ def _safe_state(raw: Mapping[str, Any]) -> WritingAgentState:
         "current_job_id",
         "current_ai_run_id",
         "current_candidate_hash",
+        "analysis_id",
         "adoption_run_id",
         "last_result_ref",
         "error",
@@ -161,7 +164,8 @@ class WritingAgentCallbacks:
     ``create_ai_job`` path. It must roll back partial job writes before raising.
     ``verify_adoption`` only reads the application receipt after the HTTP layer
     has reused ``apply_candidate`` and returns the adopted revision/hash. The
-    graph never writes manuscript or memory rows itself.
+    ``verify_memory`` callback checks the exact analysis and its saved author
+    decisions before review. The graph never writes manuscript or memory rows.
     """
 
     prepare: Callable[[WritingAgentState], Mapping[str, Any]]
@@ -169,6 +173,7 @@ class WritingAgentCallbacks:
     get_job: Callable[[WritingAgentState, str], Mapping[str, Any]]
     verify_adoption: Callable[[WritingAgentState, Mapping[str, Any]], Mapping[str, Any]]
     cancel: Callable[[WritingAgentState], Mapping[str, Any]] | None = None
+    verify_memory: Callable[[WritingAgentState], Mapping[str, Any]] | None = None
 
 
 def _require_callbacks(callbacks: WritingAgentCallbacks) -> None:
@@ -255,6 +260,16 @@ def _adoption_payload(state: WritingAgentState) -> dict[str, Any]:
         "ai_run_id": state.get("current_ai_run_id", ""),
         "candidate_hash": state.get("current_candidate_hash", ""),
         "message": "候选已生成。请复用既有候选采纳接口完成采纳，再继续总管流程。",
+    }
+
+
+def _memory_payload(state: WritingAgentState) -> dict[str, Any]:
+    return {
+        "kind": "writing_agent_memory",
+        "workflow_id": state["workflow_id"],
+        "chapter_id": state["chapter_id"],
+        "analysis_id": state["analysis_id"],
+        "message": "请先决定本次章后资料的采用或不采用；全部保存后继续故事审稿。",
     }
 
 
@@ -408,8 +423,11 @@ def build_graph(callbacks: WritingAgentCallbacks, checkpointer: Any):
             return {**current, **patch, "status": "requires_action",
                     "stage": current.get("stage", ""),
                     "error": issue}
+        if task == "chapter_analysis":
+            patch["analysis_id"] = _text(job["result"]["analysis"]["id"], "analysis_id")
         return {**current, **patch,
-                "status": "awaiting_adoption" if task in PROSE_MODES else "running",
+                "status": ("awaiting_adoption" if task in PROSE_MODES else
+                           "awaiting_memory" if task == "chapter_analysis" else "running"),
                 "stage": next_stage, "error": ""}
 
     def wait_continue(state: Mapping[str, Any]) -> WritingAgentState:
@@ -469,14 +487,41 @@ def build_graph(callbacks: WritingAgentCallbacks, checkpointer: Any):
         return "end" if state.get("status") in {"requires_action", "canceled"} else "enqueue_analysis"
 
     def wait_analysis(state: Mapping[str, Any]) -> WritingAgentState:
-        return wait_task(state, "enqueue_review", "chapter_analysis")
+        return wait_task(state, "memory_confirmation", "chapter_analysis")
 
     def route_wait_analysis(state: Mapping[str, Any]) -> str:
         if state.get("status") in {"requires_action", "canceled"}:
             return "end"
         if state.get("status") == "awaiting_job":
             return "wait_analysis"
-        return "enqueue_review"
+        return "wait_memory"
+
+    def wait_memory(state: Mapping[str, Any]) -> WritingAgentState:
+        current = _safe_state(state)
+        answer = interrupt(_memory_payload(current))
+        if _resume_action(answer) == "cancel":
+            return {**current, "status": "canceled", "error": "作者停止了章后确认"}
+        if _resume_action(answer) != "advance":
+            return {**current, "status": "requires_action",
+                    "error": "请先保存本次章后资料的决定"}
+        try:
+            if callbacks.verify_memory is None:
+                raise WritingAgentContractError("缺少章后资料确认校验，未启动审稿")
+            verified = callbacks.verify_memory(current)
+            if (not isinstance(verified, Mapping) or
+                    verified.get("analysis_id") != current["analysis_id"] or
+                    type(verified.get("ready")) is not bool):
+                raise WritingAgentContractError("章后资料确认回执与本次分析不一致")
+        except Exception as exc:
+            return {**current, "status": "requires_action", "error": str(exc)[:2048]}
+        if not verified["ready"]:
+            return {**current, "status": "awaiting_memory", "error": ""}
+        return {**current, "status": "running", "stage": "enqueue_review", "error": ""}
+
+    def route_wait_memory(state: Mapping[str, Any]) -> str:
+        if state.get("status") in {"requires_action", "canceled"}:
+            return "end"
+        return "wait_memory" if state.get("status") == "awaiting_memory" else "enqueue_review"
 
     def wait_review(state: Mapping[str, Any]) -> WritingAgentState:
         return wait_task(state, "review_ready", "semantic_review")
@@ -499,6 +544,7 @@ def build_graph(callbacks: WritingAgentCallbacks, checkpointer: Any):
     builder.add_node("adopt_continue", adopt_continue)
     builder.add_node("enqueue_analysis", enqueue_analysis)
     builder.add_node("wait_analysis", wait_analysis)
+    builder.add_node("wait_memory", wait_memory)
     builder.add_node("enqueue_review", enqueue_review)
     builder.add_node("wait_review", wait_review)
     builder.add_node("finish", finish)
@@ -516,7 +562,10 @@ def build_graph(callbacks: WritingAgentCallbacks, checkpointer: Any):
     builder.add_conditional_edges("adopt_continue", route_adopt, {"enqueue_analysis": "enqueue_analysis", "end": END})
     builder.add_conditional_edges("enqueue_analysis", route_enqueue_analysis, {"wait_analysis": "wait_analysis", "end": END})
     builder.add_conditional_edges("wait_analysis", route_wait_analysis, {
-        "enqueue_review": "enqueue_review", "wait_analysis": "wait_analysis", "end": END,
+        "wait_memory": "wait_memory", "wait_analysis": "wait_analysis", "end": END,
+    })
+    builder.add_conditional_edges("wait_memory", route_wait_memory, {
+        "enqueue_review": "enqueue_review", "wait_memory": "wait_memory", "end": END,
     })
     builder.add_conditional_edges("enqueue_review", route_enqueue_review, {"wait_review": "wait_review", "end": END})
     builder.add_conditional_edges("wait_review", route_wait_review, {

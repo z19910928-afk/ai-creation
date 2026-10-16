@@ -106,7 +106,10 @@ const requiredScreenshots = {
     'writing-workbench-1440x1000.png', 'writing-workbench-1280x900.png',
     'writing-agent-polish-1280x900.png', 'writing-agent-polish-compare-1280x900.png',
     'writing-agent-overview-confirm-1280x900.png',
-    'writing-agent-full-plan-1280x900.png'],
+    'writing-agent-full-plan-1280x900.png',
+    'writing-agent-memory-waiting-1440x1000.png', 'writing-agent-memory-partial-1440x1000.png',
+    'writing-agent-memory-rejected-1440x1000.png', 'writing-agent-memory-waiting-1280x900.png',
+    'writing-agent-memory-partial-1280x900.png', 'writing-agent-memory-rejected-1280x900.png'],
   analysis_guidance_browser_regressions: ['analysis-guidance-stale-desktop.png',
     'analysis-guidance-stale-1280x900.png'],
   frontend_browser_regressions: ['desktop-editor.png', 'compact-desktop-editor.png', 'desktop-planning.png',
@@ -138,6 +141,9 @@ const optionalScreenshots = {
   portable_backup_browser_regressions: ['portable-browser-failure.png'],
 };
 const fixtureReports = {
+  'tests/agent_memory_confirmation_http_fixtures.py': {
+    environment: 'MOYU_AGENT_MEMORY_REPORT', name: 'agent-memory-confirmation-http',
+  },
   'tests/agent_chapter_flow_fixtures.py': {
     environment: 'MOYU_AGENT_CHAPTER_REPORT', name: 'agent-chapter-flow-http',
   },

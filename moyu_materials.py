@@ -393,7 +393,8 @@ def validate_reference_context(conn: sqlite3.Connection, project: str, branch: s
 
 def validate_frozen_reference_context(context: Mapping[str, Any], audit: Any, *,
                                       input_hash: str | None = None,
-                                      prompt_hash: str | None = None) -> None:
+                                      prompt_hash: str | None = None,
+                                      require_full_request: bool = False) -> None:
     """Keep the stored consumed set and the actual frozen request inseparable."""
     issue = "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。"
     if input_hash is not None:
@@ -424,7 +425,7 @@ def validate_frozen_reference_context(context: Mapping[str, Any], audit: Any, *,
             isinstance(item, Mapping) and item.get("kind") == "reference_section"
             for item in dependencies))
     sent_has_reference = any(bool(item.get("reference_passages")) for item in materials)
-    if not context_has_reference and not sent_has_reference:
+    if not context_has_reference and not sent_has_reference and not require_full_request:
         return
     if (len(materials) != 1
             or materials[0].get("reference_passages", []) != context.get("reference_passages", [])):

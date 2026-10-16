@@ -213,6 +213,20 @@ async function main() {
     await page.locator('#aiAdopt:not([disabled])').waitFor(); await page.locator('#aiAdopt').click();
     await page.locator('.candidate-columns').waitFor(); await screenshot(page, 'agent-chat-compare-1440x1000.png');
     await page.locator('[data-apply]').click(); await saved(page);
+    const waiting = await until(async () => {
+      const current = (await api('/api/writing-agent')).sessions.find(item => item.id === row.id);
+      return current?.status === 'awaiting_memory' && current;
+    }, 'chapter memory author decisions');
+    assert.equal(waiting.calls_used, 2);
+    assert.equal((await api('/api/story-reviews?chapter_id=' + firstId)).reviews.length, 0);
+    await page.locator('[data-chat-action="' + proposal.id + '"] [data-chat-open-result]').click();
+    await page.locator(`[data-agent-session="${row.id}"] [data-agent-analysis]`).click();
+    assert.equal(await page.locator('[data-author-chapter-report]').getAttribute('data-analysis-id'),
+      waiting.result_refs.chapter_analysis.id);
+    assert.equal(await page.locator('#analysisSummaryDecision').inputValue(), '');
+    await page.locator('#analysisSummaryDecision').selectOption('accepted');
+    await page.locator('[data-confirm-analysis]').click();
+    await page.locator('.analysis-modal').waitFor({state: 'hidden'});
     await until(async () => (await api('/api/writing-agent')).sessions.find(item => item.id === row.id)?.status ===
       'review_ready', 'chapter memory and review');
     assert.ok((await api('/api/state')).chapters[0].body.endsWith(prose));

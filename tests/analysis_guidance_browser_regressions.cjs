@@ -283,12 +283,14 @@ async function currentScenario() {
       assert.equal(await page.locator('[data-confirm-analysis]').isEnabled(), true);
       assert.equal(await page.locator('[data-extract]').isEnabled(), true);
       if (step === 'summary') {
-        await page.locator('#confirmAnalysisHandoff').uncheck();
+        await page.locator('#analysisSummaryDecision').selectOption('accepted');
+        assert.equal(await page.locator('#analysisHandoffDecision').inputValue(), '');
       } else if (step === 'handoff') {
-        assert.equal(await page.locator('#confirmAnalysisSummary').isDisabled(), true);
+        assert.equal(await page.locator('#analysisSummaryDecision').isDisabled(), true);
+        await page.locator('#analysisHandoffDecision').selectOption('accepted');
       } else {
-        assert.equal(await page.locator('#confirmAnalysisSummary').isDisabled(), true);
-        assert.equal(await page.locator('#confirmAnalysisHandoff').isDisabled(), true);
+        assert.equal(await page.locator('#analysisSummaryDecision').isDisabled(), true);
+        assert.equal(await page.locator('#analysisHandoffDecision').isDisabled(), true);
         await page.locator('[data-analysis-decision]').selectOption('accepted');
       }
       const confirmation = page.waitForResponse(response =>

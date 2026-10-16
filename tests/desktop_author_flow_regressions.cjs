@@ -170,6 +170,8 @@ async function analysisAndReview(id) {
   await openAnalysisCandidate(id, 'chapter_analysis', '章后记忆', body);
   await page.locator('[data-analysis-decision]').waitFor();
   await page.locator('[data-analysis-decision]').selectOption('accepted');
+  await page.locator('#analysisSummaryDecision').selectOption('accepted');
+  await page.locator('#analysisHandoffDecision').selectOption('accepted');
   await page.locator('[data-confirm-analysis]').click();
   await page.waitForFunction(() => !document.querySelector('[data-confirm-analysis]'));
   await waitSaved();

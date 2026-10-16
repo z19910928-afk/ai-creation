@@ -6086,6 +6086,8 @@ class Handler(SimpleHTTPRequestHandler):
                     result = moyu_analysis.decide_analysis(conn, scope, parsed.path.split("/")[-2], data,
                                                           {"apply_candidate": apply_analysis_candidate})
                     append_event(conn, result["id"], "chapter.analysis.confirmed", {"decisions": data.get("decisions", [])})
+                    conn.commit()
+                    writing_agent.advance_ready(sys.modules[__name__], analysis_id=result["id"])
                     return self.send_json(200, {"analysis": result, "state": state_from_db(conn)})
                 if parsed.path.startswith("/api/story-reviews/") and parsed.path.endswith("/decision"):
                     import moyu_analysis

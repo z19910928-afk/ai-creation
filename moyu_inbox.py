@@ -16,6 +16,7 @@ KINDS = ("agent", "queue", "analysis", "review")
 _AGENT_WAITING = {
     "awaiting_authorization": "等待授权",
     "awaiting_adoption": "等待采用正文",
+    "awaiting_memory": "等待确认章后资料",
     "awaiting_plan_confirmation": "等待确认规划",
     "awaiting_plan_application": "等待采用规划",
     "requires_action": "需要作者处理",
@@ -205,6 +206,26 @@ def _agents(conn, scope, chapters, revisions, jobs, authorization_context=None):
             stale |= not _source_current(
                 context.get("_source"), job["task"], chapter, revisions,
                 scope["project_id"], scope["branch_id"])
+        if status == "awaiting_memory":
+            context = _object(job["context_json"]) if job else {}
+            artifact = (_object(job["result_json"]).get("analysis") or {}) if job else {}
+            if job:
+                try:
+                    moyu_materials.validate_frozen_reference_context(
+                        context, _object(job["consent_json"]).get("request_audit"),
+                        input_hash=job["input_hash"], prompt_hash=job["prompt_hash"],
+                        require_full_request=True)
+                except ValueError:
+                    stale = True
+            analysis = next((item for item in moyu_analysis.list_analysis(
+                conn, scope, row["chapter_id"]) if item["id"] == artifact.get("id")), None)
+            stale |= (not job or job["task"] != "chapter_analysis" or job["status"] != "success"
+                      or job["run_status"] != "success" or analysis is None)
+            if analysis is not None:
+                stale |= bool(
+                    analysis.get("stale") or analysis.get("status") == "stale"
+                    or analysis.get("material_source") != context.get("_material_source")
+                    or analysis.get("guidance_source") != context.get("_guidance_source"))
         candidate_read_only = bool(job and status == "awaiting_adoption" and _result_read_only(job))
         label = "来源已改变，需重新检查" if stale else (
             "候选仅供阅读" if candidate_read_only else _AGENT_WAITING[status])

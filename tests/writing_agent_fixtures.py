@@ -69,6 +69,7 @@ class WritingAgentGraphTests(unittest.TestCase):
     def setUp(self):
         self.jobs = {}
         self.enqueue_calls = []
+        self.memory_ready = False
 
         def prepare(_state):
             return {"status": "ready", "source_revision_id": "rev_1", "source_hash": "hash_1"}
@@ -97,6 +98,7 @@ class WritingAgentGraphTests(unittest.TestCase):
             enqueue=enqueue,
             get_job=get_job,
             verify_adoption=verify_adoption,
+            verify_memory=lambda state: {"analysis_id": state["analysis_id"], "ready": self.memory_ready},
         )
         self.checkpointer = InMemorySaver()
         self.graph = agent.build_graph(self.callbacks, self.checkpointer)
@@ -141,6 +143,12 @@ class WritingAgentGraphTests(unittest.TestCase):
             "result": {"safe_to_apply": True, "completion_state": "complete", "billing_state": "usage_reported",
                        "candidate_hash": "analysis_1", "analysis": {"id": "analysis_1"}},
         })
+        memory_wait = self.resume({"action": "advance"})
+        self.assertIn("__interrupt__", memory_wait)
+        self.assertEqual(self.current()["status"], "awaiting_memory")
+        self.assertEqual(self.current()["analysis_id"], "analysis_1")
+        self.assertEqual(len(self.enqueue_calls), 2)
+        self.memory_ready = True
         review_wait = self.resume({"action": "advance"})
         self.assertIn("__interrupt__", review_wait)
         self.assertEqual(self.current()["current_task"], "semantic_review")
@@ -207,6 +215,10 @@ class WritingAgentGraphTests(unittest.TestCase):
                        "analysis": {"id": "analysis_1"}},
         })
         self.resume({"action": "advance"})
+        self.assertEqual(self.current()["status"], "awaiting_memory")
+        self.assertEqual(self.current()["calls_used"], 1)
+        self.memory_ready = True
+        self.resume({"action": "advance"})
         self.assertEqual(self.current()["current_task"], "semantic_review")
         second_job = self.current()["current_job_id"]
         self.jobs[second_job].update({
@@ -219,6 +231,73 @@ class WritingAgentGraphTests(unittest.TestCase):
         self.assertEqual(self.current()["calls_used"], 2)
         self.assertEqual([task for task, _step in self.enqueue_calls],
                          ["chapter_analysis", "semantic_review"])
+
+    def waiting_memory(self):
+        self.state = agent.initial_state(
+            "wf_1", "book_1", "branch_1", "chapter_1", "inspect", max_calls=2
+        )
+        agent.invoke_start(self.graph, self.state)
+        self.resume({"action": "authorize"})
+        self.jobs[self.current()["current_job_id"]].update({
+            "status": "success",
+            "result": {"safe_to_apply": True, "completion_state": "complete",
+                       "billing_state": "usage_reported", "analysis": {"id": "analysis_1"}},
+        })
+        self.resume({"action": "advance"})
+        self.assertEqual(self.current()["status"], "awaiting_memory")
+
+    def test_partial_memory_decisions_never_enqueue_review_or_consume_call(self):
+        self.waiting_memory()
+        job_id = self.current()["current_job_id"]
+        for _ in range(3):
+            result = self.resume({"action": "advance"})
+            self.assertIn("__interrupt__", result)
+            self.assertEqual(self.current()["status"], "awaiting_memory")
+            self.assertEqual(self.current()["current_job_id"], job_id)
+            self.assertEqual(self.current()["calls_used"], 1)
+            self.assertEqual(len(self.enqueue_calls), 1)
+
+    def test_recompiled_graph_recovers_memory_wait_then_verifies_author_receipt(self):
+        self.waiting_memory()
+        self.graph = agent.build_graph(self.callbacks, self.checkpointer)
+        self.assertEqual(self.current()["status"], "awaiting_memory")
+        self.assertEqual(self.current()["analysis_id"], "analysis_1")
+        self.memory_ready = True
+        self.resume({"action": "advance"})
+        self.assertEqual(self.current()["current_task"], "semantic_review")
+        self.assertEqual(self.current()["calls_used"], 2)
+        self.resume({"action": "advance"})
+        self.assertEqual(len(self.enqueue_calls), 2)
+
+    def test_wrong_memory_receipt_stops_before_review(self):
+        self.waiting_memory()
+        callbacks = agent.WritingAgentCallbacks(
+            prepare=self.callbacks.prepare, enqueue=self.callbacks.enqueue,
+            get_job=self.callbacks.get_job, verify_adoption=self.callbacks.verify_adoption,
+            verify_memory=lambda _state: {"analysis_id": "another_analysis", "ready": True},
+        )
+        self.graph = agent.build_graph(callbacks, self.checkpointer)
+        self.resume({"action": "advance"})
+        self.assertEqual(self.current()["status"], "requires_action")
+        self.assertEqual(len(self.enqueue_calls), 1)
+
+    def test_missing_memory_verifier_stops_before_review(self):
+        self.waiting_memory()
+        callbacks = agent.WritingAgentCallbacks(
+            prepare=self.callbacks.prepare, enqueue=self.callbacks.enqueue,
+            get_job=self.callbacks.get_job, verify_adoption=self.callbacks.verify_adoption,
+        )
+        self.graph = agent.build_graph(callbacks, self.checkpointer)
+        self.resume({"action": "advance"})
+        self.assertEqual(self.current()["status"], "requires_action")
+        self.assertIn("缺少章后", self.current()["error"])
+        self.assertEqual(len(self.enqueue_calls), 1)
+
+    def test_canceling_memory_wait_does_not_enqueue_review(self):
+        self.waiting_memory()
+        self.resume({"action": "cancel"})
+        self.assertEqual(self.current()["status"], "canceled")
+        self.assertEqual(len(self.enqueue_calls), 1)
 
     def test_pending_job_advance_reads_same_job_without_another_enqueue(self):
         agent.invoke_start(self.graph, self.state)

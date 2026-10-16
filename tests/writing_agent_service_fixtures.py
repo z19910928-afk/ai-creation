@@ -22,6 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 import moyu_agent_service as service  # noqa: E402
+import moyu_analysis as analysis  # noqa: E402
 import moyu_backups as backups  # noqa: E402
 import moyu_settings as settings  # noqa: E402
 from moyu_agent_checkpoint import ScopedCheckpointSaver  # noqa: E402
@@ -122,7 +123,7 @@ class WritingAgentServiceTests(unittest.TestCase):
         service.advance_ready(server, job_id=job["id"])
         return self.read(session)
 
-    def finish_analysis(self, session):
+    def finish_analysis(self, session, *, advance=True):
         job = session["current_job"]
         task = job["task"]
         with closing(server.connect()) as conn, conn:
@@ -132,7 +133,35 @@ class WritingAgentServiceTests(unittest.TestCase):
             completed = server.finish_ai_job(conn, saved, result, None, 1)
         self.assertEqual(completed["status"], "success", completed)
         self.assertIn("analysis" if task == "chapter_analysis" else "story_review", completed["result"])
-        service.advance_ready(server, job_id=job["id"])
+        if advance:
+            service.advance_ready(server, job_id=job["id"])
+        return self.read(session)
+
+    def decide_memory(self, session, *, decision="accepted", advance=True):
+        with closing(server.connect()) as conn, conn:
+            job_id = self.plan(session)["steps"]["chapter_analysis"]["job_id"]
+            job = conn.execute("SELECT result_json FROM app_ai_job WHERE id=?", (job_id,)).fetchone()
+            reference = json.loads(job["result_json"])["analysis"]
+            saved = json.loads(conn.execute(
+                "SELECT payload_json FROM app_chapter_analysis WHERE id=?", (reference["id"],),
+            ).fetchone()[0])
+            data = {
+                "source_revision_id": saved["source_revision_id"],
+                "chapter_hash": saved["chapter_hash"],
+                "decisions": [{"candidate_id": item["id"], "decision": decision}
+                              for item in saved["candidates"] if item["status"] == "candidate"],
+            }
+            for name in ("summary", "handoff"):
+                if saved[name]["status"] == "pending":
+                    data[name + "_decision"] = decision
+            result = analysis.decide_analysis(
+                conn, {**self.scope, "actor_id": "fixture-author",
+                       "records": server.state_from_db(conn)["records"]},
+                saved["id"], data, {"apply_candidate": server.apply_analysis_candidate},
+            )
+        self.assertEqual(result["status"], "reviewed", result)
+        if advance:
+            service.advance_ready(server, analysis_id=result["id"])
         return self.read(session)
 
     def structured_result(self, task, body):
@@ -349,6 +378,8 @@ class WritingAgentServiceTests(unittest.TestCase):
         revision_id = self.source()["revision_id"]
         self.assertEqual(session["current_job"]["source"]["source_revision_id"], revision_id)
         session = self.finish_analysis(session)
+        self.assertEqual(session["status"], "awaiting_memory", session)
+        session = self.decide_memory(session)
         self.assertEqual(session["current_job"]["source"]["source_revision_id"], revision_id)
         session = self.finish_analysis(session)
         self.assertEqual(session["status"], "review_ready")
@@ -373,6 +404,8 @@ class WritingAgentServiceTests(unittest.TestCase):
         session = self.authorize(self.create(mode="inspect")["session"])
         session = self.finish_analysis(session)
         self.assertIn("chapter_analysis", session["result_refs"])
+        self.assertEqual(session["status"], "awaiting_memory", session)
+        session = self.decide_memory(session)
         session = self.finish_analysis(session)
         self.assertEqual(session["status"], "review_ready")
         self.assertEqual(set(session["result_refs"]), {"chapter_analysis", "semantic_review"})
@@ -404,6 +437,10 @@ class WritingAgentServiceTests(unittest.TestCase):
         session = self.authorize(self.create(mode="inspect")["session"])
         self.assertEqual(session["current_job"]["task"], "chapter_analysis")
         session = self.finish_analysis(session)
+        self.assertEqual(session["status"], "awaiting_memory", session)
+        self.assertEqual(session["calls_used"], 1)
+        self.assertEqual(self.counts()[3:], (1, 1, 0, 1, 0))
+        session = self.decide_memory(session)
         self.assertEqual(session["current_job"]["task"], "semantic_review")
         session = self.finish_analysis(session)
         self.assertEqual(session["status"], "review_ready")
@@ -424,6 +461,8 @@ class WritingAgentServiceTests(unittest.TestCase):
         self.assertEqual(session["current_job"]["source"]["source_revision_id"], adopted_revision)
         self.assertEqual(self.plan(session)["summary"]["adoption_run_id"], original_run)
         session = self.finish_analysis(session)
+        self.assertEqual(session["status"], "awaiting_memory", session)
+        session = self.decide_memory(session)
         self.assertEqual(session["current_job"]["source"]["source_revision_id"], adopted_revision)
         session = self.finish_analysis(session)
         self.assertEqual(session["status"], "review_ready")
@@ -672,6 +711,7 @@ class WritingAgentServiceTests(unittest.TestCase):
 
     def test_actual_background_worker_automatically_completes_inspect(self):
         session = self.create(mode="inspect")["session"]
+        memory_ready = threading.Event()
         done = threading.Event()
         errors = []
         original_advance = service.advance_ready
@@ -683,7 +723,10 @@ class WritingAgentServiceTests(unittest.TestCase):
         def advance(*args, **kwargs):
             try:
                 original_advance(*args, **kwargs)
-                if self.read(session)["status"] in {"review_ready", "requires_action"}:
+                status = self.read(session)["status"]
+                if status == "awaiting_memory":
+                    memory_ready.set()
+                if status in {"review_ready", "requires_action"}:
                     done.set()
             except Exception as exc:
                 errors.append(exc)
@@ -693,6 +736,11 @@ class WritingAgentServiceTests(unittest.TestCase):
                 patch.object(service, "advance_ready", side_effect=advance), \
                 patch.object(server, "start_ai_worker", side_effect=self.real_start_ai_worker):
             self.authorize(session)
+            self.assertTrue(memory_ready.wait(timeout=10), "background analysis did not reach author decision")
+            current = self.read(session)
+            self.assertEqual(current["status"], "awaiting_memory", current)
+            self.assertEqual(current["calls_used"], 1)
+            self.decide_memory(current)
             self.assertTrue(done.wait(timeout=10), "background writing workflow did not complete")
             self.assertEqual(errors, [])
             current = self.read(session)

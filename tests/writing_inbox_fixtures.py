@@ -240,6 +240,58 @@ class WritingInboxTests(unittest.TestCase):
         self.assertEqual(rows[owned]["session_id"], session)
         self.assertEqual(rows[owned]["status"], "requires_action")
 
+    def test_memory_wait_is_visible_and_uses_current_author_decision_sources(self):
+        analysis = self.analysis()
+        with closing(server.connect()) as conn, conn:
+            context, chapter = server.ai_context(conn, self.chapter, task="chapter_analysis")
+            context["_source"] = server.candidate_source(conn, "chapter_analysis", chapter)
+            job = server.create_ai_job(conn, "chapter_analysis", context, "", "json")
+            job_id = job["id"]
+            conn.execute("UPDATE app_ai_job SET status='success',result_json=? WHERE id=?",
+                         (server.json_text({"analysis": analysis}), job_id))
+            conn.execute("UPDATE ai_run SET status='success' WHERE id=?", (job["ai_run_id"],))
+        session_id = self.session(status="awaiting_memory", job_id=job_id)
+        before = self.snapshot()
+        first = self.inbox(kind="agent")
+        self.assertEqual(first["total"], 1)
+        row = first["items"][0]
+        self.assertEqual(row["session_id"], session_id)
+        self.assertEqual(row["status"], "awaiting_memory")
+        self.assertEqual(row["status_label"], "等待确认章后资料")
+        self.assertFalse(row["stale"])
+        self.assertFalse(row["read_only"])
+        self.assertEqual(self.snapshot(), before)
+        with closing(server.connect()) as conn, conn:
+            moyu_analysis.decide_analysis(conn, self.scope, analysis["id"], {
+                "source_revision_id": analysis["source_revision_id"],
+                "chapter_hash": analysis["chapter_hash"], "confirm_summary": True,
+            })
+        self.assertFalse(self.inbox(kind="agent")["items"][0]["stale"])
+        with closing(server.connect()) as conn, conn:
+            original = conn.execute("SELECT consent_json FROM ai_run WHERE id=?",
+                                    (job["ai_run_id"],)).fetchone()[0]
+            changed = json.loads(original)
+            changed["request_audit"]["request_sha256"] = "0" * 64
+            conn.execute("UPDATE ai_run SET consent_json=? WHERE id=?",
+                         (server.json_text(changed), job["ai_run_id"]))
+        self.assertTrue(self.inbox(kind="agent")["items"][0]["stale"])
+        with closing(server.connect()) as conn, conn:
+            conn.execute("UPDATE ai_run SET consent_json=? WHERE id=?", (original, job["ai_run_id"]))
+            server.update_chapter(conn, self.chapter, {"chapter_goal": "改由另一人物发现线索"})
+        changed = self.inbox(kind="agent")["items"][0]
+        self.assertTrue(changed["stale"])
+        self.assertTrue(changed["read_only"])
+        self.assertEqual(changed["status_label"], "来源已改变，需重新检查")
+
+    def test_missing_analysis_cannot_appear_as_current_memory_wait(self):
+        session = self.session(status="awaiting_memory")
+        before = self.snapshot()
+        item = self.inbox(kind="agent")["items"][0]
+        self.assertEqual(item["session_id"], session)
+        self.assertTrue(item["stale"])
+        self.assertTrue(item["read_only"])
+        self.assertEqual(self.snapshot(), before)
+
     def test_chat_jobs_never_become_writing_candidates_or_queue_attention(self):
         chat_jobs, writing_jobs = set(), {}
         for task in ("assistant_chat", "continue"):

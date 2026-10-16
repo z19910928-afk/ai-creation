@@ -670,6 +670,8 @@ async function main(){
   await desktop.page.locator('[data-action="chapterAnalysis"]').click();await desktop.page.locator('[data-analysis-decision]').waitFor();
   assert.match(await desktop.page.locator('.analysis-modal blockquote').innerText(),/红铜罗盘/);
   await desktop.page.locator('[data-analysis-decision]').selectOption('accepted');
+  await desktop.page.locator('#analysisSummaryDecision').selectOption('accepted');
+  await desktop.page.locator('#analysisHandoffDecision').selectOption('accepted');
   await desktop.page.locator('[data-confirm-analysis]').click();await desktop.page.waitForFunction(()=>!document.querySelector('[data-confirm-analysis]'));
   await waitSaved(desktop.page);
   const saved=await api('/api/state');const current=saved.chapters.find(item=>item.id===firstId);

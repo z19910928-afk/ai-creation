@@ -562,7 +562,7 @@ function authorBindWritingAgent(){
   form.querySelector('[data-agent-chapter-field]').hidden=mode==='plan';
   form.querySelector('#agentQuery').placeholder=mode==='plan'?'这部小说，你想写怎样的故事？':mode==='polish'?'这一整章，你希望怎样修改？':'这一章，你希望发生什么？';
   form.querySelector('[data-agent-mode-scope]').textContent=mode==='polish'?'整章正文生成修订候选，采纳后替换本章。':
-   mode==='plan'?'总纲、卷、章和场景逐阶段确认，最后采用完整规划。':mode==='inspect'?'整理已写正文的章后记忆与故事审稿。':'正文候选采纳后，继续整理记忆与审稿。';
+   mode==='plan'?'总纲、卷、章和场景逐阶段确认，最后采用完整规划。':mode==='inspect'?'先整理章后资料，由你逐项决定后继续故事审稿。':'正文候选采纳后整理章后资料，由你逐项决定后继续故事审稿。';
  };
  reflectMode();
  form.oninput=()=>{reflectMode();draftRevision++;const value=payload(),changed=!draft||JSON.stringify(value)!==JSON.stringify({query:draft.query,chapter_id:draft.chapter_id,mode:draft.mode});if(changed)draft={...value,request_id:draft?.request_id&&draft.request_id!==inFlightRequestId?draft.request_id:crypto.randomUUID()};storage.set(key,JSON.stringify(draft))};
@@ -610,7 +610,7 @@ async function authorLoadAgent(){
 }
 
 function authorRenderAgent(scope,host){
- const labels={awaiting_authorization:'等待启动',awaiting_job:'正在执行',awaiting_adoption:'正文候选待采纳',awaiting_plan_confirmation:'本阶段候选待确认',awaiting_plan_application:'完整规划待采用',requires_action:'需要处理',review_ready:'记忆与审稿已就绪',canceled:'已停止',restored:'历史记录'};
+ const labels={awaiting_authorization:'等待启动',awaiting_job:'正在执行',awaiting_adoption:'正文候选待采纳',awaiting_memory:'等待章后确认',awaiting_plan_confirmation:'本阶段候选待确认',awaiting_plan_application:'完整规划待采用',requires_action:'需要处理',review_ready:'记忆与审稿已就绪',canceled:'已停止',restored:'历史记录'};
  const focus=authorAgentCurrentFocus(),expanded=authorAgentEditorScopeCurrent(authorAgentExpandedScope);
  const matching=view==='editor'?authorAgentRows.filter(row=>row.mode==='plan'||row.chapter_id===activeChapter)
   .sort((a,b)=>Number(['review_ready','canceled','restored'].includes(a.status))-Number(['review_ready','canceled','restored'].includes(b.status))):authorAgentRows;
@@ -624,17 +624,19 @@ function authorRenderAgent(scope,host){
  ${row.source_stale?`<p class="agent-source-stale">${row.mode==='plan'?'创作规划已变化，请核对现有规划后再处理候选。':'任务依据与当前稿件不同，请核对后再处理结果。'}</p>`:''}
  ${row.context_evidence?.source_revision_id?`<details class="agent-context-evidence"><summary>本次任务的冻结依据</summary><p>近章 ${Number(row.context_evidence.counts?.previous_chapters||0)} · 召回 ${Number(row.context_evidence.counts?.retrieved_chapters||0)} · 确认记忆 ${Number(row.context_evidence.counts?.confirmed_memory||0)} · 设定 ${Number(row.context_evidence.counts?.story_cards||0)}</p><small>来源版本 ${esc(row.context_evidence.source_revision_id||'未提供')}<br>材料指纹 ${esc(row.context_evidence.context_hash||'未提供')}</small></details>`:''}
  ${row.error?`<p class="form-error" role="alert">${esc(row.error)}</p>`:''}
- ${row.status==='awaiting_authorization'&&!row.restored_read_only?`<p>启动后最多执行 ${Number(row.max_calls)} 次模型调用，按当前模型额度计费。${row.mode==='plan'?'每阶段确认后生成下一阶段，最后由你采用完整规划。':['continue','polish'].includes(row.mode)?'正文采纳后继续整理记忆与审稿。':'记忆和审稿结果保留待确认。'}</p>`:''}
+ ${row.status==='awaiting_authorization'&&!row.restored_read_only?`<p>启动后最多执行 ${Number(row.max_calls)} 次模型调用，按当前模型额度计费。${row.mode==='plan'?'每阶段确认后生成下一阶段，最后由你采用完整规划。':['continue','polish'].includes(row.mode)?'正文采纳后整理章后资料，由你逐项决定后继续审稿。':'章后资料由你逐项决定后继续审稿，审稿结果保留待确认。'}</p>`:''}
+ ${row.status==='awaiting_memory'&&!row.restored_read_only?'<p>章后资料已生成。每项事实、章节回顾和下一章任务都由你决定采用或不采用，未处理完可以分次保存。</p>':''}
  ${authorAgentPlanningPreview(row)}
  <div class="agent-actions">
  ${!row.restored_read_only&&row.status==='awaiting_authorization'?'<button class="primary-btn" data-agent-action="authorize">启动本次任务</button>':''}
  ${!row.restored_read_only&&row.status==='awaiting_job'?'<button class="ghost-btn" data-agent-action="advance">更新进度</button>':''}
  ${!row.restored_read_only&&row.mode==='plan'&&row.status==='awaiting_plan_confirmation'?'<button class="primary-btn" data-agent-action="confirm">确认本阶段</button>':''}
  ${!row.restored_read_only&&row.mode==='plan'&&row.status==='awaiting_plan_application'?'<button class="primary-btn" data-agent-action="apply">采用完整规划</button>':''}
- ${!row.restored_read_only&&row.mode!=='plan'&&row.current_job?'<button class="primary-btn" data-agent-open>查看当前结果</button>':''}
+ ${!row.restored_read_only&&row.mode!=='plan'&&row.current_job&&row.status!=='awaiting_memory'?'<button class="primary-btn" data-agent-open>查看当前结果</button>':''}
  ${!row.restored_read_only&&row.status==='awaiting_adoption'?'<button class="ghost-btn" data-agent-action="applied">核对采纳结果</button>':''}
+ ${!row.restored_read_only&&row.status==='awaiting_memory'?'<button class="primary-btn" data-agent-analysis>确认章后资料</button><button class="ghost-btn" data-agent-action="advance">核对确认结果</button>':''}
  ${!row.restored_read_only&&row.status==='review_ready'?(row.mode==='plan'?'<button class="ghost-btn" data-agent-planning>打开规划建立章节</button>':'<button class="ghost-btn" data-agent-analysis>章后记忆</button><button class="ghost-btn" data-agent-review>故事审稿</button>'):''}
- ${!row.restored_read_only&&['awaiting_authorization','awaiting_job','awaiting_adoption','awaiting_plan_confirmation','awaiting_plan_application'].includes(row.status)?'<button class="ghost-btn" data-agent-action="cancel">停止任务</button>':''}
+ ${!row.restored_read_only&&['awaiting_authorization','awaiting_job','awaiting_adoption','awaiting_memory','awaiting_plan_confirmation','awaiting_plan_application'].includes(row.status)?'<button class="ghost-btn" data-agent-action="cancel">停止任务</button>':''}
  </div><p class="form-error" data-agent-action-error role="alert"></p></article>`).join('')||'<div class="empty">还没有写作任务。</div>');
  host.querySelector('[data-agent-return-all]')?.addEventListener('click',()=>{
   if(!authorAgentCurrent(scope,host))return;
@@ -671,14 +673,20 @@ function authorRenderAgent(scope,host){
    if(view==='editor'&&activeChapter===row.chapter_id)return true;
    activeChapter=row.chapter_id;view='editor';render();return true;
   };
+  const openAnalysis=()=>{
+   if(!openChapter())return;
+   const analysisId=row.result_refs?.chapter_analysis?.id||row.current_job?.result?.analysis?.id;
+   if(!analysisId){toast('本次章后资料身份缺失，请刷新任务后重试');return}
+   authorOpenChapterAnalysis(row.chapter_id,analysisId);
+  };
   section.querySelector('[data-agent-open]')?.addEventListener('click',()=>{
    const job=row.current_job;if(!job||!authorAgentCurrent(scope,host))return;
+   if(job.status==='success'&&job.task==='chapter_analysis'){openAnalysis();return}
    const candidate=receiveCandidateJob(job);if(!openChapter())return;
-   if(job.status==='success'&&job.task==='chapter_analysis')actions.chapterAnalysis();
-   else if(job.status==='success'&&job.task==='semantic_review')actions.reviewChapter();
+   if(job.status==='success'&&job.task==='semantic_review')actions.reviewChapter();
    else if(candidate){displayCandidate(candidate);authorRevealWorkbenchSection('workbenchCandidateSection')}
   });
-  section.querySelector('[data-agent-analysis]')?.addEventListener('click',()=>{if(openChapter())actions.chapterAnalysis()});
+  section.querySelector('[data-agent-analysis]')?.addEventListener('click',openAnalysis);
   section.querySelector('[data-agent-review]')?.addEventListener('click',()=>{if(openChapter())actions.reviewChapter()});
   section.querySelector('[data-agent-planning]')?.addEventListener('click',()=>{
    if(!authorAgentCurrent(scope,host))return;
@@ -1880,18 +1888,20 @@ async function authorQueueTask(task,scope=authorChapterReportScope()){
  return job;
 }
 
-actions.chapterAnalysis=async()=>{
- const c=chapter();if(!c)return;const scope=authorChapterReportScope(c.id);
+async function authorOpenChapterAnalysis(chapterId=activeChapter,analysisId=''){
+ const c=chapter(chapterId);if(!c)return;const scope=authorChapterReportScope(c.id);
  try{
   if(!await syncBackend())throw new Error('当前稿件需要先保存或合并');
   if(!scope.current())return;
   const data=await authorJSON(`/api/chapter-analysis?chapter_id=${encodeURIComponent(c.id)}`,{headers:scope.headers});
   if(!scope.current())return;
   const analyses=data.analyses||data.analysis?[...(data.analyses||[]),...(data.analysis?[data.analysis]:[])]:Array.isArray(data)?data:[];
-  const latest=analyses[0];
-  authorShowAnalysis(latest,c.id,scope);
+  const analysis=analysisId?analyses.find(item=>item.id===analysisId):analyses[0];
+  if(analysisId&&!analysis)throw new Error('本次章后资料已不存在，请刷新任务后重试');
+  authorShowAnalysis(analysis,c.id,scope);
  }catch(error){if(scope.current())toast(`章后记忆读取失败：${error.message}`)}
-};
+}
+actions.chapterAnalysis=()=>authorOpenChapterAnalysis();
 function authorShowAnalysis(analysis,chapterId,scope=authorChapterReportScope(chapterId)){
  if(!scope.current())return;
  const payload=analysis?.structured||analysis?.payload||analysis||{};
@@ -1899,26 +1909,28 @@ function authorShowAnalysis(analysis,chapterId,scope=authorChapterReportScope(ch
  const summarySection=analysis?.summary||payload.summary||'';const handoffSection=analysis?.handoff||payload.handoff||payload.next_brief||'';
  const summary=typeof summarySection==='string'?summarySection:summarySection.text||'';
  const handoff=typeof handoffSection==='string'?handoffSection:handoffSection.text||'';
+ const sectionDecided=section=>['accepted','rejected'].includes(section?.status);
+ const decisionOptions=section=>`<option value="">待决定</option><option value="accepted" ${section.status==='accepted'?'selected':''}>采用</option><option value="rejected" ${section.status==='rejected'?'selected':''}>不采用</option>`;
  const stale=analysis?.stale||analysis?.status==='stale';
- const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.authorChapterReport='analysis';
+ const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.authorChapterReport='analysis';wrap.dataset.analysisId=analysis?.id||analysis?.analysis_id||'';
  const current=()=>scope.current()&&wrap.isConnected;
  wrap.innerHTML=`<div class="modal analysis-modal"><h3>章后记忆确认</h3><p class="modal-help">${esc(chapter(chapterId)?.title||'')}
  ${stale?' · 原稿或资料需要重新核对，此批候选仅供阅读':''}</p>
- ${analysis?`<label>章节回顾<textarea id="analysisSummary" ${summarySection.status==='accepted'?'readonly':''}>${esc(summary)}</textarea></label>
- <label class="confirmation-check"><input id="confirmAnalysisSummary" type="checkbox" ${summary.trim()&&summarySection.status!=='accepted'?'checked':''} ${summarySection.status==='accepted'?'disabled':''}>确认章节回顾</label>
- <label>下一章任务<textarea id="analysisHandoff" ${handoffSection.status==='accepted'?'readonly':''}>${esc(handoff)}</textarea></label>
- <label class="confirmation-check"><input id="confirmAnalysisHandoff" type="checkbox" ${handoff.trim()&&handoffSection.status!=='accepted'?'checked':''} ${handoffSection.status==='accepted'?'disabled':''}>确认下一章任务</label>`:
+ ${analysis?`<label>章节回顾<textarea id="analysisSummary" ${sectionDecided(summarySection)?'readonly':''}>${esc(summary)}</textarea></label>
+ <label>回顾决定<select id="analysisSummaryDecision" ${sectionDecided(summarySection)?'disabled':''}>${decisionOptions(summarySection)}</select></label>
+ <label>下一章任务<textarea id="analysisHandoff" ${sectionDecided(handoffSection)?'readonly':''}>${esc(handoff)}</textarea></label>
+ <label>下一章任务决定<select id="analysisHandoffDecision" ${sectionDecided(handoffSection)?'disabled':''}>${decisionOptions(handoffSection)}</select></label>`:
  '<p class="modal-help">还没有本章的待确认事实。</p>'}
  <div>${candidates.map((item,index)=>`<section class="analysis-item" data-analysis-index="${index}">
- <strong>${esc(item.type||item.kind||'事实')} · ${esc(item.name||item.title||item.attribute||'')}</strong>
- <label>名称<input data-analysis-name value="${esc(item.name||'')}" maxlength="500"></label>
- <label>内容<textarea data-analysis-edit>${esc(item.note||item.description||item.summary||item.value||'')}</textarea></label>
- <div class="plan-grid"><label>资料性质<select data-analysis-mode>${[['world_truth','已发生事实'],['character_belief','人物认知'],['narrator','叙述者已知'],['inference','推测'],['author_plan','作者计划']].map(([value,label])=>`<option value="${value}" ${item.epistemic_mode===value?'selected':''}>${label}</option>`).join('')}</select></label>
- <label>哪些人物知道<select data-analysis-known multiple size="3">${storyEntityMultiOptions(item.known_by||[])}</select></label></div>
+ <strong>${esc(({fact:'事实',event:'事件',character_state:'人物状态',relationship:'人物关系',foreshadowing:'伏笔'})[item.type||item.kind]||item.type||item.kind||'事实')} · ${esc(item.name||item.title||item.attribute||'')}</strong>
+ <label>名称<input data-analysis-name value="${esc(item.name||'')}" maxlength="500" ${sectionDecided(item)?'readonly':''}></label>
+ <label>内容<textarea data-analysis-edit ${sectionDecided(item)?'readonly':''}>${esc(item.note||item.description||item.summary||item.value||'')}</textarea></label>
+ <div class="plan-grid"><label>资料性质<select data-analysis-mode ${sectionDecided(item)?'disabled':''}>${[['world_truth','已发生事实'],['character_belief','人物认知'],['narrator','叙述者已知'],['inference','推测'],['author_plan','作者计划']].map(([value,label])=>`<option value="${value}" ${item.epistemic_mode===value?'selected':''}>${label}</option>`).join('')}</select></label>
+ <label>哪些人物知道<select data-analysis-known multiple size="3" ${sectionDecided(item)?'disabled':''}>${storyEntityMultiOptions(item.known_by||[])}</select></label></div>
  <blockquote>${esc(item.source_quote||item.quote||item.source?.quote||'无原句证据')}</blockquote>
  <div class="analysis-actions"><button class="ghost-btn" data-analysis-source="${index}">定位原句</button>
- <select data-analysis-decision aria-label="记忆决定" ${['accepted','rejected'].includes(item.status)?'disabled':''}><option value="">待决定</option><option value="accepted" ${item.status==='accepted'?'selected':''}>确认</option><option value="rejected" ${item.status==='rejected'?'selected':''}>拒绝</option></select>
- <span>${esc(item.status||'候选')}</span></div></section>`).join('')||''}</div>
+ <select data-analysis-decision aria-label="记忆决定" ${sectionDecided(item)?'disabled':''}><option value="">待决定</option><option value="accepted" ${item.status==='accepted'?'selected':''}>采用</option><option value="rejected" ${item.status==='rejected'?'selected':''}>不采用</option></select>
+ <span>${esc(({candidate:'待决定',accepted:'已采用',rejected:'未采用'})[item.status]||item.status||'待决定')}</span></div></section>`).join('')||''}</div>
  <p class="form-error" role="alert"></p><div class="modal-actions"><button class="ghost-btn" data-close>关闭</button><button class="ghost-btn" data-extract>重新提取</button>
  ${analysis?`<button class="primary-btn" data-confirm-analysis ${stale?'disabled':''}>保存所选决定与回顾</button>`:''}</div></div>`;
  document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
@@ -1938,12 +1950,16 @@ function authorShowAnalysis(analysis,chapterId,scope=authorChapterReportScope(ch
      edited:{name:row.querySelector('[data-analysis-name]').value,note:row.querySelector('[data-analysis-edit]').value,
       epistemic_mode:row.querySelector('[data-analysis-mode]').value,known_by:[...row.querySelector('[data-analysis-known]').selectedOptions].map(option=>option.value)}});
    }
-   await durableOperation(`/api/chapter-analysis/${encodeURIComponent(analysis.id||analysis.analysis_id)}/confirm`,'POST',{
+   const summaryDecision=wrap.querySelector('#analysisSummaryDecision')?.value||'';
+   const handoffDecision=wrap.querySelector('#analysisHandoffDecision')?.value||'';
+   const result=await durableOperation(`/api/chapter-analysis/${encodeURIComponent(analysis.id||analysis.analysis_id)}/confirm`,'POST',{
     source_revision_id:analysis.source_revision_id,chapter_hash:analysis.chapter_hash,decisions,
-    confirm_summary:!!wrap.querySelector('#confirmAnalysisSummary')?.checked,summary_text:wrap.querySelector('#analysisSummary')?.value||'',
-    confirm_handoff:!!wrap.querySelector('#confirmAnalysisHandoff')?.checked,handoff_text:wrap.querySelector('#analysisHandoff')?.value||''},current);
+    ...(!sectionDecided(summarySection)&&summaryDecision?{summary_decision:summaryDecision,summary_text:wrap.querySelector('#analysisSummary')?.value||''}:{}),
+    ...(!sectionDecided(handoffSection)&&handoffDecision?{handoff_decision:handoffDecision,handoff_text:wrap.querySelector('#analysisHandoff')?.value||''}:{})},current);
    if(!current())return;
-   wrap.remove();render();toast('回顾与记忆决定已经保存');
+   const saved=result.analysis||{},remaining=(saved.candidates||[]).filter(item=>!['accepted','rejected'].includes(item.status)).length+
+    ['summary','handoff'].filter(name=>saved[name]?.text?.trim()&&!sectionDecided(saved[name])).length;
+   wrap.remove();render();toast(remaining?`决定已保存，还有 ${remaining} 项待决定`:'章后资料已处理');
   }catch(error){if(current()){wrap.querySelector('.form-error').textContent=error.message;button.disabled=false}}
  });
 }

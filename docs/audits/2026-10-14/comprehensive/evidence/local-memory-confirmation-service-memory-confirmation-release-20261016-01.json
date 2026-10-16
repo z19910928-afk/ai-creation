@@ -1,0 +1,102 @@
+{
+  "passed": true,
+  "verified_at": "2026-10-16T13:23:49.606130+00:00",
+  "release_report_sha256": "6b831df6ef82f48b188ed0bedaf6ede23969364e66b8e51f133f42bbda2419bd",
+  "release_source_count": 146,
+  "release_source_inventory_sha256": "1981d0f942d6914dee1e90f696f8632c03d4f1a38f93a2574c5a7eee9cb29a9c",
+  "release_sources_match_before_and_after_restart": true,
+  "old_process": {
+    "pid": 54824,
+    "started_at_sha256": "827b6f5cc780594eff6b306f31aba68f389b1175a315ec365c83b2656165d645",
+    "command_sha256": "7c12a2205113fab0859b3d0faf87aaff24bb4144d31704a8c63f36a6e3cfc040",
+    "working_directory_verified": true,
+    "loopback_listener_verified": true
+  },
+  "new_process": {
+    "pid": 65895,
+    "started_at_sha256": "f8c4c40dc16c620a1062bc1baa6f0f6e4227f730f28d833512094ac0d2cc023f",
+    "command_sha256": "7c12a2205113fab0859b3d0faf87aaff24bb4144d31704a8c63f36a6e3cfc040",
+    "working_directory_verified": true,
+    "loopback_listener_verified": true
+  },
+  "original_process": {
+    "pid": 48520,
+    "started_at_sha256": "1d19c0e39f664e9ca8c0f2fcd4a0f880073b4833467ccf5499c04395f051be49",
+    "command_sha256": "76f0952635bb27f980f48761da58f50fee75c920fda634b35349aa8139c55b07",
+    "working_directory_verified": true,
+    "loopback_listener_verified": true
+  },
+  "original_process_unchanged": true,
+  "loopback_health_http_status": 200,
+  "health_sha256": "a66507c43a5b1dee1346e0c36e858b7bf61c85c3efa5c53dffb1d5cca8d3bb92",
+  "online_backups": {
+    "preview": {
+      "backup_sha256": "650fb959a77ce6765b36d773eb1b452b2336d7f79894b142e4759bca97781a40",
+      "manifest_sha256": "2735cb40fdfa9e8d6d3291f54529ccb10aa1f9a1ed4abbc611fd442e8cddf644",
+      "content_matches_source": true,
+      "source_schema_version": 10,
+      "backup_schema_version": 1,
+      "schema_counter_comparison": "Independent destination counter; live databases remain fully compared"
+    },
+    "original": {
+      "backup_sha256": "091866bbe0f39576283f86bfdb219b96b88275d72aaa43423d865b019d4de7a6",
+      "manifest_sha256": "68fb445d96bec4b3fc22d2de1ffc2ddc54b739e0e8c61a93b71943556d8d572a",
+      "content_matches_source": true,
+      "source_schema_version": 174,
+      "backup_schema_version": 1,
+      "schema_counter_comparison": "Independent destination counter; live databases remain fully compared"
+    }
+  },
+  "before_snapshot_sha256": "7e7a10c7886d01ff489b54c9605aa3ef9c02e551f652305388fa7510c1cbc1b4",
+  "after_snapshot_sha256": "30468be56f162fa61ef56737983561f1eb684e043231404e38859e56c9d16a07",
+  "databases": {
+    "preview": {
+      "table_count": 72,
+      "row_count": 50,
+      "schema_sha256": "055b29f67aee06a63ae1b7eb9b8d5c68e604176eb77fa47eeca129c532bca99a",
+      "tables_sha256": "53bda2820a9203c7588cc78497ed332d7635813e26b225efcc5230d36574f002",
+      "schema_version": 10,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    },
+    "original": {
+      "table_count": 65,
+      "row_count": 32,
+      "schema_sha256": "972d3c69e6dca70cd48da60d563953dbb6b64acfd6c044d863d3a45d8e2e893f",
+      "tables_sha256": "f98e0af9639f862ebab2e0a34476a5bb6ee34eda43d460bcf690fcf4d32a8ec8",
+      "schema_version": 174,
+      "user_version": 11,
+      "application_id": 0,
+      "integrity_ok": true,
+      "foreign_key_error_count": 0
+    }
+  },
+  "all_tables_content_schema_and_versions_unchanged": true,
+  "pending_work": {
+    "preview": {
+      "queued_or_running_jobs": 0,
+      "automatic_continuations": 0,
+      "awaiting_memory_sessions": 0,
+      "saved_connection_records": 0
+    },
+    "original": {
+      "queued_or_running_jobs": 0,
+      "automatic_continuations": 0,
+      "awaiting_memory_sessions": 0,
+      "saved_connection_records": 0
+    }
+  },
+  "pending_rechecked_after_old_process_stopped": true,
+  "connection_environment_cleared": true,
+  "model_calls": 0,
+  "messages_sent": 0,
+  "credential_directory_isolated": true,
+  "privacy": {
+    "manuscripts_included": false,
+    "credentials_included": false,
+    "database_files_published": false,
+    "private_paths_included": false
+  }
+}

@@ -11,9 +11,9 @@ const {spawn} = require('node:child_process');
 const {chromium} = require(process.env.MOYU_PLAYWRIGHT_MODULE || 'playwright');
 const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'moyu-agent-browser-'));
-const report = {passed:false, scope:'真实桌面 Chrome、隔离数据库、免费本机模拟模型；通过真实接口建立任务，再由页面验证启动、候选采纳、恢复和规划确认。持续聊天入口另由聊天专项覆盖。', cases:[], screenshots:[], page_errors:[], paid_provider_calls:0, artifacts:temporary};
+const report = {passed:false, scope:'真实桌面 Chrome、隔离数据库、免费本机模拟模型；通过真实接口建立任务，再由页面验证启动、候选采纳、章后逐项决定、恢复和规划确认。持续聊天入口另由聊天专项覆盖。', cases:[], screenshots:[], page_errors:[], paid_provider_calls:0, artifacts:temporary};
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
-let app, provider, browser, base, appPort, providerPort, firstId, fault = '', delay = 80;
+let app, provider, browser, base, appPort, providerPort, firstId, fault = '', delay = 80, richAnalysis = false;
 let log = '';
 const requests = [];
 const prose = '林岚将手收回来，门里的脚步声也停了。她把铜钥匙平放在门槛上，向后退开一步。\n\n门开了一道缝。守卫没有看钥匙，只盯着她袖口的血迹。';
@@ -22,9 +22,9 @@ async function api(route, method='GET', body, project='default-project'){
  const response=await fetch(base+route,{method,headers:{'Content-Type':'application/json','X-Moyu-Project':project},body:body===undefined?undefined:JSON.stringify(body)});
  const value=await response.json();assert.ok(response.ok,`${route}: ${response.status} ${JSON.stringify(value)}`);return value;
 }
-async function session(id){return (await api('/api/writing-agent')).sessions.find(item=>item.id===id)}
+async function session(id,project='default-project'){return (await api('/api/writing-agent','GET',undefined,project)).sessions.find(item=>item.id===id)}
 async function until(fn, description){for(let i=0;i<160;i++){const value=await fn();if(value)return value;await pause(100)}throw new Error('Timed out: '+description+'\n'+log.slice(-2000))}
-async function waitStatus(id,status){return until(async()=>{const row=await session(id);if(row?.status==='requires_action'&&status!=='requires_action')throw new Error(row.error);return row?.status===status&&row},status)}
+async function waitStatus(id,status,project='default-project'){return until(async()=>{const row=await session(id,project);if(row?.status==='requires_action'&&status!=='requires_action')throw new Error(row.error);return row?.status===status&&row},status)}
 async function startApp(){
  app=spawn(process.env.MOYU_TEST_PYTHON||'python3',['server.py'],{cwd:root,env:{...process.env,
   MOYU_DB:path.join(temporary,'story.sqlite3'),MOYU_HOST:'127.0.0.1',MOYU_PORT:String(appPort),
@@ -47,7 +47,13 @@ function output(input){
   return JSON.stringify({volumes:b.volumes.map(v=>({id:v.id,chapters:v.chapters.map(c=>({id:c.id,scenes:c.scenes.map((s,index)=>({
    id:s.id,title:`场景${index+1} 门外对峙`,goal:'说服守卫',location:'旧门',pov:'林岚'}))}))}))});
  }
- if(system.includes('完整普通正文'))return JSON.stringify({summary:{text:'林岚仍在门外。',evidence:[{source_quote:material.current_chapter.body.split('\n')[0]}]},handoff:{text:'',evidence:[]},candidates:[]});
+ if(system.includes('完整普通正文')){
+  const quote=material.current_chapter.body.split('\n')[0],evidence=[{source_quote:quote}];
+  return JSON.stringify({summary:{text:'林岚仍在门外。',evidence},
+   handoff:{text:richAnalysis?'核对铜钥匙是否仍在门槛上。':'',evidence:richAnalysis?evidence:[]},
+   candidates:richAnalysis?[{kind:'event',name:'铜钥匙留在门外',note:'林岚把铜钥匙留在门槛上。',
+    subject_name:'林岚',epistemic_mode:'world_truth',known_by:[],source_quote:quote}]:[]});
+ }
  if(system.includes('人物动机、因果、时间'))return JSON.stringify({findings:[],uncertainties:['本机固定回复，仅验证产品流程。']});
  return prose;
 }
@@ -58,6 +64,60 @@ async function createSavedPlan(page,query,mode='continue'){
  const response=await api('/api/writing-agent','POST',{request_id:crypto.randomUUID(),query,mode,chapter_id:firstId});
  const row=response.session;await page.evaluate(()=>authorLoadAgent());
  await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).waitFor();return row;
+}
+async function confirmAgentMemory(page,id,project='default-project'){
+ const waiting=await waitStatus(id,'awaiting_memory',project),calls=requests.length;
+ assert.equal(waiting.current_job.task,'chapter_analysis');
+ await page.evaluate(()=>authorLoadAgent());
+ if(await page.locator('[data-chat-result="workbenchAgentSection"]').isVisible()){
+  await page.locator('[data-chat-result="workbenchAgentSection"]').click();
+ }
+ await page.locator(`[data-agent-session="${id}"] [data-agent-analysis]`).click();
+ const modal=page.locator('[data-author-chapter-report="analysis"]');await modal.waitFor();
+ assert.equal(await modal.getAttribute('data-analysis-id'),waiting.result_refs.chapter_analysis.id);
+ assert.equal(await modal.locator('#analysisSummaryDecision').inputValue(),'');
+ assert.equal(requests.length,calls);
+ await modal.locator('#analysisSummaryDecision').selectOption('accepted');
+ await modal.locator('[data-confirm-analysis]').click();await modal.waitFor({state:'hidden'});
+ return waitStatus(id,'review_ready',project);
+}
+async function openAgentMemory(page,id,analysisId){
+ await page.evaluate(()=>authorLoadAgent());
+ if(await page.locator('[data-chat-result="workbenchAgentSection"]').isVisible()){
+  await page.locator('[data-chat-result="workbenchAgentSection"]').click();
+ }
+ await page.locator(`[data-agent-session="${id}"] [data-agent-analysis]`).click();
+ const modal=page.locator('[data-author-chapter-report="analysis"]');await modal.waitFor();
+ assert.equal(await modal.getAttribute('data-analysis-id'),analysisId);return modal;
+}
+async function memoryDecisionLayout(modal){
+ const layout=await modal.evaluate(element=>({
+  width:innerWidth,height:innerHeight,pageWidth:document.documentElement.scrollWidth,
+  elements:[...element.querySelectorAll('.modal,textarea,input,select,.analysis-item,.modal-actions')]
+   .map(item=>{const r=item.getBoundingClientRect();return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,
+    scrollWidth:item.scrollWidth,clientWidth:item.clientWidth,isModal:item.matches('.modal')}})
+ }));
+ assert.ok(layout.pageWidth<=layout.width,JSON.stringify(layout));
+ assert.ok(layout.elements.every(item=>item.left>=0&&item.right<=layout.width&&item.scrollWidth<=item.clientWidth+1),JSON.stringify(layout));
+ assert.ok(layout.elements.filter(item=>item.isModal).every(item=>item.top>=0&&item.bottom<=layout.height),JSON.stringify(layout));
+}
+async function createMemoryProject(page,width){
+ const created=await api('/api/projects','POST',{title:'章后确认桌面验证-'+width});
+ const owner=created.project?.id||created.state?.project?.id;assert.ok(owner);
+ const saved=await api('/api/state','GET',undefined,owner);saved.chapters=saved.chapters.slice(0,1);
+ Object.assign(saved.chapters[0],{body:'林岚把铜钥匙留在门槛上。\n\n守卫没有回答。',recap:'',next_brief:''});
+ saved.records=[];saved.memory=[];saved.plot={setup:[],develop:[],payoff:[]};
+ await api('/api/state','PUT',saved,owner);
+ await api('/api/records','POST',{type:'人物',name:'林岚',description:'旧门外的来客。'},owner);
+ await page.locator('[data-view="library"]').click();
+ await page.locator(`[data-project-open="${owner}"]`).click();await page.locator('[data-view="editor"]').click();
+ await page.waitForFunction(id=>requestedProject===id&&backendOnline&&!isDirty()&&!syncInFlight,owner);
+ const row=(await api('/api/writing-agent','POST',{request_id:crypto.randomUUID(),chapter_id:saved.chapters[0].id,
+  query:'核对铜钥匙去向，逐项处理章后资料。',mode:'inspect'},owner)).session;
+ await page.evaluate(()=>authorLoadAgent());
+ await page.locator('[data-chat-result="workbenchAgentSection"]').click();
+ await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).click();
+ return {owner,chapterId:saved.chapters[0].id,row};
 }
 async function main(){
  providerPort=await freePort();appPort=await freePort();base=`http://127.0.0.1:${appPort}`;
@@ -121,10 +181,12 @@ async function main(){
   const repeated=await api(`/api/writing-agent/${mainSession.id}/resume`,'POST',{action:'authorize',checkpoint_id:mainSession.checkpoint_id});
   assert.equal(repeated.idempotent,true);assert.equal(requests.length,1);assert.equal(ready.calls_used,1);
  });
- await test('现有比较采纳接通总管，自动整理记忆与审稿共三次',async()=>{
+ await test('正文采纳后等待作者决定章后资料，再继续审稿共三次',async()=>{
   await page.locator(`[data-agent-session="${mainSession.id}"] [data-agent-open]`).click();
   await page.locator('#aiAdopt:not([disabled])').waitFor();await page.locator('#aiAdopt').click();await page.locator('[data-apply]').click();
-  const ready=await waitStatus(mainSession.id,'review_ready');assert.equal(ready.calls_used,3);assert.equal(requests.length,3);
+  const waiting=await waitStatus(mainSession.id,'awaiting_memory');assert.equal(waiting.calls_used,2);assert.equal(requests.length,2);
+  assert.equal((await api(`/api/story-reviews?chapter_id=${firstId}`)).reviews.length,0);
+  const ready=await confirmAgentMemory(page,mainSession.id);assert.equal(ready.calls_used,3);assert.equal(requests.length,3);
   assert.ok((await api('/api/state')).chapters.find(c=>c.id===firstId).body.endsWith(prose));
   assert.equal((await api(`/api/chapter-analysis?chapter_id=${firstId}`)).analyses.length,1);
   await page.locator('[data-chat-result="workbenchAgentSection"]').click();
@@ -150,7 +212,10 @@ async function main(){
   const row=await createSavedPlan(page,'核对人物动作、因果和章后记忆。','inspect');await stopApp();await startApp();
   await page.reload();await page.waitForFunction(()=>backendOnline);await page.locator('[data-view="assistant"]').click();
   await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="authorize"]`).click();
-  const ready=await waitStatus(row.id,'review_ready');assert.equal(ready.calls_used,2);assert.equal(requests.length,5);
+  const waiting=await waitStatus(row.id,'awaiting_memory');assert.equal(waiting.calls_used,1);assert.equal(requests.length,4);
+  await stopApp();await startApp();await page.reload();await page.waitForFunction(()=>backendOnline);
+  await page.locator('[data-view="assistant"]').click();
+  const ready=await confirmAgentMemory(page,row.id);assert.equal(ready.calls_used,2);assert.equal(requests.length,5);
  });
  await test('已启动任务停止后不追加调用，迟到内容不进入正文',async()=>{
   delay=1500;const before=(await api('/api/state')).chapters[0].body;
@@ -271,7 +336,7 @@ async function main(){
   assert.equal((await api('/api/state')).chapters.find(c=>c.id===firstId).body,before);
   assert.equal((await session(row.id)).status,'awaiting_adoption');assert.equal(requests.length,beforeCalls+1);
   await page.locator('#aiAdopt:not([disabled])').click();await comparison.waitFor();
-  await page.locator('[data-apply]').click();const ready=await waitStatus(row.id,'review_ready');
+  await page.locator('[data-apply]').click();const ready=await confirmAgentMemory(page,row.id);
   assert.equal(ready.calls_used,3);assert.equal(requests.length,beforeCalls+3);
   assert.equal((await api('/api/state')).chapters.find(c=>c.id===firstId).body,prose);
   await screenshot(page,'writing-agent-polish-1280x900.png');
@@ -334,7 +399,7 @@ async function main(){
   assert.match(await section.locator('.agent-source-stale').textContent(),/创作规划已变化/);
   await section.locator('[data-agent-action="authorize"]').click();await waitStatus(row.id,'requires_action');
   assert.equal(requests.length,beforeCalls);
-  for(const status of ['awaiting_authorization','awaiting_job','awaiting_adoption','awaiting_plan_confirmation','awaiting_plan_application','review_ready']){
+  for(const status of ['awaiting_authorization','awaiting_job','awaiting_adoption','awaiting_memory','awaiting_plan_confirmation','awaiting_plan_application','review_ready']){
    await page.evaluate(({id,status})=>{
     clearTimeout(authorAgentTimer);const row=authorAgentRows.find(item=>item.id===id);
     authorAgentRows=[{...row,status,restored_read_only:true}];authorRenderAgent(authorAgentScope(),document.querySelector('#agentSessions'));
@@ -342,6 +407,99 @@ async function main(){
    assert.equal(await page.locator('[data-agent-session] button').count(),0);
   }
   assert.deepEqual(report.page_errors,[]);
+ });
+ for(const viewport of [{width:1440,height:1000},{width:1280,height:900}]){
+  await test(`${viewport.width}电脑章后逐项决定、部分保存和拒绝均绑定本次资料，处理后才审稿`,async()=>{
+   await page.setViewportSize(viewport);richAnalysis=true;
+   const beforeCalls=requests.length,{owner,chapterId,row}=await createMemoryProject(page,viewport.width);
+   const waiting=await waitStatus(row.id,'awaiting_memory',owner),analysisId=waiting.result_refs.chapter_analysis.id;
+   assert.equal(waiting.stage,'memory_confirmation');assert.equal(waiting.calls_used,1);
+   assert.equal(requests.length,beforeCalls+1);
+   assert.equal((await api(`/api/story-reviews?chapter_id=${chapterId}`,'GET',undefined,owner)).reviews.length,0);
+   let modal=await openAgentMemory(page,row.id,analysisId);
+   for(const selector of ['#analysisSummaryDecision','#analysisHandoffDecision','[data-analysis-decision]']){
+    assert.equal(await modal.locator(selector).inputValue(),'');
+   }
+   assert.match(await modal.locator('.analysis-item strong').textContent(),/^事件 · /);
+   await memoryDecisionLayout(modal);
+   await page.locator('.toast.show').waitFor({state:'hidden'});
+   await screenshot(page,`writing-agent-memory-waiting-${viewport.width}x${viewport.height}.png`,false);
+   await modal.locator('#analysisSummaryDecision').selectOption('accepted');
+   await modal.locator('[data-confirm-analysis]').click();await modal.waitFor({state:'hidden'});
+   await page.locator('.toast.show').filter({hasText:'决定已保存，还有 2 项待决定'}).waitFor();
+   const partial=await session(row.id,owner);
+   assert.equal(partial.status,'awaiting_memory');assert.equal(partial.calls_used,1);
+   assert.equal(requests.length,beforeCalls+1);
+   assert.equal((await api(`/api/story-reviews?chapter_id=${chapterId}`,'GET',undefined,owner)).reviews.length,0);
+   modal=await openAgentMemory(page,row.id,analysisId);
+   assert.equal(await modal.locator('#analysisSummaryDecision').inputValue(),'accepted');
+   assert.equal(await modal.locator('#analysisSummaryDecision').isDisabled(),true);
+   assert.equal(await modal.locator('#analysisSummary').getAttribute('readonly'),'');
+   assert.equal(await modal.locator('#analysisHandoffDecision').inputValue(),'');
+   assert.equal(await modal.locator('[data-analysis-decision]').inputValue(),'');
+   await memoryDecisionLayout(modal);
+   await page.locator('.toast.show').waitFor({state:'hidden'});
+   await screenshot(page,`writing-agent-memory-partial-${viewport.width}x${viewport.height}.png`,false);
+   await modal.locator('[data-close]').click();await modal.waitFor({state:'hidden'});
+   const newerJob=await api('/api/ai/queue','POST',{
+    chapter_id:chapterId,task:'chapter_analysis',response_format:'json',defer:true},owner);
+   const newer=await api(`/api/ai/jobs/${newerJob.id}/process`,'POST',{},owner);
+   assert.equal(newer.status,'success',JSON.stringify(newer));assert.notEqual(newer.result.analysis.id,analysisId);
+   const listed=(await api(`/api/chapter-analysis?chapter_id=${chapterId}`,'GET',undefined,owner)).analyses;
+   assert.equal(listed[0].id,newer.result.analysis.id);assert.equal(requests.length,beforeCalls+2);
+   modal=await openAgentMemory(page,row.id,analysisId);
+   assert.equal(await modal.locator('#analysisSummaryDecision').isDisabled(),true);
+   await modal.locator('#analysisHandoffDecision').selectOption('rejected');
+   await modal.locator('[data-analysis-decision]').selectOption('rejected');
+   await modal.locator('[data-confirm-analysis]').click();await modal.waitFor({state:'hidden'});
+   await page.locator('.toast.show').filter({hasText:'章后资料已处理'}).waitFor();
+   const complete=await waitStatus(row.id,'review_ready',owner);
+   assert.equal(complete.calls_used,2);assert.equal(requests.length,beforeCalls+3);
+   const analyses=(await api(`/api/chapter-analysis?chapter_id=${chapterId}`,'GET',undefined,owner)).analyses;
+   const original=analyses.find(item=>item.id===analysisId);
+   assert.equal(original.status,'reviewed');assert.equal(original.summary.status,'accepted');
+   assert.equal(original.handoff.status,'rejected');assert.equal(original.candidates[0].status,'rejected');
+   assert.equal(analyses.find(item=>item.id===newer.result.analysis.id).status,'pending');
+   const saved=await api('/api/state','GET',undefined,owner),savedChapter=saved.chapters.find(item=>item.id===chapterId);
+   assert.equal(savedChapter.recap,'林岚仍在门外。');assert.equal(savedChapter.next_brief,'');
+   assert.equal(saved.memory.filter(item=>item.status==='已确认').length,0);
+   assert.equal((await api(`/api/story-reviews?chapter_id=${chapterId}`,'GET',undefined,owner)).reviews.length,1);
+   modal=await openAgentMemory(page,row.id,analysisId);
+   for(const selector of ['#analysisSummaryDecision','#analysisHandoffDecision','[data-analysis-decision]']){
+    assert.equal(await modal.locator(selector).isDisabled(),true);
+   }
+   assert.equal(await modal.locator('#analysisHandoffDecision').inputValue(),'rejected');
+   assert.equal(await modal.locator('[data-analysis-decision]').inputValue(),'rejected');
+   assert.equal(await modal.locator('[data-analysis-name]').getAttribute('readonly'),'');
+   assert.equal(await modal.locator('[data-analysis-edit]').getAttribute('readonly'),'');
+   assert.equal(await modal.locator('[data-analysis-mode]').isDisabled(),true);
+   assert.equal(await modal.locator('[data-analysis-known]').isDisabled(),true);
+   assert.equal(await modal.locator('.analysis-actions span').textContent(),'未采用');
+   await modal.locator('[data-analysis-decision]').scrollIntoViewIfNeeded();await memoryDecisionLayout(modal);
+   await page.locator('.toast.show').waitFor({state:'hidden'});
+   await screenshot(page,`writing-agent-memory-rejected-${viewport.width}x${viewport.height}.png`,false);
+   await modal.locator('[data-close]').click();richAnalysis=false;assert.deepEqual(report.page_errors,[]);
+  });
+ }
+ await test('等待章后决定时可从页面停止，后续手动处理资料不再触发该任务审稿',async()=>{
+  richAnalysis=true;const {owner,chapterId,row}=await createMemoryProject(page,'停止');
+  const waiting=await waitStatus(row.id,'awaiting_memory',owner),beforeCalls=requests.length;
+  await page.evaluate(()=>authorLoadAgent());
+  await page.locator(`[data-agent-session="${row.id}"] [data-agent-action="cancel"]`).click();
+  const canceled=await waitStatus(row.id,'canceled',owner);assert.equal(canceled.calls_used,1);
+  await page.locator('[data-action="chapterAnalysis"]').click();
+  const modal=page.locator('[data-author-chapter-report="analysis"]');await modal.waitFor();
+  assert.equal(await modal.getAttribute('data-analysis-id'),waiting.result_refs.chapter_analysis.id);
+  await modal.locator('#analysisSummaryDecision').selectOption('rejected');
+  await modal.locator('#analysisHandoffDecision').selectOption('rejected');
+  await modal.locator('[data-analysis-decision]').selectOption('rejected');
+  await modal.locator('[data-confirm-analysis]').click();await modal.waitFor({state:'hidden'});
+  await page.locator('.toast.show').filter({hasText:'章后资料已处理'}).waitFor();
+  await pause(300);assert.equal((await session(row.id,owner)).status,'canceled');
+  assert.equal(requests.length,beforeCalls);
+  assert.equal((await api(`/api/story-reviews?chapter_id=${chapterId}`,'GET',undefined,owner)).reviews.length,0);
+  richAnalysis=false;await page.evaluate(()=>authorSwitchProject('default-project'));
+  await page.locator('[data-view="editor"]').click();assert.deepEqual(report.page_errors,[]);
  });
  await test('全书完稿后工作台和空章节状态均隐藏新建入口，直接操作也不新增',async()=>{
   const saved=await api('/api/state');saved.project.book_status='complete';await api('/api/state','PUT',saved);
