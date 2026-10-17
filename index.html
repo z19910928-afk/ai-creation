@@ -15,7 +15,14 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark">墨</span><div><strong>墨屿</strong><small>小说创作台</small></div></div>
-      <div class="top-actions"><button id="saveState" class="save-state" title="查看保存状态">正在连接本机…</button><button class="icon-btn" id="finalCheckBtn" title="终稿检查" aria-label="终稿检查">✓</button><button class="icon-btn" id="markdownExportBtn" title="导出 Markdown" aria-label="导出 Markdown">MD</button><button class="icon-btn" id="epubExportBtn" title="导出 EPUB" aria-label="导出 EPUB">EPUB</button><button class="icon-btn" id="importBtn" title="导入稿件 JSON" aria-label="导入稿件 JSON">↓</button><button class="icon-btn" id="exportBtn" title="导出稿件 JSON" aria-label="导出稿件 JSON">↑</button></div>
+      <div class="top-actions">
+        <button id="saveState" class="save-state" title="查看保存状态">正在连接本机…</button>
+        <button type="button" class="ghost-btn top-action-btn" id="finalCheckBtn" title="终稿检查">终稿检查</button>
+        <button type="button" class="ghost-btn top-action-btn" id="markdownExportBtn" title="导出文稿">导出文稿</button>
+        <button type="button" class="ghost-btn top-action-btn" id="epubExportBtn" title="导出电子书">导出电子书</button>
+        <button type="button" class="ghost-btn top-action-btn" id="importBtn" title="导入稿件包">导入稿件包</button>
+        <button type="button" class="ghost-btn top-action-btn" id="exportBtn" title="导出稿件包">导出稿件包</button>
+      </div>
     </header>
     <div class="workspace">
       <aside class="sidebar">

@@ -10,6 +10,10 @@
 
 [首次GitHub桌面失败](github-desktop-05fa49c-failure-20261017.json)记录Apple芯片页面初始化等待、Intel空剪贴板条目与Windows未关闭SQLite连接三处问题；全部构建虽成功，但未进入安装上传及发布。[SQLite资源关闭专项](desktop-sqlite-closure-20261017.json)及[重包本机复验](desktop-native-fix-local-20261017.json)覆盖随后窄修：源备份成功和异常关闭保护、后台16项、真实应用10项、DMG安装后10项与运行边界5项通过，修后163份来源前后相同。原136项整轮不改写为修后源码验收，新GitHub结果另行登记。
 
+[86e桌面运行](github-desktop-86e39e5-failure-20261017.json)记录两种Mac原生验收通过、Windows只读快照同步失败，Windows后续安装及上传均未执行。[后续专项](desktop-windows-fsync-and-uninstall-local-20261017.json)记录可写快照修前失败、修后通过及默认卸载保护的本机语法和隔离校验。[本机新包锁屏记录](desktop-native-fsync-local-lock-20261017.json)明确后台17项和窗口9/10已通过，剪贴板前置焦点因锁屏未成立、DMG安装后验证未执行，后续修复尚未推送或发布。详见[后续复验说明](../desktop-windows-native-followup-20261017.md)。
+
+[解锁后02新包](desktop-final-unlocked-local-20261017.json)在2026-10-17上海23:04:46至23:06:24完成，运行边界5项、后台17项、真实窗口10项与DMG安装后10项全部通过，164份源码前后相同，剪贴板恢复、卷卸载和临时数据清理通过。01因直连下载阻塞终止，02仅更换当前进程代理，不改源码；历史锁屏原件保留。[中文顶部专项](desktop-chinese-toolbar-local-20261017.json)另验五种电脑宽度与六项标签和操作。均为隔离合成数据，模型与外联0；Intel、Windows及正式发布仍需对应GitHub运行。
+
 ## 电脑工作台与写作总管
 
 2026-10-16的[专项记录](../writing-workbench-agent.md)覆盖三栏正文工作台、续写/整章修订/章节检查/四阶段全书规划，以及作者采纳、来源与恢复保护。[05完整验收](compatibility-python311-node24-agent-workbench-release-20261016-05.json)在上海2026-10-16 01:01:34.350至01:12:55.135完成，用时680.785秒，103项全部通过：65份Python夹具、20项JS语法、Python版本与语法2项、固定评测与编辑器合并2项、14组浏览器。115份来源前后相同，22份JSON和56张PNG共78附件逐份指纹匹配，完整报告自身不计附件，SHA256为`dbcdd39f93503f11475657b29678c64302980defc60f3b6eeca9d8c5d4487685`。[独立复核](agent-workbench-release-independent-review-20261016.json)核对来源、索引源码、103份日志与附件，并逐张查看九幅总管/工作台图。旧01/02/03/04轮保留本机原件和专项中的失败说明，不冒充发布通过。

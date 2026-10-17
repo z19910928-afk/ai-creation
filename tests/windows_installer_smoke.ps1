@@ -30,7 +30,88 @@ $temporaryCreated = $false
 $stage = 'PREPARE'
 $failureCode = $null
 $cleanupFailed = $false
+$installationVerified = $false
+$installedDesktopCases = 0
 $uninstallationVerified = $false
+$defaultUninstallationAttempted = $false
+$cleanupUninstallationAttempted = $false
+$cleanupUninstallationVerified = $false
+$appDataFixture = $null
+$appDataFixtureCreated = $false
+$appDataPreservationVerified = $false
+$appDataCleanupVerified = $false
+$appDataExpectedHashes = @{}
+$appDataExpectedLengths = @{}
+$appDataInitialHash = $null
+$appDataPreservedHash = $null
+
+function Get-SystemAppDataDirectory {
+    $systemDirectory = [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)
+    if ([string]::IsNullOrWhiteSpace($systemDirectory) -or
+        -not [System.IO.Path]::IsPathFullyQualified($systemDirectory) -or
+        [string]::IsNullOrWhiteSpace($env:APPDATA) -or
+        -not [System.IO.Path]::IsPathFullyQualified($env:APPDATA) -or
+        -not [string]::Equals([System.IO.Path]::GetFullPath($systemDirectory),
+            [System.IO.Path]::GetFullPath($env:APPDATA), [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'WINDOWS_INSTALLER_SMOKE_UNSAFE_SYSTEM_APPDATA'
+    }
+    $directory = Get-Item -LiteralPath $systemDirectory -Force
+    if (-not $directory.PSIsContainer -or
+        ($directory.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+        throw 'WINDOWS_INSTALLER_SMOKE_UNSAFE_SYSTEM_APPDATA'
+    }
+    return $directory
+}
+
+function Write-NewFixtureFile {
+    param([string] $Path, [byte[]] $Bytes)
+    $stream = [System.IO.File]::Open($Path, [System.IO.FileMode]::CreateNew,
+        [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+    try {
+        $stream.Write($Bytes, 0, $Bytes.Length)
+    } finally {
+        $stream.Dispose()
+    }
+}
+
+function Assert-OwnedAppDataFixture {
+    $systemDirectory = Get-SystemAppDataDirectory
+    $expected = Join-Path $systemDirectory.FullName 'Moyu'
+    if (-not $appDataFixtureCreated -or
+        -not [string]::Equals($appDataFixture, $expected, [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'WINDOWS_INSTALLER_SMOKE_APPDATA_OWNERSHIP_INVALID'
+    }
+    $directory = Get-Item -LiteralPath $appDataFixture -Force
+    if (-not $directory.PSIsContainer -or
+        ($directory.Attributes -band [System.IO.FileAttributes]::ReparsePoint)) {
+        throw 'WINDOWS_INSTALLER_SMOKE_APPDATA_OWNERSHIP_INVALID'
+    }
+    $owner = Get-Item -LiteralPath (Join-Path $appDataFixture '.installer-smoke-owner') -Force
+    $manuscripts = Get-Item -LiteralPath (Join-Path $appDataFixture 'synthetic-manuscripts') -Force
+    foreach ($entry in @($owner, $manuscripts)) {
+        if ($entry.Attributes -band [System.IO.FileAttributes]::ReparsePoint) {
+            throw 'WINDOWS_INSTALLER_SMOKE_APPDATA_OWNERSHIP_INVALID'
+        }
+    }
+    if ($owner.PSIsContainer -or -not $manuscripts.PSIsContainer -or
+        @(Get-ChildItem -LiteralPath $appDataFixture -Force).Count -ne 2) {
+        throw 'WINDOWS_INSTALLER_SMOKE_APPDATA_CONTENT_CHANGED'
+    }
+    $manuscript = Get-Item -LiteralPath (Join-Path $manuscripts.FullName 'preserved.bin') -Force
+    if ($manuscript.PSIsContainer -or
+        ($manuscript.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -or
+        @(Get-ChildItem -LiteralPath $manuscripts.FullName -Force).Count -ne 1) {
+        throw 'WINDOWS_INSTALLER_SMOKE_APPDATA_CONTENT_CHANGED'
+    }
+    foreach ($entry in @($owner, $manuscript)) {
+        $hash = (Get-FileHash -LiteralPath $entry.FullName -Algorithm SHA256).Hash.ToLowerInvariant()
+        if ($entry.Length -ne $appDataExpectedLengths[$entry.Name] -or
+            $hash -ne $appDataExpectedHashes[$entry.Name]) {
+            throw 'WINDOWS_INSTALLER_SMOKE_APPDATA_CONTENT_CHANGED'
+        }
+    }
+    return $appDataExpectedHashes['preserved.bin']
+}
 
 function Invoke-BoundedProcess {
     param(
@@ -136,6 +217,31 @@ try {
     New-Item -ItemType Directory -Path $temporaryRoot | Out-Null
     $temporaryCreated = $true
 
+    $stage = 'PREPARE_APPDATA'
+    $systemAppData = Get-SystemAppDataDirectory
+    $appDataFixture = Join-Path $systemAppData.FullName 'Moyu'
+    if ($null -ne (Get-Item -LiteralPath $appDataFixture -Force -ErrorAction SilentlyContinue)) {
+        throw 'WINDOWS_INSTALLER_SMOKE_EXISTING_APPDATA_REFUSED'
+    }
+    New-Item -ItemType Directory -Path $appDataFixture | Out-Null
+    $appDataFixtureCreated = $true
+    $ownerBytes = [System.Text.Encoding]::UTF8.GetBytes([guid]::NewGuid().ToString('N'))
+    $manuscriptBytes = [System.Text.Encoding]::UTF8.GetBytes(
+        'Synthetic preserved manuscript ' + [guid]::NewGuid().ToString('N'))
+    foreach ($entry in @(
+        @{ Name = '.installer-smoke-owner'; Bytes = $ownerBytes },
+        @{ Name = 'preserved.bin'; Bytes = $manuscriptBytes }
+    )) {
+        $appDataExpectedHashes[$entry.Name] = [Convert]::ToHexString(
+            [System.Security.Cryptography.SHA256]::HashData($entry.Bytes)).ToLowerInvariant()
+        $appDataExpectedLengths[$entry.Name] = $entry.Bytes.Length
+    }
+    Write-NewFixtureFile -Path (Join-Path $appDataFixture '.installer-smoke-owner') -Bytes $ownerBytes
+    $fixtureManuscripts = Join-Path $appDataFixture 'synthetic-manuscripts'
+    New-Item -ItemType Directory -Path $fixtureManuscripts | Out-Null
+    Write-NewFixtureFile -Path (Join-Path $fixtureManuscripts 'preserved.bin') -Bytes $manuscriptBytes
+    $appDataInitialHash = Assert-OwnedAppDataFixture
+
     $stage = 'INSTALL'
     # NSIS consumes everything after /D= as the path; it must remain unquoted and last.
     $null = Invoke-BoundedProcess -Executable $installer `
@@ -146,6 +252,7 @@ try {
             throw 'WINDOWS_INSTALLER_SMOKE_INSTALLED_FILES_MISSING_OR_UNSAFE'
         }
     }
+    $installationVerified = $true
 
     $stage = 'INSTALLED_DESKTOP'
     $result = Invoke-BoundedProcess -Executable $nodeExecutable -Arguments @(
@@ -196,15 +303,21 @@ try {
         throw 'WINDOWS_INSTALLER_SMOKE_DESKTOP_REPORT_FAILED'
     }
     Write-Host 'windows-installer-smoke: installed desktop 10/10 passed'
+    $installedDesktopCases = 10
 
     $stage = 'UNINSTALL'
+    $null = Assert-OwnedAppDataFixture
     # _?= prevents NSIS self-copying; it also must be unquoted and last.
+    $defaultUninstallationAttempted = $true
     $null = Invoke-BoundedProcess -Executable $uninstaller `
-        -RawArguments "/S /KEEP_APP_DATA /currentuser _?=$installDirectory" -TimeoutSeconds 120 -Label $stage
+        -RawArguments "/S /currentuser _?=$installDirectory" -TimeoutSeconds 120 -Label $stage
     if ((Test-Path -LiteralPath $installedExecutable) -or (Test-Path -LiteralPath $installedBackend)) {
         throw 'WINDOWS_INSTALLER_SMOKE_APPLICATION_REMAINED_AFTER_UNINSTALL'
     }
     $uninstallationVerified = $true
+    $stage = 'VERIFY_PRESERVED_APPDATA'
+    $appDataPreservedHash = Assert-OwnedAppDataFixture
+    $appDataPreservationVerified = $true
 } catch {
     $failureCode = "WINDOWS_INSTALLER_SMOKE_FAILED_$stage"
     if ($_.Exception.Message -match '^WINDOWS_INSTALLER_SMOKE_[A-Z0-9_]+$') {
@@ -220,9 +333,17 @@ try {
         }
         try {
             if (-not $uninstallationVerified -and (Test-Path -LiteralPath $uninstaller -PathType Leaf)) {
+                $null = Assert-OwnedAppDataFixture
+                $cleanupUninstallationAttempted = $true
                 $null = Invoke-BoundedProcess -Executable $uninstaller `
-                    -RawArguments "/S /KEEP_APP_DATA /currentuser _?=$installDirectory" `
+                    -RawArguments "/S /currentuser _?=$installDirectory" `
                     -TimeoutSeconds 120 -Label 'CLEANUP_UNINSTALL'
+                if ((Test-Path -LiteralPath $installedExecutable) -or
+                    (Test-Path -LiteralPath $installedBackend)) {
+                    throw 'WINDOWS_INSTALLER_SMOKE_CLEANUP_UNINSTALL_INCOMPLETE'
+                }
+                $null = Assert-OwnedAppDataFixture
+                $cleanupUninstallationVerified = $true
             }
         } catch {
             $cleanupFailed = $true
@@ -242,12 +363,52 @@ try {
             }
         }
     }
+    if ($appDataFixtureCreated) {
+        try {
+            if ($null -ne (Get-Item -LiteralPath $appDataFixture -Force -ErrorAction SilentlyContinue)) {
+                $null = Assert-OwnedAppDataFixture
+                Remove-Item -LiteralPath $appDataFixture -Recurse -Force
+                if ($null -ne (Get-Item -LiteralPath $appDataFixture -Force -ErrorAction SilentlyContinue)) {
+                    throw 'WINDOWS_INSTALLER_SMOKE_APPDATA_CLEANUP_INCOMPLETE'
+                }
+            }
+            $appDataCleanupVerified = $true
+        } catch {
+            $cleanupFailed = $true
+            Write-Host 'windows-installer-smoke: owned app data cleanup refused or failed'
+        }
+    }
 }
 
+$finalReport = [ordered]@{
+    passed = $null -eq $failureCode -and -not $cleanupFailed -and
+        $installationVerified -and $installedDesktopCases -eq 10 -and
+        $uninstallationVerified -and $appDataPreservationVerified -and $appDataCleanupVerified
+    installation_verified = $installationVerified
+    installed_desktop_cases = $installedDesktopCases
+    default_uninstallation_attempted = $defaultUninstallationAttempted
+    uninstallation_verified = $uninstallationVerified
+    app_data_fixture_created = $appDataFixtureCreated
+    app_data_path_kind = 'system_application_data'
+    app_data_initial_sha256 = $appDataInitialHash
+    app_data_preserved_sha256 = $appDataPreservedHash
+    app_data_preservation_verified = $appDataPreservationVerified
+    app_data_cleanup_verified = $appDataCleanupVerified
+    cleanup_uninstallation_attempted = $cleanupUninstallationAttempted
+    cleanup_uninstallation_verified = $cleanupUninstallationVerified
+    cleanup_failed = $cleanupFailed
+    synthetic_data_only = $true
+}
+if ($null -ne $failureCode) {
+    $finalReport['failure_code'] = $failureCode
+}
+Write-Host ($finalReport | ConvertTo-Json -Compress)
 if ($null -ne $failureCode) {
     throw $failureCode
 }
 if ($cleanupFailed) {
     throw 'WINDOWS_INSTALLER_SMOKE_CLEANUP_FAILED'
 }
-Write-Host '{"passed":true,"installation_verified":true,"installed_desktop_cases":10,"uninstallation_verified":true,"synthetic_data_only":true}'
+if (-not $finalReport['passed']) {
+    throw 'WINDOWS_INSTALLER_SMOKE_VERIFICATION_INCOMPLETE'
+}

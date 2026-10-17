@@ -209,8 +209,8 @@ function showWritingInboxJob(job,scope){
 }
 function installWritingInboxButton(){
  if(document.querySelector('#writingInboxBtn'))return;
- const button=document.createElement('button');button.type='button';button.id='writingInboxBtn';button.className='icon-btn inbox-top-button';
- button.innerHTML='☷<small>…</small>';button.title='全书待办';button.setAttribute('aria-label','全书待办');
+ const button=document.createElement('button');button.type='button';button.id='writingInboxBtn';button.className='ghost-btn top-action-btn inbox-top-button';
+ button.innerHTML='全书待办<small>…</small>';button.title='全书待办';button.setAttribute('aria-label','全书待办');
  button.onclick=()=>{writingInboxOffset=0;view='inbox';render()};
  document.querySelector('.top-actions')?.prepend(button);
 }

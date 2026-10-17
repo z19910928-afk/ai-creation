@@ -1,0 +1,279 @@
+{
+  "passed": true,
+  "status": "local_verification_passed_native_windows_pending",
+  "recorded_on": "2026-10-17",
+  "baseline_revision": "86e39e5da191f735039ec23a9b86d3aa322fa9a4",
+  "scope": "Targeted SQLite snapshot fsync fix and local checks of Windows installer data-preservation guards.",
+  "claim_limit": "macOS source and isolated helper verification only. This report does not establish native Windows backup, installation, default uninstallation, or data preservation after native uninstallation. Packaging checks are separate evidence.",
+  "native_windows_execution": false,
+  "default_uninstall_native_pending": true,
+  "evidence_root": "artifacts/windows-fsync-write-handle-20261017-01",
+  "raw_evidence_storage": "Ignored local artifacts; hashes and relative paths are recorded here, while raw logs are not published.",
+  "prior_windows_ci_failure": {
+    "job_id": 117409813304,
+    "tests": 16,
+    "failures": 1,
+    "errors": 2,
+    "platform_skips": 1,
+    "function": "_atomic_database_snapshot",
+    "symptom": "os.fsync on the read-only temporary snapshot raised OSError with errno 9, and HTTP backup returned 500.",
+    "context_source": "Parent agent inspection of the prior native Windows CI job; this report contains local follow-up evidence."
+  },
+  "source_files": {
+    "scripts/sqlite_backup.py": {
+      "before_sha256": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+      "after_sha256": "e28b418e99a28a3d419626a7ecfb67ba2c648029f365be917d8973d3cee4d254",
+      "change": "Open the owned temporary snapshot with r+b instead of rb before fsync. Keep integrity verification, fsync, exception propagation, atomic replacement, and cleanup."
+    },
+    "tests/desktop_backend_fixtures.py": {
+      "before_sha256": "218feda1efa45879b5699111589977d0ff8f7a563f81ffb3e8e441204245997d",
+      "after_sha256": "6e8d245b6ef299834530167a8e93549b43635865f651dba732b11ae04154435f",
+      "change": "Add a regression using actual temporary SQLite snapshots and file handles, with Windows writable-fsync and I/O-failure simulation."
+    },
+    "tests/windows_installer_smoke.ps1": {
+      "sha256": "35bebaaa70df88721ac225c2a7791dbe2149631c68344e61dc4fa433048efacf",
+      "unchanged_during_local_checks": true,
+      "behavior_under_review": "Use default uninstall arguments without KEEP_APP_DATA, preserve owned synthetic AppData, and allow cleanup only after ownership, file tree, lengths, hashes, and link checks succeed."
+    }
+  },
+  "report_artifacts": [
+    {
+      "phase": "red",
+      "recorded_at": "2026-10-17T13:54:35.299Z",
+      "path": "artifacts/windows-fsync-write-handle-20261017-01/red-results.json",
+      "sha256": "7e5ce9c9ac3776a3b0777d3ccc8d8e2f5e78e8201413336ed6f46fa88fc17c11"
+    },
+    {
+      "phase": "green",
+      "recorded_at": "2026-10-17T13:55:28.718Z",
+      "path": "artifacts/windows-fsync-write-handle-20261017-01/green-results.json",
+      "sha256": "55a09928843a1ee9dd4574f64bd53bcff1f3ddfd2f9b613232a44ebec2cde368"
+    },
+    {
+      "phase": "full",
+      "recorded_at": "2026-10-17T13:56:16.288Z",
+      "path": "artifacts/windows-fsync-write-handle-20261017-01/full-results.json",
+      "sha256": "cb225c676a07955d0cc51dee6d152a6c6923c31e88f9a514b9c9799b2ec9fd3c"
+    },
+    {
+      "phase": "powershell02",
+      "recorded_at": "2026-10-17T13:59:27.771Z",
+      "path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-results.json",
+      "sha256": "6204668540bedafa8760584e44fd11dd351be3c0c94768f7e0183e73067a096d"
+    }
+  ],
+  "fsync_regression": {
+    "test": "DesktopBackendFixtures.test_backup_snapshot_fsync_uses_writable_handle_and_propagates_failure",
+    "command": ".venv/bin/python -B tests/desktop_backend_fixtures.py DesktopBackendFixtures.test_backup_snapshot_fsync_uses_writable_handle_and_propagates_failure -v",
+    "methods": ["online", "vacuum"],
+    "mechanism": "Track actual temporary snapshot file objects opened through Path.open. At fsync, reject active snapshot handles when writable() is false. Forward all unrelated descriptors and successful writable synchronization to the original fsync. No fcntl dependency.",
+    "red": {
+      "expected_failure_reproduced": true,
+      "exit_code": 1,
+      "tests_run": 1,
+      "failing_method_subtests": 2,
+      "error": "OSError",
+      "errno": 9,
+      "symbolic_errno": "EBADF",
+      "source_mode": "rb",
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/red-snapshot-fsync-regression.stdout.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/red-snapshot-fsync-regression.stderr.log", "sha256": "b85f987407621ed51f6255324a4a9b7fd2d87472e31aa6e9e7e9f3b9e6f85272"}
+    },
+    "green": {
+      "passed": true,
+      "exit_code": 0,
+      "tests_run": 1,
+      "source_mode": "r+b",
+      "same_regression_source_as_red": true,
+      "snapshot_fsync_calls_observed_per_attempt": 1,
+      "coverage_per_method": [
+        "A successful real snapshot has a verified digest, a matching manifest, and the expected synthetic database content.",
+        "Injected EIO escapes to the caller, publishes neither a new backup nor its manifest, and removes the temporary snapshot.",
+        "Injected EIO during overwrite preserves the existing backup and manifest bytes and removes the temporary snapshot."
+      ],
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/green-snapshot-fsync-regression.stdout.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/green-snapshot-fsync-regression.stderr.log", "sha256": "085d6304bcf7fcb08530fb434dfdc5116513c19898bcb4da03e93f89f6f78cd4"}
+    }
+  },
+  "full_local_checks": [
+    {
+      "name": "desktop-backend",
+      "command": ".venv/bin/python -B tests/desktop_backend_fixtures.py -v",
+      "passed": true,
+      "exit_code": 0,
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "duration_ms": 17153,
+      "coverage": "Real source desktop service over isolated authenticated loopback HTTP, including backup and restart behavior; also includes source-helper lifecycle and fsync regressions.",
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-desktop-backend.stdout.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-desktop-backend.stderr.log", "sha256": "77319c2ec9cebeab84cd8a90da78dcaedd0fcc724dfb5672f7647127330f00d3"}
+    },
+    {
+      "name": "backup-recovery",
+      "command": ".venv/bin/python -B tests/backup_recovery_fixtures.py",
+      "passed": true,
+      "exit_code": 0,
+      "duration_ms": 52,
+      "coverage": "Online backup, digest verification, corruption rejection, restore, generic schema drill, and RPO/RTO checks.",
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-backup-recovery.stdout.log", "sha256": "08e98b224e529713c14d782f45fe918d3191f3c3a0725bfac9916a9593a48669"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-backup-recovery.stderr.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+    },
+    {
+      "name": "planning-backup",
+      "command": ".venv/bin/python -B tests/planning_backup_fixtures.py",
+      "passed": true,
+      "exit_code": 0,
+      "tests": 9,
+      "failures": 0,
+      "errors": 0,
+      "duration_ms": 75,
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-planning-backup.stdout.log", "sha256": "b1c95da5e181d95c3a837b01b04513e2725984388b2256107771b77a2407ce77"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-planning-backup.stderr.log", "sha256": "ce0919bf99c43fed8ec00029fd343cbad4581398cbdf25930a53f25cebef6477"}
+    },
+    {
+      "name": "portable-backup",
+      "command": ".venv/bin/python -B tests/portable_backup_fixtures.py",
+      "passed": true,
+      "exit_code": 0,
+      "tests": 43,
+      "executed_subtests": 532,
+      "failed_subtests": 0,
+      "captured_tables": 60,
+      "duration_ms": 6668,
+      "synthetic_source_unchanged": true,
+      "source_unchanged": true,
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-portable-backup.stdout.log", "sha256": "8cf6c18e77287151dc4d9866c073d640cd89d6655dd0b9647033016dfc769fd1"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-portable-backup.stderr.log", "sha256": "df9e9b41438c293d66016ff4691feb7c2a39aca7d567e7ef830810498c151182"}
+    },
+    {
+      "name": "portable-backup-http",
+      "command": ".venv/bin/python -B tests/portable_backup_http_fixtures.py",
+      "passed": true,
+      "exit_code": 0,
+      "tests": 41,
+      "failures": 0,
+      "errors": 0,
+      "duration_ms": 44481,
+      "source_unchanged": true,
+      "coverage": "Isolated loopback HTTP creation, download, validation, restore, concurrency, and persistence.",
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-portable-backup-http.stdout.log", "sha256": "04a8a05a30cc6c9952bdcd08f001f2e659e481be4b15486dfffc426d4b8bfa3a"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-portable-backup-http.stderr.log", "sha256": "b8ef8a6d4a527cb525e0005c90ef8b2cc968ccaa7a6222c0b1d46b024377621e"}
+    },
+    {
+      "name": "diff-check",
+      "command": "git diff --check",
+      "passed": true,
+      "exit_code": 0,
+      "duration_ms": 22,
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-diff-check.stdout.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/full-diff-check.stderr.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+    }
+  ],
+  "powershell_tool": {
+    "source": "Official PowerShell GitHub release asset",
+    "version": "7.6.7",
+    "platform": "osx-arm64",
+    "source_url": "https://github.com/PowerShell/PowerShell/releases/download/v7.6.7/powershell-7.6.7-osx-arm64.tar.gz",
+    "archive": {
+      "path": "artifacts/toolchain/powershell-7.6.7/powershell-7.6.7-osx-arm64.tar.gz",
+      "sha256": "50dde99bb066adacbb9a748182d09eb9beff25119dc3b12e85c84b6b6b1c5da9"
+    },
+    "executable": {
+      "path": "artifacts/toolchain/powershell-7.6.7/pwsh",
+      "sha256": "e525c70082e668b8403507b71c514a6ffdc5753b6dfde807bebdbdf5d53f05ff"
+    },
+    "archive_hash_matches_parent_verified_asset": true
+  },
+  "powershell_local_checks": {
+    "host_platform": "darwin",
+    "native_windows_execution": false,
+    "production_ps1_unchanged": true,
+    "version": {
+      "passed": true,
+      "exit_code": 0,
+      "observed": "7.6.7",
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-version.stdout.log", "sha256": "08ff10ab8fba3c37d9742eb7e9e7f97c1ad585a6c7ffb133add3c1b7a0bcf532"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-version.stderr.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+    },
+    "parser": {
+      "passed": true,
+      "exit_code": 0,
+      "parse_errors": 0,
+      "tokens": 2635,
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-parse.stdout.log", "sha256": "c470d3182cdbf631504385e13eb9cba92b8fb6b2ff3da4906a78cfe96ca65f32"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-parse.stderr.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+    },
+    "non_windows_guard": {
+      "passed": true,
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "rejection": "WINDOWS_INSTALLER_SMOKE_REQUIRES_HOSTED_WINDOWS_CI",
+      "installer_not_started": true,
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-guard.stdout.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-guard.stderr.log", "sha256": "b32cacaea33d3f0c181e895240069ce6a8d3078bc6b06ed95937990ef1aa8aec"}
+    },
+    "isolated_helpers": {
+      "passed": true,
+      "exit_code": 0,
+      "completed_cases": 5,
+      "source_helpers": ["Write-NewFixtureFile", "Assert-OwnedAppDataFixture"],
+      "method": "Extract only these two function definitions from the frozen production PS1 syntax tree. Replace system AppData discovery with an isolated temporary-directory stub; do not execute installation or uninstallation.",
+      "real_appdata_accessed": false,
+      "cleanup_verified": true,
+      "cases": [
+        {"case": "intact", "passed": true, "rejected": false},
+        {"case": "missing-file", "passed": true, "rejected": true},
+        {"case": "same-length-tamper", "passed": true, "rejected": true},
+        {"case": "extra-file", "passed": true, "rejected": true},
+        {"case": "owner-symlink", "passed": true, "rejected": true, "outside_symlink_target_unchanged": true}
+      ],
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-isolated-helpers.stdout.log", "sha256": "7f6c5efd9e7791e533d506affb2747d46ed8381682e719d79b79317462d369a7"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell02-isolated-helpers.stderr.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"}
+    },
+    "first_helper_harness_attempt": {
+      "passed": false,
+      "classification": "Local verification harness failure, not a production PS1 failure",
+      "cause": "The isolated test harness tried to remove the hidden owner fixture without -Force while preparing the owner-symlink case. PowerShell refused that preparation step, so no completed helper JSON report was emitted.",
+      "correction": "Add -Force only to the ignored local helper harness and rerun against the unchanged production PS1.",
+      "original_failure_logs_preserved": true,
+      "superseded_by": "powershell02 isolated-helpers",
+      "stdout": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell-isolated-helpers.stdout.log", "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+      "stderr": {"path": "artifacts/windows-fsync-write-handle-20261017-01/powershell-isolated-helpers.stderr.log", "sha256": "efb923d3ffe43f5e9a95560870ea603efe7d980d228ff67124c6f3fe311f2a13"}
+    }
+  },
+  "local_verification_scripts": [
+    {"path": "artifacts/windows-fsync-write-handle-20261017-01/run-validation.cjs", "sha256": "8f6e88dedf93ce83ece20e3513ddd9c0bc08ad32bb6ee1b79737a9a90af47089"},
+    {"path": "artifacts/windows-fsync-write-handle-20261017-01/verify-powershell.cjs", "sha256": "2bcd2889e11008674046ef4f60922de10d0c261a2f9da729397aac1fb0b78c05"},
+    {"path": "artifacts/windows-fsync-write-handle-20261017-01/check-owned-appdata-helpers.ps1", "sha256": "9e0cd1bee003cc62682fe629ba10042b806a2b4066438949a9434a85c34e91c1"}
+  ],
+  "verification_source_stability": {
+    "red_files_unchanged_during_run": true,
+    "green_files_unchanged_during_run": true,
+    "full_files_unchanged_during_run": true,
+    "same_regression_file_for_red_and_green": true,
+    "ps1_unchanged_across_powershell_attempts": true,
+    "source_files_frozen_after_focused_green": true
+  },
+  "independent_read_only_review": {
+    "issues_found": 0,
+    "coverage": "Writable opening of owned snapshot only, read-only source connection, fsync before atomic replacement, unsuppressed synchronization errors, real-handle mock boundaries, and online/vacuum success and failure behavior.",
+    "files_modified_by_reviewer": false
+  },
+  "privacy_and_cost": {
+    "synthetic_data_only": true,
+    "real_author_database_accessed": false,
+    "real_credentials_accessed": false,
+    "real_appdata_accessed": false,
+    "paid_provider_calls": 0,
+    "external_model_calls": 0,
+    "absolute_local_paths_in_public_report": false,
+    "plaintext_credentials_in_public_report": false,
+    "author_manuscripts_in_public_report": false
+  },
+  "pending_validation": [
+    "Native Windows CI backup verification using the rebuilt frozen backend.",
+    "Native Windows installation, default uninstallation, preservation of the owned synthetic AppData, and bounded cleanup.",
+    "Rebuilt packaged application checks, recorded separately by the parent agent."
+  ]
+}

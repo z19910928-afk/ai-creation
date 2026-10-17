@@ -8,6 +8,8 @@
 
 首次GitHub桌面运行暴露跨平台兼容问题后，修正了测试启动等待、空剪贴板条目，以及Windows备份临时数据库的关闭顺序。[新版本机重包验收](audits/2026-10-14/comprehensive/evidence/desktop-native-fix-local-20261017.json)已通过内置服务16项、真实窗口10项、DMG安装后10项与运行边界5项。后续原生构建以修复后的对应提交为准。
 
+后续`86e39e5`产品检查与两种Mac原生检查通过，Windows再次定位到临时备份快照只读句柄无法同步落盘的问题。可写句柄修复后的第一次本机窗口检查受锁屏阻止，失败记录保留。2026-10-17解锁后，最新源码重新构建并通过运行边界5项、后台17项、真实窗口10项和DMG复制安装后10项；164份源码前后相同，剪贴板恢复成功，外部请求与模型调用均为0。具体状态见[跨平台后续复验](audits/2026-10-14/comprehensive/desktop-windows-native-followup-20261017.md)及[解锁后新包记录](audits/2026-10-14/comprehensive/evidence/desktop-final-unlocked-local-20261017.json)。Intel Mac、Windows和正式发布仍以同提交的GitHub原生检查及发布页为准。
+
 ## 选择安装包
 
 | 电脑 | 安装文件 | 备用压缩包 |

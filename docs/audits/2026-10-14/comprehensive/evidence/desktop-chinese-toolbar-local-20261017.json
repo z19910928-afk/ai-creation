@@ -1,0 +1,552 @@
+{
+  "passed": true,
+  "scope": "Isolated synthetic desktop toolbar; no external requests or author data.",
+  "source_files": {
+    "index.html": "c4c6de568232088aaebbb6dab2d066f76aeb37fffdf29f01a44b8864604a97db",
+    "styles.css": "4da963c4ae61302ed4cf2f0c645cce54c7ce1eff95455473b7ee0aa04d99777d",
+    "writing-inbox.js": "51cd81e0105416eae06119d2d30aedb69a78a49b6ecbb85b0965794fb1ec5ea8"
+  },
+  "static_preview": null,
+  "viewports": [
+    {
+      "width": 739,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 739,
+        "height": 115,
+        "right": 739,
+        "bottom": 115
+      },
+      "brand": {
+        "x": 18,
+        "y": 12,
+        "width": 99,
+        "height": 42,
+        "right": 117,
+        "bottom": 54
+      },
+      "buttons": [
+        {
+          "id": "writingInboxBtn",
+          "text": "全书待办1",
+          "x": 18,
+          "y": 66,
+          "width": 95,
+          "height": 36,
+          "right": 113,
+          "bottom": 102,
+          "scrollWidth": 93,
+          "clientWidth": 93
+        },
+        {
+          "id": "saveState",
+          "text": "已保存到本机",
+          "x": 121,
+          "y": 66,
+          "width": 72,
+          "height": 36,
+          "right": 193,
+          "bottom": 102,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "finalCheckBtn",
+          "text": "终稿检查",
+          "x": 201,
+          "y": 66,
+          "width": 74,
+          "height": 36,
+          "right": 275,
+          "bottom": 102,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "markdownExportBtn",
+          "text": "导出文稿",
+          "x": 283,
+          "y": 66,
+          "width": 74,
+          "height": 36,
+          "right": 357,
+          "bottom": 102,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "epubExportBtn",
+          "text": "导出电子书",
+          "x": 365,
+          "y": 66,
+          "width": 87,
+          "height": 36,
+          "right": 452,
+          "bottom": 102,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "importBtn",
+          "text": "导入稿件包",
+          "x": 460,
+          "y": 66,
+          "width": 87,
+          "height": 36,
+          "right": 547,
+          "bottom": 102,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "exportBtn",
+          "text": "导出稿件包",
+          "x": 555,
+          "y": 66,
+          "width": 87,
+          "height": 36,
+          "right": 642,
+          "bottom": 102,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        }
+      ]
+    },
+    {
+      "width": 1000,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1000,
+        "height": 64,
+        "right": 1000,
+        "bottom": 64
+      },
+      "brand": {
+        "x": 24,
+        "y": 10.5,
+        "width": 99,
+        "height": 42,
+        "right": 123,
+        "bottom": 52.5
+      },
+      "buttons": [
+        {
+          "id": "writingInboxBtn",
+          "text": "全书待办1",
+          "x": 352,
+          "y": 13.5,
+          "width": 95,
+          "height": 36,
+          "right": 447,
+          "bottom": 49.5,
+          "scrollWidth": 93,
+          "clientWidth": 93
+        },
+        {
+          "id": "saveState",
+          "text": "已保存到本机",
+          "x": 455,
+          "y": 13.5,
+          "width": 72,
+          "height": 36,
+          "right": 527,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "finalCheckBtn",
+          "text": "终稿检查",
+          "x": 535,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 609,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "markdownExportBtn",
+          "text": "导出文稿",
+          "x": 617,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 691,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "epubExportBtn",
+          "text": "导出电子书",
+          "x": 699,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 786,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "importBtn",
+          "text": "导入稿件包",
+          "x": 794,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 881,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "exportBtn",
+          "text": "导出稿件包",
+          "x": 889,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 976,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        }
+      ]
+    },
+    {
+      "width": 1100,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1100,
+        "height": 64,
+        "right": 1100,
+        "bottom": 64
+      },
+      "brand": {
+        "x": 24,
+        "y": 10.5,
+        "width": 99,
+        "height": 42,
+        "right": 123,
+        "bottom": 52.5
+      },
+      "buttons": [
+        {
+          "id": "writingInboxBtn",
+          "text": "全书待办1",
+          "x": 452,
+          "y": 13.5,
+          "width": 95,
+          "height": 36,
+          "right": 547,
+          "bottom": 49.5,
+          "scrollWidth": 93,
+          "clientWidth": 93
+        },
+        {
+          "id": "saveState",
+          "text": "已保存到本机",
+          "x": 555,
+          "y": 13.5,
+          "width": 72,
+          "height": 36,
+          "right": 627,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "finalCheckBtn",
+          "text": "终稿检查",
+          "x": 635,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 709,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "markdownExportBtn",
+          "text": "导出文稿",
+          "x": 717,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 791,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "epubExportBtn",
+          "text": "导出电子书",
+          "x": 799,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 886,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "importBtn",
+          "text": "导入稿件包",
+          "x": 894,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 981,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "exportBtn",
+          "text": "导出稿件包",
+          "x": 989,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 1076,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        }
+      ]
+    },
+    {
+      "width": 1280,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 64,
+        "right": 1280,
+        "bottom": 64
+      },
+      "brand": {
+        "x": 24,
+        "y": 10.5,
+        "width": 99,
+        "height": 42,
+        "right": 123,
+        "bottom": 52.5
+      },
+      "buttons": [
+        {
+          "id": "writingInboxBtn",
+          "text": "全书待办1",
+          "x": 632,
+          "y": 13.5,
+          "width": 95,
+          "height": 36,
+          "right": 727,
+          "bottom": 49.5,
+          "scrollWidth": 93,
+          "clientWidth": 93
+        },
+        {
+          "id": "saveState",
+          "text": "已保存到本机",
+          "x": 735,
+          "y": 13.5,
+          "width": 72,
+          "height": 36,
+          "right": 807,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "finalCheckBtn",
+          "text": "终稿检查",
+          "x": 815,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 889,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "markdownExportBtn",
+          "text": "导出文稿",
+          "x": 897,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 971,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "epubExportBtn",
+          "text": "导出电子书",
+          "x": 979,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 1066,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "importBtn",
+          "text": "导入稿件包",
+          "x": 1074,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 1161,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "exportBtn",
+          "text": "导出稿件包",
+          "x": 1169,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 1256,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        }
+      ]
+    },
+    {
+      "width": 1440,
+      "header": {
+        "x": 0,
+        "y": 0,
+        "width": 1440,
+        "height": 64,
+        "right": 1440,
+        "bottom": 64
+      },
+      "brand": {
+        "x": 24,
+        "y": 10.5,
+        "width": 99,
+        "height": 42,
+        "right": 123,
+        "bottom": 52.5
+      },
+      "buttons": [
+        {
+          "id": "writingInboxBtn",
+          "text": "全书待办1",
+          "x": 792,
+          "y": 13.5,
+          "width": 95,
+          "height": 36,
+          "right": 887,
+          "bottom": 49.5,
+          "scrollWidth": 93,
+          "clientWidth": 93
+        },
+        {
+          "id": "saveState",
+          "text": "已保存到本机",
+          "x": 895,
+          "y": 13.5,
+          "width": 72,
+          "height": 36,
+          "right": 967,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "finalCheckBtn",
+          "text": "终稿检查",
+          "x": 975,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 1049,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "markdownExportBtn",
+          "text": "导出文稿",
+          "x": 1057,
+          "y": 13.5,
+          "width": 74,
+          "height": 36,
+          "right": 1131,
+          "bottom": 49.5,
+          "scrollWidth": 72,
+          "clientWidth": 72
+        },
+        {
+          "id": "epubExportBtn",
+          "text": "导出电子书",
+          "x": 1139,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 1226,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "importBtn",
+          "text": "导入稿件包",
+          "x": 1234,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 1321,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        },
+        {
+          "id": "exportBtn",
+          "text": "导出稿件包",
+          "x": 1329,
+          "y": 13.5,
+          "width": 87,
+          "height": 36,
+          "right": 1416,
+          "bottom": 49.5,
+          "scrollWidth": 85,
+          "clientWidth": 85
+        }
+      ]
+    }
+  ],
+  "cases": [
+    "Six command labels are Chinese and button IDs are unchanged",
+    "Five desktop-window widths have complete nonoverlapping Chinese controls",
+    "Chinese inbox opens the actual pending items view",
+    "Chinese final-check button opens the existing check dialog",
+    "Chinese import opens the existing manuscript-package file chooser",
+    "Chinese package export downloads valid manuscript JSON"
+  ],
+  "external_requests": [],
+  "page_errors": [],
+  "archive_provenance": {
+    "private_original_sha256": "ca8b9d3e5e47a580aff142f56cfacc7d9d881dd9d9dff819ad19faa5ca2746a9",
+    "private_logs_and_screenshots_published": false,
+    "scope": "Local synthetic-data checks only; native Intel and Windows results are separate."
+  }
+}

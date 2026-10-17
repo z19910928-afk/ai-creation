@@ -1,0 +1,102 @@
+{
+  "audit": "local_native_followup_waiting_for_unlocked_session",
+  "observed_at": "2026-10-17T14:08:23.163Z",
+  "passed": false,
+  "environment_blocked": true,
+  "platform": "macOS arm64",
+  "synthetic_data_only": true,
+  "paid_provider_calls": 0,
+  "source_files_count": 164,
+  "source_files_match_current": true,
+  "source_files": {
+    "scripts/sqlite_backup.py": "e28b418e99a28a3d419626a7ecfb67ba2c648029f365be917d8973d3cee4d254",
+    "tests/desktop_backend_fixtures.py": "6e8d245b6ef299834530167a8e93549b43635865f651dba732b11ae04154435f",
+    "tests/windows_installer_smoke.ps1": "35bebaaa70df88721ac225c2a7791dbe2149631c68344e61dc4fa433048efacf"
+  },
+  "original_report": {
+    "path": "artifacts/desktop-native-fsync-fix-20261017-02/results.json",
+    "sha256": "b6f4176a9c27d34699efeb1c36e93d727e258b5636bbe7bf099f48a4eba2a6f2",
+    "git_ignored": true,
+    "started_at": "2026-10-17T14:03:04.935Z",
+    "finished_at": "2026-10-17T14:04:45.404Z"
+  },
+  "completed_checks": {
+    "javascript_syntax": true,
+    "desktop_runtime_boundaries": {
+      "passed": true,
+      "tests": 5
+    },
+    "rebuild": {
+      "passed": true,
+      "used_existing_system_proxy": true
+    },
+    "bundled_backend": {
+      "passed": true,
+      "tests": 17
+    },
+    "independent_resource_review": {
+      "source_fingerprints_match": 164,
+      "completed_log_fingerprints_match": 5,
+      "bundled_backup_module_matches_source": true,
+      "bundled_backup_module_uses_writable_sync": true,
+      "static_and_schema_resources_match": 15,
+      "disk_image_integrity_verified": true,
+      "application_from_disk_image_executed": false
+    },
+    "real_desktop": {
+      "passed": false,
+      "passed_cases": 9,
+      "total_cases": 10,
+      "page_errors": 0,
+      "unexpected_external_requests": 0,
+      "provider_jobs": 0,
+      "failure_case": "clipboard-write-from-user-gesture",
+      "failure_step": "activate-native-desktop-window",
+      "failure_code": "TIMEOUT_NATIVE_WINDOW_FOCUS",
+      "failure_precedes_clipboard_access": true,
+      "window_focused": false,
+      "window_visible": true,
+      "window_minimized": false,
+      "application_hidden": false
+    }
+  },
+  "screen_lock_observation": {
+    "command": "ioreg -n Root -d1 | rg -o 'CGSSessionScreenIsLocked[^,}]+'",
+    "result": "CGSSessionScreenIsLocked\"=Yes",
+    "interpretation": "The native clipboard test requires an active, focused application window. The locked macOS session prevents that prerequisite; this is not a completed clipboard verification."
+  },
+  "unverified": [
+    "clipboard in an unlocked native session",
+    "complete real application 10-case pass for this follow-up",
+    "application installed from the rebuilt DMG",
+    "native Windows default uninstall data preservation",
+    "native Intel Mac and Windows results for this follow-up"
+  ],
+  "distributions_not_yet_accepted_for_release": [
+    {
+      "path": "dist/Moyu-0.1.0-mac-arm64.dmg",
+      "bytes": 149054200,
+      "sha256": "e948e13bb7dca21d6afb9350e65bdeff5c77c9fd7387f235b7dcce44b21a0940"
+    },
+    {
+      "path": "dist/Moyu-0.1.0-mac-arm64.zip",
+      "bytes": 150130681,
+      "sha256": "1b4648f3a08ce224c3f3e0366d7f275a124cd04d4517d7bb6a8675b6572d601b"
+    }
+  ],
+  "earlier_local_attempt": {
+    "report": "artifacts/desktop-native-fsync-fix-20261017/results.json",
+    "passed": false,
+    "stage": "build",
+    "timeout": true,
+    "observation": "PyInstaller completed. Electron packaging stalled while an owned process had a direct GitHub HTTPS connection in SYN_SENT; the attempt and its original logs were retained.",
+    "used_as_successful_verification": false
+  },
+  "delivery_state": {
+    "followup_committed": false,
+    "followup_pushed": false,
+    "version_tag_created": false,
+    "release_published": false,
+    "next_step": "Complete real application and DMG installation checks in an unlocked macOS session before committing and pushing this follow-up."
+  }
+}

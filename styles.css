@@ -20,7 +20,17 @@
 button{min-height:36px;line-height:1.4}
 button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid #176b65;outline-offset:3px}
 button:disabled{cursor:not-allowed;opacity:.5}
-.topbar{height:64px;padding:0 24px;background:#fff}
+.topbar{height:64px;padding:0 24px;background:#fff;gap:16px}
+.topbar .brand{flex-shrink:0}
+.top-actions{min-width:0;gap:8px}
+.top-actions .save-state{min-width:0;margin-right:0;line-height:1.5;overflow-wrap:anywhere}
+.top-actions .top-action-btn{flex:0 0 auto;min-width:0;width:auto;min-height:36px;height:36px;padding:7px 10px;font-size:13px;white-space:nowrap}
+.top-actions .inbox-top-button small{position:static;display:inline-block;margin-left:6px;vertical-align:middle}
+@media(max-width:999px){
+ .topbar{height:auto;min-height:64px;padding:12px 18px;flex-wrap:wrap;gap:12px}
+ .top-actions{flex:1 1 100%;width:100%;flex-wrap:wrap;row-gap:10px}
+ .top-actions .save-state{flex:0 1 auto;max-width:100%;font-size:12px;text-align:left}
+}
 .brand-mark,.nav-item,.editor-card,.panel,.stat-card,.record-card,.plot-col,.workflow-card,.ai-copilot,.modal,.chapter-plan{border-radius:8px}
 .brand strong,.brand small{letter-spacing:0}
 .brand-mark{background:#176b65}

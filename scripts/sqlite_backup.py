@@ -338,7 +338,8 @@ def _atomic_database_snapshot(source: Path, destination: Path, method: str) -> N
         # Validate before making the snapshot visible.  No manifest can point at
         # a partial or corrupt file after this point.
         verify_database(temp)
-        with temp.open("rb") as fh:
+        # Windows fsync requires a writable descriptor for this owned snapshot.
+        with temp.open("r+b") as fh:
             os.fsync(fh.fileno())
         os.replace(temp, destination)
         _fsync_dir(destination.parent)

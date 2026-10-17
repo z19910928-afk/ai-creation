@@ -1,0 +1,207 @@
+{
+  "audit": "github_native_desktop_matrix_failure",
+  "observed_at": "2026-10-17T13:51:13Z",
+  "passed": false,
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "commit": "86e39e5da191f735039ec23a9b86d3aa322fa9a4",
+  "branch": "codex/desktop-installers",
+  "workflow_file": ".github/workflows/desktop.yml",
+  "workflow_run": {
+    "id": 39037371923,
+    "event": "push",
+    "status": "completed",
+    "conclusion": "failure",
+    "created_at": "2026-10-17T13:38:10Z",
+    "completed_at": "2026-10-17T13:46:44Z",
+    "url": "https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39037371923"
+  },
+  "verification_scope": {
+    "workflow_and_job_metadata_read": true,
+    "three_completed_job_logs_read": true,
+    "windows_original_job_log_retained_locally": true,
+    "windows_original_job_log": "artifacts/github-desktop-86e39e5-20261017-review/windows-117409813304.log",
+    "windows_original_job_log_git_ignored": true,
+    "installer_archives_downloaded": false,
+    "installer_file_checksums_independently_verified": false,
+    "native_application_started_by_this_review": false,
+    "author_database_opened_by_this_review": false,
+    "credentials_read_by_this_review": false,
+    "source_modified_by_this_review": false,
+    "synthetic_test_data_only": true,
+    "paid_provider_calls": 0
+  },
+  "platforms": [
+    {
+      "platform": "macOS arm64",
+      "job_id": 117409813418,
+      "status": "completed",
+      "conclusion": "success",
+      "original_job_log": {
+        "bytes": 80361,
+        "sha256": "2ea0db279eb5f4a7f4950e7835c630393c9f551583942796abdad236d4ecc6d7"
+      },
+      "runtime_boundaries": "success",
+      "native_build": "success",
+      "bundled_backend": {
+        "passed": true,
+        "tests_run": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "real_desktop": {
+        "passed": true,
+        "cases": 10,
+        "page_errors": 0,
+        "unexpected_external_requests": 0,
+        "provider_jobs": 0,
+        "clipboard_restored": true,
+        "synthetic_data_only": true
+      },
+      "disk_image_installation": {
+        "passed": true,
+        "installation_verified": true,
+        "codesign_verified": true,
+        "installed_desktop_cases": 10,
+        "unmounted": true,
+        "temporary_cleanup": true,
+        "synthetic_data_only": true,
+        "evidence_kind": "installer_script_summary_with_strict_desktop_report_checks"
+      },
+      "inventory_and_checksums_step": "success",
+      "upload_step": "success"
+    },
+    {
+      "platform": "macOS x64",
+      "job_id": 117409813864,
+      "status": "completed",
+      "conclusion": "success",
+      "original_job_log": {
+        "bytes": 83594,
+        "sha256": "1c897a2e909c68fc96eabb286dc01da5b111ac346b409a51691de9853dc00dac"
+      },
+      "runtime_boundaries": "success",
+      "native_build": "success",
+      "bundled_backend": {
+        "passed": true,
+        "tests_run": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "real_desktop": {
+        "passed": true,
+        "cases": 10,
+        "page_errors": 0,
+        "unexpected_external_requests": 0,
+        "provider_jobs": 0,
+        "clipboard_restored": true,
+        "synthetic_data_only": true
+      },
+      "disk_image_installation": {
+        "passed": true,
+        "installation_verified": true,
+        "codesign_verified": true,
+        "installed_desktop_cases": 10,
+        "unmounted": true,
+        "temporary_cleanup": true,
+        "synthetic_data_only": true,
+        "evidence_kind": "installer_script_summary_with_strict_desktop_report_checks"
+      },
+      "inventory_and_checksums_step": "success",
+      "upload_step": "success"
+    },
+    {
+      "platform": "Windows x64",
+      "job_id": 117409813304,
+      "status": "completed",
+      "conclusion": "failure",
+      "original_job_log": {
+        "bytes": 75022,
+        "sha256": "e1e6f3afa35f682c6e953f79e435476850d533e61f184146a6a85fe331f05511"
+      },
+      "runtime_boundaries": "success",
+      "native_build": "success",
+      "bundled_backend": {
+        "passed": false,
+        "tests_run": 16,
+        "failures": 1,
+        "errors": 2,
+        "skipped": 1,
+        "result_text": "FAILED (failures=1, errors=2, skipped=1)",
+        "subtest_counting_note": "Both errors are subcases of the same test method; they must not be subtracted as two separate test methods."
+      },
+      "real_desktop_step": "skipped",
+      "installation_and_uninstallation_step": "skipped",
+      "inventory_and_checksums_step": "skipped",
+      "upload_step": "skipped"
+    }
+  ],
+  "windows_failure": {
+    "classification": "product_backup_file_synchronization_on_windows",
+    "direct_traceback_evidence": {
+      "test": "test_backup_snapshot_is_closed_before_cleanup_on_success_and_failure",
+      "subcases": [
+        "capture_fails=False",
+        "capture_fails=True"
+      ],
+      "call_chain": [
+        "tests/desktop_backend_fixtures.py:602 or :597",
+        "moyu_backups.py:415 create",
+        "scripts/sqlite_backup.py:444 backup_database",
+        "scripts/sqlite_backup.py:342 _atomic_database_snapshot"
+      ],
+      "snapshot_open_source": "scripts/sqlite_backup.py:341",
+      "snapshot_open_mode": "rb",
+      "failing_call": "os.fsync(fh.fileno())",
+      "exception": "OSError",
+      "errno": 9,
+      "message": "Bad file descriptor",
+      "failure_precedes_capture_callback": true,
+      "interpretation": "The failure occurs in the real product snapshot function before the test capture callback. It is not a failure of the test's connection-close assertion."
+    },
+    "correlated_http_failure": {
+      "test": "test_private_credentials_survive_restart_and_stay_out_of_backup",
+      "test_location": "tests/desktop_backend_fixtures.py:527",
+      "request": "POST /api/backups",
+      "expected_status": 201,
+      "actual_status": 500,
+      "relationship_to_fsync_failure": "inference",
+      "basis": "The real bundled backend reaches the same backup snapshot path, and the source-level product function fails on Windows at its file synchronization call.",
+      "limitation": "The job log contains the HTTP assertion failure but does not include the bundled backend's exception traceback for this request."
+    },
+    "fix_validated_by_this_run": false
+  },
+  "uploaded_artifacts": [
+    {
+      "id": 12103275042,
+      "name": "moyu-desktop-macos-arm64",
+      "size_in_bytes": 299111281,
+      "github_archive_digest": "sha256:c7f69778df6b1c7755ac61d63e5740096de537df3fae729a00127f4662bc3739",
+      "commit": "86e39e5da191f735039ec23a9b86d3aa322fa9a4",
+      "expired_at_observation": false
+    },
+    {
+      "id": 12102519079,
+      "name": "moyu-desktop-macos-x64",
+      "size_in_bytes": 312614459,
+      "github_archive_digest": "sha256:a75b4c946d312df31f805ea176e871d1a634c2c6b00ed29db78d7443eb7b75c9",
+      "commit": "86e39e5da191f735039ec23a9b86d3aa322fa9a4",
+      "expired_at_observation": false
+    }
+  ],
+  "artifact_inventory": {
+    "total_count": 2,
+    "windows_artifact_present": false,
+    "metadata_verified_against_run_and_commit": true,
+    "archive_contents_independently_verified": false
+  },
+  "release": {
+    "job_id": 117411499619,
+    "conclusion": "skipped",
+    "event_is_tag": false,
+    "published_by_this_run": false,
+    "three_platform_release_verified": false
+  },
+  "conclusion": "Both macOS jobs passed their native backend, real desktop, disk-image installation, and upload gates. Windows built successfully but failed backup verification, so its desktop, installation, checksum, and upload gates did not run. This run does not establish three-platform release readiness."
+}

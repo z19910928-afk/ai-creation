@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
 import http.client
 import io
@@ -27,6 +28,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 import moyu_backups as backups  # noqa: E402
+from scripts import sqlite_backup  # noqa: E402
 
 
 BACKEND_COMMAND = [sys.executable, "-B", str(ROOT / "desktop" / "backend.py")]
@@ -606,6 +608,76 @@ class DesktopBackendFixtures(unittest.TestCase):
                             self.assertTrue(result["verified"])
                             conn.commit()
                     self.assertGreater(len(opened), 0)
+
+    def test_backup_snapshot_fsync_uses_writable_handle_and_propagates_failure(self):
+        database = self.backend.data / "moyu.sqlite3"
+        with closing(sqlite3.connect(database)) as conn:
+            expected_branches = conn.execute(
+                "SELECT project_id,id,status FROM branch ORDER BY id"
+            ).fetchall()
+        original_open = Path.open
+        original_fsync = os.fsync
+        for method in ("online", "vacuum"):
+            with self.subTest(method=method):
+                snapshot_handles = {}
+                synchronized = []
+                fail_sync = False
+                destination = self.root / f"{method}-snapshot.sqlite3"
+
+                def tracked_open(path, *args, **kwargs):
+                    handle = original_open(path, *args, **kwargs)
+                    if path.name.endswith(".sqlite.tmp"):
+                        snapshot_handles[handle.fileno()] = handle
+                    return handle
+
+                def windows_fsync(descriptor):
+                    handle = snapshot_handles.get(descriptor)
+                    if handle is None or handle.closed:
+                        return original_fsync(descriptor)
+                    synchronized.append(descriptor)
+                    # Windows _commit rejects a read-only file descriptor.
+                    if not handle.writable():
+                        raise OSError(errno.EBADF, "Snapshot fsync requires a writable handle")
+                    if fail_sync:
+                        raise OSError(errno.EIO, "Synthetic snapshot synchronization failure")
+                    return original_fsync(descriptor)
+
+                with (
+                    patch.object(Path, "open", new=tracked_open),
+                    patch.object(sqlite_backup.os, "fsync", side_effect=windows_fsync),
+                ):
+                    result = sqlite_backup.backup_database(database, destination, method=method)
+                    self.assertTrue(result["verified"])
+                    self.assertEqual(len(synchronized), 1)
+                    self.assertEqual(result["sha256"], hashlib.sha256(destination.read_bytes()).hexdigest())
+                    manifest = sqlite_backup.manifest_path(destination)
+                    self.assertEqual(
+                        json.loads(manifest.read_text(encoding="utf-8"))["sha256"], result["sha256"],
+                    )
+                    with closing(sqlite3.connect(destination)) as conn:
+                        self.assertEqual(conn.execute(
+                            "SELECT project_id,id,status FROM branch ORDER BY id",
+                        ).fetchall(), expected_branches)
+                    preserved_database = destination.read_bytes()
+                    preserved_manifest = manifest.read_bytes()
+                    fail_sync = True
+                    for overwrite in (False, True):
+                        with self.subTest(overwrite=overwrite):
+                            target = destination if overwrite else self.root / f"{method}-unpublished.sqlite3"
+                            synchronized.clear()
+                            with self.assertRaises(OSError) as failure:
+                                sqlite_backup.backup_database(
+                                    database, target, method=method, overwrite=overwrite,
+                                )
+                            self.assertEqual(failure.exception.errno, errno.EIO)
+                            self.assertEqual(len(synchronized), 1)
+                            if overwrite:
+                                self.assertEqual(destination.read_bytes(), preserved_database)
+                                self.assertEqual(manifest.read_bytes(), preserved_manifest)
+                            else:
+                                self.assertFalse(target.exists())
+                                self.assertFalse(sqlite_backup.manifest_path(target).exists())
+                            self.assertEqual(list(self.root.glob("*.sqlite.tmp")), [])
 
     def test_credential_file_validation_stays_strict(self):
         status, _ = self.backend.json_request("PUT", "/api/ai/settings", {
