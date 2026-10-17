@@ -1,0 +1,233 @@
+{
+  "schema": "moyu-github-desktop-failure-v1",
+  "date": "2026-10-17",
+  "repository": "z19910928-afk/neural-network-ai-creation",
+  "run_id": 39035259873,
+  "commit_sha": "05fa49ca762c0f0c93250e096b4f2aff997a8d06",
+  "branch": "codex/desktop-installers",
+  "status": "completed",
+  "conclusion": "failure",
+  "created_at": "2026-10-17T13:07:19Z",
+  "updated_at": "2026-10-17T13:13:34Z",
+  "jobs": [
+    {
+      "job_id": 117403668229,
+      "name": "macOS Apple Silicon",
+      "target": "macos-arm64",
+      "started_at": "2026-10-17T13:07:26Z",
+      "completed_at": "2026-10-17T13:10:20Z",
+      "conclusion": "failure",
+      "steps": {
+        "Set up job": "success",
+        "Checkout": "success",
+        "Set up Python": "success",
+        "Set up Node": "success",
+        "Check release version": "skipped",
+        "Install Node dependencies": "success",
+        "Install Python dependencies": "success",
+        "Check desktop runtime boundaries": "success",
+        "Build native installer and archive": "success",
+        "Verify bundled backend": "success",
+        "Verify real desktop application": "failure",
+        "Verify macOS installation from disk image": "skipped",
+        "Verify Windows installation and uninstallation": "skipped",
+        "Check installer inventory and create checksums": "skipped",
+        "Upload verified installers": "skipped"
+      },
+      "backend_tests": {
+        "tests": 15,
+        "passed": 15,
+        "result": "OK"
+      },
+      "desktop_test": {
+        "passed": false,
+        "passed_cases": 0,
+        "failed_cases": 1,
+        "failure": {
+          "case": "isolated-launch-fixed-origin-renderer-sandbox",
+          "step": "start",
+          "location": "tests/desktop_smoke.cjs:131:14",
+          "message": "page.waitForFunction: ReferenceError: backendOnline is not defined",
+          "observed_at": "2026-10-17T13:10:15.0481710Z"
+        },
+        "page_errors": 1,
+        "unexpected_external_requests": 0,
+        "provider_jobs": 0,
+        "downloads": 0,
+        "remaining_cases": "Not executed after the first case failed.",
+        "diagnostic_limit": "The original smoke report counted page errors without retaining their messages. It cannot independently identify a product startup error."
+      },
+      "raw_job_log": {
+        "api_endpoint": "repos/z19910928-afk/neural-network-ai-creation/actions/jobs/117403668229/logs",
+        "bytes": 71546,
+        "sha256": "8b9fbb4398e8782d5cf69ab6a969ffebf8857f26ea5ac8edcea03da3ab506b2d"
+      }
+    },
+    {
+      "job_id": 117403668323,
+      "name": "macOS Intel",
+      "target": "macos-x64",
+      "started_at": "2026-10-17T13:07:23Z",
+      "completed_at": "2026-10-17T13:13:33Z",
+      "conclusion": "failure",
+      "steps": {
+        "Set up job": "success",
+        "Checkout": "success",
+        "Set up Python": "success",
+        "Set up Node": "success",
+        "Check release version": "skipped",
+        "Install Node dependencies": "success",
+        "Install Python dependencies": "success",
+        "Check desktop runtime boundaries": "success",
+        "Build native installer and archive": "success",
+        "Verify bundled backend": "success",
+        "Verify real desktop application": "failure",
+        "Verify macOS installation from disk image": "skipped",
+        "Verify Windows installation and uninstallation": "skipped",
+        "Check installer inventory and create checksums": "skipped",
+        "Upload verified installers": "skipped"
+      },
+      "backend_tests": {
+        "tests": 15,
+        "passed": 15,
+        "result": "OK"
+      },
+      "desktop_test": {
+        "passed": false,
+        "passed_cases": 9,
+        "failed_cases": 1,
+        "passed_case_names": [
+          "isolated-launch-fixed-origin-renderer-sandbox",
+          "real-editor-save-and-persistent-chat-draft",
+          "desktop-layout-1100-1280-and-1440",
+          "external-navigation-and-popup-rejected",
+          "four-real-downloads-json-markdown-epub-complete-backup",
+          "unsaved-close-cancel-keeps-window-and-draft",
+          "single-instance-reuses-existing-desktop",
+          "clean-exit-stops-owned-service",
+          "restart-restores-manuscript-and-chat-draft"
+        ],
+        "failure": {
+          "case": "clipboard-write-from-user-gesture",
+          "step": "preserve-all-clipboard-formats",
+          "location": "tests/desktop_smoke.cjs:175:21",
+          "message": "electronApplication.evaluate: TypeError: Failed to construct 'ClipboardItem': at least one MIME type is required.",
+          "observed_at": "2026-10-17T13:13:28.3892150Z"
+        },
+        "page_errors": 0,
+        "unexpected_external_requests": 0,
+        "provider_jobs": 0,
+        "downloads": 4,
+        "beforeunload_events": 1
+      },
+      "raw_job_log": {
+        "api_endpoint": "repos/z19910928-afk/neural-network-ai-creation/actions/jobs/117403668323/logs",
+        "bytes": 76615,
+        "sha256": "5f29632bbb2741ec7783b0d9f1a691f02e4b8b85286733c2eaf9c02e6ded5107"
+      }
+    },
+    {
+      "job_id": 117403668372,
+      "name": "Windows x64",
+      "target": "windows-x64",
+      "started_at": "2026-10-17T13:07:22Z",
+      "completed_at": "2026-10-17T13:13:08Z",
+      "conclusion": "failure",
+      "steps": {
+        "Set up job": "success",
+        "Checkout": "success",
+        "Set up Python": "success",
+        "Set up Node": "success",
+        "Check release version": "skipped",
+        "Install Node dependencies": "success",
+        "Install Python dependencies": "success",
+        "Check desktop runtime boundaries": "success",
+        "Build native installer and archive": "success",
+        "Verify bundled backend": "failure",
+        "Verify real desktop application": "skipped",
+        "Verify macOS installation from disk image": "skipped",
+        "Verify Windows installation and uninstallation": "skipped",
+        "Check installer inventory and create checksums": "skipped",
+        "Upload verified installers": "skipped"
+      },
+      "backend_tests": {
+        "tests": 15,
+        "passed": 12,
+        "failures": 1,
+        "errors": 1,
+        "platform_skips": 1,
+        "result": "FAILED (failures=1, errors=1, skipped=1)",
+        "failure_details": [
+          {
+            "test": "test_health_is_private_and_minimal",
+            "phase": "tearDown",
+            "location": "tests/desktop_backend_fixtures.py:219",
+            "message": "PermissionError: WinError 32 while removing the temporary private-data/moyu.sqlite3 file; another process still held the file."
+          },
+          {
+            "test": "test_private_credentials_survive_restart_and_stay_out_of_backup",
+            "location": "tests/desktop_backend_fixtures.py:520",
+            "message": "AssertionError: 500 != 201",
+            "expected_http_status": 201,
+            "actual_http_status": 500
+          }
+        ],
+        "diagnostic_limit": "The HTTP assertion did not include the response body. These logs alone do not establish the backup failure's root cause."
+      },
+      "raw_job_log": {
+        "api_endpoint": "repos/z19910928-afk/neural-network-ai-creation/actions/jobs/117403668372/logs",
+        "bytes": 74662,
+        "sha256": "71513dfbb8df7496bf12f9f5797648932c4dc22dadb32a89324cda64714efa69"
+      }
+    }
+  ],
+  "independent_readiness_reproduction": {
+    "scope": "An isolated local headless Chromium about:blank page using the installed Playwright package. No application scripts, author data, native Electron window, or network requests.",
+    "node": "v24.19.0",
+    "playwright": "1.62.1",
+    "first_window_source": {
+      "file": "node_modules/playwright-core/lib/coreBundle.js",
+      "start_line": 63083,
+      "end_line": 63087,
+      "excerpt": "      async firstWindow(options) {\n        if (this._windows.size)\n          return this._windows.values().next().value;\n        return await this.waitForEvent(\"window\", options);\n      }\n",
+      "excerpt_sha256": "d37e33bb704bd7f64bdc411a5fb794246b1bbb5067d3348a02d0c7efb1000ab8",
+      "finding": "firstWindow returns an existing window or waits for the window event; this method contains no document load or application readiness wait."
+    },
+    "predicate": "() => moyuNonexistentReadinessVariable",
+    "observation": {
+      "isolated_about_blank": true,
+      "wait_for_function_failure": "page.waitForFunction: ReferenceError: moyuNonexistentReadinessVariable is not defined",
+      "page_errors": 1,
+      "network_calls": 0
+    },
+    "observation_stdout_format": "UTF-8 JSON.stringify(observation) followed by one LF.",
+    "observation_stdout_sha256": "ada95e52c98b4bc26563d23c6ae2fd8221a64dc4195363ae692a5c4a3ad43778",
+    "browser_closed": true,
+    "inference": "The smoke readiness predicate itself can produce the same ReferenceError and one pageerror before application globals exist. This supports a startup test timing explanation for the arm64 failure but does not certify the unexecuted application checks."
+  },
+  "skip_interpretation": {
+    "release_version_check": "Expected skip for this branch push rather than a version tag.",
+    "windows_installation_on_macos": "Not applicable to macOS.",
+    "macos_installation_on_windows": "Not applicable to Windows.",
+    "applicable_installation_inventory_and_upload": "Not executed because preceding required verification failed.",
+    "windows_backend_platform_skip": "Reported separately from the failure and error; not counted as a failed test."
+  },
+  "artifacts": {
+    "github_uploaded_artifact_count": 0,
+    "verified_installers_uploaded": false,
+    "build_success_is_not_installation_acceptance": true
+  },
+  "release": {
+    "job_id": 117404868428,
+    "name": "Publish verified tagged release",
+    "conclusion": "skipped",
+    "release_published_by_this_run": false
+  },
+  "evidence_handling": {
+    "job_log_sha256_scope": "Raw response bytes returned by each jobs/logs endpoint, before filtering or ANSI removal.",
+    "personal_absolute_paths_in_public_summary": false,
+    "credentials_in_public_summary": false,
+    "source_or_test_files_modified_for_this_summary": false,
+    "rerun_or_publish_requested_for_this_summary": false
+  }
+}

@@ -8,6 +8,8 @@
 
 [打包本机证据](desktop-packaging-local-20261017.json)另行记录 Mac arm64 内置服务15项、真实应用10项、DMG安装后10项、包内模型库8项与桌面运行边界5项通过。实际软件内模型设置仅使用合成资料和6次免费本机调用，付费调用0；独立包核对543个文件、14个链接与ZIP逐项一致，DMG完整性及临时签名结构通过。[软件模型库截图](desktop-packaged-model-library-20261017.png)来自临时作品。Intel Mac、Windows和GitHub发布须按对应提交另行验收；此处没有文学第一梯队结论。
 
+[首次GitHub桌面失败](github-desktop-05fa49c-failure-20261017.json)记录Apple芯片页面初始化等待、Intel空剪贴板条目与Windows未关闭SQLite连接三处问题；全部构建虽成功，但未进入安装上传及发布。[SQLite资源关闭专项](desktop-sqlite-closure-20261017.json)及[重包本机复验](desktop-native-fix-local-20261017.json)覆盖随后窄修：源备份成功和异常关闭保护、后台16项、真实应用10项、DMG安装后10项与运行边界5项通过，修后163份来源前后相同。原136项整轮不改写为修后源码验收，新GitHub结果另行登记。
+
 ## 电脑工作台与写作总管
 
 2026-10-16的[专项记录](../writing-workbench-agent.md)覆盖三栏正文工作台、续写/整章修订/章节检查/四阶段全书规划，以及作者采纳、来源与恢复保护。[05完整验收](compatibility-python311-node24-agent-workbench-release-20261016-05.json)在上海2026-10-16 01:01:34.350至01:12:55.135完成，用时680.785秒，103项全部通过：65份Python夹具、20项JS语法、Python版本与语法2项、固定评测与编辑器合并2项、14组浏览器。115份来源前后相同，22份JSON和56张PNG共78附件逐份指纹匹配，完整报告自身不计附件，SHA256为`dbcdd39f93503f11475657b29678c64302980defc60f3b6eeca9d8c5d4487685`。[独立复核](agent-workbench-release-independent-review-20261016.json)核对来源、索引源码、103份日志与附件，并逐张查看九幅总管/工作台图。旧01/02/03/04轮保留本机原件和专项中的失败说明，不冒充发布通过。

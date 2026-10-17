@@ -1,0 +1,155 @@
+{
+  "passed": true,
+  "scope": "Targeted SQLite connection lifecycle fix; macOS source backend and synthetic backup tests.",
+  "claim_limit": "Local source verification only. Native Windows verification and rebuilt packaged application checks are separate and pending.",
+  "recorded_at": "2026-10-17T13:24:07.858Z",
+  "baseline_revision": "05fa49ca762c0f0c93250e096b4f2aff997a8d06",
+  "windows_ci_before": {
+    "run_id": 39035259873,
+    "job_id": 117403668372,
+    "step": "Verify bundled backend",
+    "tests": 15,
+    "passed_tests": 12,
+    "failures": 1,
+    "errors": 1,
+    "platform_skips": 1,
+    "observed_failures": [
+      {
+        "test": "test_health_is_private_and_minimal",
+        "symptom": "TemporaryDirectory cleanup raised WinError 32 for an open synthetic database.",
+        "cause": "The test used a SQLite connection transaction context without closing the connection."
+      },
+      {
+        "test": "test_private_credentials_survive_restart_and_stay_out_of_backup",
+        "symptom": "POST /api/backups returned 500 instead of 201.",
+        "cause": "Backup snapshot extraction left the snapshot connection open before temporary-directory cleanup."
+      }
+    ]
+  },
+  "local_pre_fix": {
+    "source_backend_baseline": {
+      "tests": [
+        "test_health_is_private_and_minimal",
+        "test_private_credentials_survive_restart_and_stay_out_of_backup"
+      ],
+      "passed": true,
+      "tests_run": 2,
+      "platform": "macOS",
+      "observation": "POSIX file deletion permitted the unclosed connections and did not expose the Windows failure."
+    },
+    "lifecycle_regression": {
+      "test": "test_backup_snapshot_is_closed_before_cleanup_on_success_and_failure",
+      "expected_failure_reproduced": true,
+      "tests_run": 1,
+      "failing_subtests": 2,
+      "success_path_open_handles_at_cleanup": 1,
+      "capture_exception_path_open_handles_at_cleanup": 1,
+      "mechanism": "Track actual SQLite connections and reject cleanup while any remains open, simulating Windows deletion restrictions."
+    }
+  },
+  "changes": [
+    {
+      "file": "moyu_backups.py",
+      "behavior": "Close the read-only backup snapshot connection before temporary-directory cleanup, including when capture raises."
+    },
+    {
+      "file": "moyu_backups.py",
+      "behavior": "Close the temporary in-memory validation database while retaining its existing commit and rollback context."
+    },
+    {
+      "file": "tests/desktop_backend_fixtures.py",
+      "behavior": "Close the health check connection and add success and exception lifecycle coverage."
+    }
+  ],
+  "local_post_fix": {
+    "checks": [
+      {
+        "command": ".venv/bin/python -B tests/desktop_backend_fixtures.py -v",
+        "passed": true,
+        "exit_code": 0,
+        "tests": 16,
+        "failures": 0,
+        "errors": 0,
+        "duration_seconds": 17.039,
+        "coverage": "Real source backend over authenticated loopback HTTP, restart persistence, private credential exclusion, and a separate source-helper connection lifecycle regression.",
+        "lifecycle_subtests": {
+          "success": "passed",
+          "capture_exception": "passed",
+          "open_handles_at_cleanup": 0
+        }
+      },
+      {
+        "command": ".venv/bin/python -B tests/backup_recovery_fixtures.py",
+        "passed": true,
+        "exit_code": 0,
+        "coverage": "Online backup, digest verification, corruption rejection, restore, generic schema drill, and recovery timing."
+      },
+      {
+        "command": ".venv/bin/python -B tests/planning_backup_fixtures.py -v",
+        "passed": true,
+        "exit_code": 0,
+        "tests": 9,
+        "failures": 0,
+        "errors": 0,
+        "coverage": "Planning capture, identity remapping, sealed restored history, and prevention of automatic resumed model work."
+      },
+      {
+        "command": ".venv/bin/python -B tests/portable_backup_fixtures.py",
+        "passed": true,
+        "exit_code": 0,
+        "tests": 43,
+        "executed_subtests": 532,
+        "failed_subtests": 0,
+        "captured_tables": 60,
+        "source_unchanged": true,
+        "synthetic_source_database_unchanged": true,
+        "coverage": "Complete archive capture, validation and recovery, rollback guarantees, reference closure, and exclusion of local credentials."
+      },
+      {
+        "command": ".venv/bin/python -B tests/portable_backup_http_fixtures.py",
+        "passed": true,
+        "exit_code": 0,
+        "tests": 41,
+        "failures": 0,
+        "errors": 0,
+        "source_unchanged": true,
+        "coverage": "Isolated real loopback HTTP backup creation, download, restore, validation failures, concurrency, and restart persistence."
+      },
+      {
+        "command": "git diff --check",
+        "passed": true,
+        "exit_code": 0
+      }
+    ],
+    "independent_diff_review": {
+      "mode": "read_only",
+      "issues_found": 0,
+      "coverage": "Connection closing order, success and exception paths, preservation of validation transactions, and separation of source-helper versus frozen-service coverage."
+    }
+  },
+  "source_files": {
+    "moyu_backups.py": {
+      "before_sha256": "9294c795954c344d3023ccf2091b7bcd5e962843152f5e2e3e11d5553c4567f9",
+      "after_sha256": "2f76ac610d0953a1d4f0e844e7944b8bf02e1bdd15ce2bb5d9df2e74e018a5ab"
+    },
+    "tests/desktop_backend_fixtures.py": {
+      "before_sha256": "76ca6057d567cdd7a19de51b3aeba195437f768d549b4e101b489c9aa5f179bf",
+      "after_sha256": "218feda1efa45879b5699111589977d0ff8f7a563f81ffb3e8e441204245997d"
+    }
+  },
+  "privacy_and_cost": {
+    "synthetic_data_only": true,
+    "real_database_accessed": false,
+    "real_credentials_read": false,
+    "paid_provider_calls": 0,
+    "external_model_calls": 0,
+    "free_loopback_model_probe_calls": 1,
+    "private_paths_recorded": false,
+    "plaintext_credentials_recorded": false
+  },
+  "pending_validation": [
+    "Rebuilt native backend and application checks.",
+    "Windows x64 native CI rerun, including the bundled HTTP backup test and actual temporary-directory cleanup.",
+    "Windows installation and uninstallation checks."
+  ]
+}

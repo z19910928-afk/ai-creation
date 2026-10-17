@@ -6,6 +6,8 @@
 
 2026-10-17 本机 Mac Apple 芯片版本已完成真实应用、DMG复制安装和模型库操作验证，完整产品回归136项、269个电脑页面场景全部通过，见[本轮验收说明](audits/2026-10-14/comprehensive/desktop-model-library-20261017.md)。这份本机记录不代表 Intel Mac、Windows 或 GitHub 发布已经通过；各平台以对应提交的原生运行结果为准。
 
+首次GitHub桌面运行暴露跨平台兼容问题后，修正了测试启动等待、空剪贴板条目，以及Windows备份临时数据库的关闭顺序。[新版本机重包验收](audits/2026-10-14/comprehensive/evidence/desktop-native-fix-local-20261017.json)已通过内置服务16项、真实窗口10项、DMG安装后10项与运行边界5项。后续原生构建以修复后的对应提交为准。
+
 ## 选择安装包
 
 | 电脑 | 安装文件 | 备用压缩包 |

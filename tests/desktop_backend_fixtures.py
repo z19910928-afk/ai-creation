@@ -17,11 +17,18 @@ import tempfile
 import threading
 import unittest
 import zipfile
+from contextlib import closing, contextmanager
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from unittest.mock import patch
 
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+import moyu_backups as backups  # noqa: E402
+
+
 BACKEND_COMMAND = [sys.executable, "-B", str(ROOT / "desktop" / "backend.py")]
 STATIC_FILES = (
     "index.html", "app.js", "editor-sync.js", "author-workspace.js", "styles.css",
@@ -226,7 +233,7 @@ class DesktopBackendFixtures(unittest.TestCase):
         self.assertTrue((self.backend.data / "credentials").is_dir())
         self.assertFalse((self.root / "inherited.sqlite3").exists())
         self.assertFalse((self.root / "inherited-credentials").exists())
-        with sqlite3.connect(self.backend.data / "moyu.sqlite3") as conn:
+        with closing(sqlite3.connect(self.backend.data / "moyu.sqlite3")) as conn:
             self.assertEqual(conn.execute("PRAGMA user_version").fetchone()[0], 11)
             self.assertEqual(conn.execute("PRAGMA integrity_check").fetchone()[0], "ok")
         if os.name == "posix":
@@ -535,6 +542,70 @@ class DesktopBackendFixtures(unittest.TestCase):
         self.backend.process.stdin.close()
         self.assertEqual(self.backend.process.wait(timeout=10), 0)
         self.assertTrue((self.backend.data / "moyu.sqlite3").is_file())
+
+    def test_backup_snapshot_is_closed_before_cleanup_on_success_and_failure(self):
+        connect = sqlite3.connect
+        temporary_directory = tempfile.TemporaryDirectory
+        capture = backups.capture
+        database = self.backend.data / "moyu.sqlite3"
+        with closing(connect(database)) as conn:
+            conn.row_factory = sqlite3.Row
+            project, branch = conn.execute(
+                "SELECT project_id,id FROM branch WHERE status='active' ORDER BY rowid LIMIT 1"
+            ).fetchone()
+            for capture_fails in (False, True):
+                with self.subTest(capture_fails=capture_fails):
+                    opened = []
+
+                    def tracked_connect(*args, **kwargs):
+                        source = connect(*args, **kwargs)
+                        opened.append(source)
+                        return source
+
+                    @contextmanager
+                    def locked_directory(*args, **kwargs):
+                        with temporary_directory(*args, **kwargs) as directory:
+                            try:
+                                yield directory
+                            finally:
+                                # Windows refuses to delete a still-open SQLite file.
+                                unclosed = 0
+                                for source in opened:
+                                    try:
+                                        source.execute("SELECT 1")
+                                    except sqlite3.ProgrammingError:
+                                        continue
+                                    unclosed += 1
+                                    source.close()
+                                self.assertEqual(
+                                    unclosed, 0, "Backup cleanup began with open database handles",
+                                )
+
+                    def capture_snapshot(*args, **kwargs):
+                        if capture_fails:
+                            raise ValueError("synthetic capture failure")
+                        return capture(*args, **kwargs)
+
+                    with (
+                        patch.object(backups.sqlite3, "connect", side_effect=tracked_connect),
+                        patch.object(backups.tempfile, "TemporaryDirectory",
+                                     side_effect=locked_directory),
+                        patch.object(backups, "capture", side_effect=capture_snapshot),
+                    ):
+                        if capture_fails:
+                            with self.assertRaisesRegex(ValueError, "synthetic capture failure"):
+                                backups.create(
+                                    conn, database, self.root / "fixture-backups",
+                                    project, branch, "2026-10-17T00:00:00Z",
+                                )
+                        else:
+                            result = backups.create(
+                                conn, database, self.root / "fixture-backups",
+                                project, branch, "2026-10-17T00:00:00Z",
+                            )
+                            self.assertTrue(result["verified"])
+                            conn.commit()
+                    self.assertGreater(len(opened), 0)
 
     def test_credential_file_validation_stays_strict(self):
         status, _ = self.backend.json_request("PUT", "/api/ai/settings", {

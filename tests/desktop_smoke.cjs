@@ -111,7 +111,10 @@ async function launch() {
     cwd: root, env: environment, timeout: 90000});
   page = await application.firstWindow({timeout: 90000});
   page.setDefaultTimeout(20000);
-  page.on('pageerror', () => {report.page_errors += 1;});
+  page.on('pageerror', error => {
+    report.page_errors += 1;
+    (report.page_error_details ||= []).push(failureDetails(error));
+  });
   page.on('dialog', dialog => {
     // Electron's main process owns the native unsaved-changes decision.
     if (dialog.type() === 'beforeunload') {
@@ -128,7 +131,9 @@ async function launch() {
       report.unexpected_external_requests += 1;
     }
   });
-  await page.waitForFunction(() => backendOnline && !!globalThis.MoyuAgentChat);
+  await page.waitForURL('moyu://app/', {waitUntil: 'load'});
+  await page.waitForFunction(() => typeof backendOnline !== 'undefined' &&
+    backendOnline && !!globalThis.MoyuAgentChat);
   await page.locator('[data-view="editor"]').click();
   await page.locator('#chapterBody').waitFor();
   await saved();
@@ -172,13 +177,16 @@ async function serviceStopped(identity) {
 }
 
 async function preserveClipboard() {
-  await application.evaluate(async ({app, clipboard, ClipboardItem}) => {
+  const emptyEntries = await application.evaluate(async ({app, clipboard, ClipboardItem}) => {
     const entries = await clipboard.read();
     // Materialize every format before the synthetic write replaces the system clipboard.
-    app.__moyuSmokeOriginalClipboard = await Promise.all(entries.map(async item =>
+    const populated = entries.filter(item => item.types.length > 0);
+    app.__moyuSmokeOriginalClipboard = await Promise.all(populated.map(async item =>
       new ClipboardItem(Object.fromEntries(await Promise.all(item.types.map(async type =>
         [type, await item.getType(type)]))))));
+    return entries.length - populated.length;
   });
+  report.clipboard_empty_entries = emptyEntries;
 }
 
 async function restoreClipboard() {

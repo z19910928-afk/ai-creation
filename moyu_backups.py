@@ -14,6 +14,7 @@ import time
 import uuid
 import zipfile
 import zlib
+from contextlib import closing
 from pathlib import Path
 
 from moyu_records import decode_scope
@@ -413,7 +414,7 @@ def create(conn, database, directory, project, branch, timestamp):
         snapshot = Path(tmp) / "snapshot.sqlite"
         backup_database(database, snapshot)
         verification = verify_backup(snapshot)
-        with sqlite3.connect(snapshot) as source:
+        with closing(sqlite3.connect(snapshot)) as source:
             source.row_factory = sqlite3.Row
             payload = capture(source, project)
     raw = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
@@ -1044,7 +1045,7 @@ def validate_payload(conn, payload, *, manifest=None):
         "ORDER BY CASE type WHEN 'table' THEN 0 WHEN 'index' THEN 1 ELSE 2 END,rowid")
         if row[1] in allowed]
     try:
-        with sqlite3.connect(":memory:") as scratch:
+        with closing(sqlite3.connect(":memory:")) as scratch, scratch:
             scratch.execute("PRAGMA foreign_keys=ON")
             for _, _, statement in definitions:
                 scratch.execute(statement)
