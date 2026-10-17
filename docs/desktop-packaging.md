@@ -2,13 +2,19 @@
 
 桌面版把创作页面和本机服务一起装进应用，使用者无需另外安装 Python、Node.js 或启动命令。创作与写作总管保持在同一个主窗口，不包含手机端。
 
-本文说明打包方案及验证要求。三个平台是否实际通过，以相应本机记录或 GitHub 对应提交的运行结果为准；配置完成不代表安装包已经通过验证或发布。
+## 当前发布
+
+[v0.1.0 已发布](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.0)，安装包源码为 `27482433437b02271564bbc62e01bf502b8495cc`。Mac Apple 芯片、Mac Intel 和 Windows 64 位均已在各自原生环境完成构建、内置服务、真实窗口与安装验证；Windows 还通过默认卸载后保留作品数据的检查。
+
+对应提交的[产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39046326257)共 34 项全部通过，[三平台桌面检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39046326248)也全部通过。[标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39047951067)重新构建并验收三个平台，核对六个安装文件及压缩包、三个 SHA256 校验文件后发布。下载时可用发布页中的 `SHA256SUMS-*.txt` 核对文件；后续文档更新不改变该版本的软件源码或安装包。
+
+## 本机验收与历史问题
 
 2026-10-17 本机 Mac Apple 芯片版本已完成真实应用、DMG复制安装和模型库操作验证，完整产品回归136项、269个电脑页面场景全部通过，见[本轮验收说明](audits/2026-10-14/comprehensive/desktop-model-library-20261017.md)。这份本机记录不代表 Intel Mac、Windows 或 GitHub 发布已经通过；各平台以对应提交的原生运行结果为准。
 
 首次GitHub桌面运行暴露跨平台兼容问题后，修正了测试启动等待、空剪贴板条目，以及Windows备份临时数据库的关闭顺序。[新版本机重包验收](audits/2026-10-14/comprehensive/evidence/desktop-native-fix-local-20261017.json)已通过内置服务16项、真实窗口10项、DMG安装后10项与运行边界5项。后续原生构建以修复后的对应提交为准。
 
-后续`86e39e5`产品检查与两种Mac原生检查通过，Windows再次定位到临时备份快照只读句柄无法同步落盘的问题。可写句柄修复后的第一次本机窗口检查受锁屏阻止，失败记录保留。2026-10-17解锁后，最新源码重新构建并通过运行边界5项、后台17项、真实窗口10项和DMG复制安装后10项；164份源码前后相同，剪贴板恢复成功，外部请求与模型调用均为0。具体状态见[跨平台后续复验](audits/2026-10-14/comprehensive/desktop-windows-native-followup-20261017.md)及[解锁后新包记录](audits/2026-10-14/comprehensive/evidence/desktop-final-unlocked-local-20261017.json)。Intel Mac、Windows和正式发布仍以同提交的GitHub原生检查及发布页为准。
+后续`86e39e5`产品检查与两种Mac原生检查通过，Windows再次定位到临时备份快照只读句柄无法同步落盘的问题。可写句柄修复后的第一次本机窗口检查受锁屏阻止，失败记录保留。2026-10-17解锁后，最新源码重新构建并通过运行边界5项、后台17项、真实窗口10项和DMG复制安装后10项；164份源码前后相同，剪贴板恢复成功，外部请求与模型调用均为0。具体状态见[跨平台后续复验](audits/2026-10-14/comprehensive/desktop-windows-native-followup-20261017.md)及[解锁后新包记录](audits/2026-10-14/comprehensive/evidence/desktop-final-unlocked-local-20261017.json)。上述记录只证明该次本机结果；三个平台的正式发布依据见上方“当前发布”。
 
 ## 选择安装包
 

@@ -74,13 +74,13 @@
 
 面向 Mac 和 Windows，创作窗口与本机服务随程序安装。安装版无需另外准备运行环境。
 
-| 电脑 | 安装形式 | 当前状态 |
+| 电脑 | 安装下载 | 版本 |
 | --- | --- | --- |
-| Mac · Apple 芯片 | DMG 安装包 | 发布前验证中 |
-| Mac · Intel 芯片 | DMG 安装包 | 发布前验证中 |
-| Windows · 64 位 | EXE 安装程序 | 发布前验证中 |
+| Mac · Apple 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.0/Moyu-0.1.0-mac-arm64.dmg) | v0.1.0 |
+| Mac · Intel 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.0/Moyu-0.1.0-mac-x64.dmg) | v0.1.0 |
+| Windows · 64 位 | [下载 EXE 安装程序](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.0/Moyu-0.1.0-win-x64.exe) | v0.1.0 |
 
-> 目前尚未提供正式下载。各平台的实际验证进度、系统要求与安装方法，见[桌面安装说明](docs/desktop-packaging.md)。
+> 已完成三个平台的原生构建与安装验证。备用 ZIP 和 `SHA256SUMS-*.txt` 校验文件见 [v0.1.0 发布页](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.0)。Mac 需要 macOS 15 或更新版本；首次打开提示及安装方法见[桌面安装说明](docs/desktop-packaging.md)。
 
 ### 从源码运行
 
