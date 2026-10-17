@@ -29,6 +29,7 @@ $nodeExecutable = (Get-Command node -CommandType Application).Source
 $temporaryCreated = $false
 $stage = 'PREPARE'
 $failureCode = $null
+$failureDiagnostics = $null
 $cleanupFailed = $false
 $installationVerified = $false
 $installedDesktopCases = 0
@@ -142,6 +143,9 @@ function Invoke-BoundedProcess {
     $process.StartInfo = $startInfo
     $started = $false
     try {
+        Write-Host (@{ stage = $Label; phase = 'start';
+                executable_exists = [System.IO.File]::Exists($Executable);
+                argument_count = $Arguments.Count } | ConvertTo-Json -Compress)
         $started = $process.Start()
         if (-not $started) {
             throw "WINDOWS_INSTALLER_SMOKE_START_$Label"
@@ -319,9 +323,29 @@ try {
     $appDataPreservedHash = Assert-OwnedAppDataFixture
     $appDataPreservationVerified = $true
 } catch {
+    $failureRecord = $_
+    $exceptionTypes = @()
+    $nativeErrorCodes = @()
+    $diagnosticException = $failureRecord.Exception
+    for ($depth = 0; $depth -lt 6 -and $null -ne $diagnosticException; $depth++) {
+        $exceptionTypes += $diagnosticException.GetType().FullName
+        if ($diagnosticException -is [System.ComponentModel.Win32Exception]) {
+            $nativeErrorCodes += $diagnosticException.NativeErrorCode
+        }
+        $diagnosticException = $diagnosticException.InnerException
+    }
+    $failureDiagnostics = [ordered]@{
+        stage = $stage
+        script_line = $failureRecord.InvocationInfo.ScriptLineNumber
+        category = [string] $failureRecord.CategoryInfo.Category
+        exception_types = $exceptionTypes
+        native_error_codes = $nativeErrorCodes
+        node_executable_exists = [System.IO.File]::Exists($nodeExecutable)
+    }
+    Write-Host ($failureDiagnostics | ConvertTo-Json -Compress)
     $failureCode = "WINDOWS_INSTALLER_SMOKE_FAILED_$stage"
-    if ($_.Exception.Message -match '^WINDOWS_INSTALLER_SMOKE_[A-Z0-9_]+$') {
-        $failureCode = $_.Exception.Message
+    if ($failureRecord.Exception.Message -match '^WINDOWS_INSTALLER_SMOKE_[A-Z0-9_]+$') {
+        $failureCode = $failureRecord.Exception.Message
     }
 } finally {
     if ($temporaryCreated) {
@@ -401,6 +425,7 @@ $finalReport = [ordered]@{
 }
 if ($null -ne $failureCode) {
     $finalReport['failure_code'] = $failureCode
+    $finalReport['failure_diagnostics'] = $failureDiagnostics
 }
 Write-Host ($finalReport | ConvertTo-Json -Compress)
 if ($null -ne $failureCode) {
