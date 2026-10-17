@@ -1,0 +1,195 @@
+{
+  "schema": "moyu-desktop-packaging-local-v1",
+  "date": "2026-10-17",
+  "version": "0.1.0",
+  "verified_target": "macOS arm64",
+  "local_arm64_acceptance_passed": true,
+  "scope": "Public summary extracted from the final local packaging reports. Original report hashes identify the retained local evidence; original private paths are omitted.",
+  "source_reports": {
+    "desktop_smoke": {
+      "file": "artifacts/desktop-smoke-model-final-02-20261017.json",
+      "format": "json",
+      "sha256": "62093658a9bb0f0374f81c4db769a5714cce4def26c5ebde5ede3f3259a6f089"
+    },
+    "dmg_installation": {
+      "file": "artifacts/macos-install-model-final-20261017.json",
+      "format": "json",
+      "sha256": "e7f043a7c86a9b3dfce7e725ce8cad5e52cfc8637e4623f28285acd76a6f847e"
+    },
+    "packaged_backend": {
+      "file": "artifacts/packaged-backend-model-final-20261017.json",
+      "format": "python-unittest-text",
+      "sha256": "9bdb0b0742c0f5cc93cb1efeddac7713f5a80875a4e2ada3d5b1ea9a8f5f0e03"
+    },
+    "runtime_security": {
+      "file": "artifacts/desktop-runtime-model-final-20261017.log",
+      "format": "node-test-text",
+      "sha256": "d8a4fe135bca874dbda9d0238aa8e9ebbb030f12f828b569c3c4c87295a94bd9"
+    },
+    "packaged_model_library": {
+      "file": "artifacts/packaged-model-library-2026-10-17T12-48-39-179Z/results.json",
+      "format": "json",
+      "sha256": "fb5d11ac1fbc28d2784f74836e5a1e716a73607f4cb60890067eb38005c80505"
+    },
+    "independent_package_audit": {
+      "file": "artifacts/independent-package-privacy-20261017T123419Z.json",
+      "format": "json",
+      "sha256": "09c8b38cd2915c68d76d65eb361b894933817a2a84db9075ab37b84dab85962b"
+    }
+  },
+  "desktop_smoke": {
+    "source_report": "desktop_smoke",
+    "target": "packaged",
+    "passed": true,
+    "passed_cases": 10,
+    "cases": [
+      "isolated-launch-fixed-origin-renderer-sandbox",
+      "real-editor-save-and-persistent-chat-draft",
+      "desktop-layout-1100-1280-and-1440",
+      "clipboard-write-from-user-gesture",
+      "external-navigation-and-popup-rejected",
+      "four-real-downloads-json-markdown-epub-complete-backup",
+      "unsaved-close-cancel-keeps-window-and-draft",
+      "single-instance-reuses-existing-desktop",
+      "clean-exit-stops-owned-service",
+      "restart-restores-manuscript-and-chat-draft"
+    ],
+    "real_downloads": [
+      "manuscript-json",
+      "markdown",
+      "epub",
+      "complete-backup"
+    ],
+    "page_errors": 0,
+    "unexpected_external_requests": 0,
+    "provider_jobs": 0,
+    "synthetic_data_only": true,
+    "clipboard_restored": true,
+    "beforeunload_events": 1
+  },
+  "dmg_installation": {
+    "source_report": "dmg_installation",
+    "passed": true,
+    "installation_verified": true,
+    "codesign_verified": true,
+    "installed_desktop_cases": 10,
+    "unmounted": true,
+    "temporary_cleanup": true,
+    "synthetic_data_only": true
+  },
+  "packaged_backend": {
+    "source_report": "packaged_backend",
+    "passed": true,
+    "tests": 15,
+    "result": "OK"
+  },
+  "runtime_security": {
+    "source_report": "runtime_security",
+    "passed": true,
+    "tests": 5,
+    "failed": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "cases": [
+      "only the private app origin can reach the local proxy",
+      "the main process replaces untrusted proxy and credential headers",
+      "desktop processes never inherit a developer connection or Python injection",
+      "packaged commands use the bundled backend on both platforms",
+      "a readiness message belongs to the spawned process and an actual port"
+    ]
+  },
+  "packaged_model_library": {
+    "source_report": "packaged_model_library",
+    "target": "packaged-mac-arm64",
+    "passed": true,
+    "passed_cases": 8,
+    "cases": [
+      "真实打包软件与独立临时作品服务隔离",
+      "模型A填写后先测试再保存，入库前不改变默认模型",
+      "模型B通过真实界面入库，用途下拉保存不调用模型并正确路由",
+      "修改模型地址和密钥任一项均撤销测试资格，复原文字仍需重新测试",
+      "原模型重新测试失败不会覆盖已保存连接或用途分配",
+      "失效用途在实际软件中保持原身份，风格保存失败不静默换模型",
+      "失效默认在实际软件中保持原身份，明确选新模型后才切换",
+      "合成密钥不进入公共设置和浏览器缓存，只有本机测试调用"
+    ],
+    "synthetic_data_only": true,
+    "local_mock_requests": 6,
+    "paid_provider_calls": 0,
+    "page_errors": 0,
+    "unexpected_native_dialogs": 0,
+    "unexpected_renderer_requests": 0,
+    "backend_port_is_ephemeral": true,
+    "application_exit_code": 0,
+    "owned_backend_stopped": true,
+    "owned_mock_stopped": true,
+    "isolated_data_removed": true,
+    "source_files_compared": 13,
+    "packaged_files_compared": 7,
+    "source_and_package_unchanged": true,
+    "started_at": "2026-10-17T12:48:39.189Z",
+    "finished_at": "2026-10-17T12:48:43.280Z"
+  },
+  "independent_package_audit": {
+    "source_report": "independent_package_audit",
+    "created_at": "2026-10-17T12:34:19.006634+00:00",
+    "passed_automatic_checks": true,
+    "regular_files": 543,
+    "symlinks": 14,
+    "zip_comparison": {
+      "regular_files": 543,
+      "symlinks": 14,
+      "directories": 359,
+      "mismatches": [],
+      "crc_ok": true
+    },
+    "dmg_integrity_verified": true,
+    "issues": [],
+    "codesign_deep_strict_verified": true,
+    "signing_kind": "ad_hoc",
+    "publisher_certificate_or_notarization_verified": false,
+    "minimum_system_version": "15.0",
+    "distribution_hashes": {
+      "Moyu-0.1.0-mac-arm64.zip": {
+        "size": 150205423,
+        "sha256": "1cab1ab2a545720ea8248082c76af5276cfaf5dfad78de2ade60b787f9422b92"
+      },
+      "Moyu-0.1.0-mac-arm64.dmg": {
+        "size": 149127264,
+        "sha256": "1620b37633cede1243c64c207d3129bc728c8b453b15c02a201781cd3d304690"
+      },
+      "app.asar": {
+        "size": 14935,
+        "sha256": "0dae7213383182cbee232609b2d85054c47692d2827f312c4bff20212de56a9d"
+      },
+      "backend/moyu-service": {
+        "size": 10547728,
+        "sha256": "25ca736da9a847294891beac09ab930ea826b4f5c3b3f874e0c224804156fc2a"
+      }
+    },
+    "scope": {
+      "native_ui_started": false,
+      "dmg_mounted": false,
+      "user_database_or_credentials_opened": false,
+      "source_modified": false
+    },
+    "limitations": [
+      "The independent package audit was read-only; actual installation and UI results are recorded separately above.",
+      "Pattern scans reduce disclosure risk but cannot mathematically prove absence of every possible secret."
+    ]
+  },
+  "screenshot": {
+    "file": "desktop-packaged-model-library-20261017.png",
+    "sha256": "d1b4f42cead1b94b8c843c50372aae436d0e23aa7ff982afd810fdd152abb563",
+    "source_report": "packaged_model_library",
+    "source_file": "artifacts/packaged-model-library-2026-10-17T12-48-39-179Z/packaged-model-library.png",
+    "content": "Actual packaged macOS arm64 model library with synthetic models and a loopback-only provider."
+  },
+  "acceptance_limits": {
+    "macos_arm64": "Passed local packaged application and DMG installation checks.",
+    "macos_x64": "Pending native Intel macOS CI build and installer verification.",
+    "windows_x64": "Pending native Windows CI build and installer verification.",
+    "release_signature": "Temporary ad-hoc signing only; publisher certificate and notarization are not verified.",
+    "literary_leadership": "No literary quality leadership conclusion is established by packaging or free mock-provider tests."
+  }
+}

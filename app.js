@@ -75,6 +75,7 @@ let backendOnline=false;let syncTimer=null;let syncInFlight=false;let syncQueued
 let confirmedState=loadConfirmed();let saveError='';let mergePending=null;let syncPromise=null;let independentWrite=false;
 let operationChain=Promise.resolve();let hydrateSeq=0;let aiStatusSeq=0;
 let memoryEvidenceSequence=0;const memoryEvidenceScopes=new WeakMap();
+let textRequestCancel=null;
 let aiBusy=false;let aiDraft=null;let aiRunId=null;let aiStatus={mode:'offline',model:'离线创作助手',configured:false};
 let storyMap={relationships:[],timeline:[],foreshadowing:[],conflicts:[],character_states:[],knowledge_scope:{}};
 let storyLoaded=false;let storyLoadedChapter=null;
@@ -991,8 +992,11 @@ async function reviewAssertion(id,current,memoryId,scope=memoryEvidenceScope(),w
  const stillCurrent=()=>memoryEvidenceCurrent(scope)&&(!wrap||wrap.isConnected);
  if(!stillCurrent()){wrap?.remove();return}
  if(!backendOnline)return toast('启动 SQLite 服务后才能审查 assertion');
- const next=prompt('输入状态：canon / candidate / contradicted / superseded / retracted',String(current||'candidate'));if(next===null)return;
- const reason=prompt('填写审查理由（建议说明证据或冲突）','');if(reason===null||!stillCurrent())return;
+ const next=await requestText('输入状态：canon / candidate / contradicted / superseded / retracted',
+  String(current||'candidate'),{title:'审查事实状态',current:stillCurrent});
+ if(next===null||!stillCurrent())return;
+ const reason=await requestText('填写审查理由（建议说明证据或冲突）','',{title:'审查理由',current:stillCurrent});
+ if(reason===null||!stillCurrent())return;
  try{
   const data=await durableOperation(`${API_BASE}/assertions/${encodeURIComponent(id)}/review`,'POST',{state:next.trim(),reason},stillCurrent);
   if(!stillCurrent())return;
@@ -1001,11 +1005,26 @@ async function reviewAssertion(id,current,memoryId,scope=memoryEvidenceScope(),w
 }
 async function reanchorMemory(id){
  const memory=state.memory.find(item=>item.id===id);if(!backendOnline||!memory)return toast('启动 SQLite 服务后才能重新定位证据');
- const quote=prompt('粘贴当前版本中的原文摘录（重复引文必须提供范围）',String(memory.source_quote||''));if(quote===null||!quote.trim())return;
- const startText=prompt('可选：原文摘录起点（Unicode 字符位置）',memory.source_start==null?'':String(memory.source_start));
- const endText=prompt('可选：原文摘录终点',memory.source_end==null?'':String(memory.source_end));
- const payload={source_chapter_id:memory.source_chapter_id,source_quote:quote.trim()};if(startText!==null&&startText.trim()!=='')payload.source_start=Number(startText);if(endText!==null&&endText.trim()!=='')payload.source_end=Number(endText);
- try{await durableOperation(`${API_BASE}/memory/${encodeURIComponent(id)}/reanchor`,'POST',payload);render();toast('证据已重新定位，请确认记忆')}catch(error){toast(`重新定位失败：${error.message}`)}
+ const scope=memoryEvidenceScope(),original=MoyuSync.copy(memory),source=chapter(memory.source_chapter_id);
+ const sourceRevision=source?.revision_id,sourceBody=source?.body;
+ const stillCurrent=()=>memoryEvidenceCurrent(scope)&&MoyuSync.equal(state.memory.find(item=>item.id===id),original)&&
+  chapter(original.source_chapter_id)?.revision_id===sourceRevision&&chapter(original.source_chapter_id)?.body===sourceBody;
+ const quote=await requestText('粘贴当前版本中的原文摘录（重复引文必须提供范围）',
+  String(memory.source_quote||''),{title:'重新定位原文',current:stillCurrent});
+ if(quote===null||!quote.trim()||!stillCurrent())return;
+ const startText=await requestText('可选：原文摘录起点（Unicode 字符位置）',
+  memory.source_start==null?'':String(memory.source_start),{title:'原文范围起点',current:stillCurrent});
+ if(startText===null||!stillCurrent())return;
+ const endText=await requestText('可选：原文摘录终点',
+  memory.source_end==null?'':String(memory.source_end),{title:'原文范围终点',current:stillCurrent});
+ if(endText===null||!stillCurrent())return;
+ const payload={source_chapter_id:original.source_chapter_id,source_quote:quote.trim()};
+ if(startText.trim()!=='')payload.source_start=Number(startText);if(endText.trim()!=='')payload.source_end=Number(endText);
+ try{
+  await durableOperation(`${API_BASE}/memory/${encodeURIComponent(id)}/reanchor`,'POST',payload,stillCurrent);
+  if(!memoryEvidenceCurrent(scope))return;
+  render();toast('证据已重新定位，请确认记忆');
+ }catch(error){if(memoryEvidenceCurrent(scope))toast(`重新定位失败：${error.message}`)}
 }
 async function generateAI(options={}){
  if(aiBusy)return;
@@ -1403,6 +1422,7 @@ async function verifiedFinalGate(){
 }
 async function showFinalizationCheck(){
  let gate;try{gate=await verifiedFinalGate()}catch(error){toast(error.message);return}
+ const owner=requestedProject,branch=state.branch_id||state.project?.branch_id||'main',overrideKey=finalOverrideKey();
  const issues=gate.issues;const wrap=document.createElement('div');wrap.className='modal-backdrop';
  const body=issues.length?`<p class="modal-help">终稿导出默认被阻断。请处理以下项目；覆盖时必须留下作者理由。</p><ul class="check-list">${issues.map(x=>`<li class="check-bad">阻断 · ${esc(x)}</li>`).join('')}</ul>${gate.override?`<p class="modal-help override-note">已记录作者覆盖：${esc(gate.override.reason||'未填写理由')} · ${esc(gate.override.at||'')}</p>`:''}`:'<p class="modal-help check-ok">已通过基础终稿检查，可以导出并标记全书完稿。</p>';
  const complete=state.project.book_status==='complete'?'<button class="ghost-btn" data-reopen>恢复写作</button>':`<button class="ghost-btn" data-complete ${issues.length&&!gate.override?'disabled':''}>标记全书完稿</button>`;
@@ -1410,7 +1430,20 @@ async function showFinalizationCheck(){
  const overrideButton=issues.length&&!gate.override?'<button class="ghost-btn" data-override>作者覆盖并记录原因</button>':'';
  wrap.innerHTML=`<div class="modal"><h3>终稿检查</h3>${body}<div class="modal-actions"><button class="ghost-btn" data-close>关闭</button>${overrideButton}${complete}${exportButton}</div></div>`;document.body.append(wrap);
  wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
- wrap.querySelector('[data-override]')?.addEventListener('click',()=>{const reason=prompt('请填写作者覆盖理由（至少 8 个字符）。此理由会和当前稿件指纹一起保存在本机。','');if(reason===null)return;if(Array.from(reason.trim()).length<8)return toast('覆盖理由至少需要 8 个字符');try{localStorage.setItem(finalOverrideKey(),JSON.stringify({reason:reason.trim(),at:new Date().toLocaleString(),issues}));wrap.remove();showFinalizationCheck();toast('已记录作者覆盖理由；本稿可导出。')}catch{toast('无法保存覆盖理由，请先导出 JSON 备份')}});
+ wrap.querySelector('[data-override]')?.addEventListener('click',async()=>{
+  const stillCurrent=()=>wrap.isConnected&&owner===requestedProject&&
+   branch===(state.branch_id||state.project?.branch_id||'main')&&overrideKey===finalOverrideKey();
+  if(!stillCurrent()){wrap.remove();return}
+  const reason=await requestText('请填写作者覆盖理由（至少 8 个字符）。此理由会和当前稿件指纹一起保存在本机。','',
+   {title:'作者覆盖理由',current:stillCurrent});
+  if(!stillCurrent()){wrap.remove();return}
+  if(reason===null)return;
+  if(Array.from(reason.trim()).length<8)return toast('覆盖理由至少需要 8 个字符');
+  try{
+   localStorage.setItem(overrideKey,JSON.stringify({reason:reason.trim(),at:new Date().toLocaleString(),issues}));
+   wrap.remove();showFinalizationCheck();toast('已记录作者覆盖理由；本稿可导出。');
+  }catch{toast('无法保存覆盖理由，请先导出 JSON 备份')}
+ });
  wrap.querySelector('[data-export]').onclick=()=>{wrap.remove();markdownExport()};
  wrap.querySelector('[data-complete]')?.addEventListener('click',async event=>{
   const button=event.currentTarget;button.disabled=true;
@@ -1425,7 +1458,7 @@ async function showFinalizationCheck(){
 }
 function words(){return state.chapters.reduce((n,c)=>n+c.body.replace(/\s/g,'').length,0)}
 function chapter(id=activeChapter){return state.chapters.find(c=>c.id===id)}
-function render(){dismissMemoryEvidence();cacheInstructionDraft();syncReferenceScope();const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
+function render(){textRequestCancel?.();dismissMemoryEvidence();cacheInstructionDraft();syncReferenceScope();const added=captureMemories();aiDraft=activeCandidate();aiRunId=aiDraft?.ai_run_id||null;
  document.querySelector('#projectTitle').textContent=state.project.title;document.querySelector('#projectTitle').title=state.project.title;document.querySelector('#projectMeta').textContent=`${state.chapters.length} 章 · ${words()} 字`;
  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===view));
  document.querySelector('#main').innerHTML=(views[view]||views.dashboard)();bind();ensureFinishButton();saveIndicator();updateTaskCount();
@@ -1547,6 +1580,40 @@ plot:()=>`<div class="view-head"><div><h2>情节与伏笔</h2><p>让每一条线
 story:()=>{const editable=backendOnline;const actionButtons=editable?'<div class="story-actions"><button class="ghost-btn" data-action="addRelationship">＋关系</button><button class="ghost-btn" data-action="addTimeline">＋事件</button><button class="ghost-btn" data-action="addForeshadow">＋伏笔链接</button></div>':'';const edit=(kind,id)=>editable?`<div class="story-card-actions"><button class="ghost-btn" data-action="edit${kind}" data-story-id="${safeId(id)}">编辑</button><button class="ghost-btn danger-btn" data-action="delete${kind}" data-story-id="${safeId(id)}">删除</button></div>`:'';return `<div class="view-head"><div><h2>故事结构</h2><p>把人物关系、时间线和伏笔生命周期变成可编辑的故事地图，写作前先校准，写作后再回看。</p></div><div class="view-head-actions"><button class="ghost-btn" data-action="refreshStory">↻ 刷新结构</button>${actionButtons}</div></div>${editable?'':'<section class="workflow-card"><div><span class="workflow-kicker">故事结构需要后端服务</span><h3>启动 SQLite 后编辑关系与时间线</h3><p>当前仍可在章节和设定库离线写作；启动本地服务后，这里的结构记录会和 AI 上下文、审查结果同步。</p></div><button class="primary-btn" data-action="refreshStory">重新连接</button></section>'}<section class="panel story-panel-wide"><div class="panel-title"><div><h3>关系图谱</h3><p class="panel-subtitle">从结构记录快速查看人物、势力和地点之间的稳定关系。</p></div><span>${storyMap.relationships.length} 条关系</span></div>${storyGraphSvg(storyMap.relationships)}</section><section class="panel story-panel-wide"><div class="panel-title"><div><h3>时间线总览</h3><p class="panel-subtitle">按排序序号和时间标记排列，计划事件与已发生事件一眼可见。</p></div><span>${storyMap.timeline.length} 个事件</span></div>${storyTimelineHtml(storyMap.timeline)}</section><section class="panel story-panel-wide"><div class="panel-title"><div><h3>人物状态知识范围</h3><p class="panel-subtitle">审查当前章节注入 AI 的状态边界，明确每条状态为何可见或被过滤。</p></div><span>${storyMap.character_states?.length||0} 条状态</span></div>${knowledgeScopeHtml()}</section><div class="story-grid"><section class="panel"><div class="panel-title"><h3>人物关系明细</h3><span>${storyMap.relationships.length} 条</span></div>${storyMap.relationships.map(r=>`<article class="result story-card"><strong>${esc(r.from_name)} → ${esc(r.to_name)}</strong><p>${esc(r.relation_type)} · ${esc(r.note||'')}</p>${edit('Relationship',r.id)}</article>`).join('')||'<div class="empty">暂无关系。点击“＋关系”把人物、势力或物品连接起来。</div>'}</section><section class="panel"><div class="panel-title"><h3>时间线明细</h3><span>${storyMap.timeline.length} 个事件</span></div>${storyMap.timeline.map(t=>`<article class="result story-card"><strong>${esc(t.event_time||'未定时间')} · ${esc(t.title)}</strong><p>${esc(t.summary||'')}</p><small>${t.chapter_id?'已绑定章节':'未绑定章节'} · ${esc(t.status||'planned')}</small>${edit('Timeline',t.id)}</article>`).join('')||'<div class="empty">暂无事件。先记录一个改变局面的瞬间。</div>'}</section></div><section class="panel story-panel-wide"><div class="panel-title"><h3>伏笔生命周期</h3><span>${storyMap.foreshadowing.length} 条链接</span></div>${storyMap.foreshadowing.map(f=>`<article class="result story-card"><strong>${esc(f.kind==='plant'?'埋下':f.kind==='develop'?'推进':'回收')} · ${esc(f.text)}</strong><p>${esc(f.chapter_title||'未绑定章节')} · ${esc(f.note||'')}</p>${edit('Foreshadow',f.id)}</article>`).join('')||'<div class="empty">暂无伏笔链接。先在“情节与伏笔”创建卡片，再绑定发生章节。</div>'}</section><section class="panel story-panel-wide"><div class="panel-title"><h3>冲突提示</h3><span>${storyMap.conflicts.length} 个</span></div>${storyMap.conflicts.map(c=>`<article class="result check-bad"><strong>冲突实体：${esc(c.entity_id)}</strong><p>记忆 ${esc(c.memory_id||'')} · ${esc(c.status||'')}，请回到记忆中枢核对证据。</p></article>`).join('')||'<div class="empty">当前没有检测到记忆冲突。</div>'}</section>`},
 search:()=>`<div class="view-head"><div><h2>全文搜索</h2><p>搜索章节正文和设定卡片。</p></div></div><div class="search-box"><input id="searchInput" placeholder="搜索人物、句子、关键词…"><button class="primary-btn" data-action="search">搜索</button></div><div id="searchResults"><div class="empty">输入关键词，开始检索。</div></div>`
 };
+function requestText(label,initial='',{title='填写内容',current=null}={}){
+ textRequestCancel?.();
+ const owner=requestedProject,branch=state.branch_id||state.project?.branch_id||'main';
+ const stillCurrent=()=>owner===requestedProject&&branch===(state.branch_id||state.project?.branch_id||'main')&&
+  (!current||current());
+ if(!stillCurrent())return Promise.resolve(null);
+ return new Promise(resolve=>{
+  const previousFocus=document.activeElement,dialog=document.createElement('dialog');
+  const identifier='text-request-'+crypto.randomUUID(),heading=identifier+'-heading';
+  dialog.className='modal text-request-dialog';dialog.dataset.textRequest='';
+  dialog.setAttribute('aria-labelledby',heading);
+  dialog.innerHTML=`<form><h3 id="${heading}">${esc(title)}</h3><label for="${identifier}">${esc(label)}</label>
+   <textarea id="${identifier}" data-text-input rows="4" autocomplete="off" autofocus></textarea>
+   <div class="modal-actions"><button type="button" class="ghost-btn" data-text-cancel>取消</button>
+   <button type="submit" class="primary-btn" data-text-submit>确认</button></div></form>`;
+  const input=dialog.querySelector('[data-text-input]');input.value=String(initial??'');
+  let settled=false;
+  const finish=value=>{
+   if(settled)return;settled=true;
+   input.value='';if(dialog.open)dialog.close();dialog.remove();
+   if(textRequestCancel===cancel)textRequestCancel=null;
+   if(previousFocus?.isConnected)previousFocus.focus({preventScroll:true});
+   resolve(value);
+  };
+  const cancel=()=>finish(null);textRequestCancel=cancel;
+  dialog.querySelector('[data-text-cancel]').onclick=cancel;
+  dialog.querySelector('form').onsubmit=event=>{event.preventDefault();finish(stillCurrent()?input.value:null)};
+  dialog.addEventListener('cancel',event=>{event.preventDefault();cancel()});
+  dialog.addEventListener('close',cancel);
+  document.body.append(dialog);
+  try{dialog.showModal();input.focus();input.select()}
+  catch{cancel();toast('填写窗口暂时无法打开，请重新操作')}
+ });
+}
 function modal(title,body,onSave){const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.innerHTML=`<div class="modal"><h3>${title}</h3>${body}<div class="modal-actions"><button class="ghost-btn" data-close>取消</button><button class="primary-btn" data-ok>保存</button></div></div>`;document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();wrap.querySelector('[data-ok]').onclick=()=>{if(onSave(wrap)===false)return;wrap.remove();save();render();toast('已保存')};return wrap}
 function bind(){
  document.querySelectorAll('[data-chapter]').forEach(b=>b.onclick=()=>{if(activeChapter!==b.dataset.chapter)aiDraft=null;activeChapter=b.dataset.chapter;view='editor';render()});
@@ -1579,7 +1646,18 @@ document.addEventListener('click',e=>{
  if(!memoryEvidenceCurrent(scope)){wrap?.remove();return}
  reviewAssertion(assertion.dataset.assertionReview,assertion.dataset.assertionState,assertion.dataset.memoryId,scope,wrap);
 },true);
-document.addEventListener('click',e=>{const reject=e.target.closest?.('[data-memory-reject]');const review=e.target.closest?.('[data-memory-review]');const accept=e.target.closest?.('[data-memory]');const id=reject?.dataset.memoryReject||review?.dataset.memoryReview||accept?.dataset.memory;if(!id)return;e.preventDefault();e.stopPropagation();if(reject){const reason=prompt('可选：为什么拒绝这条记忆？','')??'';decideMemory(id,'rejected',reason).catch(error=>toast(`记忆拒绝失败：${error.message}`))}else if(review)decideMemory(id,'candidate').catch(error=>toast(`记忆重新审查失败：${error.message}`));else decideMemory(id,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`))},true);
+document.addEventListener('click',async e=>{
+ const reject=e.target.closest?.('[data-memory-reject]'),review=e.target.closest?.('[data-memory-review]');
+ const accept=e.target.closest?.('[data-memory]'),id=reject?.dataset.memoryReject||review?.dataset.memoryReview||accept?.dataset.memory;
+ if(!id)return;e.preventDefault();e.stopPropagation();
+ if(reject){
+  const scope=memoryEvidenceScope(),stillCurrent=()=>memoryEvidenceCurrent(scope)&&reject.isConnected;
+  const reason=await requestText('可选：为什么拒绝这条记忆？','',{title:'拒绝记忆',current:stillCurrent});
+  if(reason===null||!stillCurrent())return;
+  decideMemory(id,'rejected',reason).catch(error=>toast(`记忆拒绝失败：${error.message}`));
+ }else if(review)decideMemory(id,'candidate').catch(error=>toast(`记忆重新审查失败：${error.message}`));
+ else decideMemory(id,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`));
+},true);
 document.addEventListener('click',event=>{const button=event.target.closest?.('[data-search-jump]');if(!button)return;event.preventDefault();openSearchEvidence(button).catch(error=>toast(`原文定位失败：${error.message}`))});
 const actions={refreshStory:async(silent=false)=>{if(!backendOnline){if(!silent)toast('启动 SQLite 服务后才能读取故事结构');return}try{const r=await fetch('/api/story-map',{headers:{Accept:'application/json'}});if(!r.ok)throw new Error(`HTTP ${r.status}`);const structure=await r.json();structure.knowledge_scope={};try{const context=await fetch(`/api/context?chapter_id=${encodeURIComponent(activeChapter||'')}&retrieval_profile=${profileQuery()}`,{headers:{Accept:'application/json'}});if(context.ok){const contextData=await context.json();structure.knowledge_scope=contextData.budget?.knowledge_scope||{}}}catch{}storyMap={...structure,character_states:Array.isArray(structure.character_states)?structure.character_states:[],knowledge_scope:structure.knowledge_scope||{}};storyLoaded=true;storyLoadedChapter=activeChapter;render();if(!silent)toast('故事结构已刷新')}catch(e){if(!silent)toast(`读取故事结构失败：${e.message}`)}},addRelationship:()=>relationshipModal(),addTimeline:()=>timelineModal(),addForeshadow:()=>foreshadowModal(),editRelationship:button=>relationshipModal(storyMap.relationships.find(x=>x.id===button?.dataset.storyId)),editTimeline:button=>timelineModal(storyMap.timeline.find(x=>x.id===button?.dataset.storyId)),editForeshadow:button=>foreshadowModal(storyMap.foreshadowing.find(x=>x.id===button?.dataset.storyId)),deleteRelationship:button=>deleteStoryItem('relationship',button?.dataset.storyId),deleteTimeline:button=>deleteStoryItem('timeline',button?.dataset.storyId),deleteForeshadow:button=>deleteStoryItem('foreshadow',button?.dataset.storyId),refreshMemory:()=>{captureMemories();save();render();toast('已刷新记忆候选')},newChapter:()=>{if(state.project.book_status==='complete')return toast('全书已完稿，请先在终稿检查中恢复写作');const c={id:crypto.randomUUID(),title:`第 ${state.chapters.length+1} 章`,body:'',status:'草稿',updated:Date.now()};state.chapters.push(c);activeChapter=c.id;localStorage.setItem(ACTIVE_KEY,c.id);view='editor';save();render()},newRecord:()=>editRecord(),newPlot:()=>modal('新增伏笔',`<label>伏笔内容</label><textarea id="plotText" placeholder="例如：第一章出现的旧钥匙……"></textarea>`,w=>{const v=w.querySelector('#plotText').value.trim();if(v)state.plot.setup.push(v)})};
 actions.finalCheck=()=>showFinalizationCheck();

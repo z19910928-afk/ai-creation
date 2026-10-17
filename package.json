@@ -1,0 +1,23 @@
+{
+  "name": "moyu",
+  "version": "0.1.0",
+  "private": true,
+  "description": "墨屿桌面小说创作软件",
+  "author": "Moyu",
+  "license": "UNLICENSED",
+  "main": "desktop/main.cjs",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "electron .",
+    "test:desktop": "node --test tests/desktop_runtime.test.cjs",
+    "test:desktop-smoke": "node tests/desktop_smoke.cjs",
+    "build:desktop": "python scripts/build_desktop.py"
+  },
+  "devDependencies": {
+    "electron": "44.9.0",
+    "electron-builder": "26.15.3",
+    "playwright": "1.62.1"
+  }
+}

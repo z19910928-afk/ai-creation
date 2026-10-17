@@ -68,7 +68,9 @@ def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
     saved = _saved(conn, project)
     main = moyu_settings.provider_settings(conn, project)
     if saved["mode"] == "inherit":
-        return {**main, "mode": "inherit", "connection_scope": "agent_chat"}
+        # Chat follows the selected default connection, never another writing purpose.
+        return {**{key: value for key, value in main.items() if key != "_connection_routes"},
+                "mode": "inherit", "connection_scope": "agent_chat"}
     key = _key(conn, project, saved)
     parameters = dict(saved.get("parameters") or {})
     max_tokens = parameters.pop("max_tokens", 3000)

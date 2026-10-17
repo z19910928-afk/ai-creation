@@ -30,6 +30,34 @@ async function api(route,method='GET',payload){
 async function test(name,run){
  await run();report.cases.push({name,passed:true});console.log(JSON.stringify({name,passed:true}));
 }
+async function registerConnection(page,model){
+ const before=modelCalls;
+ await page.locator('#connectionReset').click();
+ await page.locator('#connectionName').fill(model);
+ await page.locator('#connectionBaseUrl').fill(providerBase);
+ await page.locator('#connectionModel').fill(model);
+ assert.equal(await page.locator('#connectionSave').isDisabled(),true);
+ await page.locator('#connectionProbe').click();
+ await page.locator('#connectionProbeStatus[data-state="success"]').waitFor();
+ await page.waitForFunction(()=>!document.querySelector('#connectionSave').disabled);
+ assert.equal(modelCalls,before+1,'登记连接只进行一次真实本机测试');
+ await page.locator('#connectionSave').click();
+ await page.locator('#connectionProbeStatus[data-state="saved"]').waitFor();
+ await page.waitForFunction(()=>!document.querySelector('#connectionProbe').disabled);
+ assert.equal(modelCalls,before+1,'保存已测试连接不能重复调用模型');
+ const connection=(await api('/api/ai/connections')).connections.find(item=>item.name===model);
+ assert.ok(connection?.verified);
+ return connection;
+}
+async function assignMain(page,connection){
+ const before=modelCalls;
+ await page.locator('#modelDefault').selectOption(connection.id);
+ await page.locator('#modelSettings button[type="submit"]').click();
+ await page.waitForFunction(id=>authorSettings?.default_connection_id===id&&
+  document.querySelector('#modelSettings button[type="submit"]')?.disabled===false,connection.id);
+ assert.equal((await api('/api/ai/settings')).settings.model,connection.model);
+ assert.equal(modelCalls,before,'保存用途分配不能发送模型请求');
+}
 async function main(){
  provider=http.createServer((request,response)=>{
   let raw='';request.on('data',chunk=>raw+=chunk);request.on('end',()=>{
@@ -65,17 +93,21 @@ async function main(){
  await page.locator('#settingsHost .settings-form').waitFor();
 
  await test('总管默认继承主模型，真实探测后主设置变化立即撤销旧实测状态',async()=>{
+  const initial=await registerConnection(page,'main-browser-fixture');
+  await assignMain(page,initial);
   assert.equal(await page.locator('[name="agentConnectionMode"][value="inherit"]').isChecked(),true);
+  const before=modelCalls;
   await page.locator('#agentConnectionProbe').click();
   await page.locator('#agentProbeStatus').filter({hasText:'实测成功'}).waitFor();
-  assert.equal(modelCalls,1);
-  await page.locator('#modelDefault').fill('main-replacement-browser-fixture');
-  await page.locator('#settingsHost button[type="submit"]').click();
+  assert.equal(modelCalls,before+1);
+  const replacement=await registerConnection(page,'main-replacement-browser-fixture');
+  await assignMain(page,replacement);
   await page.locator('[data-agent-inherit-summary]').filter({hasText:'main-replacement-browser-fixture'}).waitFor();
   assert.match(await page.locator('#agentProbeStatus').innerText(),/尚未验证/);
-  assert.equal(modelCalls,1);
+  assert.equal(modelCalls,before+2);
  });
  await test('保存独立模型不发送请求，密钥只在本机保存且公共设置不泄露凭据',async()=>{
+  const before=modelCalls;
   await page.locator('[name="agentConnectionMode"][value="independent"]').check();
   await page.locator('#agentBaseUrl').fill(providerBase);
   await page.locator('#agentModel').fill('independent-browser-fixture');
@@ -90,28 +122,31 @@ async function main(){
   assert.equal(JSON.stringify(settings).includes('credential_ref'),false);
   assert.equal(JSON.stringify(settings).includes('credential_fingerprint'),false);
   assert.equal((await api('/api/ai/settings')).settings.model,'main-replacement-browser-fixture');
-  assert.equal(modelCalls,1);
+  assert.equal(modelCalls,before);
  });
  await test('主连接保存和检测事件只刷新总管摘要，保留尚未保存的独立密钥及模型',async()=>{
+  const before=modelCalls;
   await page.locator('#agentModel').fill('unsaved-independent-draft');
   await page.locator('#agentApiKey').fill(draftSecret);
   await page.evaluate(()=>{globalThis.__agentForm=document.querySelector('#agentConnectionSettings')});
-  await page.locator('#modelDefault').fill('main-final-browser-fixture');
-  await page.locator('#settingsHost button[type="submit"]').click();
-  await page.waitForFunction(()=>document.querySelector('#modelDefault')?.value==='main-final-browser-fixture'&&
-   document.querySelector('[data-agent-connection-state]')?.textContent==='已配置');
+  const final=await registerConnection(page,'main-final-browser-fixture');
+  await assignMain(page,final);
+  await page.waitForFunction(id=>document.querySelector('#modelDefault')?.value===id&&
+   document.querySelector('[data-agent-connection-state]')?.textContent==='已配置',final.id);
   assert.equal(await page.evaluate(()=>globalThis.__agentForm===document.querySelector('#agentConnectionSettings')),true);
   assert.equal(await page.locator('#agentModel').inputValue(),'unsaved-independent-draft');
   assert.equal(await page.locator('#agentApiKey').inputValue(),draftSecret);
-  await page.locator('#modelProbe').click();
-  await page.locator('#modelProbeStatus').filter({hasText:/实测成功|验证通过/}).waitFor();
+  await page.locator(`[data-connection-edit="${final.id}"]`).click();
+  await page.locator('#connectionProbe').click();
+  await page.locator('#connectionProbeStatus[data-state="success"]').waitFor();
   await page.waitForFunction(()=>document.querySelector('[data-agent-connection-state]')?.textContent==='已配置');
   assert.equal(await page.locator('#agentModel').inputValue(),'unsaved-independent-draft');
   assert.equal(await page.locator('#agentApiKey').inputValue(),draftSecret);
   assert.equal((await api('/api/agent-chat/settings')).settings.model,'independent-browser-fixture');
-  assert.equal(modelCalls,2);
+  assert.equal(modelCalls,before+2);
  });
  await test('切换模式保留独立模型，浏览器存储和服务日志不含保存及未保存密钥',async()=>{
+  const before=modelCalls;
   await page.locator('[name="agentConnectionMode"][value="inherit"]').check();
   await page.locator('#agentConnectionSettings button[type="submit"]').click();
   await page.locator('#agentProbeStatus').filter({hasText:'总管设置已保存'}).waitFor();
@@ -122,7 +157,7 @@ async function main(){
   for(const value of [secret,draftSecret]){
    assert.equal(storage.includes(value),false);assert.equal(serverLog.includes(value),false);
   }
-  assert.equal(modelCalls,2);
+  assert.equal(modelCalls,before);
  });
  assert.deepEqual(report.page_errors,[]);
  await page.screenshot({path:path.join(temporary,'agent-settings-desktop.png')});

@@ -1,0 +1,242 @@
+{
+  "cases": [
+    {
+      "name": "test_independent_analysis_without_selection_has_no_reference_payload",
+      "passed": true
+    },
+    {
+      "name": "test_independent_changed_client_selection_after_queue_does_not_replace_frozen_quote",
+      "passed": true
+    },
+    {
+      "name": "test_independent_consumed_document_metadata_change_blocks_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_independent_duplicate_reference_dependency_blocks_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_independent_empty_or_null_passage_with_binding_blocks_dispatch",
+      "passed": true,
+      "subtest": "test_independent_empty_or_null_passage_with_binding_blocks_dispatch (__main__.ReferencePassagesIntegrityHTTP.test_independent_empty_or_null_passage_with_binding_blocks_dispatch) (value=None)"
+    },
+    {
+      "name": "test_independent_empty_or_null_passage_with_binding_blocks_dispatch",
+      "passed": true,
+      "subtest": "test_independent_empty_or_null_passage_with_binding_blocks_dispatch (__main__.ReferencePassagesIntegrityHTTP.test_independent_empty_or_null_passage_with_binding_blocks_dispatch) (value=[])"
+    },
+    {
+      "name": "test_independent_empty_or_null_passage_with_binding_blocks_dispatch",
+      "passed": true
+    },
+    {
+      "name": "test_independent_frozen_payload_quote_change_cannot_bypass_bound_context",
+      "passed": true
+    },
+    {
+      "name": "test_independent_legacy_author_resolution_ignores_all_reference_changes",
+      "passed": true
+    },
+    {
+      "name": "test_independent_lost_both_bindings_blocks_candidate_revision_and_apply",
+      "passed": true,
+      "subtest": "test_independent_lost_both_bindings_blocks_candidate_revision_and_apply (__main__.ReferencePassagesIntegrityHTTP.test_independent_lost_both_bindings_blocks_candidate_revision_and_apply) (operation='revise')"
+    },
+    {
+      "name": "test_independent_lost_both_bindings_blocks_candidate_revision_and_apply",
+      "passed": true,
+      "subtest": "test_independent_lost_both_bindings_blocks_candidate_revision_and_apply (__main__.ReferencePassagesIntegrityHTTP.test_independent_lost_both_bindings_blocks_candidate_revision_and_apply) (operation='apply')"
+    },
+    {
+      "name": "test_independent_lost_both_bindings_blocks_candidate_revision_and_apply",
+      "passed": true
+    },
+    {
+      "name": "test_independent_lost_both_bindings_blocks_job_and_run_retry",
+      "passed": true
+    },
+    {
+      "name": "test_independent_lost_both_passage_and_dependency_cannot_dispatch_old_payload",
+      "passed": true
+    },
+    {
+      "name": "test_independent_reference_budget_rejection_leaves_all_tables_unchanged",
+      "passed": true
+    },
+    {
+      "name": "test_independent_unconsumed_reference_deletion_keeps_dispatch_valid",
+      "passed": true
+    },
+    {
+      "name": "test_independent_wrong_binding_scope_blocks_dispatch",
+      "passed": true
+    }
+  ],
+  "checks": 13,
+  "claim_limit": "frozen reference integrity only; no literary-quality or competitiveness claim",
+  "external_model_calls": 0,
+  "finished_at": "2026-10-17T12:47:28.487129+00:00",
+  "free_provider_calls": 3,
+  "observations": [
+    {
+      "billing_state": "not_dispatched",
+      "body_unchanged": true,
+      "canon_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "scenario": "independent_document_metadata_change",
+      "status": "failed",
+      "test": "test_independent_consumed_document_metadata_change_blocks_dispatch"
+    },
+    {
+      "billing_state": "not_dispatched",
+      "body_unchanged": true,
+      "canon_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "scenario": "independent_duplicate_reference_dependency",
+      "status": "failed",
+      "test": "test_independent_duplicate_reference_dependency_blocks_dispatch"
+    },
+    {
+      "billing_state": "not_dispatched",
+      "body_unchanged": true,
+      "canon_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "scenario": "independent_null_or_empty_reference",
+      "status": "failed",
+      "test": "test_independent_empty_or_null_passage_with_binding_blocks_dispatch"
+    },
+    {
+      "billing_state": "not_dispatched",
+      "body_unchanged": true,
+      "canon_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "scenario": "independent_null_or_empty_reference",
+      "status": "failed",
+      "test": "test_independent_empty_or_null_passage_with_binding_blocks_dispatch"
+    },
+    {
+      "billing_state": "not_dispatched",
+      "body_unchanged": true,
+      "canon_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "scenario": "independent_frozen_payload_quote_changed",
+      "status": "failed",
+      "test": "test_independent_frozen_payload_quote_change_cannot_bypass_bound_context"
+    },
+    {
+      "body_unchanged": true,
+      "database_unchanged": true,
+      "extra_provider_calls": 0,
+      "outcomes": [
+        {
+          "entry": "jobs",
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。",
+          "status": 409
+        },
+        {
+          "entry": "runs",
+          "error": "本次保存的材料或完整请求校验失败，请按当前资料生成新候选；原候选仍保留供阅读。",
+          "status": 409
+        }
+      ],
+      "scenario": "independent_lost_both_bindings_retry",
+      "test": "test_independent_lost_both_bindings_blocks_job_and_run_retry"
+    },
+    {
+      "billing_state": "not_dispatched",
+      "body_unchanged": true,
+      "canon_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "scenario": "independent_lost_both_reference_bindings",
+      "status": "failed",
+      "test": "test_independent_lost_both_passage_and_dependency_cannot_dispatch_old_payload"
+    },
+    {
+      "body_unchanged": true,
+      "database_unchanged": true,
+      "extra_provider_calls": 0,
+      "outcomes": [
+        {
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。",
+          "route": "/api/ai/prompt-preview",
+          "status": 400
+        },
+        {
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。",
+          "route": "/api/ai/queue",
+          "status": 400
+        },
+        {
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。",
+          "route": "/api/ai",
+          "status": 400
+        },
+        {
+          "error": "当前原稿和必保参考片段超出本次材料容量，请缩小正文选区、参考片段或增加材料容量。",
+          "route": "/api/context",
+          "status": 400
+        }
+      ],
+      "scenario": "independent_budget_failure",
+      "test": "test_independent_reference_budget_rejection_leaves_all_tables_unchanged"
+    },
+    {
+      "billing_state": "not_dispatched",
+      "body_unchanged": true,
+      "canon_unchanged": true,
+      "extra_provider_calls": 0,
+      "frozen_context_unchanged": true,
+      "scenario": "independent_wrong_marker_scope",
+      "status": "failed",
+      "test": "test_independent_wrong_binding_scope_blocks_dispatch"
+    }
+  ],
+  "paid_provider_calls": 0,
+  "passed": true,
+  "production_database_accessed": false,
+  "real_credentials_read": false,
+  "scope": "temporary synthetic SQLite; real loopback HTTP; free local provider",
+  "source_files_sha256_after": {
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "moyu_backups.py": "9294c795954c344d3023ccf2091b7bcd5e962843152f5e2e3e11d5553c4567f9",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_materials.py": "7d3f7b9e2ff05484e15d924b1d898c5e3efb557303d7654cac8198cf6af36a38",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "server.py": "81871fabc0e0f6adbba17d17c50aea221fd7058b81d91bfff58e324088724722",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/reference_passages_http_fixtures.py": "4aa21b3a2c8bdd930be9eb2a9cd73ca8074e57d6e6b734c38183679043259c96",
+    "tests/reference_passages_integrity_http_fixtures.py": "8dbb29632703adbd9cad26a9f4a387149253018a3de177bf7729b35ad9233fa7"
+  },
+  "source_files_sha256_before": {
+    "docs/schema-v1.1-migration.sql": "53130344c699bc5d12864e74aff2bc8c3b57773ea6798b95e2331de11c9d3ff0",
+    "docs/schema-v1.sql": "1459c2dc27ff492042116127884f5e8cb401c4b6299fa9bb603a4104a1cc4821",
+    "moyu_backups.py": "9294c795954c344d3023ccf2091b7bcd5e962843152f5e2e3e11d5553c4567f9",
+    "moyu_context.py": "5c0d6d2df7b73b37f76c1994ebeaacadbaf69364885cf3194900baf99fb3a5b3",
+    "moyu_import.py": "5b83fd862f0414834d79bb01fd52e3f6909d8424716673482604c0b819b90574",
+    "moyu_materials.py": "7d3f7b9e2ff05484e15d924b1d898c5e3efb557303d7654cac8198cf6af36a38",
+    "moyu_provider.py": "86ca3fcf9dc8bc8a60b70138fec9697eed3bebf3d9121f812f4344b4b4f79222",
+    "moyu_revision.py": "18a77b4e4686019bc915304e6060a7132a83db98ea23c05b973a606c75f15f78",
+    "moyu_workspace.py": "97e839df0a4e36d8e2f38e2346d7d132939609fbb3bb04a0482158ef7951b7a3",
+    "scripts/sqlite_backup.py": "2487da2417eec7d981e3fa8b71e0724acfe03f121df384dfc7581193eda4b084",
+    "server.py": "81871fabc0e0f6adbba17d17c50aea221fd7058b81d91bfff58e324088724722",
+    "tests/guidance_alias_http_fixtures.py": "00045ab87d40a6e5ded18048415657292100ebdf9b19c3b92be3eb639c2fcd17",
+    "tests/guidance_scope_change_http_fixtures.py": "50b5241f1a42d5efe511ccaaded4412bbce2874cce134e99193c06853daa288c",
+    "tests/reference_passages_http_fixtures.py": "4aa21b3a2c8bdd930be9eb2a9cd73ca8074e57d6e6b734c38183679043259c96",
+    "tests/reference_passages_integrity_http_fixtures.py": "8dbb29632703adbd9cad26a9f4a387149253018a3de177bf7729b35ad9233fa7"
+  },
+  "source_unchanged": true,
+  "started_at": "2026-10-17T12:47:15.488105+00:00"
+}

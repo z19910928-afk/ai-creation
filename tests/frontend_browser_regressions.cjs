@@ -120,7 +120,7 @@ async function main(){
    }else{
     response.writeHead(200,{'Content-Type':'application/json'});
     const message={content:text};if(providerReasoning!==null)message.reasoning_content=providerReasoning;
-    setTimeout(()=>response.end(JSON.stringify({model:'browser-mock',choices:[{message,finish_reason:finishReason}],
+    setTimeout(()=>response.end(JSON.stringify({model:input.model,choices:[{message,finish_reason:finishReason}],
      usage:{prompt_tokens:120,completion_tokens:35,total_tokens:155}})),providerDelay);
    }
   });
@@ -1440,19 +1440,40 @@ async function main(){
  await test('设置页保存风格和用途模型，真实本机探测成功且请求使用所选模型',async()=>{
   providerDelay=80;providerText='连接正常';
   await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
-  await workspace.page.locator('#modelBaseUrl').fill(`http://127.0.0.1:${providerPort}/v1`);
-  await workspace.page.locator('#modelDefault').fill('browser-mock');
+  const registered={};
+  for(const model of ['browser-mock','browser-special-continue']){
+   const before=providerRequests.length;
+   await workspace.page.locator('#connectionReset').click();
+   await workspace.page.locator('#connectionName').fill(model);
+   await workspace.page.locator('#connectionBaseUrl').fill(`http://127.0.0.1:${providerPort}/v1`);
+   await workspace.page.locator('#connectionModel').fill(model);
+   assert.equal(await workspace.page.locator('#connectionSave').isDisabled(),true);
+   await workspace.page.locator('#connectionProbe').click();
+   await workspace.page.locator('#connectionProbeStatus[data-state="success"]').waitFor();
+   await workspace.page.waitForFunction(()=>!document.querySelector('#connectionSave')?.disabled);
+   assert.equal(providerRequests.length,before+1);
+   assert.equal(providerRequests.at(-1).model,model);
+   await workspace.page.locator('#connectionSave').click();
+   await workspace.page.locator('#connectionProbeStatus[data-state="saved"]').waitFor();
+   await workspace.page.waitForFunction(()=>!document.querySelector('#connectionProbe')?.disabled);
+   registered[model]=(await api('/api/ai/connections')).connections.find(item=>item.name===model);
+   assert.equal(registered[model]?.verified,true);
+   assert.equal(providerRequests.length,before+1,'保存已测试连接不能重复调用模型');
+  }
+  await workspace.page.locator('#modelDefault').selectOption(registered['browser-mock'].id);
   await workspace.page.locator('#modelTone').fill('克制、动作具体');
   await workspace.page.locator('#modelStyleInstructions').fill('保持林岚视角，不补她未知的事实。');
   await workspace.page.locator('#modelMaxTokens').fill('4096');
   await workspace.page.locator('#modelReasoning').selectOption('none');
-  await workspace.page.locator('[data-task-model="continue"]').fill('browser-special-continue');
+  await workspace.page.locator('[data-task-model="continue"]').selectOption(registered['browser-special-continue'].id);
+  const beforeAssignments=providerRequests.length;
   await workspace.page.locator('#modelSettings [type="submit"]').click();
   await workspace.page.waitForFunction(()=>authorSettings?.styles?.tone==='克制、动作具体');
-  await workspace.page.locator('#modelProbe').click();
-  await workspace.page.waitForFunction(()=>document.querySelector('#modelProbeStatus')?.textContent.includes('实测成功'),null,{timeout:15000});
+  assert.equal(providerRequests.length,beforeAssignments,'保存用途和风格不能调用模型');
   const configured=(await api('/api/ai/settings')).settings;
-  assert.equal(configured.models.continue,'browser-special-continue');assert.equal(configured.last_probe.success,true);
+  assert.equal(configured.default_connection_id,registered['browser-mock'].id);
+  assert.equal(configured.task_connections.continue,registered['browser-special-continue'].id);
+  assert.equal(configured.last_probe.success,true);
   assert.equal(configured.parameters.max_tokens,4096);assert.equal(configured.parameters.reasoning_effort,'none');
   assert.equal(configured.api_key_configured,false);
   await workspace.page.locator('[data-view="editor"]').click();await workspace.page.locator(`[data-chapter="${firstId}"]`).click();

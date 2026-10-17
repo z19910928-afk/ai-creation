@@ -1,0 +1,39 @@
+appId: com.moyu.writer
+productName: 墨屿
+artifactName: Moyu-${version}-${os}-${arch}.${ext}
+asar: true
+forceCodeSigning: false
+directories:
+  output: dist
+  buildResources: desktop/assets
+files:
+  - desktop/main.cjs
+  - desktop/runtime.cjs
+extraResources:
+  - from: build/backend/moyu-service
+    to: backend
+    filter:
+      - "**/*"
+mac:
+  category: public.app-category.productivity
+  minimumSystemVersion: "15.0"
+  icon: icon.icns
+  identity: "-"
+  hardenedRuntime: false
+  notarize: false
+  target:
+    - dmg
+    - zip
+win:
+  icon: icon.ico
+  target:
+    - nsis
+    - zip
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  deleteAppDataOnUninstall: false

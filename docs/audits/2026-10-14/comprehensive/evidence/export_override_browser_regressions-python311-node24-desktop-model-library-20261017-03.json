@@ -1,0 +1,83 @@
+{
+  "passed": true,
+  "scope": "真实桌面Chrome、隔离SQLite、实际下载中文例外文稿",
+  "cases": [
+    {
+      "name": "没有作者理由时真实页面和下载接口都阻断未审稿文稿",
+      "passed": true
+    },
+    {
+      "name": "软件内理由框获得焦点，取消和Esc都不保存理由也不允许导出",
+      "passed": true
+    },
+    {
+      "name": "填写过程中稿件或作品变化会撤销输入，不能把旧理由保存到新范围",
+      "passed": true
+    },
+    {
+      "name": "七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算",
+      "passed": true
+    },
+    {
+      "name": "从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留",
+      "passed": true
+    },
+    {
+      "name": "同一中文理由可实际下载EPUB，包内原稿及审计与Markdown一致",
+      "passed": true
+    },
+    {
+      "name": "导出后改稿会使旧中文理由失效，两种格式重新要求作者确认",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "external_model_calls": 0,
+  "source_files": [
+    {
+      "path": "app.js",
+      "sha256": "db6531dc65564a5aeb74dcaf442e1c98b53a6d5cf2ec86ec765b2c80bc4760af"
+    },
+    {
+      "path": "author-workspace.js",
+      "sha256": "ba7c8e0fc2f91cb6a5c4b8e2f9b2794e9f08f1165c5eb86a8f9511fc8f1e5019"
+    },
+    {
+      "path": "server.py",
+      "sha256": "81871fabc0e0f6adbba17d17c50aea221fd7058b81d91bfff58e324088724722"
+    },
+    {
+      "path": "tests/export_override_browser_regressions.cjs",
+      "sha256": "ff966b378dd25586e977d4656753d21f767188cfb1c1841a52d13b03ea2c11de"
+    }
+  ],
+  "short_reason_lengths": [
+    {
+      "codepoints": 7,
+      "utf16_units": 7,
+      "blocked": true
+    },
+    {
+      "codepoints": 7,
+      "utf16_units": 14,
+      "blocked": true
+    }
+  ],
+  "markdown": {
+    "bytes": 2606,
+    "source_sha256": "63360ba955b134116f2b51f2dc21dc09f830c001ee8696280f482e15d7306dee",
+    "audit_reason": "作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀"
+  },
+  "epub": {
+    "bytes": 3344,
+    "source_sha256": "63360ba955b134116f2b51f2dc21dc09f830c001ee8696280f482e15d7306dee",
+    "manifest_reason": "作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀",
+    "audit_reason": "作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀"
+  },
+  "screenshot": "export-override-desktop.png",
+  "downloads": [
+    "中文例外导出合成作品.md",
+    "中文例外导出合成作品.epub"
+  ],
+  "source_unchanged": true
+}

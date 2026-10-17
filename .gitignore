@@ -17,3 +17,5 @@ node_modules/
 .DS_Store
 blind-key-private.json
 .audit-cache/
+build/
+dist/

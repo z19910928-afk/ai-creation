@@ -1,0 +1,115 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "1440 与 1280 电脑设定保存只刷新资料，保留正文节点、选区、滚动和专注状态",
+      "passed": true
+    },
+    {
+      "name": "设定在知识库页面保存后仍刷新列表",
+      "passed": true
+    },
+    {
+      "name": "先后查看两次证据时只显示最新请求，关闭后不重建正文",
+      "passed": true
+    },
+    {
+      "name": "证据迟到时 page 切换使旧结果失效",
+      "passed": true
+    },
+    {
+      "name": "证据迟到时 chapter 切换使旧结果失效",
+      "passed": true
+    },
+    {
+      "name": "证据迟到时 project 切换使旧结果失效",
+      "passed": true
+    },
+    {
+      "name": "证据迟到时 branch 切换使旧结果失效",
+      "passed": true
+    },
+    {
+      "name": "已经打开的旧作品证据失效后不能通过遗留按钮修改正典",
+      "passed": true
+    },
+    {
+      "name": "同一作品正常证据审查仍保存且只保留一个新弹窗，取消理由不提交",
+      "passed": true
+    },
+    {
+      "name": "事实状态和审查理由输入时按 Esc 都不会提交",
+      "passed": true
+    },
+    {
+      "name": "证据重新定位原文输入框取消与 Esc 都不保存",
+      "passed": true
+    },
+    {
+      "name": "证据原文范围起点输入框取消与 Esc 都不保存",
+      "passed": true
+    },
+    {
+      "name": "证据原文范围终点输入框取消与 Esc 都不保存",
+      "passed": true
+    },
+    {
+      "name": "拒绝记忆的理由输入取消与 Esc 都保持原状态",
+      "passed": true
+    },
+    {
+      "name": "assertion 等待输入时切换 project 不写入旧作品或新范围",
+      "passed": true
+    },
+    {
+      "name": "assertion 等待输入时切换 branch 不写入旧作品或新范围",
+      "passed": true
+    },
+    {
+      "name": "reanchor 等待输入时切换 project 不写入旧作品或新范围",
+      "passed": true
+    },
+    {
+      "name": "reanchor 等待输入时切换 branch 不写入旧作品或新范围",
+      "passed": true
+    },
+    {
+      "name": "reject 等待输入时切换 project 不写入旧作品或新范围",
+      "passed": true
+    },
+    {
+      "name": "reject 等待输入时切换 branch 不写入旧作品或新范围",
+      "passed": true
+    },
+    {
+      "name": "同一作品完整重新定位原文只发送一次且保留原文范围",
+      "passed": true
+    },
+    {
+      "name": "同一作品确认拒绝记忆只发送一次并保存理由",
+      "passed": true
+    },
+    {
+      "name": "持久化请求排队期间切版本时不发送到新版本",
+      "passed": true
+    },
+    {
+      "name": "持久化 mutation 响应迟到时不合并进另一版本",
+      "passed": true
+    },
+    {
+      "name": "持久化 state-read 响应迟到时不合并进另一版本",
+      "passed": true
+    },
+    {
+      "name": "长篇目录切到后章和前章后保持当前章可见，规划回读保留目录位置",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "page_errors": [],
+  "native_dialogs": [],
+  "scope": "真实桌面 Chrome、隔离数据库；设定保存、证据弹窗和持久化响应的作品范围",
+  "branch_identity_test": "Synthetic frontend branch identity; no branch-management UI claim.",
+  "paid_provider_calls": 0
+}

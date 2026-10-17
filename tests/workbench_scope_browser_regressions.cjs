@@ -10,7 +10,7 @@ const {chromium} = require(process.env.MOYU_PLAYWRIGHT_MODULE || 'playwright');
 
 const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'moyu-workbench-scope-'));
-const report = {passed: false, cases: [], artifacts: temporary, page_errors: [],
+const report = {passed: false, cases: [], artifacts: temporary, page_errors: [], native_dialogs: [],
   scope: '真实桌面 Chrome、隔离数据库；设定保存、证据弹窗和持久化响应的作品范围',
   branch_identity_test: 'Synthetic frontend branch identity; no branch-management UI claim.',
   paid_provider_calls: 0};
@@ -89,6 +89,27 @@ async function syntheticBranch(page, branch) {
     clearTimeout(syncTimer); state.branch_id = value; confirmedState = MoyuSync.copy(state); render();
   }, branch);
 }
+async function textDialog(page, title) {
+  const dialog = page.locator('dialog[data-text-request]');
+  await dialog.waitFor({state: 'visible'});
+  await dialog.getByRole('heading', {name: title, exact: true}).waitFor();
+  assert.equal(await dialog.count(), 1);
+  return dialog;
+}
+async function submitText(page, title, value) {
+  const dialog = await textDialog(page, title);
+  await dialog.locator('textarea[data-text-input]').fill(value);
+  await dialog.locator('[data-text-submit]').click();
+}
+async function cancelText(page, title, mode) {
+  const dialog = await textDialog(page, title);
+  const input = await dialog.locator('textarea[data-text-input]').elementHandle();
+  if (mode === 'escape') await dialog.locator('textarea[data-text-input]').press('Escape');
+  else await dialog.locator('[data-text-cancel]').click();
+  await dialog.waitFor({state: 'detached'});
+  assert.equal(await input.evaluate(element => element.value), '');
+  await input.dispose();
+}
 async function main() {
   const port = await freePort(); base = `http://127.0.0.1:${port}`;
   app = spawn(process.env.MOYU_TEST_PYTHON || 'python3', ['server.py'], {cwd: root,
@@ -118,6 +139,17 @@ async function main() {
   browser = await chromium.launch({headless: true, executablePath: process.env.MOYU_CHROME_PATH || undefined});
   const context = await browser.newContext({viewport: {width: 1440, height: 1000}});
   const page = await context.newPage(); page.on('pageerror', error => report.page_errors.push(error.message));
+  page.on('dialog', async dialog => {
+    report.native_dialogs.push({type: dialog.type(), message: dialog.message()});
+    await dialog.dismiss();
+  });
+  const memoryWrites = [];
+  page.on('request', request => {
+    const route = new URL(request.url()).pathname;
+    if (!['POST', 'PATCH'].includes(request.method()) || !/^\/api\/(?:memory|assertions)\//.test(route)) return;
+    memoryWrites.push({route, method: request.method(), payload: request.postDataJSON(),
+      project: request.headers()['x-moyu-project'], branch: request.headers()['x-moyu-branch']});
+  });
   await page.goto(base); await page.waitForFunction(() => backendOnline); await openEditor(page);
 
   await test('1440 与 1280 电脑设定保存只刷新资料，保留正文节点、选区、滚动和专注状态', async () => {
@@ -191,34 +223,172 @@ async function main() {
     await page.evaluate(() => {globalThis.__oldEvidenceDialog = document.querySelector('[data-memory-evidence-dialog]');});
     await page.evaluate(id => authorSwitchProject(id), otherId);
     assert.equal(await page.locator('[data-memory-evidence-dialog]').count(), 0);
-    let prompts = 0, mutations = 0;
-    const dialog = async item => {prompts += 1; await item.dismiss();};
+    let mutations = 0;
     const request = item => {if (item.method() === 'POST' && item.url().includes('/api/assertions/')) mutations += 1;};
-    page.on('dialog', dialog); page.on('request', request);
+    page.on('request', request);
     await page.evaluate(() => {
       document.body.append(globalThis.__oldEvidenceDialog);
       globalThis.__oldEvidenceDialog.querySelector('[data-assertion-review]').click();
     });
     assert.equal(await page.locator('[data-memory-evidence-dialog]').count(), 0);
-    assert.equal(prompts, 0); assert.equal(mutations, 0);
-    page.off('dialog', dialog); page.off('request', request);
+    assert.equal(await page.locator('dialog[data-text-request]').count(), 0);
+    assert.equal(mutations, 0);
+    page.off('request', request);
   });
   await test('同一作品正常证据审查仍保存且只保留一个新弹窗，取消理由不提交', async () => {
     await openEditor(page); await page.evaluate(id => showMemoryEvidence(id), memory.id);
-    let promptIndex = 0, mutations = 0;
+    let mutations = 0;
     const request = item => {if (item.method() === 'POST' && item.url().includes('/api/assertions/')) mutations += 1;};
-    const cancel = async item => {promptIndex += 1; await (promptIndex === 1 ? item.accept('candidate') : item.dismiss());};
-    page.on('request', request); page.on('dialog', cancel);
+    page.on('request', request);
     await page.locator('[data-memory-evidence-dialog] [data-assertion-review]').click();
-    assert.equal(mutations, 0); page.off('dialog', cancel);
-    const accept = item => item.accept(item.message().includes('输入状态') ? 'candidate' : '证据需要再次确认。');
-    page.on('dialog', accept);
+    await submitText(page, '审查事实状态', 'candidate');
+    await cancelText(page, '审查理由', 'cancel');
+    assert.equal(mutations, 0);
     await page.locator('[data-memory-evidence-dialog] [data-assertion-review]').click();
+    await submitText(page, '审查事实状态', 'candidate');
+    await submitText(page, '审查理由', '证据需要再次确认。');
     await page.waitForFunction(() => document.querySelector('[data-assertion-review]')?.dataset.assertionState === 'candidate');
     assert.equal(mutations, 1); assert.equal(await page.locator('[data-memory-evidence-dialog]').count(), 1);
     assert.equal((await api(`/api/assertions/${memory.assertion_id}`)).state, 'candidate');
-    page.off('dialog', accept); page.off('request', request);
+    page.off('request', request);
     await page.locator('[data-memory-evidence-dialog] [data-close]').click(); await saved(page);
+  });
+  await test('事实状态和审查理由输入时按 Esc 都不会提交', async () => {
+    await openEditor(page); await page.evaluate(id => showMemoryEvidence(id), memory.id);
+    const before = await api(`/api/memory/${memory.id}`), count = memoryWrites.length;
+    for (const stage of ['审查事实状态', '审查理由']) {
+      await page.locator('[data-memory-evidence-dialog] [data-assertion-review]').click();
+      if (stage === '审查理由') await submitText(page, '审查事实状态', 'retracted');
+      const dialog = await textDialog(page, stage);
+      await dialog.locator('textarea[data-text-input]').fill('不会保存的审查输入');
+      await cancelText(page, stage, 'escape');
+      assert.equal(memoryWrites.length, count);
+      assert.deepEqual(await api(`/api/memory/${memory.id}`), before);
+    }
+    await page.locator('[data-memory-evidence-dialog] [data-close]').click();
+  });
+  for (const stage of ['重新定位原文', '原文范围起点', '原文范围终点']) {
+    await test(`证据${stage}输入框取消与 Esc 都不保存`, async () => {
+      await openEditor(page); await page.locator('[data-view="memory"]').click(); await saved(page);
+      const before = await api(`/api/memory/${memory.id}`), count = memoryWrites.length;
+      for (const mode of ['cancel', 'escape']) {
+        await page.locator(`[data-memory-reanchor="${memory.id}"]`).click();
+        const quoteDialog = await textDialog(page, '重新定位原文');
+        assert.equal(await quoteDialog.locator('textarea[data-text-input]').inputValue(), quote);
+        if (stage !== '重新定位原文') await submitText(page, '重新定位原文', quote);
+        if (stage === '原文范围终点') await submitText(page, '原文范围起点', '0');
+        const dialog = await textDialog(page, stage);
+        await dialog.locator('textarea[data-text-input]').fill('不会保存的定位输入');
+        await cancelText(page, stage, mode);
+        assert.equal(memoryWrites.length, count);
+        assert.deepEqual(await api(`/api/memory/${memory.id}`), before);
+      }
+    });
+  }
+  await test('拒绝记忆的理由输入取消与 Esc 都保持原状态', async () => {
+    await openEditor(page); await page.locator('[data-view="memory"]').click(); await saved(page);
+    const before = await api(`/api/memory/${memory.id}`), count = memoryWrites.length;
+    for (const mode of ['cancel', 'escape']) {
+      await page.locator(`[data-memory-reject="${memory.id}"]`).click();
+      const dialog = await textDialog(page, '拒绝记忆');
+      await dialog.locator('textarea[data-text-input]').fill('不会保存的拒绝理由');
+      await cancelText(page, '拒绝记忆', mode);
+      assert.equal(memoryWrites.length, count);
+      assert.deepEqual(await api(`/api/memory/${memory.id}`), before);
+    }
+  });
+  for (const action of ['assertion', 'reanchor', 'reject']) {
+    for (const transition of ['project', 'branch']) {
+      await test(`${action} 等待输入时切换 ${transition} 不写入旧作品或新范围`, async () => {
+        await openEditor(page);
+        let title;
+        if (action === 'assertion') {
+          await page.evaluate(id => showMemoryEvidence(id), memory.id);
+          await page.locator('[data-memory-evidence-dialog] [data-assertion-review]').click();
+          title = '审查事实状态';
+          if (transition === 'branch') {
+            await submitText(page, title, 'retracted'); title = '审查理由';
+          }
+        } else {
+          await page.locator('[data-view="memory"]').click(); await saved(page);
+          await page.locator(`[data-memory-${action === 'reanchor' ? 'reanchor' : 'reject'}="${memory.id}"]`).click();
+          title = action === 'reanchor' ? '重新定位原文' : '拒绝记忆';
+          if (action === 'reanchor' && transition === 'branch') {
+            await submitText(page, title, quote);
+            await submitText(page, '原文范围起点', '0'); title = '原文范围终点';
+          }
+        }
+        const dialog = await textDialog(page, title);
+        await dialog.locator('textarea[data-text-input]').fill('已经过期的旧作品输入');
+        await page.evaluate(() => {
+          const dialog = document.querySelector('dialog[data-text-request]');
+          globalThis.__staleTextForm = dialog.querySelector('form');
+          globalThis.__staleTextInput = dialog.querySelector('[data-text-input]');
+        });
+        const before = await api(`/api/memory/${memory.id}`);
+        const otherBefore = (await api('/api/state', 'GET', undefined, otherId)).memory;
+        const count = memoryWrites.length;
+        if (transition === 'project') {
+          await page.evaluate(id => authorSwitchProject(id), otherId);
+        } else {
+          // Keep the modal mounted to exercise its final scope check independently of render.
+          await page.evaluate(() => {
+            clearTimeout(syncTimer); state.branch_id = 'scope_input_other';
+            confirmedState = MoyuSync.copy(state);
+          });
+          await dialog.locator('[data-text-submit]').click();
+        }
+        await page.locator('dialog[data-text-request]').waitFor({state: 'detached'});
+        await page.evaluate(() => {
+          globalThis.__staleTextInput.value = '过期窗口再次提交也不能写入';
+          globalThis.__staleTextForm.dispatchEvent(new Event('submit', {bubbles: true, cancelable: true}));
+        });
+        await page.evaluate(() => operationChain); await saved(page);
+        assert.equal(memoryWrites.length, count);
+        assert.deepEqual(await api(`/api/memory/${memory.id}`), before);
+        assert.deepEqual((await api('/api/state', 'GET', undefined, otherId)).memory, otherBefore);
+        if (transition === 'branch') {
+          await syntheticBranch(page, 'main'); await page.evaluate(() => hydrate());
+        }
+        await openEditor(page);
+      });
+    }
+  }
+  await test('同一作品完整重新定位原文只发送一次且保留原文范围', async () => {
+    await openEditor(page); await page.locator('[data-view="memory"]').click(); await saved(page);
+    const count = memoryWrites.length;
+    await page.locator(`[data-memory-reanchor="${memory.id}"]`).click();
+    await submitText(page, '重新定位原文', quote);
+    await submitText(page, '原文范围起点', '0');
+    const response = page.waitForResponse(item => item.request().method() === 'POST' &&
+      new URL(item.url()).pathname === `/api/memory/${memory.id}/reanchor`);
+    await submitText(page, '原文范围终点', String(Array.from(quote).length));
+    assert.equal((await response).status(), 200); await saved(page);
+    assert.equal(memoryWrites.length, count + 1);
+    assert.deepEqual(memoryWrites.at(-1), {
+      route: `/api/memory/${memory.id}/reanchor`, method: 'POST',
+      payload: {source_chapter_id: first.id, source_quote: quote, source_start: 0,
+        source_end: Array.from(quote).length}, project: 'default-project', branch: 'main',
+    });
+    const detail = await api(`/api/memory/${memory.id}`);
+    assert.equal(detail.memory.source_quote, quote);
+    assert.equal(Number(detail.memory.source_start), 0);
+    assert.equal(Number(detail.memory.source_end), Array.from(quote).length);
+    assert.equal(await page.locator('dialog[data-text-request]').count(), 0);
+  });
+  await test('同一作品确认拒绝记忆只发送一次并保存理由', async () => {
+    await openEditor(page); await page.locator('[data-view="memory"]').click(); await saved(page);
+    const count = memoryWrites.length, reason = '本条只是角色猜测，不能作为已发生事实。';
+    await page.locator(`[data-memory-reject="${memory.id}"]`).click();
+    const response = page.waitForResponse(item => item.request().method() === 'PATCH' &&
+      new URL(item.url()).pathname === `/api/memory/${memory.id}`);
+    await submitText(page, '拒绝记忆', reason);
+    assert.equal((await response).status(), 200); await saved(page);
+    assert.equal(memoryWrites.length, count + 1);
+    assert.deepEqual(memoryWrites.at(-1), {route: `/api/memory/${memory.id}`, method: 'PATCH',
+      payload: {status: 'rejected', reason}, project: 'default-project', branch: 'main'});
+    assert.equal((await api(`/api/memory/${memory.id}`)).memory.status, '已拒绝');
+    await openEditor(page);
   });
   await test('持久化请求排队期间切版本时不发送到新版本', async () => {
     await page.evaluate(() => {
@@ -299,7 +469,8 @@ async function main() {
     assert.deepEqual((await api('/api/state', 'GET', undefined, owner)).chapters.map(row => row.body),
       book.chapters.map(row => row.body));
   });
-  assert.deepEqual(report.page_errors, []); report.passed = true; await context.close();
+  assert.deepEqual(report.page_errors, []); assert.deepEqual(report.native_dialogs, []);
+  report.passed = true; await context.close();
 }
 main().catch(error => {report.error = error.stack; report.server_log = serverLog.slice(-3000); process.exitCode = 1;})
   .finally(async () => {

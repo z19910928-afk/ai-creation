@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "总管默认继承主模型，真实探测后主设置变化立即撤销旧实测状态",
+      "passed": true
+    },
+    {
+      "name": "保存独立模型不发送请求，密钥只在本机保存且公共设置不泄露凭据",
+      "passed": true
+    },
+    {
+      "name": "主连接保存和检测事件只刷新总管摘要，保留尚未保存的独立密钥及模型",
+      "passed": true
+    },
+    {
+      "name": "切换模式保留独立模型，浏览器存储和服务日志不含保存及未保存密钥",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "paid_provider_calls": 0,
+  "page_errors": [],
+  "screenshots": [
+    "agent-settings-desktop.png"
+  ],
+  "local_mock_model_requests": 5
+}

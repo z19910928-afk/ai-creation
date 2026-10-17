@@ -1,0 +1,247 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "切换功能页保留同一个聊天面板和未发送草稿",
+      "passed": true
+    },
+    {
+      "name": "1440、1280、1920电脑布局无横向溢出，正文结果按需展开",
+      "passed": true
+    },
+    {
+      "name": "切换作品与前端分支分别恢复各自草稿，不把旧稿写入新作品",
+      "passed": true
+    },
+    {
+      "name": "会话创建回应丢失时复用原身份，消息保存丢失后重试不重复发送",
+      "passed": true
+    },
+    {
+      "name": "新对话未发送草稿刷新后恢复，旧会话历史仍可打开",
+      "passed": true
+    },
+    {
+      "name": "正文选区附带已保存版本与Unicode范围，可预览和移除",
+      "passed": true
+    },
+    {
+      "name": "请求延迟时新输入和切换作品的草稿不被旧回应清除",
+      "passed": true
+    },
+    {
+      "name": "停止与动作确认通过真实请求入口，失败时不跳转或改稿",
+      "passed": true
+    },
+    {
+      "name": "未知回复结束等待，确认中步骤可恢复且不能误放弃",
+      "passed": true
+    },
+    {
+      "name": "原卡精确绑定任务，迟到聊天和任务读取不回滚确认或手动启动结果",
+      "passed": true
+    },
+    {
+      "name": "确认和启动回应丢失后读取原绑定，不自动重发或清除作者草稿",
+      "passed": true
+    },
+    {
+      "name": "任务读取失败或编号章节方式指令不符时撤销启动资格，恢复后重新核实",
+      "passed": true
+    },
+    {
+      "name": "续写先保存稿件和未保存规划，保存失败不读取或启动，成功使用最新检查点",
+      "passed": true
+    },
+    {
+      "name": "历史只读未知结果和待处理任务不能启动，终态经过聊天轮询仍不高频读取",
+      "passed": true
+    },
+    {
+      "name": "任务与查看结果的迟到读取跨聊天作品分支均不串线或导航",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-agent-chat-ui-Bem6mX/agent-chat-results-1280x900.png",
+    "<temporary-root>/moyu-agent-chat-ui-Bem6mX/agent-chat-1280x900.png",
+    "<temporary-root>/moyu-agent-chat-ui-Bem6mX/agent-chat-results-1440x1000.png",
+    "<temporary-root>/moyu-agent-chat-ui-Bem6mX/agent-chat-1440x1000.png",
+    "<temporary-root>/moyu-agent-chat-ui-Bem6mX/agent-chat-results-1920x1080.png",
+    "<temporary-root>/moyu-agent-chat-ui-Bem6mX/agent-chat-1920x1080.png"
+  ],
+  "page_errors": [],
+  "paid_provider_calls": 0,
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "scope": "真实桌面 Chrome 与隔离作品数据库；聊天与写作任务响应由本机受控接口模拟，仅验证前端交互、请求身份与隔离，不证明模型或聊天后端可用。",
+  "branch_identity_test": "Synthetic frontend branch identity; no branch-management UI claim.",
+  "inline_task_races": [
+    {
+      "outcome": "success",
+      "task_id": "ui_task_c8697f5f-f73a-4f46-8f28-d76d7b8e241d",
+      "confirmation_snapshot": "proposed",
+      "stale_task_status": "awaiting_authorization",
+      "start_requests": 1,
+      "exact_reads": 4
+    },
+    {
+      "outcome": "503",
+      "task_id": "ui_task_de3996d6-a0f1-415f-9df1-da3f6529c17e",
+      "confirmation_snapshot": "proposed",
+      "start_requests": 0,
+      "exact_reads": 1
+    },
+    {
+      "outcome": "abort",
+      "task_id": "ui_task_fe7cf3d6-4701-40a0-b1cc-f4252f295cea",
+      "confirmation_snapshot": "proposed",
+      "start_requests": 0,
+      "exact_reads": 1
+    }
+  ],
+  "inline_task_identity_failures": [
+    {
+      "fault": "503",
+      "status": "unverified"
+    },
+    {
+      "fault": "id",
+      "status": "unverified"
+    },
+    {
+      "fault": "chapter",
+      "status": "unverified"
+    },
+    {
+      "fault": "mode",
+      "status": "unverified"
+    },
+    {
+      "fault": "query",
+      "status": "unverified"
+    }
+  ],
+  "inline_task_terminal_reads": [
+    {
+      "id": "ui_task_242b891b-6987-49ac-b60d-90c52f488f39",
+      "reads_before": 1,
+      "reads_after": 1
+    },
+    {
+      "id": "ui_task_70492eae-e8e5-402a-9d8b-af52871825cc",
+      "reads_before": 1,
+      "reads_after": 1
+    },
+    {
+      "id": "ui_task_add6101e-9226-44cc-8e87-e28c97df305e",
+      "reads_before": 1,
+      "reads_after": 1
+    },
+    {
+      "id": "ui_task_acf51eed-395b-4e7a-93c7-21c25abf5466",
+      "reads_before": 1,
+      "reads_after": 1
+    },
+    {
+      "id": "ui_task_0adb72b1-0755-4d5c-a9c2-7056779d0e68",
+      "reads_before": 1,
+      "reads_after": 1
+    },
+    {
+      "id": "ui_task_b7209078-cf36-48e0-9b04-8d19b7bc82a5",
+      "reads_before": 1,
+      "reads_after": 1
+    },
+    {
+      "id": "ui_task_4df9b62d-8d40-4af2-b6ca-ef343c6b1bf5",
+      "reads_before": 1,
+      "reads_after": 1
+    }
+  ],
+  "inline_task_scope_races": [
+    {
+      "kind": "refresh",
+      "transition": "chat",
+      "source_task": "ui_task_1446796d-733f-44a5-aade-9de82cef8116",
+      "target_task": "ui_task_aa2688b5-db26-4bed-a3c2-0e4f116b5ccd",
+      "source_reads_before_switch": 1,
+      "final_identity": {
+        "project": "default-project",
+        "branch": "main",
+        "view": "memory",
+        "chapter": "ch_de99bb5a66764e898def25b610675469",
+        "focus": null
+      }
+    },
+    {
+      "kind": "refresh",
+      "transition": "project",
+      "source_task": "ui_task_21db17ea-8cf1-4f59-88a5-cb6c7463b450",
+      "target_task": "ui_task_47c72f9a-1f7e-4488-bfc2-0ba2f5e4d19e",
+      "source_reads_before_switch": 1,
+      "final_identity": {
+        "project": "book_9ac57bd5e2d14f948c147c3230348b80",
+        "branch": "branch_13cc68eee8444e01be8c1dd687eac5b3",
+        "view": "memory",
+        "chapter": "ch_8cafdd08b62d4f0898bff3c479db7652",
+        "focus": null
+      }
+    },
+    {
+      "kind": "refresh",
+      "transition": "branch",
+      "source_task": "ui_task_90700744-0036-44f3-890b-8c5b8f95186b",
+      "target_task": "ui_task_d9d71c77-2f7c-4ce1-9203-a104f35c7df8",
+      "source_reads_before_switch": 1,
+      "final_identity": {
+        "project": "default-project",
+        "branch": "inline-task-synthetic",
+        "view": "memory",
+        "chapter": "ch_de99bb5a66764e898def25b610675469",
+        "focus": null
+      }
+    },
+    {
+      "kind": "result",
+      "transition": "chat",
+      "source_task": "ui_task_8577bcca-0e54-41c8-8e85-b8698959c6c1",
+      "target_task": "ui_task_dc50bbcb-f500-49f5-aa53-3700f68c18dd",
+      "source_reads_before_switch": 2,
+      "final_identity": {
+        "project": "default-project",
+        "branch": "main",
+        "view": "memory",
+        "chapter": "ch_de99bb5a66764e898def25b610675469",
+        "focus": null
+      }
+    },
+    {
+      "kind": "result",
+      "transition": "project",
+      "source_task": "ui_task_e20a231d-a381-4999-aac2-d9e5cd2e6e23",
+      "target_task": "ui_task_93adbcbb-b090-49c5-b107-dca54f4f7abd",
+      "source_reads_before_switch": 2,
+      "final_identity": {
+        "project": "book_9ac57bd5e2d14f948c147c3230348b80",
+        "branch": "branch_13cc68eee8444e01be8c1dd687eac5b3",
+        "view": "memory",
+        "chapter": "ch_8cafdd08b62d4f0898bff3c479db7652",
+        "focus": null
+      }
+    },
+    {
+      "kind": "result",
+      "transition": "branch",
+      "source_task": "ui_task_5e06cc82-f651-4c42-815b-97b4c0d9ae35",
+      "target_task": "ui_task_086de1a4-7b6d-44c1-afdb-e058187cdc24",
+      "source_reads_before_switch": 2,
+      "final_identity": {
+        "project": "default-project",
+        "branch": "inline-task-synthetic",
+        "view": "memory",
+        "chapter": "ch_de99bb5a66764e898def25b610675469",
+        "focus": null
+      }
+    }
+  ]
+}

@@ -39,6 +39,12 @@ async function finalDialog(page){
  const dialog=page.locator('.modal').filter({has:page.locator('h3',{hasText:'终稿检查'})});
  await dialog.waitFor();return dialog;
 }
+async function overrideInput(page){
+ const dialog=await finalDialog(page);await dialog.locator('[data-override]').click();
+ const input=page.locator('dialog[data-text-request]');
+ await input.waitFor();await input.locator('textarea[data-text-input]').waitFor();
+ return input;
+}
 async function blockedExport(page,format,downloads){
  const before=downloads.length;
  await page.locator(format==='markdown'?'#markdownExportBtn':'#epubExportBtn').click();
@@ -91,12 +97,52 @@ async function main(){
   await blockedExport(page,'markdown',downloads);await blockedExport(page,'epub',downloads);
   assert.equal(downloads.length,0);assert.equal((await publicationEvents()).length,0);
  });
+ await test('软件内理由框获得焦点，取消和Esc都不保存理由也不允许导出',async()=>{
+  await page.locator('#finalCheckBtn').click();
+  for(const action of ['cancel','escape']){
+   const input=await overrideInput(page);
+   const field=input.locator('textarea[data-text-input]');
+   assert.equal(await field.evaluate(element=>element===document.activeElement),true);
+   await field.fill('这是一条尚未提交的合成作者覆盖理由。');
+   if(action==='cancel')await input.locator('[data-text-cancel]').click();
+   else await field.press('Escape');
+   await input.waitFor({state:'detached'});
+   const dialog=await finalDialog(page);
+   assert.equal(await dialog.locator('[data-export]').isEnabled(),false);
+   assert.equal(await page.evaluate(()=>finalOverride()),null);
+   assert.equal(downloads.length,0);assert.equal((await publicationEvents()).length,0);
+  }
+  await (await finalDialog(page)).locator('[data-close]').click();
+ });
+ await test('填写过程中稿件或作品变化会撤销输入，不能把旧理由保存到新范围',async()=>{
+  const snapshot=await page.evaluate(()=>({project:requestedProject,body:state.chapters[0].body}));
+  const reasonsBefore=await page.evaluate(()=>Object.keys(localStorage).filter(key=>key.includes(':final-override:')).sort());
+  for(const change of ['manuscript','project']){
+   await page.locator('#finalCheckBtn').click();const input=await overrideInput(page);
+   await input.locator('textarea[data-text-input]').fill('此理由只能用于弹窗打开时的合成作品与稿件。');
+   await page.evaluate(kind=>{
+    if(kind==='manuscript')state.chapters[0].body+='\n等待填写时收到的新稿。';
+    else requestedProject='synthetic-switched-project';
+   },change);
+   await input.locator('[data-text-submit]').click();
+   await input.waitFor({state:'detached'});
+   assert.equal(await page.evaluate(()=>finalOverride()),null);
+   assert.deepEqual(await page.evaluate(()=>Object.keys(localStorage).filter(key=>key.includes(':final-override:')).sort()),reasonsBefore);
+   assert.equal(downloads.length,0);
+   await page.evaluate(original=>{
+    requestedProject=original.project;state.chapters[0].body=original.body;
+   },snapshot);
+   await page.evaluate(()=>document.querySelectorAll('.modal-backdrop').forEach(element=>element.remove()));
+  }
+  assert.equal((await publicationEvents()).length,0);
+ });
  await test('七个中文字符或七个emoji的理由仍被页面阻断，按完整字符计算',async()=>{
   await page.locator('#finalCheckBtn').click();const dialog=await finalDialog(page);
   results.short_reason_lengths=[];
   for(const short of ['作者已经核对稿','😀'.repeat(7)]){
-   assert.equal(Array.from(short).length,7);page.once('dialog',prompt=>prompt.accept(short));
-   await dialog.locator('[data-override]').click();
+   assert.equal(Array.from(short).length,7);const input=await overrideInput(page);
+   await input.locator('textarea[data-text-input]').fill(short);
+   await input.locator('[data-text-submit]').click();
    assert.match(await page.locator('#toast').innerText(),/至少需要 8 个字符/);
    assert.equal(await dialog.locator('[data-export]').isEnabled(),false);
    assert.equal(await page.evaluate(()=>finalOverride()),null);assert.equal(downloads.length,0);
@@ -105,8 +151,9 @@ async function main(){
  });
  const reason='作者已核对全文，导出供校对使用，保留原句与 100% 进度。😀';
  await test('从终稿窗口填写中文理由后可实际下载Markdown，审计理由原样保留',async()=>{
-  const dialog=await finalDialog(page);page.once('dialog',prompt=>prompt.accept(reason));
-  await dialog.locator('[data-override]').click();
+  const input=await overrideInput(page);
+  await input.locator('textarea[data-text-input]').fill(reason);
+  await input.locator('[data-text-submit]').click();
   const verified=await finalDialog(page);
   await verified.locator('.override-note').waitFor();
   assert.match(await verified.locator('.override-note').innerText(),/作者已核对全文/);

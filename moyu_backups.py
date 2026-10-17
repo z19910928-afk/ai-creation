@@ -274,7 +274,8 @@ def _portable_model_settings(raw):
     settings = _strict_json(raw)
     if not isinstance(settings, dict):
         raise ValueError("备份中的模型设置格式无效")
-    public = {"base_url", "model", "models", "styles", "parameters", "task_parameters", "daily_limit"}
+    public = {"base_url", "model", "models", "styles", "parameters", "task_parameters", "daily_limit",
+              "connections", "connection_workflow", "default_connection_id", "task_connections"}
     settings = {key: value for key, value in settings.items() if key in public}
     for key in ("models", "styles", "parameters", "task_parameters"):
         if key in settings and not isinstance(settings[key], dict):
@@ -310,6 +311,38 @@ def _portable_model_settings(raw):
         settings["task_parameters"] = task_parameters
     if "models" in settings:
         settings["models"] = {key: value for key, value in settings["models"].items() if key in TASKS}
+    if "connections" in settings:
+        if not isinstance(settings["connections"], list) or len(settings["connections"]) > 100:
+            raise ValueError("备份中的模型库格式无效")
+        connections = []
+        identifiers = set()
+        for connection in settings["connections"]:
+            if not isinstance(connection, dict):
+                raise ValueError("备份中的模型连接格式无效")
+            clean = {}
+            for key, limit in (("id", 100), ("name", 200), ("base_url", 2048), ("model", 200)):
+                value = connection.get(key, "")
+                if not isinstance(value, str) or len(value) > limit:
+                    raise ValueError("备份中的模型连接格式无效")
+                clean[key] = value
+            if not clean["id"] or clean["id"] in identifiers:
+                raise ValueError("备份中的模型连接身份无效")
+            identifiers.add(clean["id"])
+            clean.update(_credential_ref=None, last_probe=None, revision="restored")
+            connections.append(clean)
+        settings["connections"] = connections
+    if "connection_workflow" in settings and type(settings["connection_workflow"]) is not bool:
+        raise ValueError("备份中的模型设置流程无效")
+    if "default_connection_id" in settings:
+        if not isinstance(settings["default_connection_id"], str):
+            raise ValueError("备份中的默认模型无效")
+        settings["default_connection_id"] = ""
+    if "task_connections" in settings:
+        if not isinstance(settings["task_connections"], dict):
+            raise ValueError("备份中的用途模型格式无效")
+        settings["task_connections"] = {}
+    if settings.get("connection_workflow"):
+        settings.update(base_url="", model="", models={})
     settings["_credential_ref"] = None
     settings["last_probe"] = None
     return json.dumps(settings, ensure_ascii=False, allow_nan=False)

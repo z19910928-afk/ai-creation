@@ -35,7 +35,8 @@ def _root() -> Path:
     if directory.is_symlink():
         raise ValueError("密钥目录不能为符号链接。")
     directory.mkdir(parents=True, exist_ok=True, mode=0o700)
-    os.chmod(directory, 0o700)
+    if os.name == "posix":
+        os.chmod(directory, 0o700)
     return directory
 
 
@@ -51,7 +52,8 @@ def _store_key(conn: sqlite3.Connection, project: str, key: str) -> str:
     directory = _root()
     with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=directory,
                                      prefix=".key-", delete=False) as handle:
-        os.fchmod(handle.fileno(), 0o600)
+        if os.name == "posix":
+            os.fchmod(handle.fileno(), 0o600)
         json.dump({"api_key": key}, handle, ensure_ascii=False)
         handle.flush()
         os.fsync(handle.fileno())
@@ -71,7 +73,8 @@ def _read_key(reference: str | None) -> str:
     if path.is_symlink():
         raise ValueError("密钥文件不能为符号链接。")
     metadata = path.stat()
-    if stat.S_IMODE(metadata.st_mode) != 0o600 or metadata.st_size > 20_000:
+    if (not stat.S_ISREG(metadata.st_mode) or metadata.st_size > 20_000
+            or (os.name == "posix" and stat.S_IMODE(metadata.st_mode) != 0o600)):
         raise ValueError("密钥文件权限或大小无效。")
     descriptor = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
     with os.fdopen(descriptor, encoding="utf-8") as handle:
@@ -114,10 +117,7 @@ def _text(value: Any, name: str, length: int) -> str:
     return value.strip()
 
 
-def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
-    saved = _saved(conn, project)
-    payload = saved if saved is not None else _environment()
-    key = _read_key(payload.get("_credential_ref")) if saved is not None else os.environ.get("MOYU_AI_API_KEY", "")
+def _provider_parameters(payload: dict[str, Any]) -> dict[str, Any]:
     parameters = dict(payload.get("parameters") or {})
     max_tokens = parameters.pop("max_tokens", 3000)
     models = payload.get("models") or {}
@@ -135,14 +135,31 @@ def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
                        if "max_tokens" in values}
     sampling_by_task = {task: {key: value for key, value in values.items() if key != "max_tokens"}
                         for task, values in task_parameters.items()}
+    return {"task_models": task_models, "parameters": parameters, "max_tokens": max_tokens,
+            "task_parameters": sampling_by_task, "task_max_tokens": task_max_tokens,
+            "styles": payload.get("styles") or {}, "daily_limit": payload.get("daily_limit", 0)}
+
+
+def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
+    saved = _saved(conn, project)
+    payload = saved if saved is not None else _environment()
+    if payload.get("connection_workflow") is True:
+        from moyu_model_connections import routing_config
+        return routing_config(conn, project, payload)
+    key = _read_key(payload.get("_credential_ref")) if saved is not None else os.environ.get("MOYU_AI_API_KEY", "")
     return {"base_url": payload.get("base_url", ""), "model": payload.get("model", ""),
-            "api_key": key, "task_models": task_models, "parameters": parameters,
-            "max_tokens": max_tokens, "task_parameters": sampling_by_task,
-            "task_max_tokens": task_max_tokens, "styles": payload.get("styles") or {},
-            "daily_limit": payload.get("daily_limit", 0),
+            "api_key": key, **_provider_parameters(payload),
             "credential_ref": payload.get("_credential_ref"),
             "credential_fingerprint": hashlib.sha256(key.encode()).hexdigest() if key else None,
             "credential_source": "private_file" if saved is not None else "environment"}
+
+
+def task_provider_settings(config: dict[str, Any], task: str) -> dict[str, Any]:
+    """Resolve one verified connection before preparing or freezing a request."""
+    if "_connection_routes" not in config:
+        return config
+    from moyu_model_connections import resolve_task_config
+    return resolve_task_config(config, task)
 
 
 def frozen_provider_settings(conn: sqlite3.Connection, project: str,
@@ -170,19 +187,40 @@ def frozen_provider_settings(conn: sqlite3.Connection, project: str,
 def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
     saved = _saved(conn, project)
     payload = saved if saved is not None else _environment()
-    config = provider_settings(conn, project)
-    return {
-        "base_url": payload.get("base_url", ""), "model": payload.get("model", ""),
+    from moyu_model_connections import public_connections
+    library = public_connections(conn, project)
+    workflow = library["connection_workflow"]
+    if workflow:
+        selected = next((item for item in library["connections"]
+                         if item["id"] == payload.get("default_connection_id")), None)
+        base_url = selected["base_url"] if selected else ""
+        model = selected["model"] if selected else ""
+        configured = bool(selected and selected["verified"])
+        key_configured = bool(selected and selected["api_key_configured"])
+        probe = selected["last_probe"] if selected else None
+    else:
+        config = provider_settings(conn, project)
+        base_url, model = config["base_url"], config["model"]
+        configured = bool(base_url and model)
+        key_configured = bool(config["api_key"])
+        probe = _public_probe(payload.get("last_probe"))
+    result = {
+        "base_url": base_url, "model": model,
         "models": payload.get("models") or {}, "styles": payload.get("styles") or {},
         "parameters": payload.get("parameters") or {},
         "task_parameters": payload.get("task_parameters") or {},
-        "daily_limit": payload.get("daily_limit", 0), "last_probe": _public_probe(payload.get("last_probe")),
-        "configured": bool(config["base_url"] and config["model"]),
-        "api_key_configured": bool(config["api_key"]),
-        "api_key_masked": "已保存密钥" if config["api_key"] else "",
+        "daily_limit": payload.get("daily_limit", 0), "last_probe": probe,
+        "configured": configured, "api_key_configured": key_configured,
+        "api_key_masked": "已保存密钥" if key_configured else "",
         "credential_storage": "local_private_file",
         "credential_backup": "密钥不包含在作品备份中，换设备后需重新填写。",
+        **library,
+        "default_connection_id": payload.get("default_connection_id") or "",
+        "task_connections": payload.get("task_connections") or {},
     }
+    if workflow:
+        result["models"] = {}
+    return result
 
 
 def _public_probe(probe: Any) -> dict[str, Any] | None:
@@ -200,6 +238,51 @@ def _public_probe(probe: Any) -> dict[str, Any] | None:
 
 
 def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) -> dict[str, Any]:
+    if not isinstance(data, dict):
+        raise ValueError("设置必须为对象。")
+    original = _saved(conn, project)
+    assignments = {"default_connection_id", "task_connections"}
+    workflow = bool(original and original.get("connection_workflow") is True) or bool(set(data) & assignments)
+    if not workflow:
+        return _save_legacy_settings(conn, project, data)
+    if set(data) & {"base_url", "model", "api_key", "models", "clear_api_key"}:
+        raise ValueError("请先测试并保存模型连接，再从已验证的连接中分配用途。")
+    allowed = assignments | {"styles", "parameters", "task_parameters", "daily_limit"}
+    if set(data) - allowed:
+        raise ValueError("设置包含未支持的字段。")
+    from moyu_model_connections import validate_assignments
+    if not conn.in_transaction:
+        conn.execute("BEGIN IMMEDIATE")
+    else:
+        conn.execute("UPDATE app_state_version SET version=version WHERE project_id=?", (project,))
+    savepoint = "model_assignments_" + uuid.uuid4().hex
+    conn.execute("SAVEPOINT " + savepoint)
+    try:
+        _save_legacy_settings(conn, project, {key: value for key, value in data.items()
+                                            if key not in assignments}, return_public=False)
+        payload = _saved(conn, project)
+        payload.update(validate_assignments(conn, project, payload, data))
+        payload["connection_workflow"] = True
+        _write_settings(conn, project, payload)
+        result = public_settings(conn, project)
+        conn.execute("RELEASE SAVEPOINT " + savepoint)
+        return result
+    except BaseException:
+        conn.execute("ROLLBACK TO SAVEPOINT " + savepoint)
+        conn.execute("RELEASE SAVEPOINT " + savepoint)
+        raise
+
+
+def _write_settings(conn: sqlite3.Connection, project: str, payload: dict[str, Any]) -> None:
+    conn.execute(
+        "INSERT INTO app_model_settings(project_id,settings_json,updated_at) VALUES(?,?,?) "
+        "ON CONFLICT(project_id) DO UPDATE SET settings_json=excluded.settings_json,updated_at=excluded.updated_at",
+        (project, json.dumps(payload, ensure_ascii=False, allow_nan=False), _now()),
+    )
+
+
+def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any],
+                          *, return_public: bool = True) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("设置必须为对象。")
     allowed = {"base_url", "model", "api_key", "models", "styles", "parameters", "task_parameters",
@@ -255,7 +338,7 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
                 task: {name: value for name, value in overrides.items() if name != "max_tokens"}}},
             [{"role": "user", "content": "settings-validation"}], task=task,
             max_tokens=overrides.get("max_tokens", max_tokens))
-    next_payload = {
+    next_payload = {**current,
         "base_url": base_url, "model": model, "models": models, "styles": styles,
         "parameters": {**parameters, "max_tokens": max_tokens}, "task_parameters": next_task_parameters,
         "daily_limit": daily_limit,
@@ -267,18 +350,16 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
         next_payload["last_probe"] = None
     if key is not None or data.get("clear_api_key") or (original is None and effective_key):
         next_payload["_credential_ref"] = _store_key(conn, project, effective_key) if effective_key else None
-    conn.execute(
-        "INSERT INTO app_model_settings(project_id,settings_json,updated_at) VALUES(?,?,?) "
-        "ON CONFLICT(project_id) DO UPDATE SET settings_json=excluded.settings_json,updated_at=excluded.updated_at",
-        (project, json.dumps(next_payload, ensure_ascii=False, allow_nan=False), _now()),
-    )
-    return public_settings(conn, project)
+    _write_settings(conn, project, next_payload)
+    return public_settings(conn, project) if return_public else next_payload
 
 
 def probe_settings(conn: sqlite3.Connection, project: str,
-                   *, cancel_event=None) -> dict[str, Any]:
+                   *, cancel_event=None, configuration_override=None, persist: bool = True,
+                   configuration_guard=None) -> dict[str, Any]:
     """Reserve a shared daily slot, release the write lock, then probe once."""
-    config = provider_settings(conn, project)
+    config = (dict(configuration_override) if configuration_override is not None
+              else provider_settings(conn, project))
     if not config["base_url"] or not config["model"]:
         raise ValueError("请先保存模型地址和名称。")
     messages = [{"role": "system", "content": "连接测试。只回复：连接正常"},
@@ -384,8 +465,13 @@ def probe_settings(conn: sqlite3.Connection, project: str,
     audit = result.get("request_audit") or prepared["request_audit"]
     conn.execute("UPDATE app_state_version SET version=version WHERE project_id=?", (project,))
     latest_saved = _saved(conn, project)
-    latest_config = provider_settings(conn, project)
-    probe["configuration_stale"] = latest_config != config
+    if configuration_guard is not None:
+        probe["configuration_stale"] = not configuration_guard(conn)
+    elif configuration_override is not None:
+        probe["configuration_stale"] = False
+    else:
+        latest_config = provider_settings(conn, project)
+        probe["configuration_stale"] = latest_config != config
     if probe["configuration_stale"]:
         probe.update(success=False, error_code="probe_configuration_stale",
                      error="检测期间设置发生变化，本次回复不能验证当前设置。")
@@ -406,7 +492,7 @@ def probe_settings(conn: sqlite3.Connection, project: str,
     )
     conn.execute("UPDATE app_quota_reservation SET status=?,updated_at=? WHERE ai_run_id=?",
                  (quota_status, finished_at, run_id))
-    if not probe["configuration_stale"]:
+    if persist and not probe["configuration_stale"]:
         payload = latest_saved if latest_saved is not None else _environment()
         payload["last_probe"] = probe
         if latest_saved is None and config["api_key"]:

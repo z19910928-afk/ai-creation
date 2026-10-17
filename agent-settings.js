@@ -21,7 +21,7 @@
   return probe.success?`写作总管实测成功。${models}`:`连接检测未通过：${probe.error||'模型回复不符合测试要求。'}${models}`;
  }
  function scopeText(settings){
-  return '独立连接用于总管对话；续写、润色和创作规划使用下方主写作连接。'+
+  return '独立连接用于总管对话；续写、润色和创作规划使用主写作设置中的默认模型或对应的用途模型。'+
    (settings.daily_limit?`每日共享上限 ${settings.daily_limit} 次。`:'与主写作共用每日额度。');
  }
  function draw(host,settings,captured,token){
@@ -35,7 +35,7 @@
     <label><input type="radio" name="agentConnectionMode" value="inherit" ${selected==='inherit'?'checked':''}>沿用主写作连接</label>
     <label><input type="radio" name="agentConnectionMode" value="independent" ${selected==='independent'?'checked':''}>独立连接</label>
    </fieldset>
-   <p class="agent-connection-summary" data-agent-inherit-summary>${escape(settings.mode==='inherit'&&settings.model?`当前模型：${settings.model}`:'沿用下方主写作模型。')}</p>
+   <p class="agent-connection-summary" data-agent-inherit-summary>${escape(settings.mode==='inherit'&&settings.model?`当前模型：${settings.model}`:'沿用主写作设置中的默认模型。')}</p>
    <fieldset class="agent-independent-fields"><legend>独立对话模型</legend><div class="agent-settings-grid">
     <label class="agent-settings-wide">服务地址<input id="agentBaseUrl" type="url" maxlength="2048" autocomplete="off" spellcheck="false" value="${escape(independent.base_url||'')}" placeholder="https://…/v1"></label>
     <label class="agent-settings-wide">模型名称<input id="agentModel" maxlength="200" autocomplete="off" spellcheck="false" value="${escape(independent.model||'')}"></label>
@@ -70,7 +70,7 @@
     settings=data.settings||data;
     form.querySelector('[data-agent-connection-state]').textContent=settings.configured?'已配置':'待配置';
     form.querySelector('[data-agent-inherit-summary]').textContent=
-     settings.mode==='inherit'&&settings.model?`当前模型：${settings.model}`:'沿用下方主写作模型。';
+     settings.mode==='inherit'&&settings.model?`当前模型：${settings.model}`:'沿用主写作设置中的默认模型。';
     form.querySelector('[data-agent-settings-scope]').textContent=scopeText(settings);
     field('agentProbeStatus').textContent=probeText(settings);
    }catch(error){

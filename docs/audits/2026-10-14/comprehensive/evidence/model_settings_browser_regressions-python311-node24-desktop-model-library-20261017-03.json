@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "scope": "电脑模型库先测试后保存、用途分配与参数，免费本机模拟提供方",
+  "cases": [
+    {
+      "name": "模型库未测试不可保存，用途只能下拉选择已测试并保存的模型",
+      "passed": true
+    },
+    {
+      "name": "授权失败和回传名称不符均不能入库，不产生可选择项",
+      "passed": true
+    },
+    {
+      "name": "测试只验证当前草稿，修改连接撤销保存资格，成功后另行保存才入库",
+      "passed": true
+    },
+    {
+      "name": "第二个不同地址的模型可登记，保存用途不外发并且预览路由正确",
+      "passed": true
+    },
+    {
+      "name": "手工伪造未验证模型身份被服务拒绝，原用途和密钥不变",
+      "passed": true
+    },
+    {
+      "name": "九用途参数及隐藏参数保持，三个桌面尺寸无横向遮挡",
+      "passed": true
+    },
+    {
+      "name": "用途温度零保留，空白仅删数值覆盖，隐藏参数不丢失",
+      "passed": true
+    },
+    {
+      "name": "分析审稿继承回顾检查的整组参数，单设子用途只继承全局",
+      "passed": true
+    },
+    {
+      "name": "清除一个用途参数不动模型及其他用途，保存失败可重试",
+      "passed": true
+    },
+    {
+      "name": "思考开关强度互换不留下冲突，空白继承，数值边界由表单拒绝",
+      "passed": true
+    },
+    {
+      "name": "迟到测试响应不能污染重新打开的页面，未保存密钥不缓存",
+      "passed": true
+    },
+    {
+      "name": "迟到用途保存不能覆盖重新读取的当前设置",
+      "passed": true
+    },
+    {
+      "name": "编辑已保存连接必须重新测试，闲置连接可删除，正在使用的连接保留",
+      "passed": true
+    },
+    {
+      "name": "失效用途连接保留身份，只改风格不会静默改用默认模型，明确清除后才继承默认",
+      "passed": true
+    },
+    {
+      "name": "失效默认连接保留身份和原设置，必须明确选择有效模型才切换",
+      "passed": true
+    },
+    {
+      "name": "所有连接失效时仍可明确清除原分配，保存失败不能先丢失默认或用途",
+      "passed": true
+    },
+    {
+      "name": "旧连接登记不提前切换，迁移后不反复预填旧配置，支持只分配指定用途",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "synthetic_data_only": true,
+  "paid_provider_calls": 0,
+  "source_files_sha256_before": {
+    "app.js": "db6531dc65564a5aeb74dcaf442e1c98b53a6d5cf2ec86ec765b2c80bc4760af",
+    "author-workspace.js": "ba7c8e0fc2f91cb6a5c4b8e2f9b2794e9f08f1165c5eb86a8f9511fc8f1e5019",
+    "styles.css": "c8e901df61bbb19cb641ae49f93ab1dbe0a8ac57facad2dd0a4be357a38cd454",
+    "moyu_settings.py": "07f451f17694269d9d05971c78bfc3c30f61f6bb364d0278894026c5fd97e953",
+    "moyu_model_connections.py": "e9346f1d75a5599b54f0e5f945a33ba92c278aceb87c216df5359c7afa541451",
+    "server.py": "81871fabc0e0f6adbba17d17c50aea221fd7058b81d91bfff58e324088724722"
+  },
+  "screenshots": [
+    "model-library-1100.png",
+    "model-routing-1100.png",
+    "model-library-1280.png",
+    "model-routing-1280.png",
+    "model-library-1440.png",
+    "model-routing-1440.png"
+  ],
+  "provider_requests": 10,
+  "page_errors": 0,
+  "source_files_sha256_after": {
+    "app.js": "db6531dc65564a5aeb74dcaf442e1c98b53a6d5cf2ec86ec765b2c80bc4760af",
+    "author-workspace.js": "ba7c8e0fc2f91cb6a5c4b8e2f9b2794e9f08f1165c5eb86a8f9511fc8f1e5019",
+    "styles.css": "c8e901df61bbb19cb641ae49f93ab1dbe0a8ac57facad2dd0a4be357a38cd454",
+    "moyu_settings.py": "07f451f17694269d9d05971c78bfc3c30f61f6bb364d0278894026c5fd97e953",
+    "moyu_model_connections.py": "e9346f1d75a5599b54f0e5f945a33ba92c278aceb87c216df5359c7afa541451",
+    "server.py": "81871fabc0e0f6adbba17d17c50aea221fd7058b81d91bfff58e324088724722"
+  }
+}

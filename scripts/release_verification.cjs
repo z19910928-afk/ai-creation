@@ -22,8 +22,10 @@ const environment = {...process.env, MOYU_TEST_PYTHON: python,
   MOYU_AI_BASE_URL: '', MOYU_AI_MODEL: '', MOYU_AI_API_KEY: '', MOYU_SECRET_KEY: ''};
 const filesIn = (directory, pattern) => fs.readdirSync(path.join(root, directory))
   .filter(name => pattern.test(name)).sort().map(name => path.posix.join(directory, name).replace(/^\.\//, ''));
-const pythonFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/)];
-const javascriptFiles = [...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/)];
+const pythonFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/),
+  ...filesIn('desktop', /\.py$/)];
+const javascriptFiles = [...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/),
+  ...filesIn('desktop', /\.cjs$/)];
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const safeText = text => text.replaceAll(root, '.').replaceAll(process.env.HOME || '\u0000', '<private-home>')
   .replaceAll(os.tmpdir(), '<temporary-root>')
@@ -37,9 +39,10 @@ const safeValue = value => {
   return value;
 };
 const fingerprints = () => {
-  const currentFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/),
-    ...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/),
-    ...filesIn('.', /\.css$/), '.github/workflows/ci.yml', 'requirements.txt', 'index.html'];
+  const currentFiles = [...pythonFiles, ...javascriptFiles, ...filesIn('.', /\.css$/),
+    ...filesIn('desktop', /(?:\.spec|\.txt)$/), '.github/workflows/ci.yml',
+    '.github/workflows/desktop.yml', 'requirements.txt', 'index.html', 'package.json',
+    'package-lock.json', 'electron-builder.yml'];
   return Object.fromEntries(currentFiles.map(file => [file, hash(fs.readFileSync(path.join(root, file)))]));
 };
 const report = {passed: false, scope: 'Python3.11/Node24 release; macOS arm64; isolated desktop tests and free local providers.',
@@ -119,8 +122,8 @@ const requiredScreenshots = {
     'compact-desktop-long-title-navigation.png', 'short-desktop-long-title-navigation.png',
     'desktop-record-knowledge-scope.png', 'desktop-review-repair.png'],
   planning_browser_regressions: ['planning-second-round.png'],
-  model_settings_browser_regressions: ['model-settings-failed.png', 'model-settings-success.png', 'desktop-settings.png',
-    'task-settings-1440x1000.png', 'task-settings-1280x900.png', 'task-settings-alias-inheritance.png'],
+  model_settings_browser_regressions: ['model-library-1100.png', 'model-library-1280.png',
+    'model-library-1440.png', 'model-routing-1100.png', 'model-routing-1280.png', 'model-routing-1440.png'],
   desktop_author_flow_regressions: ['desktop-five-chapter-author.png', 'compact-desktop-five-chapter-author.png',
     'desktop-stale-payoff-blocked.png', 'desktop-final-complete.png'],
   instruction_draft_browser_regressions: ['instruction-draft-desktop.png', 'instruction-draft-desktop-1280x900.png'],

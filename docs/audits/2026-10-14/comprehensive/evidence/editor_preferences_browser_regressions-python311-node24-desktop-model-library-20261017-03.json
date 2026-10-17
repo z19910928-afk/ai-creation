@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "cases": [
+    {
+      "name": "1440x1000 与 1280x800 阅读偏好即时应用，不替换正文节点或修改稿件",
+      "passed": true
+    },
+    {
+      "name": "切章分别恢复选区方向、正文滚动和编辑区滚动，按旧编辑框身份保存",
+      "passed": true
+    },
+    {
+      "name": "同章重新绘制保留光标、选区与滚动，刷新后恢复本机偏好与位置",
+      "passed": true
+    },
+    {
+      "name": "切换真实作品后各自恢复位置，切换前的位置不会写到另一作品",
+      "passed": true
+    },
+    {
+      "name": "同一章节编号在不同前端分支隔离，恢复主线不套用另一分支位置",
+      "passed": true
+    },
+    {
+      "name": "删除身份或同名新章不继承其他章位置，正文变化不恢复旧选区",
+      "passed": true
+    },
+    {
+      "name": "证据、审稿和全文搜索的明确原句定位优先于历史阅读位置",
+      "passed": true
+    },
+    {
+      "name": "存储写入失败时设置与切章仍可用，并明确提示未能记住",
+      "passed": true
+    },
+    {
+      "name": "存储读取和写入都被禁止时能够打开稿件并调整阅读设置",
+      "passed": true
+    },
+    {
+      "name": "阅读操作不产生正文版本、写接口或模型调用",
+      "passed": true
+    }
+  ],
+  "artifacts": "Private temporary DB and logs retained locally; screenshots are listed in this report.",
+  "page_errors": [],
+  "scope": "真实桌面 Chrome、隔离数据库；逐章位置、阅读偏好、来源定位和浏览器存储失败",
+  "branch_identity_test": "Synthetic frontend branch identity; no branch-management UI claim.",
+  "paid_provider_calls": 0,
+  "model_request_posts": 0,
+  "browser_mutations": [],
+  "source_files": [
+    {
+      "path": "author-workspace.js",
+      "sha256": "ba7c8e0fc2f91cb6a5c4b8e2f9b2794e9f08f1165c5eb86a8f9511fc8f1e5019"
+    },
+    {
+      "path": "editor-preferences.css",
+      "sha256": "4f9ccbefa0f98f2abf7072177c80e30b07d14880cacaa93535067e395f2b0472"
+    },
+    {
+      "path": "tests/editor_preferences_browser_regressions.cjs",
+      "sha256": "a3fc5b4dacbc41ca14b6b8d14b75e54050b09f3fb9750b0e4d5544c9018f95b7"
+    }
+  ],
+  "screenshots": [
+    "<temporary-root>/moyu-editor-preferences-V6VQsU/editor-preferences-1440x1000.png",
+    "<temporary-root>/moyu-editor-preferences-V6VQsU/editor-preferences-1280x800.png"
+  ],
+  "source_unchanged": true
+}
