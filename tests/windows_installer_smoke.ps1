@@ -25,7 +25,7 @@ $installDirectory = Join-Path $temporaryRoot '中文 安装目录'
 $installedExecutable = Join-Path $installDirectory '墨屿.exe'
 $installedBackend = Join-Path $installDirectory 'resources\backend\moyu-service.exe'
 $uninstaller = Join-Path $installDirectory 'Uninstall 墨屿.exe'
-$nodeExecutable = (Get-Command node -CommandType Application).Source
+$nodeExecutable = ''
 $temporaryCreated = $false
 $stage = 'PREPARE'
 $failureCode = $null
@@ -206,6 +206,16 @@ function Stop-InstalledProcesses {
 }
 
 try {
+    $nodeCommand = Get-Command node.exe -CommandType Application -ErrorAction SilentlyContinue |
+        Select-Object -First 1
+    if ($null -eq $nodeCommand) {
+        throw 'WINDOWS_INSTALLER_SMOKE_NODE_MISSING_OR_UNSAFE'
+    }
+    $nodeExecutable = [string] $nodeCommand.Source
+    if (-not [System.IO.Path]::IsPathFullyQualified($nodeExecutable) -or
+        -not [System.IO.File]::Exists($nodeExecutable)) {
+        throw 'WINDOWS_INSTALLER_SMOKE_NODE_MISSING_OR_UNSAFE'
+    }
     $package = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'package.json') | ConvertFrom-Json -AsHashtable
     if ($package.version -notmatch '^[0-9]+\.[0-9]+\.[0-9]+(?:[-+][0-9A-Za-z.-]+)?$') {
         throw 'WINDOWS_INSTALLER_SMOKE_INVALID_PACKAGE_VERSION'
