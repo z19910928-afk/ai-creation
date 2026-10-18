@@ -4,9 +4,9 @@
 
 ## 当前发布
 
-[v0.1.1 已发布](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.1)，发布时间为北京时间 2026-10-18 18:19:24，安装包源码为 `34df7b4f521aba3b9d666f1e940cd7b52a15984c`。本版包含自动获取模型清单、搜索选择以及主写作和总管的 Chat / Responses 接入更新，详见[更新说明](releases/v0.1.1.md)。
+[v0.1.2 已发布](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.2)，发布时间为北京时间 2026-10-18 20:06:40（UTC 12:06:40），安装包源码为 `85ef5f83e66c520cda538f5b07a9c30ffcbc1d00`。本版更新模型配置列表、服务商预设、自定义请求路径、测试保存与默认模型启用流程，并修复写作总管的协议参数兼容问题，详见[更新说明](releases/v0.1.2.md)。
 
-同一提交的[完整产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39116841021)共 36 个步骤全部成功，[三平台预验收](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39117407735)也已成功。[正式标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39118302197)再次在三个原生环境构建和验收，核对六个安装文件及压缩包、三份 SHA256 校验文件后发布。
+同一源码的[完整产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39123882973)共 36 个步骤全部成功。[正式标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39125325662)已在三个原生环境完成构建和验收，发布页共提供 9 个资产：3 个安装程序、3 个备用 ZIP 和 3 份 SHA256 校验文件。
 
 | 正式构建平台 | 包内后台 | 真实窗口 | 安装后运行 |
 | --- | --- | --- | --- |
@@ -14,11 +14,15 @@
 | Mac Intel | 19 通过，无跳过 | 10/10 | 10/10 |
 | Windows 64 位 | 18 通过，1 项 POSIX 专属检查跳过 | 10/10 | 10/10 |
 
-Windows 另通过默认卸载后保留作品数据的检查。三个平台的窗口检查均无模型生成任务、意外外部请求或页面错误。发布后另读取三份校验文件，六个安装文件的摘要与 GitHub 资产记录全部一致；下载时可用发布页中的 `SHA256SUMS-*.txt` 核对文件。后续文档更新不改变该版本的软件源码或安装包。
+Windows 另通过默认卸载后保留应用数据的检查，卸载前后样本文件的摘要保持一致。三个平台的窗口检查均无远程模型生成、意外外部请求或页面错误。发布后已独立下载三份校验文件，六个安装程序和 ZIP 的摘要与 GitHub 资产记录逐一相同；下载时可用发布页中的 `SHA256SUMS-*.txt` 核对文件。工程验收未调用真实远程模型，也未进行文学质量评测。后续文档更新不改变该版本的软件源码或安装包。
+
+历史版本 [v0.1.1](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.1) 保留下载，发布时间为北京时间 2026-10-18 18:19:24，源码为 `34df7b4f521aba3b9d666f1e940cd7b52a15984c`，包含自动获取模型清单、搜索选择以及主写作和总管的 Chat / Responses 接入更新，见[该版更新说明](releases/v0.1.1.md)。该版[完整产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39116841021)的 36 个步骤、[三平台预验收](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39117407735)及[正式标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39118302197)均已成功。
 
 历史版本 [v0.1.0](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.0) 保留下载，其源码为 `27482433437b02271564bbc62e01bf502b8495cc`，不包含本轮模型接入更新。
 
 ## 本机验收与历史问题
+
+2026-10-18 的 0.1.2 本机 Mac Apple 芯片版本已通过包内后台19项、真实窗口10项和DMG安装后10项，58份构建输入与110份验证输入在打包验收前后保持一致，见[模型配置与本机安装包核验记录](audits/model-configuration-redesign-20261018.md)。自动获取模型、Chat / Responses 接入、编辑保存、聊天草稿和导出均在真实打包窗口验证；使用隔离临时作品和本机模拟模型服务，没有调用真实远程模型或进行文学效果评测。
 
 2026-10-18 的 0.1.1 本机 Mac Apple 芯片版本已通过包内后台19项、真实窗口10项、DMG安装后10项、运行边界5项及自动模型获取浏览器专项19项，见[本轮本机记录](audits/2026-10-14/comprehensive/desktop-v011-local-20261018.md)。主模型与写作总管的两种接入方式均在真实打包窗口验证了自动获取、搜索和选择；所有模型服务均为本机合成服务。
 
@@ -32,9 +36,9 @@ Windows 另通过默认卸载后保留作品数据的检查。三个平台的窗
 
 | 电脑 | 安装文件 | 备用压缩包 |
 | --- | --- | --- |
-| Mac，Apple 芯片 | `Moyu-0.1.1-mac-arm64.dmg` | `Moyu-0.1.1-mac-arm64.zip` |
-| Mac，Intel 芯片 | `Moyu-0.1.1-mac-x64.dmg` | `Moyu-0.1.1-mac-x64.zip` |
-| Windows，64 位 Intel 或 AMD | `Moyu-0.1.1-win-x64.exe` | `Moyu-0.1.1-win-x64.zip` |
+| Mac，Apple 芯片 | `Moyu-0.1.2-mac-arm64.dmg` | `Moyu-0.1.2-mac-arm64.zip` |
+| Mac，Intel 芯片 | `Moyu-0.1.2-mac-x64.dmg` | `Moyu-0.1.2-mac-x64.zip` |
+| Windows，64 位 Intel 或 AMD | `Moyu-0.1.2-win-x64.exe` | `Moyu-0.1.2-win-x64.zip` |
 
 Mac 需要 macOS 15 或更新版本，可在左上角苹果菜单的“关于本机”查看系统版本和芯片名称。打开 DMG 后将“墨屿”拖入“应用程序”；Windows 打开 EXE，按安装窗口完成安装。Windows 安装包可选择安装目录，默认只为当前用户安装。
 
@@ -103,7 +107,7 @@ Mac Intel 的应用路径是 `dist/mac/墨屿.app/Contents/MacOS/墨屿`；Windo
 
 GitHub 的“墨屿桌面安装包”任务可手动运行，也会在 `codex/desktop-installers` 分支更新时运行。三个独立环境分别使用 `macos-15` 的 arm64、`macos-15-intel` 的 x64 和 `windows-latest` 的 x64，均安装 Python 3.11 与 Node.js 24，按锁文件安装依赖、原生构建并执行上述验证。每个平台验证成功后仅上传自己的安装包、压缩包和 SHA256 校验文件，不上传私有截图、日志或数据库。
 
-普通分支构建和手动运行只生成 GitHub 构建附件。推送与 `package.json` 版本严格一致的 `v*` 标签才允许发布正式下载，例如版本 `0.1.1` 对应 `v0.1.1`；必须三个平台全部通过，再重新核对六个安装文件、三个校验文件及全部 SHA256，才创建 GitHub Release。工程验证不等于已获得签名、公证或真实文学质量评测通过。
+普通分支构建和手动运行只生成 GitHub 构建附件。推送与 `package.json` 版本严格一致的 `v*` 标签才允许发布正式下载，例如版本 `0.1.2` 对应 `v0.1.2`；必须三个平台全部通过，再重新核对六个安装文件、三个校验文件及全部 SHA256，才创建 GitHub Release。工程验证不等于已获得签名、公证或真实文学质量评测通过。
 
 ## 官方依据
 

@@ -76,11 +76,11 @@
 
 | 电脑 | 安装下载 | 版本 |
 | --- | --- | --- |
-| Mac · Apple 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.1/Moyu-0.1.1-mac-arm64.dmg) | v0.1.1 |
-| Mac · Intel 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.1/Moyu-0.1.1-mac-x64.dmg) | v0.1.1 |
-| Windows · 64 位 | [下载 EXE 安装程序](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.1/Moyu-0.1.1-win-x64.exe) | v0.1.1 |
+| Mac · Apple 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.2/Moyu-0.1.2-mac-arm64.dmg) | v0.1.2 |
+| Mac · Intel 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.2/Moyu-0.1.2-mac-x64.dmg) | v0.1.2 |
+| Windows · 64 位 | [下载 EXE 安装程序](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.2/Moyu-0.1.2-win-x64.exe) | v0.1.2 |
 
-> v0.1.1 已完成三个平台的原生构建与安装验证，包含自动获取模型与 Chat / Responses 接入更新。备用 ZIP 和 `SHA256SUMS-*.txt` 校验文件见 [v0.1.1 发布页](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.1)。Mac 需要 macOS 15 或更新版本；首次打开提示及安装方法见[桌面安装说明](docs/desktop-packaging.md)。
+> v0.1.2 已完成三个平台的原生构建与安装验证，包含模型配置列表、自动获取多个模型、先测后存，以及写作总管从模型库选择或独立接入的更新。备用 ZIP 和 `SHA256SUMS-*.txt` 校验文件见 [v0.1.2 发布页](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.2)。Mac 需要 macOS 15 或更新版本；首次打开提示及安装方法见[桌面安装说明](docs/desktop-packaging.md)。
 
 ### 从源码运行
 
