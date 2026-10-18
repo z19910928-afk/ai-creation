@@ -7,8 +7,8 @@ import uuid
 from contextlib import contextmanager
 from typing import Any
 
-from moyu_context import ScopePolicy, resolve_aliases, scope_decision, source_evidence_reasons
-from moyu_records import decode_scope, normalize_scope
+from .moyu_context import ScopePolicy, resolve_aliases, scope_decision, source_evidence_reasons
+from .moyu_records import decode_scope, normalize_scope
 
 
 MAX_LIMIT = 100

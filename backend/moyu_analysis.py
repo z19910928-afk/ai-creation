@@ -16,11 +16,11 @@ import sqlite3
 import uuid
 from typing import Any, Callable, Mapping
 
-from moyu_context import (
+from .moyu_context import (
     refresh_analysis_status, sent_evidence_ranges, text_hash, validate_chapter_analysis,
     validate_source_quote, validate_story_review,
 )
-import moyu_materials
+from . import moyu_materials
 
 
 class AnalysisConflict(ValueError):
@@ -101,7 +101,7 @@ def _complete_guidance_source(marker, chapter_id):
 
 
 def _require_guidance_source(conn, scope, chapter_id, marker):
-    import moyu_workspace
+    from . import moyu_workspace
     if not _complete_guidance_source(marker, chapter_id) or dict(marker) != moyu_workspace.guidance_source(
             conn, *_scope(scope), chapter_id):
         raise AnalysisConflict("创作约定或章节计划已经改变，请按当前指南重新生成。")
@@ -480,7 +480,7 @@ def decide_analysis(
             item["decision_material_source"] = moyu_materials.refresh(
                 conn, *_scope(scope), item["material_source"])
         if item.get("guidance_source") is not None:
-            import moyu_workspace
+            from . import moyu_workspace
             # Record only this transaction's author decisions; never replace
             # the guidance frozen with the original model request.
             item["decision_guidance_source"] = moyu_workspace.guidance_source(
@@ -638,7 +638,7 @@ def _resolution_source(
         ],
     }
     if _item_sources_required(conn, scope, item):
-        import moyu_workspace
+        from . import moyu_workspace
         source["guidance_source"] = moyu_workspace.guidance_source(conn, project_id, branch_id, item["chapter_id"])
     if item.get("material_source") is not None:
         try:

@@ -15,10 +15,10 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_provider
-import moyu_records
-import server
-from moyu_context import ScopePolicy, scope_decision
+from backend import moyu_provider
+from backend import moyu_records
+from backend import server
+from backend.moyu_context import ScopePolicy, scope_decision
 
 
 class ScopeIntersectionTests(unittest.TestCase):

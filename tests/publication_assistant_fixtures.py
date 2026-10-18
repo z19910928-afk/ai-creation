@@ -22,12 +22,12 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import moyu_import
-import moyu_backups
-import moyu_provider
-import moyu_publication
-import moyu_settings
-import server
+from backend import moyu_import
+from backend import moyu_backups
+from backend import moyu_provider
+from backend import moyu_publication
+from backend import moyu_settings
+from backend import server
 
 
 BODY_A = (

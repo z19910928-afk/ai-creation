@@ -18,8 +18,8 @@ from datetime import datetime, timezone
 from functools import wraps
 from typing import Any, Callable
 
-from moyu_provider import validate_json
-from moyu_workspace import current_scope, validate_blueprint, validate_id
+from .moyu_provider import validate_json
+from .moyu_workspace import current_scope, validate_blueprint, validate_id
 
 
 STAGES = ("overview", "volumes", "chapters", "scenes")

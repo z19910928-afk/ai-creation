@@ -12,7 +12,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-import moyu_backups as backups
+from . import moyu_backups as backups
 
 
 PREVIEW_SECONDS = 1800

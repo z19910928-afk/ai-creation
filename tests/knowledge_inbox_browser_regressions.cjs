@@ -17,9 +17,9 @@ const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const report = {passed: false, cases: [], artifacts: temporary, screenshots: [], page_errors: [],
   paid_provider_calls: 0, model_request_posts: 0, browser_mutations: [], seed_agent_plans: 0,
   scope: '真实桌面 Chrome、隔离 SQLite；知识出入链、原句与全书待办；不授权模型任务',
-  source_files: ['server.py', 'moyu_knowledge.py', 'moyu_inbox.py',
-    'app.js', 'author-workspace.js', 'knowledge-workspace.js', 'writing-inbox.js',
-    'knowledge-workspace.css',
+  source_files: ['backend/server.py', 'backend/moyu_knowledge.py', 'backend/moyu_inbox.py',
+    'frontend/app.js', 'frontend/author-workspace.js', 'frontend/knowledge-workspace.js', 'frontend/writing-inbox.js',
+    'frontend/knowledge-workspace.css',
     'tests/knowledge_inbox_browser_regressions.cjs'].map(file => ({
     path: file, sha256: hash(fs.readFileSync(path.join(root, file))),
   }))};
@@ -149,7 +149,7 @@ function seedReports(chapterId, quote) {
   const script = `
 import json, sys
 from contextlib import closing
-import server, moyu_analysis
+from backend import server, moyu_analysis
 scope = {"project_id": server.PROJECT_ID, "branch_id": server.BRANCH_ID}
 chapter_id, quote = sys.argv[1:3]
 result = {"analyses": []}

@@ -22,9 +22,9 @@ const environment = {...process.env, MOYU_TEST_PYTHON: python,
   MOYU_AI_BASE_URL: '', MOYU_AI_MODEL: '', MOYU_AI_API_KEY: '', MOYU_SECRET_KEY: ''};
 const filesIn = (directory, pattern) => fs.readdirSync(path.join(root, directory))
   .filter(name => pattern.test(name)).sort().map(name => path.posix.join(directory, name).replace(/^\.\//, ''));
-const pythonFiles = [...filesIn('.', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/),
+const pythonFiles = [...filesIn('.', /\.py$/), ...filesIn('backend', /\.py$/), ...filesIn('scripts', /\.py$/), ...filesIn('tests', /\.py$/),
   ...filesIn('desktop', /\.py$/)];
-const javascriptFiles = [...filesIn('.', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/),
+const javascriptFiles = [...filesIn('frontend', /\.js$/), ...filesIn('scripts', /\.cjs$/), ...filesIn('tests', /\.cjs$/),
   ...filesIn('desktop', /\.cjs$/)];
 const hash = bytes => crypto.createHash('sha256').update(bytes).digest('hex');
 const safeText = text => text.replaceAll(root, '.').replaceAll(process.env.HOME || '\u0000', '<private-home>')
@@ -39,10 +39,10 @@ const safeValue = value => {
   return value;
 };
 const fingerprints = () => {
-  const currentFiles = [...pythonFiles, ...javascriptFiles, ...filesIn('.', /\.css$/),
+  const currentFiles = [...pythonFiles, ...javascriptFiles, ...filesIn('frontend', /\.css$/),
     ...filesIn('desktop', /(?:\.spec|\.txt)$/), '.github/workflows/ci.yml',
-    '.github/workflows/desktop.yml', 'requirements.txt', 'index.html', 'package.json',
-    'package-lock.json', 'electron-builder.yml'];
+    '.github/workflows/desktop.yml', 'requirements.txt', 'frontend/index.html', 'package.json',
+    'package-lock.json', 'desktop/electron-builder.yml'];
   return Object.fromEntries(currentFiles.map(file => [file, hash(fs.readFileSync(path.join(root, file)))]));
 };
 const report = {passed: false, scope: 'Python3.11/Node24 release; macOS arm64; isolated desktop tests and free local providers.',

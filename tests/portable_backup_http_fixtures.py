@@ -34,10 +34,10 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 
-import moyu_backups as backups  # noqa: E402
-import moyu_portable as portable  # noqa: E402
-import moyu_workspace as workspace  # noqa: E402
-import server  # noqa: E402
+from backend import moyu_backups as backups  # noqa: E402
+from backend import moyu_portable as portable  # noqa: E402
+from backend import moyu_workspace as workspace  # noqa: E402
+from backend import server  # noqa: E402
 from portable_backup_fixtures import (  # noqa: E402
     AGENT_TABLES, ALTERNATE_BRANCH, ALL_TABLES, CHAT_TABLES, SOURCE_ACTOR, SOURCE_BRANCH,
     SOURCE_PROJECT, seed_source,
@@ -49,12 +49,12 @@ TARGET_ACTOR = "portable-http-author"
 TARGET_ALTERNATE_BRANCH = "portable-http-alternate"
 SYNTHETIC_KEY = "synthetic-portable-http-credential"
 SOURCES = (
-    "server.py", "moyu_backups.py", "moyu_portable.py", "moyu_workspace.py",
-    "moyu_analysis.py", "moyu_context.py", "moyu_materials.py", "moyu_import.py",
-    "moyu_planning.py", "moyu_settings.py", "moyu_records.py", "moyu_revision.py",
-    "moyu_provider.py", "scripts/sqlite_backup.py",
-    "moyu_agent_checkpoint.py", "moyu_agent_service.py", "moyu_writing_agent.py", "requirements.txt",
-    "moyu_agent_chat.py", "moyu_agent_settings.py",
+    "backend/server.py", "backend/moyu_backups.py", "backend/moyu_portable.py", "backend/moyu_workspace.py",
+    "backend/moyu_analysis.py", "backend/moyu_context.py", "backend/moyu_materials.py", "backend/moyu_import.py",
+    "backend/moyu_planning.py", "backend/moyu_settings.py", "backend/moyu_records.py", "backend/moyu_revision.py",
+    "backend/moyu_provider.py", "scripts/sqlite_backup.py",
+    "backend/moyu_agent_checkpoint.py", "backend/moyu_agent_service.py", "backend/moyu_writing_agent.py", "requirements.txt",
+    "backend/moyu_agent_chat.py", "backend/moyu_agent_settings.py",
     "docs/schema-v1.sql", "docs/schema-v1.1-migration.sql",
     "tests/portable_backup_fixtures.py", "tests/portable_backup_http_fixtures.py",
 )

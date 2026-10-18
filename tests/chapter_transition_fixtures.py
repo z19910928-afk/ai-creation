@@ -19,9 +19,9 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_analysis
-import moyu_chapter_transition as transition
-import server
+from backend import moyu_analysis
+from backend import moyu_chapter_transition as transition
+from backend import server
 
 
 BODY = (
@@ -462,8 +462,8 @@ def main():
             "paid_calls": 0,
             "source_sha256": {
                 name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
-                for name in ("moyu_chapter_transition.py", "tests/chapter_transition_fixtures.py",
-                             "server.py", "moyu_workspace.py", "moyu_analysis.py")
+                for name in ("backend/moyu_chapter_transition.py", "tests/chapter_transition_fixtures.py",
+                             "backend/server.py", "backend/moyu_workspace.py", "backend/moyu_analysis.py")
             },
         }
         path = Path(report_path)

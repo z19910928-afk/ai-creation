@@ -4,7 +4,7 @@ from __future__ import annotations
 import copy
 import json
 
-from moyu_context import EPISTEMIC_MODES, chapter_number
+from .moyu_context import EPISTEMIC_MODES, chapter_number
 
 
 FIELDS = {"knowledge_scope", "known_by", "epistemic_mode", "available_from",

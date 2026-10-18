@@ -1,7 +1,7 @@
 'use strict';
 
 const assert=require('node:assert/strict');
-const {merge,mergeText,codepointOffset,utf16Offset}=require('../editor-sync.js');
+const {merge,mergeText,codepointOffset,utf16Offset}=require('../frontend/editor-sync.js');
 
 const original={
  version:6,head_revision:'rev_6',

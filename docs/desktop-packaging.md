@@ -92,7 +92,7 @@ python -m PyInstaller --noconfirm --clean --distpath build/backend --workpath bu
 
 `--backend-only` 只构建服务，`--dir` 构建可直接运行的未封装应用。`--node` 可明确指定 Node.js 可执行文件路径。构建脚本始终传入 `--publish never`，并关闭自动寻找签名证书；本机构建不会上传安装包。
 
-`electron-builder.yml` 只将 `desktop/main.cjs`、`desktop/runtime.cjs` 和构建工具自动保留的 `package.json` 放入窗口程序；内置服务仅从 `build/backend/moyu-service/` 复制至应用资源的 `backend/`。图标来自 `desktop/assets/`。服务包含必要的数据库建表脚本等运行资源，研究文档、检查截图、日志和现有数据不打包；不会将整个项目目录复制进安装包。
+`desktop/electron-builder.yml` 只将 `desktop/main.cjs`、`desktop/runtime.cjs` 和构建工具自动保留的 `package.json` 放入窗口程序；构建脚本明确指定项目根目录与这份配置。内置服务仅从 `build/backend/moyu-service/` 复制至应用资源的 `backend/`，页面文件从 `frontend/` 打入对应目录。图标来自 `desktop/assets/`。服务包含必要的数据库建表脚本等运行资源，研究文档、检查截图、日志和现有数据不打包；不会将整个项目目录复制进安装包。
 
 ## 验证与发布
 

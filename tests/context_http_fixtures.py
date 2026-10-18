@@ -8,7 +8,6 @@ provider transport and author decisions then use real HTTP endpoints.
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import math
 import os
@@ -28,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from context_pipeline_fixtures import corpus  # noqa: E402
-from moyu_context import text_hash  # noqa: E402
+from backend.moyu_context import text_hash  # noqa: E402
 
 
 def available_port():
@@ -173,9 +172,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, help="Write the measured JSON report to this path.")
     args = parser.parse_args()
-    spec = importlib.util.spec_from_file_location("context_http_server_seed", ROOT / "server.py")
-    server = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(server)
+    from backend import server
     provider = ThreadingHTTPServer(("127.0.0.1", 0), LocalProvider)
     provider.received = queue.Queue()
     provider_thread = threading.Thread(target=provider.serve_forever, daemon=True)

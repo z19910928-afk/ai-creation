@@ -20,11 +20,11 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_backups as backups
-import moyu_model_connections as connections
-import moyu_provider as provider
-import moyu_settings as settings
-import server
+from backend import moyu_backups as backups
+from backend import moyu_model_connections as connections
+from backend import moyu_provider as provider
+from backend import moyu_settings as settings
+from backend import server
 
 
 KEY = "synthetic-transport-fixture-private-value"

@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_provider import (ProviderCanceled, ProviderError, call_chat_completion,
+from backend.moyu_provider import (ProviderCanceled, ProviderError, call_chat_completion,
                            prepare_chat_request, reasoning_field_counts, usage_accounting)
 
 
@@ -403,7 +403,7 @@ class ProtocolTests(unittest.TestCase):
                 self.assertEqual(reasoning, parameters)
 
     def test_frozen_request_preserves_thinking_when_current_configuration_changes(self) -> None:
-        import server
+        from backend import server
         messages = [{"role": "system", "content": "只返回正文"},
                     {"role": "user", "content": "续写场景"}]
         for mode in ("enabled", "disabled"):
@@ -543,7 +543,7 @@ class ProtocolTests(unittest.TestCase):
         def interrupted(_response, accumulator, _account, _assert_running):
             accumulator.payload({"choices": [], "usage": {"completion_tokens": 9}}, sse=True)
             raise KeyboardInterrupt
-        with patch("moyu_provider._read_sse", side_effect=interrupted), \
+        with patch("backend.moyu_provider._read_sse", side_effect=interrupted), \
                 self.assertRaises(KeyboardInterrupt) as caught:
             self.call("normal", stream=True)
         result = caught.exception.partial_result
@@ -940,7 +940,7 @@ class ProtocolTests(unittest.TestCase):
             accumulator.payload({"choices": [], "usage": {
                 "prompt_tokens": 8, "completion_tokens": 5, "total_tokens": 13}}, sse=True)
             raise KeyboardInterrupt
-        with patch("moyu_provider._read_sse", side_effect=interrupted), \
+        with patch("backend.moyu_provider._read_sse", side_effect=interrupted), \
                 self.assertRaises(KeyboardInterrupt) as caught:
             self.call("normal", stream=True)
         result = caught.exception.partial_result
@@ -975,7 +975,7 @@ class ProtocolTests(unittest.TestCase):
                 self.call("json", **kwargs)
 
     def test_schema_accepts_valid_json_task(self) -> None:
-        from moyu_provider import validate_json, TASK_SCHEMAS
+        from backend.moyu_provider import validate_json, TASK_SCHEMAS
         validate_json({"pov": "林岚", "location": "码头", "goal": "找人",
                        "obstacle": "封锁", "exit": "开门"}, TASK_SCHEMAS["scene"])
         with self.assertRaises(ProviderError):

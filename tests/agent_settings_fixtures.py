@@ -17,12 +17,12 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_agent_settings as agent
-from moyu_agent_chat import SCHEMA as AGENT_CHAT_SCHEMA
-import moyu_model_connections as library
-import moyu_settings
-import moyu_workspace
-from moyu_provider import call_chat_completion
+from backend import moyu_agent_settings as agent
+from backend.moyu_agent_chat import SCHEMA as AGENT_CHAT_SCHEMA
+from backend import moyu_model_connections as library
+from backend import moyu_settings
+from backend import moyu_workspace
+from backend.moyu_provider import call_chat_completion
 
 MAIN_KEY = "synthetic-main-connection-private-key"
 AGENT_KEY = "synthetic-agent-connection-private-key"
@@ -316,7 +316,7 @@ class AgentSettingsTests(unittest.TestCase):
         count = len(Provider.calls)
         with self.connect() as conn:
             main_before = moyu_settings._saved(conn, self.project)
-            with patch("moyu_agent_settings.prepare_chat_request", wraps=agent.prepare_chat_request) as prepare:
+            with patch("backend.moyu_agent_settings.prepare_chat_request", wraps=agent.prepare_chat_request) as prepare:
                 public = agent.save_settings(conn, self.project, {
                     "mode": "library", "connection_id": selected["id"]})
             self.assertEqual(prepare.call_count, 1)
@@ -360,7 +360,7 @@ class AgentSettingsTests(unittest.TestCase):
         def incompatible(conn, project, saved):
             config = original(conn, project, saved)
             return {**config, "parameters": {"seed": 41}} if saved["mode"] == "library" else config
-        with self.connect() as conn, patch("moyu_agent_settings._configuration", side_effect=incompatible):
+        with self.connect() as conn, patch("backend.moyu_agent_settings._configuration", side_effect=incompatible):
             with self.assertRaisesRegex(Exception, "Responses.*seed"):
                 agent.save_settings(conn, self.project, {"mode": "library", "connection_id": selected["id"]})
         self.assertEqual(self.raw(), before)
@@ -442,7 +442,7 @@ class AgentSettingsTests(unittest.TestCase):
                             parameters=kwargs["parameters"], request_id=kwargs["request_id"])
                         kwargs["on_dispatch"]({**prepared["request_audit"], "dispatched": True})
                     raise RuntimeError("synthetic interruption")
-                with patch("moyu_agent_settings.call_chat_completion", side_effect=interrupt):
+                with patch("backend.moyu_agent_settings.call_chat_completion", side_effect=interrupt):
                     result = self.probe_draft()
                 self.assertFalse(result["probe"]["success"])
                 self.assertEqual(result["probe"]["error_code"], "probe_interrupted")
@@ -620,7 +620,7 @@ class AgentSettingsTests(unittest.TestCase):
         count = len(Provider.calls)
         with self.connect() as conn:
             before = "\n".join(conn.iterdump())
-            with patch("moyu_provider.list_models", return_value={
+            with patch("backend.moyu_provider.list_models", return_value={
                     "models": ["agent-fixture"], "endpoint": self.base + "/normal/models"}) as listing:
                 agent.list_models(conn, self.project, {})
                 self.assertEqual(listing.call_args.args[0]["api_protocol"], "responses")

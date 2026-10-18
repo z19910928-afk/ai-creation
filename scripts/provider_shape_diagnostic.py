@@ -16,7 +16,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_provider import prepare_chat_request
+from backend.moyu_provider import prepare_chat_request
 from scripts.literary_evaluation import now, write_json
 
 

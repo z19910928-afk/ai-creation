@@ -18,7 +18,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 import analysis_candidate_reuse_http_fixtures as reuse
 from guidance_alias_http_fixtures import Provider
 from guidance_scope_change_http_fixtures import EvidenceResult
-import server
+from backend import server
 
 
 PROJECT = reuse.PROJECT

@@ -11,7 +11,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from moyu_provider import (
+from backend.moyu_provider import (
     ProviderError, list_models, normalize_json_completion, parse_sse_completion,
     prepare_chat_request,
 )

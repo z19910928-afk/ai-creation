@@ -2,8 +2,8 @@
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-APP = (ROOT / "app.js").read_text(encoding="utf-8")
-CSS = (ROOT / "styles.css").read_text(encoding="utf-8")
+APP = (ROOT / "frontend" / "app.js").read_text(encoding="utf-8")
+CSS = (ROOT / "frontend" / "styles.css").read_text(encoding="utf-8")
 
 # These checks protect the user-visible review surface without requiring a
 # browser or a build tool in the local-first project.

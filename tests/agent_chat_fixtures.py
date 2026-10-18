@@ -20,11 +20,11 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_agent_chat as chat
-import moyu_backups as backups
-import moyu_settings as settings
-import moyu_workspace as workspace
-import server
+from backend import moyu_agent_chat as chat
+from backend import moyu_backups as backups
+from backend import moyu_settings as settings
+from backend import moyu_workspace as workspace
+from backend import server
 
 
 MANUSCRIPT = "林岚握住旧门的把手。\n门里传来两下轻响。"
@@ -35,8 +35,8 @@ REPORT_SCOPE = (
     "no production data, real credentials or paid provider calls"
 )
 SOURCE_FILES = (
-    "server.py", "moyu_agent_chat.py", "moyu_agent_service.py", "moyu_agent_settings.py",
-    "moyu_backups.py", "moyu_settings.py", "moyu_provider.py", "moyu_materials.py",
+    "backend/server.py", "backend/moyu_agent_chat.py", "backend/moyu_agent_service.py", "backend/moyu_agent_settings.py",
+    "backend/moyu_backups.py", "backend/moyu_settings.py", "backend/moyu_provider.py", "backend/moyu_materials.py",
     "tests/agent_chat_fixtures.py",
 )
 

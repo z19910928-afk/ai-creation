@@ -18,17 +18,17 @@ sys.path.insert(0, str(ROOT / "tests"))
 
 from guidance_alias_http_fixtures import GuidanceAliasHTTP, Provider
 from guidance_scope_change_http_fixtures import EvidenceResult
-import moyu_analysis
-import moyu_records
-import moyu_workspace
-import server
+from backend import moyu_analysis
+from backend import moyu_records
+from backend import moyu_workspace
+from backend import server
 
 
 PROJECT = "default-project"
 CANARY = "MATERIAL_DEPENDENCY_CANARY"
 SOURCES = (
-    "server.py", "moyu_analysis.py", "moyu_context.py", "moyu_workspace.py",
-    "moyu_records.py", "moyu_materials.py", "tests/guidance_alias_http_fixtures.py",
+    "backend/server.py", "backend/moyu_analysis.py", "backend/moyu_context.py", "backend/moyu_workspace.py",
+    "backend/moyu_records.py", "backend/moyu_materials.py", "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py",
     "tests/material_dependency_http_fixtures.py",
 )
@@ -421,7 +421,7 @@ class MaterialDependencyHTTP(unittest.TestCase):
                 context, chapter = server.ai_context(conn, self.chapter_id, task="continue")
         self.change("/api/records/" + card["id"], description="资料已在插入任务之前修改。")
         ledger, body = self.ledger(), self.body()
-        with patch("server.ai_context", return_value=(context, chapter)):
+        with patch("backend.server.ai_context", return_value=(context, chapter)):
             status, result = self.call("POST", "/api/ai/queue", {**self.request, "defer": True})
         self.observe("late_creation", http_status=status, ledger_unchanged=self.ledger() == ledger,
                      body_unchanged=self.body() == body, free_provider_calls=len(Provider.requests))
@@ -470,7 +470,7 @@ class MaterialDependencyHTTP(unittest.TestCase):
         self.change("/api/records/" + card["id"], description="取消后设定已改变。")
         ledger, body = self.ledger(), self.body()
         outcomes = []
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, result = self.call("POST", f"/api/ai/{kind}/{identifier}/retry", {"mode": "original"})
                 outcomes.append({"entry": kind, "http_status": status})
@@ -629,7 +629,7 @@ class MaterialDependencyHTTP(unittest.TestCase):
         self.strip_marker(job)
         ledger, body = self.ledger(), self.body()
         outcomes = []
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, result = self.call("POST", f"/api/ai/{kind}/{identifier}/retry", {"mode": "original"})
                 outcomes.append({"entry": kind, "http_status": status})
@@ -673,7 +673,7 @@ def main():
     if target and target.exists():
         raise RuntimeError("Evidence exists; use a new report path")
     before, started = fingerprints(), datetime.now(timezone.utc).isoformat()
-    integrated = "_material_source" in (ROOT / "server.py").read_text(encoding="utf-8")
+    integrated = "_material_source" in (ROOT / "backend/server.py").read_text(encoding="utf-8")
     Provider.total_calls = 0
     MaterialDependencyHTTP.observations = []
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(MaterialDependencyHTTP)

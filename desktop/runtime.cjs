@@ -85,7 +85,7 @@ function backendCommand({packaged, resourcesPath, root, python, platform = proce
       platform === 'win32' ? 'moyu-service.exe' : 'moyu-service'), args: []};
   }
   if (!python) throw new Error('DEVELOPMENT_PYTHON_REQUIRED');
-  return {file: python, args: [path.join(root, 'desktop', 'backend.py')]};
+  return {file: python, args: [path.join(root, 'desktop', 'service_entry.py')]};
 }
 
 function readyMessage(line, expectedPid) {

@@ -16,10 +16,10 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_analysis
-import moyu_inbox
-import moyu_workspace
-import server
+from backend import moyu_analysis
+from backend import moyu_inbox
+from backend import moyu_workspace
+from backend import server
 
 
 BODY = "林岚握住旧门的把手。\n门里传来两下轻响。"

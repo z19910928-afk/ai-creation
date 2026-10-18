@@ -17,16 +17,16 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
-import moyu_analysis
-import moyu_workspace
+from backend import moyu_analysis
+from backend import moyu_workspace
 from publication_assistant_fixtures import PublicationAssistantFixtures, BODY_A, BODY_B
-import server
+from backend import server
 
 
 QUOTE = "林岚数完台阶，才发现铜环不在原来的位置。"
 REASON = "作者已查看当前稿件，确认这是有意保留的叙事安排。"
 OVERRIDE_REASON = "Author confirmed the current manuscript and unresolved review."
-SOURCES = ("server.py", "moyu_analysis.py", "moyu_workspace.py", __file__)
+SOURCES = ("backend/server.py", "backend/moyu_analysis.py", "backend/moyu_workspace.py", __file__)
 
 
 class StoryReviewPublicationHTTPTests(unittest.TestCase):

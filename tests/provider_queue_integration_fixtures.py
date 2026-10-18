@@ -23,10 +23,10 @@ sys.path.insert(0, str(ROOT))
 os.environ["MOYU_AI_BASE_URL"] = ""
 os.environ["MOYU_AI_API_KEY"] = ""
 os.environ["MOYU_AI_MODEL"] = ""
-import server
-import moyu_settings
-import moyu_backups
-from moyu_provider import ProviderCanceled
+from backend import server
+from backend import moyu_settings
+from backend import moyu_backups
+from backend.moyu_provider import ProviderCanceled
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -762,7 +762,7 @@ class IntegrationTests(unittest.TestCase):
         job = self.canceled_http_job()
         self.settings("probe", key="fixture-new-credential")
         before = len(Handler.calls)
-        with patch("moyu_settings._read_key", side_effect=AssertionError("credential read before endpoint check")):
+        with patch("backend.moyu_settings._read_key", side_effect=AssertionError("credential read before endpoint check")):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, rejected = self.request("POST", f"/api/ai/{kind}/{identifier}/retry", {})
                 self.assertEqual(status, 409, rejected)
@@ -778,7 +778,7 @@ class IntegrationTests(unittest.TestCase):
         with server.connect() as conn:
             conn.execute("DELETE FROM app_model_settings WHERE project_id=?", (self.project,))
         before = len(Handler.calls)
-        with patch("moyu_settings._read_key", side_effect=AssertionError("deleted settings read a credential")):
+        with patch("backend.moyu_settings._read_key", side_effect=AssertionError("deleted settings read a credential")):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, rejected = self.request("POST", f"/api/ai/{kind}/{identifier}/retry", {})
                 self.assertEqual(status, 409, rejected)
@@ -786,7 +786,7 @@ class IntegrationTests(unittest.TestCase):
         self.settings()
         status, cleared = self.request("PUT", "/api/ai/settings", {"clear_api_key": True})
         self.assertEqual(status, 200, cleared)
-        with patch("moyu_settings._read_key", side_effect=AssertionError("cleared settings read a credential")):
+        with patch("backend.moyu_settings._read_key", side_effect=AssertionError("cleared settings read a credential")):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, rejected = self.request("POST", f"/api/ai/{kind}/{identifier}/retry", {})
                 self.assertEqual(status, 409, rejected)

@@ -16,8 +16,8 @@ os.environ["MOYU_AI_BASE_URL"] = ""
 os.environ["MOYU_AI_MODEL"] = ""
 os.environ["MOYU_AI_API_KEY"] = ""
 
-import moyu_settings
-import server
+from backend import moyu_settings
+from backend import server
 
 
 class Provider(BaseHTTPRequestHandler):

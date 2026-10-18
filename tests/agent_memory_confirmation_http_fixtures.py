@@ -34,8 +34,8 @@ BODY = (
 QUOTE = BODY.splitlines()[0]
 CONTINUATION = "她将船票夹进衣袖，沿着屋檐慢慢退到街角。\n\n渡口的钟刚响过一声。"
 SOURCES = (
-    "server.py", "moyu_agent_service.py", "moyu_writing_agent.py", "moyu_analysis.py",
-    "moyu_materials.py", "moyu_workspace.py", "moyu_context.py", "moyu_backups.py",
+    "backend/server.py", "backend/moyu_agent_service.py", "backend/moyu_writing_agent.py", "backend/moyu_analysis.py",
+    "backend/moyu_materials.py", "backend/moyu_workspace.py", "backend/moyu_context.py", "backend/moyu_backups.py",
     "tests/agent_memory_confirmation_http_fixtures.py",
 )
 
@@ -50,8 +50,8 @@ def fingerprints():
 
 def serve_application():
     """Delay only the completion notification, after the real analysis was committed."""
-    import server
-    import moyu_agent_service
+    from backend import server
+    from backend import moyu_agent_service
 
     control = Path(os.environ["MOYU_MEMORY_TEST_CONTROL"])
     original = moyu_agent_service.advance_ready

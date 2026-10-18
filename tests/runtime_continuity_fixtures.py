@@ -18,7 +18,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from server import filter_character_states_for_context, fit_context_budget  # noqa: E402
+from backend.server import filter_character_states_for_context, fit_context_budget  # noqa: E402
 
 
 def call(port: int, method: str, path: str, payload: dict | None = None) -> dict:

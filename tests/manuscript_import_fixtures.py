@@ -14,12 +14,12 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_import import (  # noqa: E402
+from backend.moyu_import import (  # noqa: E402
     ImportRejected, ensure_reference_tables, list_import_sources, list_references,
     parse_import, reference_details, save_import_source, save_reference,
     search_references, validate_import_selection,
 )
-from moyu_context import text_hash  # noqa: E402
+from backend.moyu_context import text_hash  # noqa: E402
 
 
 def epub_bytes(*, first_body="林岚按住左肩。\n", second_body="第二页正文。", extra=None,
@@ -130,7 +130,7 @@ class ImportParsingTests(unittest.TestCase):
 
     def test_extreme_single_chapter_splits_without_loss(self):
         text = "第一章 一整章\n" + "长句原文；" * 150
-        with patch("moyu_import.MAX_CHAPTER_CHARS", 300):
+        with patch("backend.moyu_import.MAX_CHAPTER_CHARS", 300):
             parsed = self.assert_exact(text.encode(), "long.txt", text)
         self.assertGreater(len(parsed["chapters"]), 1)
         self.assertTrue(all(len(item["body"]) <= 300 for item in parsed["chapters"]))
@@ -179,7 +179,7 @@ class ImportParsingTests(unittest.TestCase):
         for raw, filename in ((b"bad zip", "bad.epub"), (b"\x00binary", "binary.txt"), (b"", "empty.txt"), (b"  \n", "space.md"), (b"hello", "book.pdf")):
             with self.subTest(filename=filename), self.assertRaises(ImportRejected):
                 parse_import(raw, filename)
-        with patch("moyu_import.MAX_SOURCE_BYTES", 5):
+        with patch("backend.moyu_import.MAX_SOURCE_BYTES", 5):
             with self.assertRaises(ImportRejected):
                 parse_import(b"toolarge", "big.txt")
 
@@ -200,13 +200,13 @@ class ImportParsingTests(unittest.TestCase):
         for number, raw in enumerate(samples):
             with self.subTest(number=number), self.assertRaises(ImportRejected):
                 parse_import(raw, "malicious.epub")
-        with patch("moyu_import.MAX_EPUB_MEMBER_BYTES", 100):
+        with patch("backend.moyu_import.MAX_EPUB_MEMBER_BYTES", 100):
             with self.assertRaises(ImportRejected):
                 parse_import(epub_bytes(), "large.epub")
-        with patch("moyu_import.MAX_EPUB_RATIO", 2):
+        with patch("backend.moyu_import.MAX_EPUB_RATIO", 2):
             with self.assertRaises(ImportRejected):
                 parse_import(epub_bytes(extra={"OEBPS/bomb": "a" * 1_100_000}), "bomb.epub")
-        with patch("moyu_import.MAX_EPUB_EXPANDED_BYTES", 50):
+        with patch("backend.moyu_import.MAX_EPUB_EXPANDED_BYTES", 50):
             with self.assertRaises(ImportRejected):
                 parse_import(epub_bytes(), "expanded.epub")
 
@@ -317,7 +317,7 @@ class ReferenceWorkflowTests(unittest.TestCase):
     def test_reference_search_reports_a_bounded_complete_section_subset(self):
         save_reference(self.conn, self.scope, self.parsed, self.selection, self.raw)
         first_size = len(self.parsed["chapters"][0]["body"].encode("utf-8"))
-        with patch("moyu_import.MAX_SEARCH_UTF8_BYTES", first_size):
+        with patch("backend.moyu_import.MAX_SEARCH_UTF8_BYTES", first_size):
             results = search_references(self.conn, self.scope, "红铜罗盘")
         self.assertTrue(results["limited"])
         self.assertEqual(results["sections_considered"], 1)

@@ -15,8 +15,8 @@ from datetime import datetime, timezone
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import server
-from moyu_provider import ProviderError
+from backend import server
+from backend.moyu_provider import ProviderError
 
 
 def encode(value):
@@ -224,7 +224,7 @@ class GuidanceAliasHTTP(unittest.TestCase):
         job = self.queue()
         failure = ProviderError("fixture did not dispatch", code="fixture_not_dispatched",
                                 request_dispatched=False)
-        with patch("server.call_ai_provider", side_effect=failure):
+        with patch("backend.server.call_ai_provider", side_effect=failure):
             completed = self.process(job)
         self.assertEqual(completed["status"], "failed", completed)
         self.assertEqual(completed["result"]["billing_state"], "not_dispatched")
@@ -310,7 +310,7 @@ class ReportResult(unittest.TextTestResult):
 
 def fingerprints():
     return {name: hashlib.sha256((ROOT / name).read_bytes()).hexdigest() for name in (
-        "moyu_workspace.py", "moyu_context.py", "server.py",
+        "backend/moyu_workspace.py", "backend/moyu_context.py", "backend/server.py",
         "tests/guidance_alias_http_fixtures.py",
     )}
 

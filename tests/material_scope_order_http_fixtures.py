@@ -20,7 +20,7 @@ sys.path.insert(0, str(ROOT / "tests"))
 from guidance_alias_http_fixtures import GuidanceAliasHTTP, Provider, encode
 from guidance_scope_change_http_fixtures import EvidenceResult
 from material_dependency_http_fixtures import MaterialDependencyHTTP
-import server
+from backend import server
 
 
 PROJECT = "default-project"
@@ -28,8 +28,8 @@ ORDER_CANARY = "ACTIVE_CHAPTER_INDEX_SCOPE_CANARY"
 PLAN_CANARY = "FORESHADOW_PLAN_SOURCE_TITLE_CANARY"
 PROFILE = {"chapter_top_k": 0, "recent_window": 0, "memory_top_k": 0, "record_top_k": 10}
 SOURCES = (
-    "moyu_materials.py", "server.py", "moyu_analysis.py", "moyu_context.py",
-    "moyu_workspace.py", "moyu_records.py", "tests/guidance_alias_http_fixtures.py",
+    "backend/moyu_materials.py", "backend/server.py", "backend/moyu_analysis.py", "backend/moyu_context.py",
+    "backend/moyu_workspace.py", "backend/moyu_records.py", "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py",
     "tests/material_dependency_http_fixtures.py",
     "tests/material_scope_order_http_fixtures.py",
@@ -176,7 +176,7 @@ class MaterialScopeOrderHTTP(unittest.TestCase):
     def assert_original_retries_blocked(self, job, scenario):
         ledger, body, calls = self.ledger(), self.body(), len(Provider.requests)
         outcomes = []
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, result = self.call("POST", f"/api/ai/{kind}/{identifier}/retry", {"mode": "original"})
                 outcomes.append({"entry": kind, "status": status})

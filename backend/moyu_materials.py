@@ -7,7 +7,7 @@ import re
 import sqlite3
 from typing import Any, Mapping
 
-from moyu_records import decode_scope
+from .moyu_records import decode_scope
 
 
 _CHANGED = "本次使用的资料已变化，请按当前资料生成新候选；原候选仍保留供阅读"
@@ -368,7 +368,7 @@ def validate(conn: sqlite3.Connection, project: str, branch: str, marker: Mappin
 def validate_reference_context(conn: sqlite3.Connection, project: str, branch: str,
                                context: Mapping[str, Any]) -> None:
     """Require the exact quote and its consumed dependency to remain together."""
-    from moyu_import import REFERENCE_SELECTION_FIELDS, resolve_reference_selections
+    from .moyu_import import REFERENCE_SELECTION_FIELDS, resolve_reference_selections
 
     passages = context.get("reference_passages", [])
     marker = context.get("_material_source")
@@ -404,7 +404,7 @@ def validate_frozen_reference_context(context: Mapping[str, Any], audit: Any, *,
     payload = audit.get("payload") if isinstance(audit, Mapping) else None
     messages = None
     if isinstance(payload, Mapping):
-        from moyu_provider import request_messages
+        from .moyu_provider import request_messages
         try:
             messages = request_messages(payload, audit.get("api_protocol", "chat_completions"))
         except ValueError:

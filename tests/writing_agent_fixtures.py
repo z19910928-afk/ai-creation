@@ -12,7 +12,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import moyu_writing_agent as agent
+from backend import moyu_writing_agent as agent
 
 try:
     from langgraph.checkpoint.memory import InMemorySaver

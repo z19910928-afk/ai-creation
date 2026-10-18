@@ -15,8 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_planning as planning  # noqa: E402
-import moyu_workspace as workspace  # noqa: E402
+from backend import moyu_planning as planning  # noqa: E402
+from backend import moyu_workspace as workspace  # noqa: E402
 
 
 def planning_ids(blueprint):

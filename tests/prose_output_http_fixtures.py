@@ -17,8 +17,8 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import server  # noqa: E402
-import moyu_revision  # noqa: E402
+from backend import server  # noqa: E402
+from backend import moyu_revision  # noqa: E402
 
 
 SELECTED = "😀她把铜环留在桌上。 \n\t"

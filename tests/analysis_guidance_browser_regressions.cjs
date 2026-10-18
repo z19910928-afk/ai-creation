@@ -19,8 +19,8 @@ const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const reportPath = process.env.MOYU_ANALYSIS_GUIDANCE_BROWSER_REPORT || path.join(temporary, 'results.json');
 if (fs.existsSync(reportPath)) throw new Error('Evidence exists; use a new report path');
 const sourceFiles = [
-  'app.js', 'author-workspace.js', 'server.py', 'moyu_analysis.py', 'moyu_context.py',
-  'moyu_workspace.py', 'moyu_materials.py', 'moyu_records.py', 'styles.css',
+  'frontend/app.js', 'frontend/author-workspace.js', 'backend/server.py', 'backend/moyu_analysis.py', 'backend/moyu_context.py',
+  'backend/moyu_workspace.py', 'backend/moyu_materials.py', 'backend/moyu_records.py', 'frontend/styles.css',
   'tests/analysis_guidance_browser_regressions.cjs',
 ];
 const fingerprints = () => Object.fromEntries(sourceFiles.map(file =>

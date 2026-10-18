@@ -20,15 +20,15 @@ import material_legacy_http_fixtures as legacy_fixture
 from guidance_alias_http_fixtures import Provider
 from guidance_scope_change_http_fixtures import EvidenceResult
 from review_guidance_http_fixtures import ReviewGuidanceHTTP
-import moyu_analysis
-import moyu_workspace
-import server
+from backend import moyu_analysis
+from backend import moyu_workspace
+from backend import server
 
 
 PROJECT = "default-project"
 SOURCES = (
-    "server.py", "moyu_analysis.py", "moyu_materials.py", "moyu_context.py",
-    "moyu_workspace.py", "moyu_records.py",
+    "backend/server.py", "backend/moyu_analysis.py", "backend/moyu_materials.py", "backend/moyu_context.py",
+    "backend/moyu_workspace.py", "backend/moyu_records.py",
     "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py",
     "tests/material_legacy_http_fixtures.py",

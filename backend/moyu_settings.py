@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from moyu_provider import (
+from .moyu_provider import (
     ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts, usage_accounting,
     transport_options,
 )
@@ -141,7 +141,7 @@ def _probe_response_valid(text: Any) -> bool:
 
 
 def _validate_saved_key_target(base_url: str, saved_base_url: str) -> None:
-    from moyu_provider import _endpoint
+    from .moyu_provider import _endpoint
 
     def service(value: str) -> tuple[str, str, int, str]:
         endpoint, host, port, path = _endpoint(value, "models")
@@ -179,7 +179,7 @@ def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
     saved = _saved(conn, project)
     payload = saved if saved is not None else _environment()
     if payload.get("connection_workflow") is True:
-        from moyu_model_connections import routing_config
+        from .moyu_model_connections import routing_config
         return routing_config(conn, project, payload)
     key = _read_key(payload.get("_credential_ref")) if saved is not None else os.environ.get("MOYU_AI_API_KEY", "")
     return {"base_url": payload.get("base_url", ""), "model": payload.get("model", ""),
@@ -193,7 +193,7 @@ def task_provider_settings(config: dict[str, Any], task: str) -> dict[str, Any]:
     """Resolve one verified connection before preparing or freezing a request."""
     if "_connection_routes" not in config:
         return config
-    from moyu_model_connections import resolve_task_config
+    from .moyu_model_connections import resolve_task_config
     return resolve_task_config(config, task)
 
 
@@ -222,7 +222,7 @@ def frozen_provider_settings(conn: sqlite3.Connection, project: str,
 def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
     saved = _saved(conn, project)
     payload = saved if saved is not None else _environment()
-    from moyu_model_connections import public_connections
+    from .moyu_model_connections import public_connections
     library = public_connections(conn, project)
     workflow = library["connection_workflow"]
     if workflow:
@@ -294,7 +294,7 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
     allowed = assignments | {"styles", "parameters", "task_parameters", "daily_limit"}
     if set(data) - allowed:
         raise ValueError("设置包含未支持的字段。")
-    from moyu_model_connections import validate_assignments
+    from .moyu_model_connections import validate_assignments
     if not conn.in_transaction:
         conn.execute("BEGIN IMMEDIATE")
     else:

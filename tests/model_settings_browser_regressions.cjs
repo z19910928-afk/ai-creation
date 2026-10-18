@@ -14,7 +14,7 @@ const root=path.resolve(__dirname,'..');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-settings-browser-'));
 const secret='synthetic-model-library-browser-key';
 const tasks=['continue','polish','outline','scene','summary','check','brainstorm','chapter_analysis','semantic_review'];
-const sources=['app.js','author-workspace.js','styles.css','moyu_settings.py','moyu_model_connections.py','server.py'];
+const sources=['frontend/app.js','frontend/author-workspace.js','frontend/styles.css','backend/moyu_settings.py','backend/moyu_model_connections.py','backend/server.py'];
 const fingerprint=()=>Object.fromEntries(sources.map(file=>[file,
  require('node:crypto').createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')]));
 const report={passed:false,scope:'电脑模型库先测试后保存、用途分配与参数，免费本机模拟提供方',
@@ -523,7 +523,7 @@ async function main(){
  await test('直接打开网页文件时以中文说明正确入口，不显示原生网络错误',async()=>{
   const filePage=await browser.newPage({viewport:{width:1280,height:900}});
   try{
-   await filePage.goto(pathToFileURL(path.join(root,'index.html')).href);
+   await filePage.goto(pathToFileURL(path.join(root,'frontend','index.html')).href);
    await filePage.locator('[data-view="settings"]').click();
    const message=filePage.locator('#settingsHost .settings-unavailable');
    await message.waitFor();

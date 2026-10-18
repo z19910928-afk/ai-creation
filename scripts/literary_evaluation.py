@@ -32,12 +32,12 @@ except ImportError:  # pragma: no cover - Windows fallback
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_output import (
+from backend.moyu_output import (
     find_planning_contamination,
     output_contract as prose_output_contract,
     output_prompt_constraints,
 )
-from moyu_provider import (
+from backend.moyu_provider import (
     ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts,
     usage_accounting, validate_json,
 )
@@ -1084,7 +1084,7 @@ def freeze_run(out: Path, plan: dict[str, Any], writer_model: str, *,
                 "request_sha256": prepared["request_audit"]["request_sha256"],
             }
     files = {}
-    for name in ("server.py", "moyu_provider.py", "moyu_context.py", "moyu_output.py",
+    for name in ("backend/server.py", "backend/moyu_provider.py", "backend/moyu_context.py", "backend/moyu_output.py",
                  "scripts/literary_evaluation.py"):
         files[name] = hashlib.sha256((ROOT / name).read_bytes()).hexdigest()
     descriptor.update({"run_id": uuid.uuid4().hex,
@@ -1107,7 +1107,7 @@ def messages_for(case: dict[str, Any], arm: dict[str, Any], plan_path: Path,
                  config: dict[str, Any] | None = None) -> list[dict[str, str]]:
     source = arm.get("source")
     if source == "moyu-prompt":
-        import server
+        from backend import server
         # Share the frozen contract without adding evaluation metadata to the material.
         context = {**case["context"], "_output_contract": output_contract(case)}
         preview = server.ai_prompt_preview(case["task"], context, case["instruction"], "text",

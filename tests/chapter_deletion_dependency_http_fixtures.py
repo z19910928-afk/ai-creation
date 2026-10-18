@@ -20,7 +20,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import server  # noqa: E402
+from backend import server  # noqa: E402
 
 
 PROJECT = "synthetic-chapter-deletion-book"
@@ -29,7 +29,7 @@ ACTOR = "synthetic-chapter-deletion-author"
 CANARY = "DELETED_CHAPTER_FACT_CANARY"
 KEEP_CANARY = "RETAINED_CHAPTER_FACT_CANARY"
 AUTHOR_CANARY = "UNLINKED_AUTHOR_STATE_CANARY"
-SOURCES = ("server.py", "moyu_context.py", "moyu_materials.py",
+SOURCES = ("backend/server.py", "backend/moyu_context.py", "backend/moyu_materials.py",
            "tests/chapter_deletion_dependency_http_fixtures.py")
 REPORT = {"observations": [], "http": [], "attempted_provider_calls": 0,
           "attempted_worker_calls": 0}

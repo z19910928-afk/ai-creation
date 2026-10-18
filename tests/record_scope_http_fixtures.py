@@ -15,9 +15,9 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import moyu_backups
-import moyu_records
-import server
+from backend import moyu_backups
+from backend import moyu_records
+from backend import server
 
 
 class Provider(BaseHTTPRequestHandler):

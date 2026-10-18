@@ -21,9 +21,9 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
 from guidance_alias_http_fixtures import GuidanceAliasHTTP, Provider, encode
 from guidance_scope_change_http_fixtures import EvidenceResult
-import moyu_context
-import moyu_import
-import server
+from backend import moyu_context
+from backend import moyu_import
+from backend import server
 
 
 PROJECT = "default-project"
@@ -36,9 +36,9 @@ PROFILE = {
     "memory_top_k": 0, "record_top_k": 0,
 }
 SOURCES = (
-    "server.py", "moyu_context.py", "moyu_import.py", "moyu_materials.py",
-    "moyu_provider.py", "moyu_revision.py", "moyu_workspace.py",
-    "moyu_backups.py", "scripts/sqlite_backup.py",
+    "backend/server.py", "backend/moyu_context.py", "backend/moyu_import.py", "backend/moyu_materials.py",
+    "backend/moyu_provider.py", "backend/moyu_revision.py", "backend/moyu_workspace.py",
+    "backend/moyu_backups.py", "scripts/sqlite_backup.py",
     "docs/schema-v1.sql", "docs/schema-v1.1-migration.sql",
     "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py",
@@ -377,7 +377,7 @@ class ReferencePassagesHTTP(unittest.TestCase):
     def assert_retries_blocked(self, job, scenario):
         before, body, calls = self.snapshot(), self.body(), len(Provider.requests)
         outcomes = []
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             for entry, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, result = self.call(
                     "POST", f"/api/ai/{entry}/{identifier}/retry", {"mode": "original"},
@@ -462,7 +462,7 @@ class ReferencePassagesHTTP(unittest.TestCase):
             selections.append(copy.deepcopy(kwargs.get("selection")))
             return real_assemble(*args, **kwargs)
 
-        with patch("moyu_context.assemble_context", side_effect=recording_assemble):
+        with patch("backend.moyu_context.assemble_context", side_effect=recording_assemble):
             preview, job = self.preview(), self.queue()
             context_status, context_preview = self.context_preview()
         context, consent, _ = self.assert_bound_passage(job)
@@ -495,7 +495,7 @@ class ReferencePassagesHTTP(unittest.TestCase):
             selections.append(copy.deepcopy(kwargs.get("selection")))
             return real_assemble(*args, **kwargs)
 
-        with patch("moyu_context.assemble_context", side_effect=recording_assemble):
+        with patch("backend.moyu_context.assemble_context", side_effect=recording_assemble):
             preview, job = self.preview(), self.queue()
         _, consent = self.frozen(job)
         self.assertEqual(selections[0], selections[1])
@@ -686,7 +686,7 @@ class ReferencePassagesHTTP(unittest.TestCase):
         parent_context, parent_consent, _ = self.assert_bound_passage(job)
         self.assertEqual(self.call("POST", "/api/ai/jobs/" + job["id"] + "/cancel", {})[0], 200)
         self.request["reference_selections"] = []
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             status, retried = self.call(
                 "POST", "/api/ai/jobs/" + job["id"] + "/retry", {"mode": "original"},
             )

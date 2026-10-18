@@ -20,16 +20,16 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 
 import provider_queue_integration_fixtures as provider_fixture
-import moyu_settings
-import server
+from backend import moyu_settings
+from backend import server
 
 TASKS = (
     "continue", "polish", "outline", "scene", "summary", "check", "brainstorm",
     "chapter_analysis", "semantic_review",
 )
 SOURCES = (
-    "server.py", "moyu_settings.py", "moyu_provider.py", "moyu_planning.py",
-    "moyu_backups.py", "moyu_portable.py", "moyu_workspace.py",
+    "backend/server.py", "backend/moyu_settings.py", "backend/moyu_provider.py", "backend/moyu_planning.py",
+    "backend/moyu_backups.py", "backend/moyu_portable.py", "backend/moyu_workspace.py",
     "docs/schema-v1.sql", "docs/schema-v1.1-migration.sql",
     "tests/provider_queue_integration_fixtures.py",
     "tests/task_parameter_http_fixtures.py",

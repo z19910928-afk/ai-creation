@@ -123,8 +123,10 @@ def main(argv: list[str] | None = None) -> int:
         str(BUILDER_CLI),
         f"--{target}",
         f"--{architecture}",
+        "--projectDir",
+        str(ROOT),
         "--config",
-        "electron-builder.yml",
+        "desktop/electron-builder.yml",
         "--publish",
         "never",
     ]

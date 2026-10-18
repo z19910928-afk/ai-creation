@@ -19,7 +19,7 @@ sys.path[:0] = [str(ROOT), str(ROOT / "tests")]
 import material_legacy_http_fixtures as legacy
 from guidance_alias_http_fixtures import Provider, encode
 from guidance_scope_change_http_fixtures import EvidenceResult
-import server
+from backend import server
 
 
 PROJECT = "default-project"
@@ -28,8 +28,8 @@ CANON_TABLES = (
     "app_story_relation", "app_timeline_event", "app_plot_item", "app_foreshadow_link",
 )
 SOURCES = (
-    "server.py", "moyu_analysis.py", "moyu_context.py", "moyu_materials.py",
-    "moyu_workspace.py", "moyu_records.py", "moyu_provider.py",
+    "backend/server.py", "backend/moyu_analysis.py", "backend/moyu_context.py", "backend/moyu_materials.py",
+    "backend/moyu_workspace.py", "backend/moyu_records.py", "backend/moyu_provider.py",
     "tests/guidance_alias_http_fixtures.py", "tests/guidance_scope_change_http_fixtures.py",
     "tests/material_legacy_http_fixtures.py", "tests/analysis_candidate_reuse_http_fixtures.py",
 )

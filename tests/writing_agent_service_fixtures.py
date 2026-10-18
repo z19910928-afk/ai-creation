@@ -21,12 +21,12 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_agent_service as service  # noqa: E402
-import moyu_analysis as analysis  # noqa: E402
-import moyu_backups as backups  # noqa: E402
-import moyu_settings as settings  # noqa: E402
-from moyu_agent_checkpoint import ScopedCheckpointSaver  # noqa: E402
-import server  # noqa: E402
+from backend import moyu_agent_service as service  # noqa: E402
+from backend import moyu_analysis as analysis  # noqa: E402
+from backend import moyu_backups as backups  # noqa: E402
+from backend import moyu_settings as settings  # noqa: E402
+from backend.moyu_agent_checkpoint import ScopedCheckpointSaver  # noqa: E402
+from backend import server  # noqa: E402
 
 
 MANUSCRIPT = "林岚握住旧门的把手。\n门里传来两下轻响。"

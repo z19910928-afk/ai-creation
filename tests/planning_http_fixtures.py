@@ -18,9 +18,9 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import server  # noqa: E402
-import moyu_backups as backups  # noqa: E402
-import moyu_planning as planning  # noqa: E402
+from backend import server  # noqa: E402
+from backend import moyu_backups as backups  # noqa: E402
+from backend import moyu_planning as planning  # noqa: E402
 
 
 MANUSCRIPT = "😀作者已经写下的正文。\n林岚握着钥匙离开渡口，这一段不能被规划覆盖。"
@@ -614,8 +614,8 @@ class PlanningHTTPTests(unittest.TestCase):
         self.assertTrue(tables["app_planning_event"])
         with LocalPlanningProvider.lock:
             calls = len(LocalPlanningProvider.calls)
-        with patch("server.call_ai_provider", side_effect=AssertionError("restore must not call a provider")) as provider:
-            with patch("server.start_ai_worker", side_effect=AssertionError("restore must not start a worker")) as worker:
+        with patch("backend.server.call_ai_provider", side_effect=AssertionError("restore must not call a provider")) as provider:
+            with patch("backend.server.start_ai_worker", side_effect=AssertionError("restore must not start a worker")) as worker:
                 status, restored = self.request(
                     "POST", "/api/backups/" + backup["id"] + "/restore", {"confirm": True},
                 )
@@ -684,8 +684,8 @@ class PlanningHTTPTests(unittest.TestCase):
         archive = backups.read(self.root / "backups" / (backup["id"] + ".zip"), self.project)
         with LocalPlanningProvider.lock:
             calls = len(LocalPlanningProvider.calls)
-        with patch("server.call_ai_provider", side_effect=AssertionError("restored planning must not dispatch")) as provider:
-            with patch("server.start_ai_worker", side_effect=AssertionError("restored planning must not start a worker")) as worker:
+        with patch("backend.server.call_ai_provider", side_effect=AssertionError("restored planning must not dispatch")) as provider:
+            with patch("backend.server.start_ai_worker", side_effect=AssertionError("restored planning must not start a worker")) as worker:
                 status, restored = self.request(
                     "POST", "/api/backups/" + backup["id"] + "/restore", {"confirm": True},
                 )

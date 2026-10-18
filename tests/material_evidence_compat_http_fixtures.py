@@ -19,15 +19,15 @@ sys.path.insert(0, str(ROOT / "tests"))
 from guidance_alias_http_fixtures import GuidanceAliasHTTP, Provider
 from guidance_scope_change_http_fixtures import EvidenceResult
 from material_dependency_http_fixtures import MaterialDependencyHTTP, CANARY
-import server
+from backend import server
 
 
 PROJECT = "default-project"
 OTHER_CANARY = "OMITTED_OTHER_MEMORY_EVIDENCE_CANARY"
 LEGACY_NOTE = "legacy free-text evidence note"
 SOURCES = (
-    "moyu_materials.py", "server.py", "moyu_analysis.py", "moyu_context.py",
-    "moyu_workspace.py", "moyu_records.py", "tests/guidance_alias_http_fixtures.py",
+    "backend/moyu_materials.py", "backend/server.py", "backend/moyu_analysis.py", "backend/moyu_context.py",
+    "backend/moyu_workspace.py", "backend/moyu_records.py", "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py",
     "tests/material_dependency_http_fixtures.py",
     "tests/material_evidence_compat_http_fixtures.py",

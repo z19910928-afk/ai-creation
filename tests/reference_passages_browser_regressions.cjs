@@ -20,8 +20,8 @@ const screenshotDirectory = process.env.MOYU_REFERENCE_BROWSER_SCREENSHOT_DIR ||
 if (fs.existsSync(reportPath)) throw new Error('Evidence exists; choose a new report path');
 const hash = value => crypto.createHash('sha256').update(value).digest('hex');
 const sourceFiles = [
-  'app.js', 'author-workspace.js', 'styles.css', 'server.py', 'moyu_import.py',
-  'moyu_context.py', 'moyu_materials.py', 'tests/reference_passages_browser_regressions.cjs',
+  'frontend/app.js', 'frontend/author-workspace.js', 'frontend/styles.css', 'backend/server.py', 'backend/moyu_import.py',
+  'backend/moyu_context.py', 'backend/moyu_materials.py', 'tests/reference_passages_browser_regressions.cjs',
 ];
 const fingerprints = () => Object.fromEntries(sourceFiles.map(file =>
   [file, hash(fs.readFileSync(path.join(root, file)))]));

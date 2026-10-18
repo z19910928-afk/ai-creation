@@ -19,8 +19,8 @@ from urllib.parse import parse_qs, urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import server as service
-from desktop.backend import make_handler
+from backend import server as service
+from desktop.service_entry import make_handler
 
 
 class AssetParser(HTMLParser):
@@ -65,7 +65,7 @@ class StaticCacheTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="moyu-static-cache-") as temporary:
             site = Path(temporary)
             for asset in service.Handler.STATIC_FILES - {"/"}:
-                shutil.copy2(ROOT / asset.lstrip("/"), site / asset.lstrip("/"))
+                shutil.copy2(ROOT / "frontend" / asset.lstrip("/"), site / asset.lstrip("/"))
 
             class StaticHandler(service.Handler):
                 def __init__(self, *args, **kwargs):

@@ -10,7 +10,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from moyu_output import (  # noqa: E402
+from backend.moyu_output import (  # noqa: E402
     count_characters,
     find_planning_contamination,
     output_contract,

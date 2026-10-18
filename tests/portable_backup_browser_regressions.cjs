@@ -28,10 +28,10 @@ const chatTableRows = {
   app_agent_chat_action: 4,
 };
 const sourceFiles = [
-  'app.js', 'author-workspace.js', 'styles.css', 'index.html', 'server.py',
-  'moyu_portable.py', 'moyu_backups.py', 'moyu_workspace.py', 'moyu_import.py',
-  'moyu_planning.py', 'moyu_revision.py', 'moyu_records.py',
-  'moyu_agent_checkpoint.py', 'moyu_agent_service.py', 'moyu_writing_agent.py', 'requirements.txt',
+  'frontend/app.js', 'frontend/author-workspace.js', 'frontend/styles.css', 'frontend/index.html', 'backend/server.py',
+  'backend/moyu_portable.py', 'backend/moyu_backups.py', 'backend/moyu_workspace.py', 'backend/moyu_import.py',
+  'backend/moyu_planning.py', 'backend/moyu_revision.py', 'backend/moyu_records.py',
+  'backend/moyu_agent_checkpoint.py', 'backend/moyu_agent_service.py', 'backend/moyu_writing_agent.py', 'requirements.txt',
   'tests/portable_backup_fixtures.py', 'tests/portable_backup_browser_regressions.cjs',
 ];
 const fingerprints = () => Object.fromEntries(sourceFiles.map(file =>
@@ -53,10 +53,10 @@ const services = [], openContexts = [], requestLog = [];
 const serverScript = String.raw`
 import base64, hashlib, json, os, sqlite3, sys, threading, time, urllib.request
 from pathlib import Path
-import server
-import moyu_backups as backups
-import moyu_portable as portable
-import moyu_workspace as workspace
+from backend import server
+from backend import moyu_backups as backups
+from backend import moyu_portable as portable
+from backend import moyu_workspace as workspace
 sys.path.insert(0, str(Path.cwd() / "tests"))
 from portable_backup_fixtures import seed_source, snapshot, SOURCE_PROJECT, SOURCE_BRANCH, SOURCE_ACTOR
 role = sys.argv[1]

@@ -15,8 +15,8 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import moyu_output
-from moyu_provider import prepare_chat_request
+from backend import moyu_output
+from backend.moyu_provider import prepare_chat_request
 from scripts import literary_evaluation as evaluation
 
 

@@ -24,7 +24,7 @@ import xml.etree.ElementTree as ET
 from xml.parsers import expat
 import zipfile
 
-from moyu_context import ScopePolicy, paragraph_ranges, search_materials, text_hash
+from .moyu_context import ScopePolicy, paragraph_ranges, search_materials, text_hash
 
 
 MAX_SOURCE_BYTES = 32 * 1024 * 1024
@@ -351,7 +351,7 @@ def _exact_preview(raw: bytes, filename: str, fmt: str, encoding: str,
 
 
 def _markdown_manuscript(text: str) -> tuple[Mapping[str, Any], str] | None:
-    import moyu_publication
+    from . import moyu_publication
 
     claimed = list(re.finditer(r"<!--\s*moyu-manuscript-v1\b", text))
     if not claimed:
@@ -371,7 +371,7 @@ def _markdown_manuscript(text: str) -> tuple[Mapping[str, Any], str] | None:
 
 
 def _epub_manuscript(archive: zipfile.ZipFile, reading_count: int) -> tuple[Mapping[str, Any], str] | None:
-    import moyu_publication
+    from . import moyu_publication
 
     manifest_path = "META-INF/moyu-export-manifest.json"
     names = set(archive.namelist())

@@ -14,8 +14,12 @@ const root = path.resolve(__dirname, '..');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(), 'moyu-desktop-author-flow-'));
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const hash = text => crypto.createHash('sha256').update(text).digest('hex');
-const sourceFiles = fs.readdirSync(root).filter(file => /\.(py|js)$/.test(file))
-  .concat(['index.html', 'styles.css', 'tests/desktop_author_flow_regressions.cjs']).sort();
+const sourceFiles = fs.readdirSync(root).filter(file => /\.py$/.test(file))
+  .concat(fs.readdirSync(path.join(root, 'backend'))
+    .filter(file => /\.py$/.test(file)).map(file => 'backend/' + file))
+  .concat(fs.readdirSync(path.join(root, 'frontend'))
+    .filter(file => /\.(js|css|html)$/.test(file)).map(file => 'frontend/' + file))
+  .concat(['tests/desktop_author_flow_regressions.cjs']).sort();
 const fingerprints = () => Object.fromEntries(sourceFiles.map(file =>
   [file, hash(fs.readFileSync(path.join(root, file)))]));
 const results = {

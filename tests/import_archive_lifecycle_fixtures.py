@@ -25,9 +25,9 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import moyu_analysis
-import moyu_backups
-import server
+from backend import moyu_analysis
+from backend import moyu_backups
+from backend import server
 
 
 def _request(base: str, method: str, path: str, payload=None, project: str | None = None,
@@ -647,7 +647,7 @@ def main() -> int:
                     table: conn.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0]
                     for table in moyu_backups.tables(conn)
                 }
-            with patch("server.sync_state", side_effect=RuntimeError("forced sync failure")):
+            with patch("backend.server.sync_state", side_effect=RuntimeError("forced sync failure")):
                 status, failed = _apply_import(base, rollback_preview, mode="manuscript", title="失败导入")
             assert status >= 500, failed
             after_projects = _request(base, "GET", "/api/projects")[1]["projects"]
@@ -696,8 +696,8 @@ def main() -> int:
             assert any(row["source_sha256"] == hashlib.sha256(raw_gb).hexdigest() for row in tables["app_reference_document"])
             source_event_keys = {row["idempotency_key"] for row in tables["event_log"]}
 
-            with patch("server.call_ai_provider", side_effect=AssertionError("archive must not call a provider")) as provider:
-                with patch("server.start_ai_worker", side_effect=AssertionError("archive must not restart a job")) as worker:
+            with patch("backend.server.call_ai_provider", side_effect=AssertionError("archive must not call a provider")) as provider:
+                with patch("backend.server.start_ai_worker", side_effect=AssertionError("archive must not restart a job")) as worker:
                     status, restored = _request(
                         base, "POST", f"/api/backups/{backup_id}/restore", {"confirm": True}, manuscript_project
                     )
@@ -739,7 +739,7 @@ def main() -> int:
                     (restored_project,),
                 ).fetchone()
                 assert restored_ref is not None and bytes(restored_ref["source_bytes"]) == raw_gb
-            with patch("server.generate_ai", side_effect=AssertionError("restored jobs must not run")) as generate:
+            with patch("backend.server.generate_ai", side_effect=AssertionError("restored jobs must not run")) as generate:
                 status, drained = _request(base, "POST", "/api/ai/queue/drain", {}, restored_project)
                 _assert_status(status, drained, 200)
                 assert not generate.called

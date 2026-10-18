@@ -18,18 +18,18 @@ sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
 
 from guidance_alias_http_fixtures import GuidanceAliasHTTP, Provider
-import moyu_analysis
-import moyu_records
-import moyu_workspace
-from moyu_provider import ProviderError
-import server
+from backend import moyu_analysis
+from backend import moyu_records
+from backend import moyu_workspace
+from backend.moyu_provider import ProviderError
+from backend import server
 
 
 CANARY = "SCOPE_CHANGE_CARD_CANARY"
 PROJECT = "default-project"
 SOURCES = (
-    "moyu_workspace.py", "moyu_context.py", "moyu_records.py", "moyu_analysis.py",
-    "moyu_backups.py", "server.py", "tests/guidance_alias_http_fixtures.py",
+    "backend/moyu_workspace.py", "backend/moyu_context.py", "backend/moyu_records.py", "backend/moyu_analysis.py",
+    "backend/moyu_backups.py", "backend/server.py", "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py",
 )
 
@@ -174,7 +174,7 @@ class GuidanceScopeChangeHTTP(unittest.TestCase):
         self.change(card, knowledge_scope={"available_from": 9})
         ledger = self.ledger()
         # Delayed assembly simulates the scope being saved before job insertion.
-        with patch("server.ai_context", return_value=(frozen, chapter)):
+        with patch("backend.server.ai_context", return_value=(frozen, chapter)):
             status, rejected = self.call("POST", "/api/ai/queue", {**self.request, "defer": True})
         self.observe("late_creation", http_status=status, ledger_unchanged=self.ledger() == ledger,
                      provider_calls=len(Provider.requests))
@@ -189,7 +189,7 @@ class GuidanceScopeChangeHTTP(unittest.TestCase):
         self.change(card, private=True)
         ledger, body = self.ledger(), self.body()
         outcomes = []
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, response = self.call("POST", f"/api/ai/{kind}/{identifier}/retry", {"mode": "original"})
                 outcomes.append({"entry": kind, "status": status})
@@ -205,12 +205,12 @@ class GuidanceScopeChangeHTTP(unittest.TestCase):
         job = self.queue()
         failure = ProviderError("synthetic failure before dispatch", code="fixture_not_dispatched",
                                 request_dispatched=False)
-        with patch("server.call_ai_provider", side_effect=failure):
+        with patch("backend.server.call_ai_provider", side_effect=failure):
             self.assertEqual(self.process(job)["status"], "failed")
         self.change(card, knowledge_scope={"known_by": ["scope_other_person"], "private": True})
         ledger = self.ledger()
         outcomes = []
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             for kind, identifier in (("jobs", job["id"]), ("runs", job["ai_run_id"])):
                 status, response = self.call("POST", f"/api/ai/{kind}/{identifier}/retry", {"mode": "original"})
                 outcomes.append({"entry": kind, "status": status})

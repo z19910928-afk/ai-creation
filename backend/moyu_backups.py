@@ -17,7 +17,7 @@ import zlib
 from contextlib import closing
 from pathlib import Path
 
-from moyu_records import decode_scope
+from .moyu_records import decode_scope
 from scripts.sqlite_backup import backup_database, verify_backup
 
 
@@ -270,7 +270,7 @@ def tables(conn):
 
 
 def _portable_model_settings(raw):
-    from moyu_settings import PARAMETERS, TASKS, _connection_options
+    from .moyu_settings import PARAMETERS, TASKS, _connection_options
 
     settings = _strict_json(raw)
     if not isinstance(settings, dict):
@@ -297,7 +297,7 @@ def _portable_model_settings(raw):
     if "parameters" in settings:
         settings["parameters"] = public_parameters(settings["parameters"])
     if "task_parameters" in settings:
-        from moyu_provider import prepare_chat_request
+        from .moyu_provider import prepare_chat_request
         task_parameters = {}
         for task, values in settings["task_parameters"].items():
             if task not in TASKS:
@@ -895,7 +895,7 @@ def _check_content(data, indexes):
         for row in data.get(table, []):
             if hashlib.sha256(row["source_bytes"]).hexdigest() != row["source_sha256"]:
                 raise ValueError("备份中的原始来源文件指纹不一致")
-            from moyu_import import parse_import
+            from .moyu_import import parse_import
             parsed = parse_import(row["source_bytes"], row["filename"])
             metadata = _strict_json(row["metadata_json"])
             text = "".join(chapter["body"] for chapter in parsed["chapters"])
@@ -976,7 +976,7 @@ def _check_content(data, indexes):
                     or hashlib.sha256("".join(parts).encode("utf-8")).hexdigest() != chunk["cumulative_hash"]):
                 raise ValueError("备份中的模型分片顺序或内容指纹不一致")
     if data.get("app_planning_workflow"):
-        from moyu_planning import _hash
+        from .moyu_planning import _hash
         for row in data["app_planning_workflow"]:
             if _hash({"version": row["source_version"],
                       "blueprint": _strict_json(row["source_blueprint_json"])}) != row["source_hash"]:

@@ -24,9 +24,9 @@ import chapter_deletion_dependency_http_fixtures as seed  # noqa: E402
 
 server = seed.server
 SOURCES = (
-    "server.py", "moyu_context.py", "moyu_materials.py", "moyu_backups.py",
-    "moyu_portable.py", "moyu_records.py", "moyu_workspace.py",
-    "moyu_agent_chat.py", "moyu_agent_settings.py",
+    "backend/server.py", "backend/moyu_context.py", "backend/moyu_materials.py", "backend/moyu_backups.py",
+    "backend/moyu_portable.py", "backend/moyu_records.py", "backend/moyu_workspace.py",
+    "backend/moyu_agent_chat.py", "backend/moyu_agent_settings.py",
     "tests/chapter_deletion_dependency_http_fixtures.py",
     "tests/legacy_deleted_dependency_http_fixtures.py",
 )

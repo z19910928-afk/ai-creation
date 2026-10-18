@@ -1,13 +1,20 @@
 # 更新记录
 
+## 2026-10-18 · 项目首页目录整理
+
+- 将页面文件归入 `frontend/`，本机服务与写作模块归入 `backend/`，桌面打包配置归入 `desktop/`，GitHub仓库根目录从58项减少到15项。
+- 保留根目录 `server.py` 启动入口、原有页面地址和本机数据位置，同步测试、构建与开发文档中的文件路径。
+- 桌面服务入口使用 `desktop/service_entry.py`，避免打包时与 `backend/` 包重名。
+- 此次整理不改变已发布的 v0.1.2 安装包；验证范围与结果见[目录整理验收记录](audits/repository-layout-20261018.md)。
+
 ## 2026-10-14 · 中断片段回看与冻结字数契约
 
 - 修复失败、取消和中断任务刷新后无法回看已保存片段的问题，任务中心提供只读入口；缺少最终结果时只回读已有分片账本。
 - 只读片段不能采纳、整理或再次停止；执行或费用未知不显示重试入口，保留作品、分支和章节身份检查。
 - 模型设置与助手状态读完后才显示新表单，等待期间切页或切作品会重新核对身份，防止新模型表单与旧助手状态混用。
 - 文学评测两臂统一使用冻结的输出字数契约，私有契约字段不进入故事素材，原上下文和历史请求保持不变；95项离线测试通过。
-- 上海时间21:30:46至21:34:21的[完整复验](docs/audits/2026-10-13/evidence/compatibility-python311-node24-interrupted-fragment-contract-final.json)57项和79个电脑浏览器场景通过，70份源码前后相同，20份结果及截图归档；本轮中间失败原件保留。验证使用隔离数据与免费本机模拟模型。
-- [v25真实单候选诊断](docs/audits/2026-10-14/literary-pilot-v25-single-candidate/diagnosis.md)完整返回898字，超600至850字硬门，新增1次请求和1592 tokens，没有基线、评审或文学通过结论。累计56/60次共享预留、105621个已知tokens、8条缺完整用量，金额未知；不擅自扩大预算。
+- 上海时间21:30:46至21:34:21的[完整复验](audits/2026-10-13/evidence/compatibility-python311-node24-interrupted-fragment-contract-final.json)57项和79个电脑浏览器场景通过，70份源码前后相同，20份结果及截图归档；本轮中间失败原件保留。验证使用隔离数据与免费本机模拟模型。
+- [v25真实单候选诊断](audits/2026-10-14/literary-pilot-v25-single-candidate/diagnosis.md)完整返回898字，超600至850字硬门，新增1次请求和1592 tokens，没有基线、评审或文学通过结论。累计56/60次共享预留、105621个已知tokens、8条缺完整用量，金额未知；不擅自扩大预算。
 
 ## 2026-10-14 · 原候选整理与失败诊断
 
@@ -15,11 +22,11 @@
 - 每个父候选只建立一个子候选，重复请求返回已有任务；只有作者明确比较并采纳才写正文，过期原稿、已采纳或手改父候选拒绝整理。
 - 提交失联先只读核对已有任务，执行或费用未知不重发、不自动采纳。备份恢复与作品副本保留历史候选及关联，只供阅读，不能继续采纳、整理、重试或自动收费。
 - 公开整理关联只提供 `operation`、`parent_run_id`、`root_run_id`、`parent_characters`，不公开候选全文、整理备注或 `request_id`。
-- [真实整理诊断](docs/audits/2026-10-13/literary-revision-v1/diagnosis.md)基线与墨屿均只返回“铁”1字，整理输出合格0/2；两次均为 `glm-5.1`、`stop`、完整协议，未修复第十二轮942/868字失败首稿，未新增独立故事或发送盲评。新增4740和4747、合计9487 tokens，当前累计33条请求预留、59129个可信完整tokens与已知下界，仍有10条缺完整用量，实际金额未知。
-- 上海时间02:03:08至02:06:19的[候选整理完整复验](docs/audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-final.json)51个执行项、36份Python测试和55个电脑浏览器场景通过；66份源码前后指纹相同，13份附件指纹核验。候选整理19项、正文HTTP15项、20轮连续写作和五章10次专用候选检查均实际执行，提供方为免费本机模拟。
-- 文学质量、事实安全、作者效率与第一梯队均未证明。[中间工程失败](docs/audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)因源码变化与浏览器启动失败保留原件，随后独立完整复验通过；提交 `89ab69d` 已上传并通过[GitHub Actions 运行38447803077](docs/audits/2026-10-13/evidence/github-actions-candidate-revision-ci-fix-success.json)。工程检查成功不改变真实文学失败结论。
-- 回复模式诊断先执行一次同条件不分段请求，仍得到“铁”1字并观察到非空 `reasoning_content`；按停止条件未发送第二次流式请求。累计更新为34条预留、63876个可信完整tokens，10条缺完整用量，费用未知。[诊断记录](docs/audits/2026-10-13/literary-transport-v1/report.md)不代表文学达标或第一梯队。
-- 修正 `ai_contract_fixtures.py` 的服务健康等待：远程运行器现在最多等待10秒，并在服务提前退出时保留启动日志。修复后的[工程快照](docs/audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-ci-fix.json)51项、36份Python测试和55个电脑浏览器场景通过；这只修复检查启动竞态，不改变文学失败结论。
+- [真实整理诊断](audits/2026-10-13/literary-revision-v1/diagnosis.md)基线与墨屿均只返回“铁”1字，整理输出合格0/2；两次均为 `glm-5.1`、`stop`、完整协议，未修复第十二轮942/868字失败首稿，未新增独立故事或发送盲评。新增4740和4747、合计9487 tokens，当前累计33条请求预留、59129个可信完整tokens与已知下界，仍有10条缺完整用量，实际金额未知。
+- 上海时间02:03:08至02:06:19的[候选整理完整复验](audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-final.json)51个执行项、36份Python测试和55个电脑浏览器场景通过；66份源码前后指纹相同，13份附件指纹核验。候选整理19项、正文HTTP15项、20轮连续写作和五章10次专用候选检查均实际执行，提供方为免费本机模拟。
+- 文学质量、事实安全、作者效率与第一梯队均未证明。[中间工程失败](audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-release.json)因源码变化与浏览器启动失败保留原件，随后独立完整复验通过；提交 `89ab69d` 已上传并通过[GitHub Actions 运行38447803077](audits/2026-10-13/evidence/github-actions-candidate-revision-ci-fix-success.json)。工程检查成功不改变真实文学失败结论。
+- 回复模式诊断先执行一次同条件不分段请求，仍得到“铁”1字并观察到非空 `reasoning_content`；按停止条件未发送第二次流式请求。累计更新为34条预留、63876个可信完整tokens，10条缺完整用量，费用未知。[诊断记录](audits/2026-10-13/literary-transport-v1/report.md)不代表文学达标或第一梯队。
+- 修正 `ai_contract_fixtures.py` 的服务健康等待：远程运行器现在最多等待10秒，并在服务提前退出时保留启动日志。修复后的[工程快照](audits/2026-10-13/evidence/compatibility-python311-node24-candidate-revision-ci-fix.json)51项、36份Python测试和55个电脑浏览器场景通过；这只修复检查启动竞态，不改变文学失败结论。
 - 新增“协议完整但正文只有1字”的正文 HTTP 回归，确认候选仍可回看但页面与后端均阻止采纳，原稿和候选历史保持不变；该场景与真实“铁”1字诊断分开记录。
 
 ## 2026-10-14 · 电脑端交付复验与评测范围收口
@@ -28,9 +35,9 @@
 - 同起点插入与删除、替换在两个方向均保留冲突双方，由作者选择后保存，避免静默丢字。
 - 修正每日额度读取；流式回归直接验证首片已经到达后模型才继续结束，不以机器速度判断通过。
 - 文学工具只把双方候选合格、两个不同实际评审模型的双顺序均完成的故事计入对应对照。每个对照仍需30个独立故事；计划数量、任务或题材被篡改的记录不能充数。
-- 上海时间00:11:10至00:13:55的[电脑端复验](docs/audits/2026-10-13/evidence/compatibility-python311-node24-desktop-release-final.json)50个执行项、35份Python测试和49个真实浏览器场景全部通过；64份源码前后相同，包含连续20轮写作和五章10次专用候选检查。附件使用真实路径，旧报告与截图保留。
-- [第十二轮文学诊断](docs/audits/2026-10-13/literary-pilot-v12/report.md)首对942/868字均超600至850字门，输出合格0/6、有效评审0/12，停止扩题和盲评。仅墨屿系统收束一句变化，不能由单对差异宣称文学改善。含独立诊断累计31条请求预留、49642个可信完整tokens，10条缺完整用量，实际金额未知。
-- 工程修复提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传分支 `codex/full-function-audit`；GitHub增强自动检查运行 `38434003558` 于上海时间00:52:11至00:56:02真实成功，语法、全部Python契约测试、固定评测、编辑器12项和浏览器37/规划5/五章7场景通过，见[远程记录](docs/audits/2026-10-13/evidence/github-actions-desktop-release-success.json)。
+- 上海时间00:11:10至00:13:55的[电脑端复验](audits/2026-10-13/evidence/compatibility-python311-node24-desktop-release-final.json)50个执行项、35份Python测试和49个真实浏览器场景全部通过；64份源码前后相同，包含连续20轮写作和五章10次专用候选检查。附件使用真实路径，旧报告与截图保留。
+- [第十二轮文学诊断](audits/2026-10-13/literary-pilot-v12/report.md)首对942/868字均超600至850字门，输出合格0/6、有效评审0/12，停止扩题和盲评。仅墨屿系统收束一句变化，不能由单对差异宣称文学改善。含独立诊断累计31条请求预留、49642个可信完整tokens，10条缺完整用量，实际金额未知。
+- 工程修复提交 `eaca3586ddd2d8210f1ed62b1d1e22cd2c383886` 已上传分支 `codex/full-function-audit`；GitHub增强自动检查运行 `38434003558` 于上海时间00:52:11至00:56:02真实成功，语法、全部Python契约测试、固定评测、编辑器12项和浏览器37/规划5/五章7场景通过，见[远程记录](audits/2026-10-13/evidence/github-actions-desktop-release-success.json)。
 - 本机服务和真实编辑页面已启动验证，电脑入口为 `http://127.0.0.1:4173`；作品保存于忽略上传的 `moyu.sqlite3`，连接凭据保存在本机私有文件。本轮限电脑端，尚未合并 `main`；公网部署、七竞品同条件文学对照、第一梯队结论仍未完成。
 
 ## 2026-10-13 · 保存保护、长篇资料与产品修复
@@ -41,14 +48,14 @@
 - 模型设置按作品保存，密钥存于本机私有文件；任务统一排队和预留每日次数，费用未知的旧请求不会自动再次发送。
 - 长篇材料按章节时点、人物知情和有效原句选取；改稿使旧摘要、来源与审稿过期。
 - 文学试评保存固定材料、请求、完整候选、失败和费用未知记录。已有工程回归与真实模型诊断分别归档；当前仍未证明文学质量达到第一梯队，远程检查与正式部署另行验收。
-- 自动检查使用 Python 3.11 / Node 24，加入编辑器合并和真实浏览器回归。运行版本与验证范围见[审查证据](docs/audits/2026-10-13/evidence/README.md)。
+- 自动检查使用 Python 3.11 / Node 24，加入编辑器合并和真实浏览器回归。运行版本与验证范围见[审查证据](audits/2026-10-13/evidence/README.md)。
 
 ## 2026-10-11 · 任务卡、来源证据与独立审查
 
 - 为章节增加目标、视角、场景计划、伏笔动作、回顾、下一章简报和 hook，写作流程从任务卡开始，并在完成前执行可重复的质量审查。
 - 将记忆候选接到章节来源 span 与正典 assertion：保存原文引句、范围和哈希，正文修订后旧来源会标记为 stale。
 - 增加有界上下文预览和 AI 运行记录，报告估算 token、检索章节、来源 ID、提示/上下文哈希与延迟；不把有限召回描述成百万上下文。
-- 记录 NovelForge、MuMuAINovel、arboris-novel、Ai-Novel、91Writing 和 webnovel-writer 的 clean-room 借鉴边界、许可证注意事项、AI 写作失效模式和剩余 P2/P3 缺口，详见 [`docs/third-party-audit.md`](docs/third-party-audit.md)。
+- 记录 NovelForge、MuMuAINovel、arboris-novel、Ai-Novel、91Writing 和 webnovel-writer 的 clean-room 借鉴边界、许可证注意事项、AI 写作失效模式和剩余 P2/P3 缺口，详见 [`docs/third-party-audit.md`](third-party-audit.md)。
 
 ## 2026-10-11 · 全书完成与终稿闭环
 

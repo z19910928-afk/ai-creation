@@ -6,10 +6,10 @@ import json
 import sqlite3
 import uuid
 
-import moyu_analysis
-from moyu_context import source_evidence_reasons, text_hash
-import moyu_materials
-import moyu_workspace
+from . import moyu_analysis
+from .moyu_context import source_evidence_reasons, text_hash
+from . import moyu_materials
+from . import moyu_workspace
 
 
 KINDS = ("agent", "queue", "analysis", "review")

@@ -14,9 +14,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "tests"))
 
-import moyu_backups  # noqa: E402
-import server  # noqa: E402
-from moyu_provider import ProviderError  # noqa: E402
+from backend import moyu_backups  # noqa: E402
+from backend import server  # noqa: E402
+from backend.moyu_provider import ProviderError  # noqa: E402
 from prose_output_http_fixtures import (  # noqa: E402
     BODY, UNICODE_PROSE, LocalProseProvider, ProseOutputHTTPTests,
 )
@@ -113,7 +113,7 @@ class CandidateRevisionTests(ProseOutputHTTPTests):
             "fixture transport did not dispatch", code="fixture_not_dispatched",
             request_dispatched=False,
         )
-        with patch("server.call_ai_provider", side_effect=failure):
+        with patch("backend.server.call_ai_provider", side_effect=failure):
             status, failed = self.request(
                 "POST", f"/api/ai/jobs/{job['id']}/process", {},
             )
@@ -122,7 +122,7 @@ class CandidateRevisionTests(ProseOutputHTTPTests):
         return failed
 
     def _deferred_retry(self, job):
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             status, retried = self.request(
                 "POST", f"/api/ai/jobs/{job['id']}/retry", {"mode": "original"},
             )
@@ -469,7 +469,7 @@ class CandidateRevisionTests(ProseOutputHTTPTests):
                 with lock:
                     errors.append(error)
 
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             threads = [threading.Thread(target=retry) for _ in range(2)]
             for thread in threads:
                 thread.start()
@@ -562,7 +562,7 @@ class CandidateRevisionTests(ProseOutputHTTPTests):
         )
         self.assertEqual(status, 200, changed)
         before, calls = self._ledger(), self._calls()
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             status, rejected = self.request(
                 "POST", f"/api/ai/jobs/{child['id']}/retry", {"mode": "original"},
             )

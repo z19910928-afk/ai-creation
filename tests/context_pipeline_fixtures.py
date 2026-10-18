@@ -16,7 +16,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_context import (  # noqa: E402
+from backend.moyu_context import (  # noqa: E402
     ScopePolicy, analysis_request, assemble_context, chapter_chunks, paragraph_ranges,
     refresh_analysis_status, scope_decision, search_materials, text_hash,
     validate_chapter_analysis, validate_source_quote, validate_story_review,

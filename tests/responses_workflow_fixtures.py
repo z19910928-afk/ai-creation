@@ -19,11 +19,11 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_backups
-import moyu_materials
-import moyu_revision
-from moyu_provider import prepare_chat_request
-import server
+from backend import moyu_backups
+from backend import moyu_materials
+from backend import moyu_revision
+from backend.moyu_provider import prepare_chat_request
+from backend import server
 
 
 SECRET = "synthetic-responses-workflow-credential"

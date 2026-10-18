@@ -16,7 +16,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import server
+from backend import server
 
 
 class QuietHandler(server.Handler):
@@ -219,8 +219,9 @@ class KnowledgeInboxHTTP(unittest.TestCase):
                       "editor-preferences.css"):
             with urllib.request.urlopen(self.base + "/" + asset) as response:
                 self.assertEqual(response.status, 200)
-                self.assertEqual(response.read(), (ROOT / asset).read_bytes())
-        for private in ("moyu_knowledge.py", "moyu_inbox.py", "moyu.sqlite3", ".env"):
+                self.assertEqual(response.read(), (ROOT / "frontend" / asset).read_bytes())
+        for private in ("moyu_knowledge.py", "moyu_inbox.py", "moyu.sqlite3", ".env",
+                        "backend/moyu_knowledge.py", "backend/moyu_inbox.py", "frontend/"):
             with self.assertRaises(urllib.error.HTTPError) as caught:
                 urllib.request.urlopen(self.base + "/" + private)
             self.assertEqual(caught.exception.code, 404)

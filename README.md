@@ -146,11 +146,29 @@ py -3.11 -m venv .venv
 | 想了解什么 | 从这里开始 |
 | --- | --- |
 | 安装、打包和各平台进度 | [桌面安装说明](docs/desktop-packaging.md) |
+| 版本更新与问题反馈 | [更新记录](docs/CHANGELOG.md) · [安全问题](.github/SECURITY.md) |
 | 聊天、写作、记忆、备份和详细操作 | [使用与开发参考](docs/reference-guide.md) |
 | 接口、运行配置和开发检查 | [本机接口](docs/reference-guide.md#本地-api) · [开发验证](docs/reference-guide.md#验证) |
 | 产品方向和下一步能力 | [产品蓝图](docs/master-product-blueprint-v2.md) · [能力对照](docs/audits/2026-10-14/comprehensive/capability-matrix.md) |
 | 已做过哪些检查 | [产品验收记录](docs/audits/2026-10-14/comprehensive/README.md) · [文学评测说明](docs/evaluations/README.md) |
 | 借鉴了哪些产品 | [NovelForge 流程研究](docs/research/novelforge-writing-flow-and-interface-2026-10-16.md) · [设计参考](docs/design-references.md) · [第三方边界](docs/third-party-audit.md) |
+
+<details>
+<summary><strong>项目目录</strong></summary>
+
+```text
+backend/      本机服务、写作总管与模型接入
+frontend/     创作页面、交互与样式
+desktop/      Mac / Windows 桌面窗口与打包配置
+docs/         使用说明、设计资料与验证记录
+scripts/      构建、备份与评测工具
+tests/        功能与界面自动检查
+server.py     源码版启动入口
+```
+
+源码版仍从项目根目录运行 `python server.py`，作品和密钥保存位置不变。
+
+</details>
 
 <details>
 <summary><strong>当前版本的范围</strong></summary>

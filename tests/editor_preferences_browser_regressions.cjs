@@ -16,7 +16,7 @@ const report = {passed: false, cases: [], artifacts: temporary, page_errors: [],
   scope: '真实桌面 Chrome、隔离数据库；逐章位置、阅读偏好、来源定位和浏览器存储失败',
   branch_identity_test: 'Synthetic frontend branch identity; no branch-management UI claim.',
   paid_provider_calls: 0, model_request_posts: 0, browser_mutations: [],
-  source_files: ['author-workspace.js', 'editor-preferences.css',
+  source_files: ['frontend/author-workspace.js', 'frontend/editor-preferences.css',
     'tests/editor_preferences_browser_regressions.cjs'].map(file => ({
     path: file, sha256: hash(fs.readFileSync(path.join(root, file))),
   }))};

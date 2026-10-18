@@ -22,11 +22,11 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_backups as backups
-import moyu_model_connections as connections
-import moyu_settings as settings
-from moyu_provider import call_chat_completion, request_messages
-import server
+from backend import moyu_backups as backups
+from backend import moyu_model_connections as connections
+from backend import moyu_settings as settings
+from backend.moyu_provider import call_chat_completion, request_messages
+from backend import server
 
 
 FIRST_KEY = "synthetic-library-first-private-value"

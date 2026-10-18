@@ -1,4 +1,4 @@
-"""Private loopback service owned by the desktop application's main process."""
+"""Desktop service entry point, distinct from the backend package."""
 
 from __future__ import annotations
 
@@ -169,7 +169,7 @@ def main():
         token, port = configure_environment()
         if not getattr(sys, "frozen", False):
             sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-        import server as service
+        from backend import server as service
 
         os.chdir(service.ROOT)
         service.init_db()

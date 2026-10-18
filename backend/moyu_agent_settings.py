@@ -11,9 +11,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 from urllib.parse import urlsplit
 
-import moyu_settings
-import moyu_provider
-from moyu_provider import (
+from . import moyu_settings
+from . import moyu_provider
+from .moyu_provider import (
     ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts,
     usage_accounting,
 )
@@ -81,7 +81,7 @@ def _configuration(conn: sqlite3.Connection, project: str, saved: dict[str, Any]
         return {**{key: value for key, value in main.items() if key != "_connection_routes"},
                 "mode": "inherit", "connection_scope": "agent_chat"}
     if saved["mode"] == "library":
-        import moyu_model_connections as library
+        from . import moyu_model_connections as library
         route = library._route(conn, project, library._payload(conn, project),
                                saved.get("connection_id") or "")
         # A library entry supplies its connection, not the main writer's sampling
@@ -187,7 +187,7 @@ def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
     configured = bool(config["base_url"] and config["model"]
                       and (saved["mode"] != "independent" or _independent_verified(saved, config))
                       and (saved["mode"] != "library" or config.get("connection_verified")))
-    import moyu_model_connections as library
+    from . import moyu_model_connections as library
     return {
         "mode": saved["mode"], "connection_id": saved.get("connection_id") or "",
         "connection_scope": "agent_chat",

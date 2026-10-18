@@ -29,13 +29,13 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_analysis as analysis  # noqa: E402
-import moyu_backups as backups  # noqa: E402
-import moyu_import as manuscript_import  # noqa: E402
-import moyu_planning as planning  # noqa: E402
-import moyu_records as records  # noqa: E402
-import moyu_workspace as workspace  # noqa: E402
-import server  # noqa: E402
+from backend import moyu_analysis as analysis  # noqa: E402
+from backend import moyu_backups as backups  # noqa: E402
+from backend import moyu_import as manuscript_import  # noqa: E402
+from backend import moyu_planning as planning  # noqa: E402
+from backend import moyu_records as records  # noqa: E402
+from backend import moyu_workspace as workspace  # noqa: E402
+from backend import server  # noqa: E402
 
 
 BASE_TABLES = {
@@ -1560,7 +1560,7 @@ class PortableBackupTests(unittest.TestCase):
                 self.assertEqual(snapshot(self.conn), before)
 
     def test_restored_agent_history_preserves_bytes_and_cannot_deserialize(self):
-        from moyu_agent_checkpoint import ScopedCheckpointSaver
+        from backend.moyu_agent_checkpoint import ScopedCheckpointSaver
 
         first = self.restore()
         first_payload = self.assert_all_rows(self.payload_copy, first)
@@ -1601,8 +1601,8 @@ class PortableBackupTests(unittest.TestCase):
             self.assertEqual(snapshot(self.conn), before)
 
     def test_real_langgraph_checkpoints_restore_as_sealed_history(self):
-        from moyu_agent_checkpoint import ScopedCheckpointSaver
-        import moyu_writing_agent as agent
+        from backend.moyu_agent_checkpoint import ScopedCheckpointSaver
+        from backend import moyu_writing_agent as agent
 
         conn = server.connect(check_same_thread=False)
         self.local.callback(conn.close)
@@ -2316,9 +2316,9 @@ def main() -> int:
     if report_target and report_target.exists():
         raise RuntimeError("Evidence exists; use a new portable backup report path")
     files = (
-        "moyu_backups.py", "server.py", "moyu_workspace.py", "moyu_planning.py",
-        "moyu_agent_checkpoint.py", "moyu_agent_service.py", "moyu_writing_agent.py", "requirements.txt",
-        "moyu_settings.py", "moyu_records.py", "moyu_import.py", "moyu_analysis.py",
+        "backend/moyu_backups.py", "backend/server.py", "backend/moyu_workspace.py", "backend/moyu_planning.py",
+        "backend/moyu_agent_checkpoint.py", "backend/moyu_agent_service.py", "backend/moyu_writing_agent.py", "requirements.txt",
+        "backend/moyu_settings.py", "backend/moyu_records.py", "backend/moyu_import.py", "backend/moyu_analysis.py",
         "docs/schema-v1.sql", "docs/schema-v1.1-migration.sql",
         "tests/portable_backup_fixtures.py", "tests/manuscript_import_fixtures.py",
     )

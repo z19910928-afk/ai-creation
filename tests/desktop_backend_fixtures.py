@@ -27,11 +27,11 @@ from unittest.mock import patch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_backups as backups  # noqa: E402
+from backend import moyu_backups as backups  # noqa: E402
 from scripts import sqlite_backup  # noqa: E402
 
 
-BACKEND_COMMAND = [sys.executable, "-B", str(ROOT / "desktop" / "backend.py")]
+BACKEND_COMMAND = [sys.executable, "-B", str(ROOT / "desktop" / "service_entry.py")]
 STATIC_FILES = (
     "index.html", "app.js", "editor-sync.js", "author-workspace.js", "styles.css",
     "knowledge-workspace.js", "writing-inbox.js", "knowledge-workspace.css",
@@ -288,11 +288,11 @@ class DesktopBackendFixtures(unittest.TestCase):
                 status, raw, headers = self.backend.request("GET", "/" + name)
                 self.assertEqual(status, 200)
                 self.assertEqual(hashlib.sha256(raw).digest(),
-                                 hashlib.sha256((ROOT / name).read_bytes()).digest())
+                                 hashlib.sha256((ROOT / "frontend" / name).read_bytes()).digest())
                 self.assertIn("content-type", {name.lower() for name in headers})
         status, raw, _ = self.backend.request("GET", "/")
         self.assertEqual(status, 200)
-        self.assertEqual(raw, (ROOT / "index.html").read_bytes())
+        self.assertEqual(raw, (ROOT / "frontend" / "index.html").read_bytes())
         status, raw, _ = self.backend.request("HEAD", "/index.html")
         self.assertEqual((status, raw), (200, b""))
 
@@ -350,8 +350,10 @@ class DesktopBackendFixtures(unittest.TestCase):
     def test_private_files_are_hidden_for_get_and_head(self):
         forbidden = (
             "/moyu.sqlite3", "/credentials/", "/credentials/key.json", "/server.py",
-            "/desktop/backend.py", "/docs/schema-v1.sql", "/.git/config",
+            "/desktop/backend.py", "/desktop/service_entry.py",
+            "/docs/schema-v1.sql", "/.git/config",
             "/_internal/server.py", "/%2e%2e/server.py", "/docs/",
+            "/backend/server.py", "/backend/moyu_settings.py", "/frontend/",
         )
         for method in ("GET", "HEAD"):
             for path in forbidden:

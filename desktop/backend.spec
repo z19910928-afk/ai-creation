@@ -24,18 +24,23 @@ static_files = (
 )
 schema_files = ("docs/schema-v1.sql", "docs/schema-v1.1-migration.sql")
 datas = []
-for name in static_files + schema_files:
+for name in static_files:
+    source = project / "frontend" / name
+    if not source.is_file() or source.is_symlink():
+        raise RuntimeError("A required desktop resource is missing or unsafe")
+    datas.append((str(source), "frontend"))
+for name in schema_files:
     source = project / name
     if not source.is_file() or source.is_symlink():
         raise RuntimeError("A required desktop resource is missing or unsafe")
     datas.append((str(source), str(Path(name).parent)))
 datas += copy_metadata("langgraph", recursive=True)
-hiddenimports = ["server"]
+hiddenimports = ["backend.server"]
 for package in ("langgraph", "langgraph_sdk", "langchain_core", "pydantic", "pydantic_core"):
     hiddenimports += collect_submodules(package)
 
 a = Analysis(
-    [str(project / "desktop" / "backend.py")],
+    [str(project / "desktop" / "service_entry.py")],
     pathex=[str(project)],
     binaries=[],
     datas=datas,

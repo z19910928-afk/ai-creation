@@ -3,11 +3,11 @@ from __future__ import annotations
 
 import json
 
-import moyu_agent_service as writing_agent
-import moyu_agent_settings as connection
-import moyu_chapter_transition as chapter_transition
-import moyu_materials
-from moyu_provider import ProviderCanceled, prepare_chat_request, validate_json
+from . import moyu_agent_service as writing_agent
+from . import moyu_agent_settings as connection
+from . import moyu_chapter_transition as chapter_transition
+from . import moyu_materials
+from .moyu_provider import ProviderCanceled, prepare_chat_request, validate_json
 
 
 class ChatNotFound(LookupError):

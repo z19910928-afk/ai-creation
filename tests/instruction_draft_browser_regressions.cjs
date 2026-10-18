@@ -14,7 +14,7 @@ const root=path.resolve(__dirname,'..');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-instruction-draft-'));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const results={passed:false,scope:'真实桌面Chrome、隔离SQLite、本机免费模拟提供方',cases:[],artifacts:temporary,
- external_model_calls:0,source_files:['app.js','tests/instruction_draft_browser_regressions.cjs'].map(file=>({
+ external_model_calls:0,source_files:['frontend/app.js','tests/instruction_draft_browser_regressions.cjs'].map(file=>({
   path:file,sha256:crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')}))};
 const providerRequests=[];
 let app,provider,browser,base,serverLog='',releaseProvider;

@@ -18,15 +18,15 @@ sys.path.insert(0, str(ROOT / "tests"))
 
 from guidance_alias_http_fixtures import GuidanceAliasHTTP, Provider, encode
 from guidance_scope_change_http_fixtures import EvidenceResult
-import moyu_analysis
-import moyu_workspace
-import server
+from backend import moyu_analysis
+from backend import moyu_workspace
+from backend import server
 
 
 PROJECT = "default-project"
 SOURCES = (
-    "server.py", "moyu_analysis.py", "moyu_materials.py", "moyu_context.py",
-    "moyu_workspace.py", "moyu_records.py", "tests/guidance_alias_http_fixtures.py",
+    "backend/server.py", "backend/moyu_analysis.py", "backend/moyu_materials.py", "backend/moyu_context.py",
+    "backend/moyu_workspace.py", "backend/moyu_records.py", "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py", "tests/material_legacy_http_fixtures.py",
 )
 
@@ -373,7 +373,7 @@ class MaterialLegacyHTTP(unittest.TestCase):
             self.change(description="生成完成之后的来源变更，原候选必须保留。")
             return result
 
-        with patch("server.generate_ai", side_effect=change_after_generate):
+        with patch("backend.server.generate_ai", side_effect=change_after_generate):
             completed = self.process(job)
         self.assertEqual(completed["status"], "failed", completed)
         result = completed["result"]

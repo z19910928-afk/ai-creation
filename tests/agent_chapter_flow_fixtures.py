@@ -17,9 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from agent_chat_fixtures import ChatTests, Provider, REPORT_SCOPE
-import moyu_backups as backups
-import moyu_chapter_transition as transition
-import server
+from backend import moyu_backups as backups
+from backend import moyu_chapter_transition as transition
+from backend import server
 
 
 BODY = (
@@ -27,8 +27,8 @@ BODY = (
     "木板发出轻响，门里的人却没有走出来。她看了看空着的街道，把灯移到屋檐下面，继续等候。"
 )
 SOURCE_FILES = (
-    "server.py", "moyu_agent_chat.py", "moyu_agent_service.py",
-    "moyu_chapter_transition.py", "moyu_chapter_handoff.py", "moyu_backups.py",
+    "backend/server.py", "backend/moyu_agent_chat.py", "backend/moyu_agent_service.py",
+    "backend/moyu_chapter_transition.py", "backend/moyu_chapter_handoff.py", "backend/moyu_backups.py",
     "tests/agent_chat_fixtures.py", "tests/agent_chapter_flow_fixtures.py",
 )
 

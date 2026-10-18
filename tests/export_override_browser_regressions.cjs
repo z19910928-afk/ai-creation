@@ -14,7 +14,7 @@ const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-export-override-'));
 const pause=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
 const results={passed:false,scope:'真实桌面Chrome、隔离SQLite、实际下载中文例外文稿',cases:[],artifacts:temporary,
- external_model_calls:0,source_files:['app.js','author-workspace.js','server.py',
+ external_model_calls:0,source_files:['frontend/app.js','frontend/author-workspace.js','backend/server.py',
   'tests/export_override_browser_regressions.cjs'].map(file=>({path:file,sha256:hash(fs.readFileSync(path.join(root,file)))}))};
 let app,browser,base,serverLog='',markdownSource;
 

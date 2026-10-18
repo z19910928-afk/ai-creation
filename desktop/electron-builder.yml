@@ -3,6 +3,7 @@ productName: 墨屿
 artifactName: Moyu-${version}-${os}-${arch}.${ext}
 asar: true
 forceCodeSigning: false
+# Resource paths stay relative to the project root passed by build_desktop.py.
 directories:
   output: dist
   buildResources: desktop/assets

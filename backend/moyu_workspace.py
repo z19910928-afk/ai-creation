@@ -223,7 +223,7 @@ def blueprint_dependency(conn, project, branch):
 
 
 def guidance_source(conn, project, branch, chapter_id):
-    from moyu_records import decode_scope
+    from .moyu_records import decode_scope
 
     rows = conn.execute(
         "SELECT n.id,m.chapter_goal,m.scene_plan,m.pov,m.foreshadowing_op,m.hook,m.next_brief,"
@@ -306,7 +306,7 @@ def remap_portable_state(state, new_project, new_branch, title=None):
     if title:
         result["project"]["title"] = title
     result["branch_id"] = new_branch
-    from moyu_records import FIELDS
+    from .moyu_records import FIELDS
     scope_mapping = {**mapping, state.get("project", {}).get("id"): new_project,
                      state.get("branch_id", "main"): new_branch}
     def remap_scope(value):

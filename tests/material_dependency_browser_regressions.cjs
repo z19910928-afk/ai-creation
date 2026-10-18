@@ -27,8 +27,8 @@ const results = {
   artifacts: temporary,
   paid_provider_calls: 0,
   source_files: [
-    'app.js', 'author-workspace.js', 'server.py', 'moyu_analysis.py', 'moyu_context.py',
-    'moyu_workspace.py', 'moyu_materials.py', 'moyu_records.py', 'styles.css',
+    'frontend/app.js', 'frontend/author-workspace.js', 'backend/server.py', 'backend/moyu_analysis.py', 'backend/moyu_context.py',
+    'backend/moyu_workspace.py', 'backend/moyu_materials.py', 'backend/moyu_records.py', 'frontend/styles.css',
     'tests/material_dependency_browser_regressions.cjs',
   ].map(file => ({path: file, sha256: hash(fs.readFileSync(path.join(root, file)))})),
 };

@@ -200,7 +200,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 章节正文采用追加式 revision，数据库中的 `document_revision`、`event_log` 和
 `candidate_memory` 遵循 schema 的外键、作用域及 append-only 触发器约束。
 
-仅做静态预览时可以运行 `python3 -m http.server 4173`。API 不可用时页面使用浏览器本地缓存；书架、任务、完整备份等服务功能不具备，正式创作请使用 `server.py`。
+仅做静态预览时可以运行 `python3 -m http.server 4173 --directory frontend`。API 不可用时页面使用浏览器本地缓存；书架、任务、完整备份等服务功能不具备，正式创作请在项目根目录运行 `python server.py`。
 
 ## 当前功能
 
@@ -344,7 +344,7 @@ python3 scripts/evaluation_runner.py \
 仓库的[自动检查配置](../.github/workflows/ci.yml)使用 Python 3.11 / Node 24，在推送和拉取请求时先安装 `requirements.txt`，再执行语法、全部 `tests/*_fixtures.py`、固定评测、编辑器合并及各类电脑浏览器回归，覆盖规划保稿、五章作者流程、资料待办和阅读偏好。Node（执行页面自动检查所需的开发工具）只用于开发验证，不是运行产品的依赖。浏览器回归使用 Playwright 1.62.1（自动点击真实浏览器的测试工具），使用隔离数据和免费本机模拟提供方；资料待办与阅读偏好专项不调用模型，不使用真实密钥。历史 Node 20 证据保留原运行版本，不能当作 Node 24 或增强版远程检查已经通过。
 
 ```bash
-python3 -m py_compile *.py scripts/*.py tests/*.py
+python3 -m py_compile *.py backend/*.py desktop/*.py scripts/*.py tests/*.py
 for fixture in tests/*_fixtures.py; do python3 "$fixture" || exit 1; done
 node tests/editor_sync_fixtures.cjs
 node tests/frontend_browser_regressions.cjs

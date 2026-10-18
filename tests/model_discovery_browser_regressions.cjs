@@ -12,7 +12,7 @@ const {chromium}=require(process.env.MOYU_PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(__dirname,'..');
 const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-model-discovery-'));
 const secret='synthetic-model-discovery-key';
-const sourceFiles=['model-picker.js','model-picker.css','author-workspace.js','agent-settings.js','index.html'];
+const sourceFiles=['frontend/model-picker.js','frontend/model-picker.css','frontend/author-workspace.js','frontend/agent-settings.js','frontend/index.html'];
 const fingerprints=()=>Object.fromEntries(sourceFiles.map(file=>[file,
  crypto.createHash('sha256').update(fs.readFileSync(path.join(root,file))).digest('hex')]));
 const report={passed:false,synthetic_only:true,paid_provider_calls:0,cases:[],page_errors:[],

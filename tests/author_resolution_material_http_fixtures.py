@@ -20,15 +20,15 @@ sys.path.insert(0, str(ROOT / "tests"))
 import material_legacy_http_fixtures as legacy_fixture
 from guidance_alias_http_fixtures import Provider
 from guidance_scope_change_http_fixtures import EvidenceResult
-import moyu_materials
-import server
+from backend import moyu_materials
+from backend import server
 
 
 PROJECT = "default-project"
 REASON = "作者已结合当前合成稿件核对，这处叙事安排可以保留。"
 SOURCES = (
-    "server.py", "moyu_analysis.py", "moyu_materials.py", "moyu_context.py",
-    "moyu_workspace.py", "moyu_records.py", "author-workspace.js", "app.js",
+    "backend/server.py", "backend/moyu_analysis.py", "backend/moyu_materials.py", "backend/moyu_context.py",
+    "backend/moyu_workspace.py", "backend/moyu_records.py", "frontend/author-workspace.js", "frontend/app.js",
     "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py",
     "tests/material_legacy_http_fixtures.py",
@@ -277,7 +277,7 @@ class AuthorResolutionMaterialHTTP(unittest.TestCase):
         })
         self.assertEqual(status, 400, revised)
         self.assertEqual(self.ledger(), before)
-        with patch("server.start_ai_worker", return_value=False):
+        with patch("backend.server.start_ai_worker", return_value=False):
             statuses = []
             for entry, identifier in (("jobs", queued["id"]), ("runs", queued["ai_run_id"])):
                 retry_status, result = self.call("POST", f"/api/ai/{entry}/{identifier}/retry", {

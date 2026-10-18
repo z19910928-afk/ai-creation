@@ -15,9 +15,9 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-import moyu_chapter_handoff as handoff
-import moyu_workspace as workspace
-import server
+from backend import moyu_chapter_handoff as handoff
+from backend import moyu_workspace as workspace
+from backend import server
 
 
 class ChapterHandoffTests(unittest.TestCase):

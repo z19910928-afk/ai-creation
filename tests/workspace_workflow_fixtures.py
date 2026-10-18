@@ -14,8 +14,8 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import server
-import moyu_backups
+from backend import server
+from backend import moyu_backups
 
 
 def main():

@@ -17,15 +17,15 @@ sys.path.insert(0, str(ROOT / "tests"))
 from guidance_scope_change_http_fixtures import (
     EvidenceResult, GuidanceScopeChangeHTTP, Provider,
 )
-import moyu_records
-import server
+from backend import moyu_records
+from backend import server
 
 
 PROJECT = "default-project"
 CANARY = "NESTED_RECORD_BOUNDARY_CANARY"
 SOURCES = (
-    "moyu_context.py", "moyu_records.py", "moyu_workspace.py", "server.py",
-    "moyu_backups.py", "tests/guidance_alias_http_fixtures.py",
+    "backend/moyu_context.py", "backend/moyu_records.py", "backend/moyu_workspace.py", "backend/server.py",
+    "backend/moyu_backups.py", "tests/guidance_alias_http_fixtures.py",
     "tests/guidance_scope_change_http_fixtures.py", "tests/nested_record_scope_http_fixtures.py",
 )
 

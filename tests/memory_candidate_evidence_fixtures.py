@@ -18,8 +18,8 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-import moyu_workspace
-import server
+from backend import moyu_workspace
+from backend import server
 
 
 QUOTE = "林岚把🗝️铜钥匙放回门边。"

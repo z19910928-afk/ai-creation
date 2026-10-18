@@ -19,8 +19,8 @@ const results = {
   cases: [],
   artifacts: temporary,
   source_files: [
-    'app.js', 'author-workspace.js', 'server.py', 'moyu_analysis.py',
-    'moyu_workspace.py', 'moyu_context.py', 'styles.css',
+    'frontend/app.js', 'frontend/author-workspace.js', 'backend/server.py', 'backend/moyu_analysis.py',
+    'backend/moyu_workspace.py', 'backend/moyu_context.py', 'frontend/styles.css',
     'tests/author_workspace_lifecycle_browser_regressions.cjs',
   ].map(file => ({path: file, sha256: hash(fs.readFileSync(path.join(root, file)))})),
 };

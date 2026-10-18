@@ -20,8 +20,8 @@ from guidance_scope_change_http_fixtures import EvidenceResult
 from reference_passages_http_fixtures import (
     ReferencePassagesHTTP, Provider, CANARY, prompt_material, fingerprints,
 )
-import moyu_materials
-import server
+from backend import moyu_materials
+from backend import server
 
 
 def source_fingerprints():

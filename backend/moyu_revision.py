@@ -6,8 +6,8 @@ import json
 from collections.abc import Mapping
 from typing import Any
 
-import moyu_output
-from moyu_provider import MAX_REQUEST_BYTES, request_messages
+from . import moyu_output
+from .moyu_provider import MAX_REQUEST_BYTES, request_messages
 
 
 _BODY_TASKS = frozenset({"continue", "polish"})

@@ -13,9 +13,9 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 from urllib.parse import urlsplit
 
-import moyu_settings as settings
-import moyu_provider
-from moyu_provider import prepare_chat_request
+from . import moyu_settings as settings
+from . import moyu_provider
+from .moyu_provider import prepare_chat_request
 
 
 _ALIASES = {"summary": "chapter_analysis", "check": "semantic_review"}

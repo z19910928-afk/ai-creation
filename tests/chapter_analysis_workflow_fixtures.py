@@ -11,11 +11,11 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from moyu_analysis import (  # noqa: E402
+from backend.moyu_analysis import (  # noqa: E402
     AnalysisConflict, decide_analysis, decide_review, list_analysis, list_reviews,
     review_repair_source, save_analysis, save_review, invalidate_chapter,
 )
-from moyu_context import text_hash  # noqa: E402
+from backend.moyu_context import text_hash  # noqa: E402
 
 
 class AnalysisWorkflowTests(unittest.TestCase):

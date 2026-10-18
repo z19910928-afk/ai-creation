@@ -6,10 +6,10 @@ from contextlib import closing
 
 from langgraph.types import Command
 
-import moyu_analysis
-import moyu_agent_planning as planning_agent
-from moyu_agent_checkpoint import ScopedCheckpointSaver
-from moyu_writing_agent import PROSE_MODES, WritingAgentCallbacks, build_graph, initial_state
+from . import moyu_analysis
+from . import moyu_agent_planning as planning_agent
+from .moyu_agent_checkpoint import ScopedCheckpointSaver
+from .moyu_writing_agent import PROSE_MODES, WritingAgentCallbacks, build_graph, initial_state
 
 
 LABELS = {"continue": "生成正文候选", "polish": "整章修订候选",
