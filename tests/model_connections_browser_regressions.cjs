@@ -39,13 +39,17 @@ async function test(name,action){
 }
 async function settingsPage(){
  await page.locator('[data-view="settings"]').click();
- await page.locator('#modelConnectionForm').waitFor();await page.locator('#modelSettings').waitFor();
+ await page.locator('#connectionAdd').waitFor();await page.locator('#modelSettings').waitFor();
+ await page.locator('#modelTaskSettings,#modelAdvancedParameters').evaluateAll(details=>details.forEach(item=>item.open=true));
+}
+async function closeConnection(){
+ if(await page.evaluate(()=>document.querySelector('#connectionDialog')?.open))await page.locator('#connectionCancel').click();
 }
 async function reopenSettings(){
- await page.locator('[data-view="editor"]').click();await settingsPage();
+ await closeConnection();await page.locator('[data-view="editor"]').click();await settingsPage();
 }
 async function fillConnection(model,url=providerBase){
- await page.locator('#connectionReset').click();
+ await closeConnection();await page.locator('#connectionAdd').click();
  await page.locator('#connectionName').fill(model+' 连接');
  await page.locator('#connectionBaseUrl').fill(url);
  await page.locator('#connectionModel').fill(model);
@@ -54,7 +58,7 @@ async function fillConnection(model,url=providerBase){
  await page.locator('#connectionModelListStatus[data-state="success"]').waitFor();
 }
 async function openCompatibility(){
- await page.locator('.settings-compatibility').evaluate(details=>details.open=true);
+ await page.locator('.settings-transport').evaluate(details=>details.open=true);
 }
 async function waitIdle(){
  await page.waitForFunction(()=>document.querySelector('#connectionProbe')?.disabled===false);
@@ -65,11 +69,11 @@ async function probeDraft(){
  await page.locator('#connectionProbe').click();
  const result=await (await response).json();await waitIdle();return result;
 }
-async function saveConnection(){
+async function saveConnection(useAsDefault=false){
  const before=generatedCalls();
  const response=page.waitForResponse(response=>
   new URL(response.url()).pathname==='/api/ai/connections'&&response.request().method()==='POST');
- await page.locator('#connectionSave').click();
+ await page.locator(useAsDefault?'#connectionSaveDefault':'#connectionSave').click();
  const result=await (await response).json();await waitIdle();
  assert.ok(result.connection?.id,'保存成功必须返回连接身份');
  assert.equal(generatedCalls(),before,'保存模型不能再次调用模型');return result.connection;
@@ -87,6 +91,7 @@ async function modelChoices(){
  return page.locator('#connectionModelList [role="option"]').evaluateAll(options=>options.map(option=>option.dataset.modelValue));
 }
 async function saveSettings(){
+ await closeConnection();
  const before=generatedCalls();
  await page.evaluate(()=>{
   const form=document.querySelector('#modelSettings'),submit=form.onsubmit;
@@ -98,9 +103,14 @@ async function saveSettings(){
  await page.waitForFunction(()=>document.querySelector('#modelSettings [type="submit"]')?.disabled===false);
  assert.equal(await page.locator('#modelSettings .form-error').textContent(),'');
  assert.equal(generatedCalls(),before,'用途保存不能外发模型请求');
+ await page.locator('#modelTaskSettings,#modelAdvancedParameters').evaluateAll(details=>details.forEach(item=>item.open=true));
  return (await api('/api/ai/settings')).settings;
 }
 async function saveAgentSettings(){
+ if(await page.locator('[name="agentConnectionMode"][value="independent"]').isChecked()&&
+  await page.locator('#agentConnectionSave').isDisabled()){
+  assert.equal((await probeAgent()).probe.success,true);
+ }
  const before=generatedCalls();
  await page.locator('#agentConnectionSettings [type="submit"]').click();
  await page.locator('#agentProbeStatus').filter({hasText:'总管设置已保存'}).waitFor();
@@ -127,6 +137,7 @@ async function frozenRequest(task){
  }finally{await api('/api/ai/runs/'+queued.ai_run_id+'/cancel','POST',{})}
 }
 async function switchProject(identifier){
+ await closeConnection();
  await page.locator('[data-view="library"]').click();
  await page.locator(`[data-project-open="${identifier}"]`).click();
  await page.waitForFunction(id=>requestedProject===id&&backendOnline===true,identifier);
@@ -171,7 +182,7 @@ async function main(){
   request.on('end',()=>{
    const payload=raw?JSON.parse(raw):null;
    calls.push({method:request.method,path:request.url,payload,
-    key_matches:request.headers.authorization==='Bearer '+secret});
+    key_matches:request.headers.authorization==='Bearer '+secret,user_agent:request.headers['user-agent']});
    if(request.method==='GET'){
     assert.ok(request.url.endsWith('/models'),'列表请求必须访问模型列表端点');
     if(listMode==='failed'){
@@ -303,6 +314,7 @@ async function main(){
   assert.equal(saved.output_token_parameter,'max_completion_tokens');assert.equal(saved.include_usage,true);
  });
  await test('用途模型使用保存的输出字段和流式用量开关，不额外调用模型',async()=>{
+  await closeConnection();
   await page.locator('#modelDefault').selectOption(connectionA.id);
   await page.locator('[data-task-model="continue"]').selectOption(connectionA.id);
   await saveSettings();
@@ -379,6 +391,7 @@ async function main(){
   await fillConnection('editing-change-fixture');
   await withHeldResponse('/api/ai/connections/models',
    ()=>page.locator('#connectionFetchModels').click(),async()=>{
+    await closeConnection();
     await page.locator(`[data-connection-edit="${connectionA.id}"]`).click();
    });
   assert.equal(await page.locator('#connectionModel').inputValue(),connectionA.model);
@@ -414,8 +427,8 @@ async function main(){
   await fillConnection('late-probe-fixture');
   await withHeldResponse('/api/ai/connections/probe',
    ()=>page.locator('#connectionProbe').click(),async()=>{
-    await page.locator('[data-view="library"]').click();
-    await page.locator(`[data-project-open="${created.project.id}"]`).click();
+    await page.locator('[data-view="library"]').dispatchEvent('click');
+    await page.locator(`[data-project-open="${created.project.id}"]`).dispatchEvent('click');
     await page.locator('#toast').filter({hasText:'切换已暂停'}).waitFor();
     assert.equal(await page.evaluate(()=>requestedProject),'default-project');
     assert.equal((await api('/api/ai/connections','GET',undefined,created.project.id)).connections.length,0);
@@ -431,7 +444,9 @@ async function main(){
  await test('总管沿用默认模型时，未回传名称的成功探测保留明确警示',async()=>{
   await page.locator('#agentConnectionSettings').waitFor();
   assert.equal(await page.locator('[name="agentConnectionMode"][value="inherit"]').isChecked(),true);
-  probeMode='unreported';const result=await probeAgent();probeMode='normal';
+  assert.equal(await page.locator('#agentConnectionProbe').isVisible(),false);
+  probeMode='unreported';const result=await api('/api/agent-chat/settings/probe','POST',{});probeMode='normal';
+  await page.evaluate(()=>MoyuAgentSettings.refresh(document.querySelector('#agentSettingsHost')));
   assert.equal(result.probe.success,true);
   assert.equal(result.probe.identity_status,'unreported');
   assert.equal(result.probe.model_identity_match,null);
@@ -446,7 +461,7 @@ async function main(){
   await page.locator('.agent-settings-compatibility').evaluate(details=>details.open=true);
   await page.locator('#agentOutputTokenParameter').selectOption('max_completion_tokens');
   await page.locator('#agentIncludeUsage').check();
-  const saved=await saveAgentSettings();
+  probeMode='unreported';const saved=await saveAgentSettings();probeMode='normal';
   assert.equal(saved.mode,'independent');
   assert.equal(saved.independent_settings.output_token_parameter,'max_completion_tokens');
   assert.equal(saved.independent_settings.include_usage,true);
@@ -464,32 +479,108 @@ async function main(){
   assert.equal(await page.locator('#agentIncludeUsage').isChecked(),true);
   assert.match(await page.locator('#agentProbeStatus').textContent(),new RegExp(identityWarning));
  });
- await test('修改总管兼容选项即时撤销旧实测提示，保存后必须重新实测',async()=>{
+ await test('修改总管兼容选项撤销保存资格，原配置保留，重新测试后才能保存',async()=>{
   await page.locator('.agent-settings-compatibility').evaluate(details=>details.open=true);
   await page.locator('#agentIncludeUsage').uncheck();
-  assert.match(await page.locator('#agentProbeStatus').textContent(),/信息已修改/);
+  assert.match(await page.locator('#agentProbeStatus').textContent(),/尚未保存/);
   assert.equal((await page.locator('#agentProbeStatus').textContent()).includes(identityWarning),false);
-  let saved=await saveAgentSettings();assert.equal(saved.last_probe,null);
+  assert.equal(await page.locator('#agentConnectionSave').isDisabled(),true);
+  assert.equal((await api('/api/agent-chat/settings')).settings.independent_settings.include_usage,true);
+  let saved=await saveAgentSettings();assert.equal(saved.last_probe.success,true);
   assert.equal(saved.independent_settings.include_usage,false);
-  assert.match(await page.locator('#agentProbeStatus').textContent(),/尚未验证/);
-  assert.equal((await probeAgent()).probe.success,true);
   await page.locator('.agent-settings-compatibility').evaluate(details=>details.open=true);
   await page.locator('#agentOutputTokenParameter').selectOption('max_tokens');
-  assert.match(await page.locator('#agentProbeStatus').textContent(),/信息已修改/);
-  saved=await saveAgentSettings();assert.equal(saved.last_probe,null);
+  assert.match(await page.locator('#agentProbeStatus').textContent(),/尚未保存/);
+  assert.equal(await page.locator('#agentConnectionSave').isDisabled(),true);
+  saved=await saveAgentSettings();assert.equal(saved.last_probe.success,true);
   assert.equal(saved.independent_settings.output_token_parameter,'max_tokens');
  });
  await test('总管名称不符或授权失败继续显示检测失败，不混淆为未回传名称的成功',async()=>{
   for(const failure of ['mismatch','unauthorized']){
    probeMode=failure;const result=await probeAgent();
    assert.equal(result.probe.success,false);
-   await page.locator('#agentProbeStatus').filter({hasText:'连接检测未通过'}).waitFor();
+   await page.locator('#agentProbeStatus').filter({hasText:'连接未通过'}).waitFor();
    assert.equal((await page.locator('#agentProbeStatus').textContent()).includes(identityWarning),false);
-   assert.equal((await api('/api/agent-chat/settings')).settings.last_probe.success,false);
+   assert.equal(await page.locator('#agentConnectionSave').isDisabled(),true);
+   assert.equal((await api('/api/agent-chat/settings')).settings.last_probe.success,true);
   }
   probeMode='normal';
   await page.locator('[name="agentConnectionMode"][value="inherit"]').check();
   await saveAgentSettings();
+ });
+ await test('服务商预设只填入地址，空名称、自定义路径和请求标识测试后可一键用于写作',async()=>{
+  await page.locator('#connectionAdd').click();const before=calls.length;
+  await page.locator('#connectionProvider').selectOption('deepseek');
+  assert.equal(await page.locator('#connectionBaseUrl').inputValue(),'https://api.deepseek.com');
+  assert.equal(await page.locator('#connectionKey').inputValue(),'');
+  assert.equal(await page.locator('#connectionModel').inputValue(),'');
+  await pause(750);assert.equal(calls.length,before);
+  await fillConnection('transport-fixture-model');
+  await page.locator('#connectionName').fill('');await openCompatibility();
+  await page.locator('#connectionRequestPath').fill('/custom/chat/completions');
+  await page.locator('#connectionModelsPath').fill('/custom/models');
+  await page.locator('#connectionUserAgent').fill('MoyuBrowserFixture/2');
+  await page.locator('#connectionUserAgent').blur();
+  await page.locator('#connectionModelListStatus[data-state="success"]').waitFor();
+  const origin=new URL(providerBase).origin;
+  assert.equal(await page.locator('#connectionRequestEndpoint').textContent(),origin+'/custom/chat/completions');
+  assert.equal(await page.locator('#connectionModelsEndpoint').textContent(),origin+'/custom/models');
+  const listed=await fetchModels();assert.equal(listed.endpoint,origin+'/custom/models');
+  assert.equal(calls.at(-1).user_agent,'MoyuBrowserFixture/2');
+  for(const invalid of ['https://other.invalid/chat/completions','//other.invalid/path','/../path','/./path',
+   '/chat?x=1','/%2e%2e/path','/%2e/path','/中文/path']){
+   const count=calls.length;
+   await page.locator('#connectionRequestPath').fill(invalid);await page.locator('#connectionRequestPath').blur();
+   await pause(700);await page.locator('#connectionProbe').click();
+   await page.locator('#connectionProbeStatus[data-state="failed"]').waitFor();
+   await waitIdle();assert.equal(calls.length,count,'无效兼容路径不得外发请求');
+   assert.equal(await page.locator('#connectionSaveDefault').isDisabled(),true);
+  }
+  await page.locator('#connectionRequestPath').fill('/custom/chat/completions');
+  await page.locator('#connectionRequestPath').blur();
+  await page.locator('#connectionModelListStatus[data-state="success"]').waitFor();
+  assert.equal((await probeDraft()).probe.success,true);
+  assert.equal(calls.at(-1).path,'/custom/chat/completions');
+  assert.equal(calls.at(-1).user_agent,'MoyuBrowserFixture/2');
+  const connection=await saveConnection(true);
+  assert.equal(connection.name,'transport-fixture-model');
+  assert.equal((await api('/api/ai/settings')).settings.default_connection_id,connection.id);
+  assert.equal(await page.locator('#modelDefault').inputValue(),connection.id);
+  assert.equal(await page.locator('#connectionDialog').evaluate(dialog=>dialog.open),false);
+  report.transport_connection_id=connection.id;
+ });
+ await test('添加同服务模型只复用本机凭据，不回填密钥或覆盖原连接',async()=>{
+  const source=(await api('/api/ai/connections')).connections.find(item=>item.id===report.transport_connection_id);
+  const bodies=[],observe=request=>{
+   const route=new URL(request.url()).pathname;
+   if(['/api/ai/connections/models','/api/ai/connections/probe'].includes(route))bodies.push({route,body:request.postDataJSON()});
+  };
+  page.on('request',observe);
+  try{
+   await page.locator(`[data-connection-copy="${source.id}"]`).click();
+   assert.equal(await page.locator('#connectionName').inputValue(),'');
+   assert.equal(await page.locator('#connectionModel').inputValue(),'');
+   assert.equal(await page.locator('#connectionKey').inputValue(),'');
+   assert.equal(await page.locator('#connectionSourceStatus').isVisible(),true);
+   await page.locator('#connectionModelListStatus[data-state="success"]').waitFor();
+   await page.locator('#connectionModel').fill('second-transport-fixture');
+   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
+   assert.equal((await probeDraft()).probe.success,true);
+   const copied=await saveConnection();
+   assert.notEqual(copied.id,source.id);assert.equal(copied.name,'second-transport-fixture');
+   for(const {body} of bodies){
+    assert.equal(body.source_connection_id,source.id);assert.equal(Object.hasOwn(body,'id'),false);
+    assert.equal(Object.hasOwn(body,'api_key'),false);
+    assert.equal(body.custom_request_path,source.custom_request_path);
+    assert.equal(body.models_path,source.models_path);assert.equal(body.user_agent,source.user_agent);
+   }
+   assert.equal(bodies.some(item=>item.route.endsWith('/probe')),true);
+   const connections=(await api('/api/ai/connections')).connections;
+   assert.equal(connections.find(item=>item.id===source.id).revision,source.revision);
+   assert.equal(connections.find(item=>item.id===source.id).model,source.model);
+   assert.equal((await api('/api/ai/settings')).settings.default_connection_id,source.id);
+   assert.equal(JSON.stringify(connections).includes(secret),false);
+  }finally{page.off('request',observe)}
  });
  await test('三个桌面尺寸下新增控件可见且不重叠，密钥不进入公共响应与浏览器缓存',async()=>{
   await page.locator(`[data-connection-edit="${connectionA.id}"]`).click();

@@ -16,6 +16,7 @@ from typing import Any
 
 from moyu_provider import (
     ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts, usage_accounting,
+    transport_options,
 )
 
 
@@ -23,7 +24,7 @@ TASKS = {"continue", "polish", "outline", "scene", "summary", "check", "brainsto
          "chapter_analysis", "semantic_review"}
 PARAMETERS = {"temperature", "max_tokens", "top_p", "presence_penalty",
               "frequency_penalty", "seed", "stop", "reasoning_effort", "thinking"}
-PROBE_MAX_TOKENS = 256
+PROBE_MAX_TOKENS = 1024
 _REF = re.compile(r"^[a-f0-9]{64}-[a-f0-9]{32}$")
 
 
@@ -130,7 +131,13 @@ def _connection_options(payload: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(include_usage, bool):
         raise ValueError("用量回报开关无效。")
     return {"api_protocol": api_protocol, "output_token_parameter": token_parameter,
-            "include_usage": include_usage}
+            "include_usage": include_usage, **transport_options(payload)}
+
+
+def _probe_response_valid(text: Any) -> bool:
+    if not isinstance(text, str) or len(text) > 32:
+        return False
+    return text.strip().strip("\"'`“”‘’「」『』 \t\r\n。.!！?？") == "连接正常"
 
 
 def _validate_saved_key_target(base_url: str, saved_base_url: str) -> None:
@@ -325,7 +332,8 @@ def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str
     if not isinstance(data, dict):
         raise ValueError("设置必须为对象。")
     allowed = {"base_url", "model", "api_key", "models", "styles", "parameters", "task_parameters",
-               "daily_limit", "clear_api_key", "output_token_parameter", "include_usage", "api_protocol"}
+               "daily_limit", "clear_api_key", "output_token_parameter", "include_usage", "api_protocol",
+               "provider", "custom_request_path", "models_path", "user_agent"}
     if set(data) - allowed:
         raise ValueError("设置包含未支持的字段。")
     original = _saved(conn, project)
@@ -469,7 +477,7 @@ def probe_settings(conn: sqlite3.Connection, project: str,
         reasoning_consistent = not (
             observation.get("requested_disabled") is True
             and (nonempty_reasoning > 0 or invalid_reasoning > 0))
-        response_valid = isinstance(text, str) and text.strip() == "连接正常"
+        response_valid = _probe_response_valid(text)
         probe.update({"protocol_complete": protocol_complete,
                       "response_valid": response_valid, "reasoning_consistent": reasoning_consistent,
                       "response_characters": len(text.strip()) if isinstance(text, str) else 0,

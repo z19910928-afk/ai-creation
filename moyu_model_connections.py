@@ -70,10 +70,13 @@ def _fingerprint(key: str) -> str | None:
 
 def _signature(base_url: str, model: str, fingerprint: str | None,
                options: dict[str, Any] | None = None, *, legacy: bool = False,
-               protocol_legacy: bool = False) -> str:
+               protocol_legacy: bool = False, transport_legacy: bool = False) -> str:
     fields = {"base_url": base_url, "model": model, "credential_fingerprint": fingerprint}
     if not legacy:
         fields.update(settings._connection_options(options or {}))
+        if transport_legacy:
+            for key in moyu_provider.TRANSPORT_DEFAULTS:
+                fields.pop(key)
         if protocol_legacy:
             fields.pop("api_protocol")
     encoded = json.dumps(
@@ -90,10 +93,15 @@ def _signature_matches(signature: Any, base_url: str, model: str, fingerprint: s
     normalized = settings._connection_options(options)
     if hmac.compare_digest(signature, _signature(base_url, model, fingerprint, normalized)):
         return True
+    if any(normalized[key] != value for key, value in moyu_provider.TRANSPORT_DEFAULTS.items()):
+        return False
+    if hmac.compare_digest(signature, _signature(
+            base_url, model, fingerprint, normalized, transport_legacy=True)):
+        return True
     if normalized["api_protocol"] != "chat_completions":
         return False
     if hmac.compare_digest(signature, _signature(
-            base_url, model, fingerprint, normalized, protocol_legacy=True)):
+            base_url, model, fingerprint, normalized, protocol_legacy=True, transport_legacy=True)):
         return True
     return (normalized == settings._connection_options({})
             and hmac.compare_digest(signature, _signature(base_url, model, fingerprint, legacy=True)))
@@ -183,6 +191,21 @@ def _legacy_revision(conn: sqlite3.Connection, project: str, payload: dict[str, 
     return _signature(payload.get("base_url", ""), payload.get("model", ""), _fingerprint(key), payload)
 
 
+def _draft_source(conn: sqlite3.Connection, project: str, payload: dict[str, Any],
+                  data: dict[str, Any]) -> dict[str, Any] | None:
+    source_id = data.get("source_connection_id")
+    if source_id is None:
+        return None
+    if data.get("id"):
+        raise ValueError("新增同服务模型与编辑已有模型不能同时进行。")
+    if not isinstance(source_id, str) or not source_id or len(source_id) > 200:
+        raise ValueError("来源模型连接无效。")
+    source = _find(payload, source_id)
+    if source is None or not _verified(conn, project, source)[0]:
+        raise ValueError("来源模型连接已失效，请先重新测试并保存。")
+    return source
+
+
 def _draft_credentials(conn: sqlite3.Connection, project: str, payload: dict[str, Any],
                        data: dict[str, Any]) -> tuple[str | None, dict[str, Any] | None, str]:
     identifier = data.get("id")
@@ -191,6 +214,7 @@ def _draft_credentials(conn: sqlite3.Connection, project: str, payload: dict[str
     if identifier is not None and (not isinstance(identifier, str) or len(identifier) > 200):
         raise ValueError("连接身份无效。")
     entry = _find(payload, identifier) if identifier and identifier != "legacy" else None
+    source = _draft_source(conn, project, payload, data)
     if identifier and identifier != "legacy" and entry is None:
         raise ValueError("要修改的模型连接不存在。")
     supplied = data.get("api_key")
@@ -202,6 +226,8 @@ def _draft_credentials(conn: sqlite3.Connection, project: str, payload: dict[str
         key = _private_key(conn, project, entry.get("_credential_ref"))
     elif identifier == "legacy":
         key = _legacy_key(conn, project, payload)
+    elif source is not None:
+        key = _private_key(conn, project, source.get("_credential_ref"))
     else:
         key = ""
     return identifier, entry, key
@@ -210,11 +236,14 @@ def _draft_credentials(conn: sqlite3.Connection, project: str, payload: dict[str
 def list_connection_models(conn: sqlite3.Connection, project: str,
                            data: dict[str, Any]) -> dict[str, Any]:
     """Read the draft provider's inventory without saving or testing a connection."""
-    if not isinstance(data, dict) or set(data) - {"id", "base_url", "api_key", "api_protocol"}:
+    if not isinstance(data, dict) or set(data) - {
+            "id", "source_connection_id", "base_url", "api_key", "api_protocol",
+            *moyu_provider.TRANSPORT_DEFAULTS}:
         raise ValueError("模型列表查询包含未支持的字段。")
     payload = _payload(conn, project)
     identifier, entry, key = _draft_credentials(conn, project, payload, data)
-    source = entry if entry is not None else payload if identifier == "legacy" else {}
+    source = (entry if entry is not None else payload if identifier == "legacy"
+              else _draft_source(conn, project, payload, data) or {})
     options = settings._connection_options({**source, **data})
     base_url = settings._text(data.get("base_url"), "服务地址", 2048).rstrip("/")
     if not base_url:
@@ -224,7 +253,7 @@ def list_connection_models(conn: sqlite3.Connection, project: str,
     if not key and not _local(base_url):
         raise ValueError("远程连接需要填写密钥后获取模型。")
     result = moyu_provider.list_models({
-        "base_url": base_url, "api_key": key, "api_protocol": options["api_protocol"]})
+        "base_url": base_url, "api_key": key, **options})
     return moyu_provider._redact(
         {"models": result["models"], "endpoint": result["endpoint"]}, key)
 
@@ -232,8 +261,9 @@ def list_connection_models(conn: sqlite3.Connection, project: str,
 def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any],
                      cancel_event=None) -> dict[str, Any]:
     if not isinstance(data, dict) or set(data) - {
-            "id", "name", "base_url", "model", "api_key", "output_token_parameter", "include_usage",
-            "api_protocol"}:
+            "id", "source_connection_id", "name", "base_url", "model", "api_key",
+            "output_token_parameter", "include_usage", "api_protocol",
+            *moyu_provider.TRANSPORT_DEFAULTS}:
         raise ValueError("连接测试包含未支持的字段。")
     initial = _payload(conn, project)
     identifier, entry, key = _draft_credentials(conn, project, initial, data)
@@ -244,7 +274,9 @@ def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any
     if not base_url or not model:
         raise ValueError("请填写模型地址和名称后测试。")
     name = settings._text(data.get("name", entry.get("name", "") if entry else ""), "连接名称", 100)
-    option_source = entry if entry is not None else initial if identifier == "legacy" else {}
+    source = _draft_source(conn, project, initial, data)
+    option_source = (entry if entry is not None else initial if identifier == "legacy"
+                     else source or {})
     options = settings._connection_options({**option_source, **data})
     if key and data.get("api_key") is None:
         settings._validate_saved_key_target(base_url, option_source.get("base_url", ""))
@@ -275,6 +307,9 @@ def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any
         if identifier:
             found = _find(latest, identifier)
             return found is not None and found.get("revision") == revision
+        if source:
+            found = _find(latest, source["id"])
+            return found is not None and found.get("revision") == source.get("revision")
         return True
 
     result = settings.probe_settings(
@@ -312,8 +347,11 @@ def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any
 
 
 def save_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any]) -> dict[str, Any]:
-    if not isinstance(data, dict) or set(data) - {"verification_token", "name"}:
+    if not isinstance(data, dict) or set(data) - {"verification_token", "name", "use_as_default"}:
         raise ValueError("保存连接包含未支持的字段，请重新测试后保存。")
+    use_as_default = data.get("use_as_default", False)
+    if not isinstance(use_as_default, bool):
+        raise ValueError("用于写作的选择无效。")
     token = data.get("verification_token")
     if not isinstance(token, str) or not 20 <= len(token) <= 200:
         raise ValueError("请先测试连接，成功后再保存。")
@@ -370,6 +408,10 @@ def save_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any]
     payload.setdefault("connection_workflow", False)
     payload.setdefault("default_connection_id", "")
     payload.setdefault("task_connections", {})
+    if use_as_default:
+        payload.update(validate_assignments(
+            conn, project, payload, {"default_connection_id": entry["id"]}))
+        payload["connection_workflow"] = True
     settings._write_settings(conn, project, payload)
     return {"connection": _public_connection(conn, project, entry),
             "settings": settings.public_settings(conn, project)}
@@ -385,6 +427,11 @@ def remove_connection(conn: sqlite3.Connection, project: str, identifier: str) -
     assignments = payload.get("task_connections") or {}
     if payload.get("default_connection_id") == identifier or identifier in assignments.values():
         raise ValueError("这个连接仍用于写作，请先取消默认或用途分配后再删除。")
+    if conn.execute("SELECT 1 FROM sqlite_master WHERE name='app_agent_connection' AND type='table'").fetchone():
+        row = conn.execute("SELECT settings_json FROM app_agent_connection WHERE project_id=?", (project,)).fetchone()
+        agent = json.loads(row[0]) if row else {}
+        if agent.get("mode") == "library" and agent.get("connection_id") == identifier:
+            raise ValueError("写作总管正在使用这个模型，请先切换总管模型后再删除。")
     payload["connections"] = [item for item in _connections(payload) if item["id"] != identifier]
     payload["_pending_connection_probes"] = [
         item for item in _active_pending(payload) if item.get("existing_id") != identifier

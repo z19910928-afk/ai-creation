@@ -334,17 +334,17 @@ def retry_provider_config(conn: sqlite3.Connection, snapshot: Any) -> dict[str, 
             return frozen_provider_settings(conn, project_id(), snapshot)
         current_url = current.get("base_url", "")
         current_model = current.get("model", "")
-        current_protocol = _connection_options(current)["api_protocol"]
+        current_options = _connection_options(current)
         if (source == "private_file" and snapshot.get("credential_ref")
                 and not current.get("_credential_ref")):
             raise ValueError("原模型密钥已清除，请重新配置并建立新任务。")
     else:
         current_url = os.environ.get("MOYU_AI_BASE_URL", "").strip()
         current_model = os.environ.get("MOYU_AI_MODEL", "").strip()
-        current_protocol = "chat_completions"
+        current_options = _connection_options({})
     if (not isinstance(current_url, str) or
             current_url.rstrip("/") != snapshot["base_url"].rstrip("/") or not current_model
-            or current_protocol != snapshot["api_protocol"]):
+            or current_options != _connection_options(snapshot)):
         raise ValueError("模型服务地址已改变或不可用，不能重试原请求；请建立新任务。")
     return frozen_provider_settings(conn, project_id(), snapshot)
 
@@ -400,6 +400,7 @@ def validate_frozen_request_audit(audit: Any, prepared: dict[str, Any],
     regenerated = prepared["request_audit"]
     if (audit.get("api_protocol", "chat_completions") != prepared["api_protocol"] or
             audit.get("endpoint") != prepared["endpoint"] or
+            audit.get("user_agent", "Moyu/1") != regenerated.get("user_agent", "Moyu/1") or
             audit.get("request_sha256") != regenerated["request_sha256"] or
             audit.get("messages_sha256") != regenerated["messages_sha256"] or
             prompt_hash != regenerated["request_sha256"]):
@@ -5976,7 +5977,9 @@ class Handler(SimpleHTTPRequestHandler):
                     return self.send_json(200, {"settings": agent_connection.save_settings(conn, project_id(), data)})
                 if parsed.path == "/api/agent-chat/settings/probe":
                     conn.commit()
-                    return self.send_json(200, agent_connection.probe(conn, project_id()))
+                    return self.send_json(200, (
+                        agent_connection.probe_draft(conn, project_id(), data)
+                        if data else agent_connection.probe(conn, project_id())))
                 if parsed.path == "/api/agent-chat/sessions":
                     return self.send_json(201, agent_chat.create_session(sys.modules[__name__], conn, data))
                 if parsed.path.startswith("/api/agent-chat/"):

@@ -264,6 +264,7 @@ async function assertNoModelJobs() {
 
 async function modelSettingsDiscovery() {
   currentStep = 'open-packaged-model-settings';
+  await page.locator('#connectionAdd').click();
   await page.locator('#modelConnectionForm').waitFor();
   await page.locator('#agentConnectionSettings').waitFor();
   const before = {
@@ -350,6 +351,8 @@ async function modelSettingsDiscovery() {
   await searchAndSelect('connection', 'gamma', models[2], false);
   assert.equal(await page.locator('#connectionSave').isDisabled(), true,
     'DESKTOP_MODEL_LIST_MUST_NOT_VERIFY_CONNECTION');
+  await page.locator('#connectionCancel').click();
+  assert.equal(await page.locator('#connectionDialog').isVisible(), false);
 
   await page.locator('[name="agentConnectionMode"][value="independent"]').check();
   assert.equal(await page.locator('#agentApiProtocol').inputValue(), 'chat_completions');
@@ -364,12 +367,15 @@ async function modelSettingsDiscovery() {
     await page.locator('#agentApiProtocol').selectOption('responses');
     await page.locator('#agentApiProtocol').blur();
   });
-  assert.equal(await page.locator('.agent-settings-compatibility').isVisible(), false);
+  assert.equal(await page.locator('.agent-settings-compatibility').isVisible(), true);
+  assert.equal(await page.locator('.agent-chat-compatibility').getAttribute('hidden'), '');
   assert.equal(await page.locator('#agentMaxTokens').getAttribute('min'), '16');
   await searchAndSelect('agent', 'gamma', models[2], true);
 
   currentStep = 'discard-unsaved-model-settings';
+  await page.locator('#connectionAdd').click();
   await page.locator('#connectionReset').click();
+  await page.locator('#connectionCancel').click();
   await page.locator('#agentBaseUrl').fill('');
   await page.locator('#agentApiKey').fill('');
   await page.locator('#agentModel').fill('');

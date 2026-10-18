@@ -169,11 +169,11 @@ class ModelSettingsTests(unittest.TestCase):
                                        (result["ai_run_id"],)).fetchone()
         self.assertEqual(reservation["status"], "consumed")
 
-    def test_extra_punctuation_is_not_the_exact_requested_reply(self) -> None:
+    def test_short_confirmation_with_punctuation_is_accepted(self) -> None:
         probe = self.probe("extra-punctuation")["probe"]
         self.assertTrue(probe["protocol_complete"])
-        self.assertFalse(probe["response_valid"])
-        self.assertFalse(probe["success"])
+        self.assertTrue(probe["response_valid"])
+        self.assertTrue(probe["success"])
 
     def test_model_mismatch_is_preserved_and_not_reported_healthy(self) -> None:
         probe = self.probe("model-mismatch")["probe"]

@@ -80,7 +80,7 @@ class Provider(BaseHTTPRequestHandler):
         if case == "unauthorized":
             body = {"error": {"message": "synthetic provider rejected " + SECOND_KEY}}
         else:
-            message = {"content": "连接正常。" if case == "extra" else "连接正常"}
+            message = {"content": "连接正常，但这是一段额外说明。" if case == "extra" else "连接正常"}
             if case == "reasoning":
                 message["reasoning"] = "synthetic private reasoning"
             body = {

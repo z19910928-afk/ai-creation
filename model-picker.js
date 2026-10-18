@@ -1,33 +1,65 @@
 'use strict';
 
 (() => {
+ const providers = [
+  {id:'openai_compatible',label:'自定义兼容服务',base_url:''},
+  {id:'openai',label:'OpenAI',base_url:'https://api.openai.com/v1'},
+  {id:'deepseek',label:'DeepSeek',base_url:'https://api.deepseek.com'},
+  {id:'qwen',label:'通义千问（百炼）',base_url:'https://dashscope.aliyuncs.com/compatible-mode/v1'},
+  {id:'siliconflow',label:'硅基流动',base_url:'https://api.siliconflow.cn/v1'},
+  {id:'ollama',label:'Ollama 本机模型',base_url:'http://localhost:11434/v1'},
+ ];
  const localHost = hostname => ['localhost', '127.0.0.1', '[::1]', '::1'].includes(hostname);
  function service(value) {
   try {
+   if (typeof value !== 'string' || value.length > 2048 || /[\x00-\x20]/.test(value)) return '';
    const address = new URL(value);
    if (!['http:', 'https:'].includes(address.protocol) || address.username || address.password || address.search || address.hash) return '';
    let route = address.pathname.replace(/\/+$/, '');
-   route = route.replace(/\/(?:chat\/completions|responses)$/, '');
+   route = route.replace(/\/(?:chat\/completions|responses|models)$/, '');
    return address.origin + route;
   } catch { return ''; }
  }
  const sameService = (left, right) => !!service(left) && service(left) === service(right);
+ function requestPath(value) {
+  if (!value) return true;
+  try {
+   const decoded = decodeURIComponent(value);
+   return value.length <= 2048 && value.startsWith('/') && !value.startsWith('//') &&
+    !/[^\x21-\x7e]|[\\?#]/.test(value) && !/[\\?#\x00-\x20\x7f]/.test(decoded) &&
+    !decoded.startsWith('//') && !decoded.split('/').some(part=>part==='.'||part==='..');
+  } catch { return false; }
+ }
+ function endpoints(body) {
+  const base = service(body.base_url);
+  const custom = body.custom_request_path || '', models = body.models_path || '';
+  if (!base || !requestPath(custom) || !requestPath(models)) return null;
+  const origin = new URL(base).origin;
+  return {
+   request:custom ? origin + custom : base + (body.api_protocol === 'responses' ? '/responses' : '/chat/completions'),
+   models:models ? origin + models : base + '/models',
+  };
+ }
 
  function connection(body, hasSavedKey = false) {
   let address;
   try { address = new URL(body.base_url); } catch {}
   const conflictingKey = body.clear_api_key && !!body.api_key;
-  const valid = !!service(body.base_url) && !conflictingKey;
+  const transport = endpoints(body);
+  const validAgent = typeof (body.user_agent || '') === 'string' &&
+   (body.user_agent || '').length <= 256 && !/[^\x20-\x7e]/.test(body.user_agent || '');
+  const valid = !!transport && validAgent && !conflictingKey;
   const hasKey = !!body.api_key || (hasSavedKey && !body.clear_api_key && !Object.hasOwn(body, 'api_key'));
   return {
    body,
-   key: JSON.stringify([body.id || '', body.base_url,
+   key: JSON.stringify([body.id || '', body.source_connection_id || '', body.provider || 'openai_compatible', body.base_url,
     body.clear_api_key ? {clear: true, key: body.api_key ?? null} : Object.hasOwn(body, 'api_key') ? body.api_key : null,
-    body.api_protocol || 'chat_completions']),
+    body.api_protocol || 'chat_completions', body.custom_request_path || '', body.models_path || '', body.user_agent || '']),
    valid,
-   ready: valid && (hasKey || localHost(address.hostname)),
+   ready: valid && (hasKey || localHost(address?.hostname)),
    hint: conflictingKey ? '填写新密钥与清除旧密钥只能选择一项。' :
-    !body.base_url ? '填写服务地址后获取模型。' : !valid ? '请填写没有密码或查询参数的完整服务地址。' :
+    !body.base_url ? '填写服务地址后获取模型。' : !transport ? '请检查服务地址和兼容路径，路径应为同一服务内的完整路径。' :
+    !validAgent ? '请求标识请使用 256 字以内的英文、数字或标点。' :
     '填写密钥后自动获取模型；免密服务可直接点击获取。',
   };
  }
@@ -249,5 +281,5 @@
   close();
   return {changed, setDisabled, dispose};
  }
- globalThis.MoyuModelPicker = {connection, mount, sameService};
+ globalThis.MoyuModelPicker = {connection, mount, sameService, providers, endpoints};
 })();

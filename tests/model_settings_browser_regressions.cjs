@@ -4,6 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const os=require('node:os');
 const path=require('node:path');
+const {pathToFileURL}=require('node:url');
 const http=require('node:http');
 const net=require('node:net');
 const {spawn,execFileSync}=require('node:child_process');
@@ -43,12 +44,19 @@ async function test(name,action){
 }
 async function settingsPage(){
  await page.locator('[data-view="settings"]').click();
- await page.locator('#modelSettings').waitFor();await page.locator('#modelConnectionForm').waitFor();
+ await page.locator('#modelSettings').waitFor();await page.locator('#connectionAdd').waitFor();
+}
+async function expandSettings(){
+ await page.locator('#modelTaskSettings,#modelAdvancedParameters').evaluateAll(details=>details.forEach(item=>item.open=true));
+}
+async function closeConnection(){
+ if(await page.evaluate(()=>document.querySelector('#connectionDialog')?.open))await page.locator('#connectionCancel').click();
 }
 async function reopenSettings(){
- await page.locator('[data-view="editor"]').click();await settingsPage();
+ await closeConnection();await page.locator('[data-view="editor"]').click();await settingsPage();await expandSettings();
 }
 async function fillConnection(model,url=providerBase){
+ await closeConnection();await page.locator('#connectionAdd').click();
  await page.locator('#connectionName').fill(model+' 连接');
  await page.locator('#connectionBaseUrl').fill(url);await page.locator('#connectionModel').fill(model);
  await page.locator('#connectionKey').fill(secret);
@@ -102,11 +110,11 @@ async function submitSettings(key='pendingModelSettings'){
  await page.evaluate(key=>window[key],key);
 }
 async function saveSettings(){
- const before=calls.length;await submitSettings();
+ await closeConnection();const before=calls.length;await submitSettings();
  await page.waitForFunction(()=>document.querySelector('#modelSettings [type="submit"]')?.disabled===false);
  assert.equal(await page.locator('#modelSettings .form-error').textContent(),'');
  assert.equal(calls.length,before,'保存用途和文风不能调用模型');
- return (await api('/api/ai/settings')).settings;
+ await expandSettings();return (await api('/api/ai/settings')).settings;
 }
 async function preview(task){
  const state=await api('/api/state');
@@ -160,7 +168,18 @@ async function main(){
  await page.route('**/*',route=>route.request().url().startsWith(base)?route.continue():route.abort());
  await page.goto(base);await page.waitForFunction(()=>backendOnline===true);await settingsPage();
 
+ await test('配置列表为首屏，弹窗取消即清空草稿且参数默认折叠',async()=>{
+  assert.equal(await page.locator('#connectionDialog').evaluate(dialog=>dialog.open),false);
+  assert.equal(await page.locator('#modelTaskSettings').evaluate(details=>details.open),false);
+  assert.equal(await page.locator('#modelAdvancedParameters').evaluate(details=>details.open),false);
+  await page.locator('#connectionAdd').click();await page.locator('#connectionKey').fill(secret);
+  await page.locator('#connectionCancel').click();
+  assert.equal(await page.locator('#connectionDialog').evaluate(dialog=>dialog.open),false);
+  assert.equal(await page.locator('#connectionKey').inputValue(),'');
+  assert.equal((await api('/api/ai/connections')).connections.length,0);assert.equal(calls.length,0);
+ });
  await test('模型库未测试不可保存，用途只能下拉选择已测试并保存的模型',async()=>{
+  await page.locator('#modelTone').fill('克制、重动作');
   await fillConnection('model-a-fixture');assert.equal(await page.locator('#connectionSave').isDisabled(),true);
   assert.equal(await page.locator('#modelDefault').evaluate(element=>element.tagName),'SELECT');
   assert.equal(await page.locator('[data-task-model]').evaluateAll(elements=>
@@ -188,7 +207,7 @@ async function main(){
   await page.locator('#connectionModel').fill('model-a-fixture');
   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
   result=await probeDraft();await waitProbe();assert.equal(result.probe.success,true);
-  await page.locator('#modelTone').fill('克制、重动作');connectionA=await saveConnection();
+  connectionA=await saveConnection();
   assert.equal(connectionA.verified,true);assert.equal(await page.locator('#connectionKey').inputValue(),'');
   assert.equal(await page.locator('#modelTone').inputValue(),'克制、重动作');
   assert.equal(await page.locator('#modelDefault').inputValue(),'');
@@ -251,7 +270,7 @@ async function main(){
     }if(document.documentElement.scrollWidth>innerWidth)problems.push('page-overflow');return problems;
    });
    assert.deepEqual(issues,[]);
-   await page.locator('#modelConnectionForm').scrollIntoViewIfNeeded();
+   await page.locator('#connectionAdd').scrollIntoViewIfNeeded();
    await screenshot(`model-library-${size.width}.png`);
    await page.locator('#modelSettings').scrollIntoViewIfNeeded();
    await screenshot(`model-routing-${size.width}.png`);
@@ -341,7 +360,7 @@ async function main(){
  await test('迟到测试响应不能污染重新打开的页面，未保存密钥不缓存',async()=>{
   await fillConnection('late-probe-fixture');mode='held';release=null;
   const pending=probeDraft();for(let index=0;index<100&&!release;index++)await pause(20);assert.ok(release);
-  await page.locator('[data-view="editor"]').click();release();await pending;mode='normal';await settingsPage();
+  await page.locator('[data-view="editor"]').dispatchEvent('click');release();await pending;mode='normal';await settingsPage();await expandSettings();
   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
   assert.equal(await page.locator('#connectionKey').inputValue(),'');
   assert.equal((await api('/api/ai/connections')).connections.length,2);
@@ -475,6 +494,7 @@ async function main(){
   await page.locator('[data-view="library"]').click();
   await page.locator(`[data-project-open="${project}"]`).click();
   await page.waitForFunction(id=>requestedProject===id&&backendOnline,project);await settingsPage();
+  await page.locator('#connectionRegisterLegacy').click();
   assert.equal(await page.locator('#connectionModel').inputValue(),'legacy-fixture');
   assert.equal(await page.locator('#connectionKey').inputValue(),'');
   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
@@ -490,6 +510,7 @@ async function main(){
   assert.equal(await page.locator('#connectionKey').inputValue(),'');
   assert.equal(await page.locator('#connectionEditorHeading').textContent(),'新增模型');
   await page.locator('#modelDefault').selectOption('');
+  await expandSettings();
   await page.locator('[data-task-model="scene"]').selectOption(migrated.id);
   await submitSettings();
   assert.equal(await page.locator('#modelSettings .form-error').textContent(),'');
@@ -498,6 +519,19 @@ async function main(){
   assert.equal(saved.connection_workflow,true);
   assert.equal((await api('/api/ai/settings')).settings.connections.length,2);
   assert.equal((await api('/api/ai/connections','GET',undefined,project)).connections.length,1);
+ });
+ await test('直接打开网页文件时以中文说明正确入口，不显示原生网络错误',async()=>{
+  const filePage=await browser.newPage({viewport:{width:1280,height:900}});
+  try{
+   await filePage.goto(pathToFileURL(path.join(root,'index.html')).href);
+   await filePage.locator('[data-view="settings"]').click();
+   const message=filePage.locator('#settingsHost .settings-unavailable');
+   await message.waitFor();
+   assert.match(await message.textContent(),/请在墨屿软件中配置模型/);
+   assert.match(await message.textContent(),/打开已安装的墨屿/);
+   assert.doesNotMatch(await message.textContent(),/Failed to fetch|NetworkError|TypeError/i);
+   assert.equal(await filePage.locator('#connectionKey').count(),0);
+  }finally{await filePage.close()}
  });
  assert.deepEqual(pageErrors,[]);report.provider_requests=calls.length;report.page_errors=pageErrors.length;
  report.source_files_sha256_after=fingerprint();

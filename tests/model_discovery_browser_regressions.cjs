@@ -34,12 +34,20 @@ async function test(name,run){
  console.log(JSON.stringify({test:name,state:'running'}));
  await run();report.cases.push({name,passed:true});console.log(JSON.stringify({test:name,state:'passed'}));
 }
-async function settings(){
- await page.locator('[data-view="settings"]').click();
- await page.locator('#modelConnectionForm').waitFor();await page.locator('#agentConnectionSettings').waitFor();
+async function closeConnection(){
+ if(await page.evaluate(()=>document.querySelector('#connectionDialog')?.open))await page.locator('#connectionCancel').click();
 }
-async function reopen(){
- await page.locator('[data-view="editor"]').click();await settings();
+async function settings(openMain=true){
+ await page.locator('[data-view="settings"]').click();
+ await page.locator('#connectionAdd').waitFor();await page.locator('#agentConnectionSettings').waitFor();
+ await page.locator('#modelTaskSettings,#modelAdvancedParameters').evaluateAll(details=>details.forEach(item=>item.open=true));
+ if(openMain)await page.locator('#connectionAdd').click();
+}
+async function reopen(openMain=true){
+ await closeConnection();await page.locator('[data-view="editor"]').click();await settings(openMain);
+}
+async function agentAdvanced(){
+ await page.locator('.agent-settings-compatibility').evaluate(details=>details.open=true);
 }
 async function success(prefix='connection'){
  await page.locator(`#${prefix}ModelListStatus[data-state="success"]`).waitFor();
@@ -52,7 +60,8 @@ async function refresh(prefix='connection',state='success'){
 }
 async function openList(prefix='connection'){
  const input=page.locator('#'+prefix+'Model');
- await input.press('Escape');await page.locator('#'+prefix+'ModelToggle').click();
+ if(await input.getAttribute('aria-expanded')==='true')await input.press('Escape');
+ await page.locator('#'+prefix+'ModelToggle').click();
  await page.locator('#'+prefix+'ModelList').waitFor({state:'visible'});
  return page.locator('#'+prefix+'ModelList [role="option"]');
 }
@@ -129,12 +138,14 @@ async function main(){
   }
  });
  await page.route('**/*',route=>route.request().url().startsWith(base)?route.continue():route.abort());
- await page.goto(base);await page.waitForFunction(()=>backendOnline===true);await settings();
+ await page.goto(base);await page.waitForFunction(()=>backendOnline===true);await settings(false);
 
  await test('地址与密钥在模型选择之前，空连接不自动发送请求',async()=>{
+  assert.equal(await page.locator('#connectionDialog').evaluate(dialog=>dialog.open),false);
+  await page.locator('#connectionAdd').click();
   assert.deepEqual(await page.locator('#modelConnectionForm input,#modelConnectionForm select').evaluateAll(elements=>
-   elements.slice(0,5).map(element=>element.id)),
-  ['connectionBaseUrl','connectionKey','connectionApiProtocol','connectionName','connectionModel']);
+   elements.slice(0,6).map(element=>element.id)),
+  ['connectionProvider','connectionBaseUrl','connectionKey','connectionApiProtocol','connectionName','connectionModel']);
   assert.equal(await page.locator('#connectionApiProtocol').inputValue(),'chat_completions');
   await pause(700);assert.equal(inventory.length,0);assert.equal(generated().length,0);
  });
@@ -168,7 +179,7 @@ async function main(){
   await pause(750);assert.equal(inventory.length,before);assert.equal(generated().length,0);
  });
  await test('Responses协议进入清单测试与凭证，兼容草稿保留且切协议撤销测试',async()=>{
-  await page.locator('.settings-compatibility').evaluate(element=>element.open=true);
+  await page.locator('.settings-transport').evaluate(element=>element.open=true);
   await page.locator('#connectionOutputTokenParameter').selectOption('max_completion_tokens');
   await page.locator('#connectionIncludeUsage').check();
   await page.locator('#connectionApiProtocol').selectOption('responses');await page.locator('#connectionApiProtocol').blur();
@@ -187,7 +198,8 @@ async function main(){
   await page.locator('#connectionProbe').click();await page.locator('#connectionProbeStatus[data-state="success"]').waitFor();
   await page.waitForFunction(()=>document.querySelector('#connectionSave')?.disabled===false);
   const before=generated().length;await page.locator('#connectionSave').click();
-  await page.locator('#connectionProbeStatus[data-state="saved"]').waitFor();
+  await page.waitForFunction(()=>document.querySelector('#connectionProbeStatus')?.dataset.state==='saved'&&
+   !document.querySelector('#connectionDialog')?.open);
   await page.waitForFunction(()=>document.querySelector('#connectionProbe')?.disabled===false);
   saved=(await api('/api/ai/connections')).connections[0];assert.equal(saved.api_protocol,'responses');
   assert.equal(await page.locator('#connectionKey').inputValue(),'');
@@ -200,13 +212,20 @@ async function main(){
   assert.equal(inventory.at(-1).id,saved.id);assert.equal(inventory.at(-1).uses_saved_key,true);
   assert.equal(inventory.at(-1).protocol,'responses');assert.equal(providerCalls.at(-1).key_matches,true);
   assert.equal(await page.locator('#connectionModel').inputValue(),saved.model);
+  await closeConnection();
   await page.locator('#modelDefault').selectOption(saved.id);
   assert.equal(await page.locator('#modelMaxTokens').getAttribute('min'),'16');
   await page.locator('#modelReasoning').selectOption('deepseek_enabled');
   assert.equal(await page.locator('#modelReasoning').evaluate(element=>element.checkValidity()),false);
   assert.match(await page.locator('#modelProtocolWarning').textContent(),/DeepSeek/);
   assert.equal(await page.locator('#modelReasoning').inputValue(),'deepseek_enabled');
+  const before=(await api('/api/ai/settings')).settings;
+  await page.locator('#modelAdvancedParameters').evaluate(details=>details.open=false);
+  await page.locator('#modelSettings [type="submit"]').click();
+  assert.equal(await page.locator('#modelAdvancedParameters').evaluate(details=>details.open),true);
+  assert.deepEqual((await api('/api/ai/settings')).settings,before);
   await page.locator('#modelReasoning').selectOption('');
+  await page.locator(`[data-connection-edit="${saved.id}"]`).click();await success();
  });
  await test('主连接换地址不自动发送原密钥，清单手动免密且测试必须补新密钥',async()=>{
   const before=inventory.length,probes=generated().length;
@@ -223,6 +242,7 @@ async function main(){
   await page.locator('#connectionBaseUrl').fill(providerBase);await page.locator('#connectionBaseUrl').blur();await success();
  });
  await test('Responses用途按有效继承长度校验，章后回顾别名不静默改草稿',async()=>{
+  await closeConnection();
   await page.locator('#modelDefault').selectOption('');
   await page.locator('#modelMaxTokens').fill('1');
   await page.locator('[data-task-model="continue"]').selectOption(saved.id);
@@ -243,6 +263,7 @@ async function main(){
   await page.locator('[data-task-model="continue"]').selectOption('');
   await page.locator('[data-task-model="summary"]').selectOption('');
   await continuation.fill('');await summary.fill('');await page.locator('#modelMaxTokens').fill('3000');
+  await page.locator(`[data-connection-edit="${saved.id}"]`).click();await success();
  });
  await test('同一连接获取中改模型名称不取消清单，返回结果不覆盖手填模型',async()=>{
   await held('/api/ai/connections/models',()=>page.locator('#connectionFetchModels').click(),async()=>{
@@ -288,6 +309,7 @@ async function main(){
   listMode='normal';await refresh();assert.equal(await page.locator('#connectionModel').inputValue(),'manual-after-failure');
  });
  await test('总管独立连接也自动发现多个模型并传递协议，不生成或保存',async()=>{
+  await closeConnection();
   const before=generated().length;
   await page.locator('[name="agentConnectionMode"][value="independent"]').check();
   await page.locator('#agentBaseUrl').fill(providerBase);await page.locator('#agentApiKey').fill(secret);
@@ -299,7 +321,8 @@ async function main(){
   const options=await openList('agent');assert.equal(await options.count(),3);
   await page.locator('#agentModel').fill('gamma');await page.locator('#agentModel').press('ArrowDown');
   await page.locator('#agentModel').press('Enter');assert.equal(await page.locator('#agentModel').inputValue(),'fixture-gamma');
-  assert.equal(await page.locator('.agent-settings-compatibility').isVisible(),false);
+  await agentAdvanced();
+  assert.equal(await page.locator('.agent-chat-compatibility').isVisible(),false);
   assert.equal(await page.locator('#agentMaxTokens').getAttribute('min'),'16');
  });
  await test('总管协议保存测试沿用正确接入，保存清密钥不重复查询',async()=>{
@@ -310,15 +333,21 @@ async function main(){
   assert.equal(await page.locator('#agentThinking').evaluate(element=>element.checkValidity()),false);
   assert.match(await page.locator('#agentProtocolWarning').textContent(),/DeepSeek/);
   await page.locator('#agentThinking').selectOption('default');
+  assert.equal(await page.locator('#agentConnectionSave').isDisabled(),true);
+  const before=generated().length;await page.locator('#agentConnectionProbe').click();
+  await page.locator('#agentProbeStatus').filter({hasText:'实测成功'}).waitFor();
+  await page.waitForFunction(()=>document.querySelector('#agentConnectionSave')?.disabled===false);
+  assert.equal(generated().length,before+1);
+  assert.equal((await api('/api/agent-chat/settings')).settings.mode,'inherit');
   await page.locator('#agentConnectionSettings [type="submit"]').click();
   await page.locator('#agentProbeStatus').filter({hasText:'总管设置已保存'}).waitFor();
   const stored=(await api('/api/agent-chat/settings')).settings;
   assert.equal(stored.independent_settings.api_protocol,'responses');assert.equal(stored.independent_settings.api_key_configured,true);
   assert.equal(await page.locator('#agentApiKey').inputValue(),'');
   const count=inventory.length;await pause(750);assert.equal(inventory.length,count);
-  const before=generated().length;await page.locator('#agentConnectionProbe').click();
+  const savedProbeCount=generated().length;await page.locator('#agentConnectionProbe').click();
   await page.locator('#agentProbeStatus').filter({hasText:'实测成功'}).waitFor();
-  assert.equal(generated().length,before+1);assert.equal(generated().at(-1).protocol,'responses');
+  assert.equal(generated().length,savedProbeCount+1);assert.equal(generated().at(-1).protocol,'responses');
   assert.equal(generated().at(-1).has_input,true);
  });
  await test('总管换地址不自动沿用原密钥，保存与测试阻止跨地址凭据外发',async()=>{
@@ -326,9 +355,9 @@ async function main(){
   await page.locator('#agentBaseUrl').fill(providerBase+'/other-agent-service');
   await page.locator('#agentBaseUrl').blur();await pause(750);
   assert.equal(inventory.length,before);assert.match(await page.locator('#agentModelListStatus').textContent(),/重新填写/);
-  await page.locator('#agentConnectionSettings [type="submit"]').click();
-  assert.match(await page.locator('#agentConnectionSettings .form-error').textContent(),/重新填写/);
+  assert.equal(await page.locator('#agentConnectionSave').isDisabled(),true);
   await page.locator('#agentConnectionProbe').click();
+  await page.locator('#agentProbeStatus').filter({hasText:'重新填写'}).waitFor();
   assert.equal(generated().length,probes);
   assert.equal((await api('/api/agent-chat/settings')).settings.independent_settings.base_url,providerBase);
   await refresh('agent');assert.equal(inventory.at(-1).uses_saved_key,false);assert.equal(providerCalls.at(-1).no_key,true);
@@ -338,6 +367,7 @@ async function main(){
   await page.locator('#agentBaseUrl').fill(providerBase);await page.locator('#agentBaseUrl').blur();await success('agent');
  });
  await test('填写新总管密钥再勾清除会取消旧清单并提示二选一',async()=>{
+  await agentAdvanced();
   await held('/api/agent-chat/settings/models',()=>page.locator('#agentFetchModels').click(),async()=>{
    await page.locator('#agentApiKey').fill(secret);await page.locator('#agentClearApiKey').check();
   });
@@ -348,7 +378,7 @@ async function main(){
   await page.locator('#agentApiKey').blur();await success('agent');
  });
  await test('总管重开自动沿用已存密钥，清除密钥草稿不提前写入',async()=>{
-  await reopen();await success('agent');assert.equal(inventory.at(-1).uses_saved_key,true);
+  await reopen(false);await success('agent');await agentAdvanced();assert.equal(inventory.at(-1).uses_saved_key,true);
   assert.equal(providerCalls.at(-1).key_matches,true);assert.equal(inventory.at(-1).protocol,'responses');
   const count=inventory.length;await page.locator('#agentModel').fill('agent-manual-draft');
   await pause(700);assert.equal(inventory.length,count);
@@ -368,9 +398,11 @@ async function main(){
   assert.equal(generated().length,before);
  });
  await test('跨作品的慢清单不带入新作品，桌面下拉不越界且秘密不进入缓存',async()=>{
+  await page.locator('#connectionAdd').click();
   await page.locator('#connectionBaseUrl').fill(providerBase);await page.locator('#connectionBaseUrl').blur();await success();
   const created=await api('/api/projects','POST',{title:'模型发现隔离合成作品',goal:50000});
   await held('/api/ai/connections/models',()=>page.locator('#connectionFetchModels').click(),async()=>{
+   await closeConnection();
    await page.locator('[data-view="library"]').click();
    await page.locator(`[data-project-open="${created.project.id}"]`).click();
    await page.waitForFunction(id=>requestedProject===id&&backendOnline===true,created.project.id);await settings();

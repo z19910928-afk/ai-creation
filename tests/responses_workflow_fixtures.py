@@ -254,11 +254,14 @@ class ResponsesWorkflowTests(unittest.TestCase):
         for independent in (False, True):
             with self.subTest(independent=independent):
                 if independent:
-                    saved = self.request("/api/agent-chat/settings", "POST", {
+                    checked = self.request("/api/agent-chat/settings/probe", "POST", {
                         "mode": "independent", "base_url": self.provider_base,
                         "api_key": SECRET, "model": "workflow-responses",
                         "api_protocol": "responses",
                         "parameters": {"temperature": 0.3, "max_tokens": 500}})
+                    self.assertTrue(checked["probe"]["success"], checked)
+                    saved = self.request("/api/agent-chat/settings", "POST", {
+                        "verification_token": checked["verification_token"]})
                     self.assertEqual(saved["settings"]["api_protocol"], "responses")
                     before = len(self.provider.calls)
                     listed = self.request("/api/agent-chat/settings/models", "POST", {

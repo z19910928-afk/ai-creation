@@ -1447,7 +1447,7 @@ async function main(){
   const registered={};
   for(const model of ['browser-mock','browser-special-continue']){
    const before=providerRequests.length;
-   await workspace.page.locator('#connectionReset').click();
+   await workspace.page.locator('#connectionAdd').click();
    await workspace.page.locator('#connectionName').fill(model);
    await workspace.page.locator('#connectionBaseUrl').fill(`http://127.0.0.1:${providerPort}/v1`);
    await workspace.page.locator('#connectionModel').fill(model);
@@ -1458,7 +1458,8 @@ async function main(){
    assert.equal(providerRequests.length,before+1);
    assert.equal(providerRequests.at(-1).model,model);
    await workspace.page.locator('#connectionSave').click();
-   await workspace.page.locator('#connectionProbeStatus[data-state="saved"]').waitFor();
+   await workspace.page.waitForFunction(()=>document.querySelector('#connectionProbeStatus')?.dataset.state==='saved'&&
+    !document.querySelector('#connectionDialog')?.open);
    await workspace.page.waitForFunction(()=>!document.querySelector('#connectionProbe')?.disabled);
    registered[model]=(await api('/api/ai/connections')).connections.find(item=>item.name===model);
    assert.equal(registered[model]?.verified,true);
@@ -1467,6 +1468,7 @@ async function main(){
   await workspace.page.locator('#modelDefault').selectOption(registered['browser-mock'].id);
   await workspace.page.locator('#modelTone').fill('克制、动作具体');
   await workspace.page.locator('#modelStyleInstructions').fill('保持林岚视角，不补她未知的事实。');
+  await workspace.page.locator('#modelTaskSettings,#modelAdvancedParameters').evaluateAll(details=>details.forEach(item=>item.open=true));
   await workspace.page.locator('#modelMaxTokens').fill('4096');
   await workspace.page.locator('#modelReasoning').selectOption('none');
   await workspace.page.locator('[data-task-model="continue"]').selectOption(registered['browser-special-continue'].id);
@@ -1490,11 +1492,13 @@ async function main(){
  });
  await test('电脑端明确关闭DeepSeek思考，保存回读和实际请求均保留开关',async()=>{
   await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
+  await workspace.page.locator('#modelAdvancedParameters').evaluate(details=>details.open=true);
   await workspace.page.locator('#modelReasoning').selectOption('deepseek_disabled');
   await workspace.page.locator('#modelSettings [type="submit"]').click();
   await workspace.page.waitForFunction(()=>authorSettings?.parameters?.thinking?.type==='disabled');
   await workspace.page.reload();await workspace.page.waitForFunction(()=>backendOnline);
   await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
+  await workspace.page.locator('#modelAdvancedParameters').evaluate(details=>details.open=true);
   assert.equal(await workspace.page.locator('#modelReasoning').inputValue(),'deepseek_disabled');
   const configured=(await api('/api/ai/settings')).settings;
   assert.deepEqual(configured.parameters.thinking,{type:'disabled'});
@@ -1507,6 +1511,7 @@ async function main(){
   assert.deepEqual(actual.thinking,{type:'disabled'});assert.equal(actual.reasoning_effort,undefined);
   await rejectCandidate(workspace.page);
   await workspace.page.locator('[data-view="settings"]').click();await workspace.page.locator('#modelSettings').waitFor();
+  await workspace.page.locator('#modelAdvancedParameters').evaluate(details=>details.open=true);
   await workspace.page.locator('#modelReasoning').selectOption('');
   await workspace.page.locator('#modelSettings [type="submit"]').click();
   await workspace.page.waitForFunction(()=>!authorSettings?.parameters?.thinking&&!authorSettings?.parameters?.reasoning_effort);

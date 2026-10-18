@@ -277,6 +277,7 @@ def _portable_model_settings(raw):
         raise ValueError("备份中的模型设置格式无效")
     public = {"base_url", "model", "models", "styles", "parameters", "task_parameters", "daily_limit",
               "api_protocol", "output_token_parameter", "include_usage",
+              "provider", "custom_request_path", "models_path", "user_agent",
               "connections", "connection_workflow", "default_connection_id", "task_connections"}
     settings = {key: value for key, value in settings.items() if key in public}
     settings.update(_connection_options(settings))

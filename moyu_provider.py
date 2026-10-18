@@ -17,7 +17,7 @@ import time
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Callable, Mapping
-from urllib.parse import urlsplit, urlunsplit
+from urllib.parse import unquote, urlsplit, urlunsplit
 
 
 MAX_REQUEST_BYTES = 2_000_000
@@ -26,6 +26,10 @@ MAX_LINE_BYTES = 256_000
 MAX_JSON_DEPTH = 24
 FINISH_REASONS = {"stop", "length", "content_filter", "tool_calls", "function_call"}
 API_PROTOCOLS = {"chat_completions", "responses"}
+TRANSPORT_DEFAULTS = {
+    "provider": "openai_compatible", "custom_request_path": "", "models_path": "", "user_agent": "",
+}
+CONNECTION_PROVIDERS = {"openai_compatible", "openai", "deepseek", "qwen", "siliconflow", "ollama"}
 _STRING = {"type": "string", "maxLength": 200_000}
 _SHORT_STRING = {"type": "string", "maxLength": 12_000}
 _STRINGS = {"type": "array", "items": _SHORT_STRING, "maxItems": 100}
@@ -234,7 +238,43 @@ def request_messages(payload: Mapping[str, Any],
     return messages
 
 
-def _endpoint(base_url: str, resource: str = "chat/completions") -> tuple[str, str, int, str]:
+def _transport_path(value: Any, label: str) -> str:
+    if not isinstance(value, str) or len(value) > 2048:
+        raise ProviderError(f"{label}必须为不超过2048字的路径。", code="invalid_configuration")
+    if not value:
+        return ""
+    decoded = unquote(value)
+    if (not value.startswith("/") or value.startswith("//") or decoded.startswith("//")
+            or any(char in decoded for char in ("?", "#", "\\"))
+            or any(ord(char) < 33 or ord(char) > 126 for char in value)
+            or any(ord(char) < 33 or ord(char) == 127 for char in decoded)
+            or any(part in {".", ".."} for part in decoded.split("/"))):
+        raise ProviderError(
+            f"{label}必须为以单个 / 开头的同域路径，不含完整网址、查询参数或上级目录。",
+            code="invalid_configuration")
+    return value
+
+
+def transport_options(config: Mapping[str, Any]) -> dict[str, Any]:
+    """Validate the shared connection fields without changing the API base."""
+    provider = config.get("provider", TRANSPORT_DEFAULTS["provider"])
+    if not isinstance(provider, str) or provider not in CONNECTION_PROVIDERS:
+        raise ProviderError("请选择支持的模型服务类型。", code="invalid_configuration")
+    user_agent = config.get("user_agent", "")
+    if (not isinstance(user_agent, str) or len(user_agent) > 256
+            or any(ord(char) < 32 or ord(char) > 126 for char in user_agent)):
+        raise ProviderError("客户端标识必须为不超过256字的英文或数字，不能含换行。",
+                            code="invalid_configuration")
+    return {
+        "provider": provider,
+        "custom_request_path": _transport_path(config.get("custom_request_path", ""), "生成接口路径"),
+        "models_path": _transport_path(config.get("models_path", ""), "模型列表路径"),
+        "user_agent": user_agent.strip(),
+    }
+
+
+def _endpoint(base_url: str, resource: str = "chat/completions", *,
+              custom_path: str = "") -> tuple[str, str, int, str]:
     if not isinstance(base_url, str) or len(base_url) > 2048 or any(ord(char) < 33 for char in base_url):
         raise ProviderError("模型服务地址无效。", code="invalid_configuration")
     try:
@@ -255,25 +295,36 @@ def _endpoint(base_url: str, resource: str = "chat/completions") -> tuple[str, s
         raise ProviderError("模型服务端口无效。", code="invalid_configuration") from None
     path = parsed.path.rstrip("/")
     # A copied endpoint identifies the API base; protocol is chosen explicitly.
-    for suffix in ("/chat/completions", "/responses"):
+    for suffix in ("/chat/completions", "/responses", "/models"):
         if path.endswith(suffix):
             path = path[:-len(suffix)]
             break
-    path += "/" + resource
+    path = _transport_path(custom_path, "接口路径") if custom_path else path + "/" + resource
     return urlunsplit((parsed.scheme, parsed.netloc, path, "", "")), host, port, path
+
+
+def _transport_endpoint(config: Mapping[str, Any], *, models: bool = False) -> dict[str, Any]:
+    options = transport_options(config)
+    protocol = _api_protocol(config)
+    resource = "models" if models else "responses" if protocol == "responses" else "chat/completions"
+    endpoint, host, port, path = _endpoint(
+        config.get("base_url", ""), resource,
+        custom_path=options["models_path" if models else "custom_request_path"])
+    return {"endpoint": endpoint, "host": host, "port": port, "path": path,
+            "user_agent": options["user_agent"] or "Moyu/1", "provider": options["provider"]}
 
 
 def list_models(config: Mapping[str, Any]) -> dict[str, Any]:
     """Read bounded model identifiers once, without generating or following redirects."""
-    _api_protocol(config)
-    endpoint, host, port, path = _endpoint(config.get("base_url", ""), "models")
+    transport = _transport_endpoint(config, models=True)
+    endpoint, host, port, path = (transport[key] for key in ("endpoint", "host", "port", "path"))
     secret = config.get("api_key", "")
     if not isinstance(secret, str) or len(secret) > 4096 or any(
             ord(char) < 32 or ord(char) == 127 for char in secret):
         raise ProviderError("模型密钥格式无效。", code="invalid_configuration")
     timeout = _finite_number(config.get("connect_timeout", 10), "连接超时", 0.1, 90)
     total_timeout = _finite_number(config.get("total_timeout", 30), "总超时", 0.1, 90)
-    headers = {"Accept": "application/json", "User-Agent": "Moyu/1"}
+    headers = {"Accept": "application/json", "User-Agent": transport["user_agent"]}
     if secret:
         headers["Authorization"] = "Bearer " + secret
     connection = (
@@ -395,9 +446,8 @@ def prepare_chat_request(
     if not isinstance(config, Mapping) or response_format not in {"text", "json"}:
         raise ProviderError("模型请求设置无效。", code="invalid_request")
     protocol = _api_protocol(config)
-    endpoint, host, port, path = _endpoint(
-        config.get("base_url", ""),
-        "responses" if protocol == "responses" else "chat/completions")
+    transport = _transport_endpoint(config)
+    endpoint, host, port, path = (transport[key] for key in ("endpoint", "host", "port", "path"))
     task_models = config.get("task_models", {})
     if not isinstance(task_models, Mapping):
         raise ProviderError("用途模型设置无效。", code="invalid_configuration")
@@ -519,6 +569,7 @@ def prepare_chat_request(
         raise ProviderError("请求身份无效。", code="invalid_request")
     audit = {"request_id": identifier, "endpoint": endpoint, "method": "POST",
              "api_protocol": protocol,
+             "provider": transport["provider"], "user_agent": transport["user_agent"],
              "requested_model": model, "request_sha256": _sha(body),
              "messages_sha256": _sha(_encoded(messages)), "request_bytes": len(body),
              "effective_parameters": {**transmitted, token_parameter: max_tokens,
@@ -527,7 +578,7 @@ def prepare_chat_request(
              "created_at": datetime.now(timezone.utc).isoformat(),
              "dispatched": False}
     return {"endpoint": endpoint, "host": host, "port": port, "path": path,
-            "api_protocol": protocol,
+            "api_protocol": protocol, "user_agent": transport["user_agent"],
             "payload": payload, "body": body, "request_audit": _redact(audit, secret)}
 
 
@@ -1511,7 +1562,7 @@ def call_chat_completion(
     accumulator = accumulator_type(task, response_format, secret, on_chunk, schema,
                                    thinking_disabled=thinking_disabled)
     headers = {"Content-Type": "application/json", "Accept": "text/event-stream" if stream else "application/json",
-               "User-Agent": "Moyu/1", "X-Client-Request-Id": prepared["request_audit"]["request_id"]}
+               "User-Agent": prepared["user_agent"], "X-Client-Request-Id": prepared["request_audit"]["request_id"]}
     if secret:
         headers["Authorization"] = "Bearer " + secret
     if prepared["endpoint"].startswith("https:"):
