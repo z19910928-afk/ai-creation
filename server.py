@@ -5175,6 +5175,19 @@ class Handler(SimpleHTTPRequestHandler):
     def log_message(self, fmt: str, *args: Any) -> None:
         sys.stderr.write("%s - - [%s] %s\n" % (self.address_string(), now(), fmt % args))
 
+    def end_headers(self) -> None:
+        # Different checkouts can reuse asset timestamps; keep previews current.
+        try:
+            static_path = urlparse(getattr(self, "path", "") or "").path in self.STATIC_FILES
+        except ValueError:
+            static_path = False
+        if static_path and not any(
+            header.lower().startswith(b"cache-control:")
+            for header in getattr(self, "_headers_buffer", ())
+        ):
+            self.send_header("Cache-Control", "no-store")
+        super().end_headers()
+
     def send_json(self, status: int, value: Any) -> None:
         self.finish_transaction(status)
         raw = json.dumps(value, ensure_ascii=False).encode("utf-8")
