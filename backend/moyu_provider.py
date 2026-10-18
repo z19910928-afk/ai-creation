@@ -2,7 +2,8 @@
 
 This module owns no database transaction. The caller must reserve its budget
 before dispatch and persist each ``on_chunk`` callback in a short transaction.
-There are no automatic retries: an interrupted dispatched request may be billed.
+Generation requests are never automatically retried: an interrupted dispatched
+request may be billed. Model inventory GETs may reconnect once before a response.
 """
 from __future__ import annotations
 
@@ -314,8 +315,31 @@ def _transport_endpoint(config: Mapping[str, Any], *, models: bool = False) -> d
             "user_agent": options["user_agent"] or "Moyu/1", "provider": options["provider"]}
 
 
+def _models_connection_error(error: BaseException, *, timed_out: bool = False) -> ProviderError:
+    if timed_out or isinstance(error, (TimeoutError, socket.timeout)):
+        return ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
+                             code="models_timeout")
+    if isinstance(error, ssl.SSLCertVerificationError):
+        return ProviderError("模型服务的安全证书验证未通过，请检查电脑时间、服务证书或网络代理的证书配置。",
+                             code="models_certificate_error")
+    if isinstance(error, ssl.SSLError):
+        return ProviderError("与模型服务建立加密连接失败，请检查 HTTPS 服务地址或网络代理设置。",
+                             code="models_tls_error")
+    if isinstance(error, socket.gaierror):
+        return ProviderError("无法解析模型服务的域名，请检查服务地址和网络的域名解析设置。",
+                             code="models_dns_error")
+    if isinstance(error, ConnectionRefusedError):
+        return ProviderError("模型服务拒绝连接，请检查服务地址、端口以及服务是否正在运行。",
+                             code="models_connection_refused")
+    if isinstance(error, (ConnectionResetError, ConnectionAbortedError, BrokenPipeError)):
+        return ProviderError("模型服务或网络代理提前断开了连接，请稍后重试并检查网络代理设置。",
+                             code="models_connection_reset")
+    return ProviderError("获取模型列表时连接中断，请检查服务地址或网络，也可手动填写模型名称。",
+                         code="models_connection_interrupted")
+
+
 def list_models(config: Mapping[str, Any]) -> dict[str, Any]:
-    """Read bounded model identifiers once, without generating or following redirects."""
+    """Read bounded model identifiers without generating or following redirects."""
     transport = _transport_endpoint(config, models=True)
     endpoint, host, port, path = (transport[key] for key in ("endpoint", "host", "port", "path"))
     secret = config.get("api_key", "")
@@ -327,28 +351,53 @@ def list_models(config: Mapping[str, Any]) -> dict[str, Any]:
     headers = {"Accept": "application/json", "User-Agent": transport["user_agent"]}
     if secret:
         headers["Authorization"] = "Bearer " + secret
-    connection = (
-        http.client.HTTPSConnection(host, port, timeout=timeout, context=ssl.create_default_context())
-        if endpoint.startswith("https:") else http.client.HTTPConnection(host, port, timeout=timeout)
-    )
+    try:
+        context = ssl.create_default_context() if endpoint.startswith("https:") else None
+    except (OSError, http.client.HTTPException) as error:
+        raise _models_connection_error(error) from None
+    connection = None
     response = None
     started = time.monotonic()
     timed_out = threading.Event()
 
     def abort() -> None:
         timed_out.set()
-        _abort_connection(connection, response)
+        if connection is not None:
+            _abort_connection(connection, response)
 
     deadline = threading.Timer(total_timeout, abort)
     deadline.daemon = True
     deadline.start()
     try:
-        connection.connect()
-        if connection.sock:
-            connection.sock.settimeout(max(0.1, total_timeout - (time.monotonic() - started)))
-        connection.request("GET", path, headers=headers)
-        response = connection.getresponse()
-        if timed_out.is_set():
+        for attempt in range(2):
+            remaining = total_timeout - (time.monotonic() - started)
+            if timed_out.is_set() or remaining <= 0:
+                raise _models_connection_error(TimeoutError())
+            connection = (
+                http.client.HTTPSConnection(host, port, timeout=min(timeout, remaining), context=context)
+                if context is not None else
+                http.client.HTTPConnection(host, port, timeout=min(timeout, remaining))
+            )
+            # A deadline abort must not silently open another socket while sending.
+            connection.auto_open = 0
+            try:
+                connection.connect()
+                if timed_out.is_set() or time.monotonic() - started >= total_timeout:
+                    raise _models_connection_error(TimeoutError())
+                if connection.sock:
+                    connection.sock.settimeout(max(0.1, total_timeout - (time.monotonic() - started)))
+                connection.request("GET", path, headers=headers)
+                response = connection.getresponse()
+                break
+            except (OSError, http.client.HTTPException) as error:
+                transient = isinstance(error, (ConnectionResetError, ssl.SSLEOFError)) or (
+                    isinstance(error, ssl.SSLError)
+                    and getattr(error, "reason", "") == "UNEXPECTED_EOF_WHILE_READING")
+                if (attempt or response is not None or not transient or timed_out.is_set()
+                        or time.monotonic() - started >= total_timeout):
+                    raise
+                connection.close()
+        if timed_out.is_set() or time.monotonic() - started >= total_timeout:
             raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
                                 code="models_timeout")
         if response.status != 200:
@@ -382,7 +431,7 @@ def list_models(config: Mapping[str, Any]) -> dict[str, Any]:
                 raise ProviderError("模型列表超过大小上限，请手动填写模型名称。",
                                     code="models_too_large")
             parts.append(raw)
-        if timed_out.is_set():
+        if timed_out.is_set() or time.monotonic() - started >= total_timeout:
             raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
                                 code="models_timeout")
         value = _load_json(b"".join(parts), "invalid_models_response")
@@ -403,18 +452,14 @@ def list_models(config: Mapping[str, Any]) -> dict[str, Any]:
         return {"models": sorted(models, key=str.casefold), "endpoint": _redact(endpoint, secret)}
     except ProviderError:
         raise
-    except (TimeoutError, socket.timeout):
-        raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
-                            code="models_timeout") from None
-    except (OSError, http.client.HTTPException):
-        if timed_out.is_set():
-            raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
-                                code="models_timeout") from None
-        raise ProviderError("获取模型列表时连接中断，请检查服务地址或网络，也可手动填写模型名称。",
-                            code="models_connection_interrupted") from None
+    except (OSError, http.client.HTTPException) as error:
+        raise _models_connection_error(
+            error, timed_out=timed_out.is_set() or time.monotonic() - started >= total_timeout,
+        ) from None
     finally:
         deadline.cancel()
-        connection.close()
+        if connection is not None:
+            connection.close()
         if response is not None:
             response.close()
         deadline.join(timeout=1)

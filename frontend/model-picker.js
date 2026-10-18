@@ -225,13 +225,16 @@
    else debounce = setTimeout(() => { void load(); }, 600);
   }
   function setDisabled(value, {clear = false} = {}) {
+   const wasDisabled = disabled, interrupted = !!controller;
    disabled = value;
    if (value) {
     abort(clear); close();
-    if (clear) attempted = '';
+    if (clear || interrupted) attempted = '';
+    if (interrupted && !clear) show('模型列表获取已暂停。', 'untested');
    }
    refresh.disabled = value || !!controller;
    toggle.disabled = value;
+   if (wasDisabled && !value) changed();
   }
   function dispose() {
    if (disposed) return;

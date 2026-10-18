@@ -273,6 +273,24 @@ async function main(){
   await success();assert.equal(await page.locator('#connectionModel').inputValue(),'typing-during-list');
   assert.equal(await page.locator('#connectionModelList [role="option"]').textContent(),'late-old-fixture');
  });
+ await test('主模型清单获取中测试连接，结束后自动恢复且已成功清单不重复获取',async()=>{
+  const before=inventory.length,probes=generated().length;
+  await held('/api/ai/connections/models',()=>page.locator('#connectionFetchModels').click(),async()=>{
+   await page.locator('#connectionProbe').click();
+   await page.locator('#connectionProbeStatus[data-state="success"]').waitFor();
+   await page.waitForFunction(()=>document.querySelector('#connectionSave')?.disabled===false);
+  });
+  await success();assert.equal(inventory.length,before+2);assert.equal(generated().length,probes+1);
+  assert.equal(await page.locator('#connectionModel').inputValue(),'typing-during-list');
+  assert.equal(await page.locator('#connectionModelList [data-model-value="fixture-alpha"]').count(),1);
+  assert.equal(await page.locator('#connectionModelList [data-model-value="late-old-fixture"]').count(),0);
+  assert.equal(await page.locator('#connectionModel').getAttribute('aria-busy'),'false');
+  const completed=inventory.length;
+  await page.locator('#connectionProbe').click();
+  await page.locator('#connectionProbeStatus[data-state="success"]').waitFor();
+  await page.waitForFunction(()=>document.querySelector('#connectionProbe')?.disabled===false);
+  await pause(750);assert.equal(inventory.length,completed,'测试已完成清单不能触发重复获取');
+ });
  await test('改地址立即取消并清理旧清单，慢返回不能污染新连接',async()=>{
   const before=inventory.length;
   await held('/api/ai/connections/models',()=>page.locator('#connectionFetchModels').click(),async()=>{
@@ -306,6 +324,12 @@ async function main(){
   await page.locator('#connectionModel').fill('manual-after-failure');
   assert.equal(await page.locator('#connectionModel').inputValue(),'manual-after-failure');
   assert.equal(await page.locator('#connectionProbe').isEnabled(),true);
+  const failedCount=inventory.length;
+  await page.locator('#connectionProbe').click();
+  await page.locator('#connectionProbeStatus[data-state="success"]').waitFor();
+  await page.waitForFunction(()=>document.querySelector('#connectionProbe')?.disabled===false);
+  await pause(750);assert.equal(inventory.length,failedCount,'失败清单不能在测试结束后自动循环重试');
+  assert.equal(await page.locator('#connectionModelListStatus').getAttribute('data-state'),'failed');
   listMode='normal';await refresh();assert.equal(await page.locator('#connectionModel').inputValue(),'manual-after-failure');
  });
  await test('总管独立连接也自动发现多个模型并传递协议，不生成或保存',async()=>{
@@ -324,6 +348,20 @@ async function main(){
   await agentAdvanced();
   assert.equal(await page.locator('.agent-chat-compatibility').isVisible(),false);
   assert.equal(await page.locator('#agentMaxTokens').getAttribute('min'),'16');
+ });
+ await test('总管清单获取中测试连接，结束后自动恢复且过时清单不能覆盖',async()=>{
+  const before=inventory.length,probes=generated().length;
+  await held('/api/agent-chat/settings/models',()=>page.locator('#agentFetchModels').click(),async()=>{
+   await page.locator('#agentConnectionProbe').click();
+   await page.locator('#agentProbeStatus').filter({hasText:'实测成功'}).waitFor();
+   await page.waitForFunction(()=>document.querySelector('#agentConnectionSave')?.disabled===false);
+  });
+  await success('agent');assert.equal(inventory.length,before+2);assert.equal(generated().length,probes+1);
+  assert.equal(await page.locator('#agentModel').inputValue(),'fixture-gamma');
+  assert.equal(await page.locator('#agentModelList [data-model-value="fixture-alpha"]').count(),1);
+  assert.equal(await page.locator('#agentModelList [data-model-value="late-old-fixture"]').count(),0);
+  assert.equal(await page.locator('#agentModel').getAttribute('aria-busy'),'false');
+  const completed=inventory.length;await pause(750);assert.equal(inventory.length,completed);
  });
  await test('总管协议保存测试沿用正确接入，保存清密钥不重复查询',async()=>{
   await page.locator('#agentApiProtocol').selectOption('chat_completions');
