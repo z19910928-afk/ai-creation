@@ -65,7 +65,7 @@
 | 随时讨论与安排任务 | 常驻总管对话、当前章与选区引用、任务进度、保存后接续 |
 | 保持人物与情节连贯 | 关联知识卡、章后记忆、原句证据、人物关系、时间线与伏笔 |
 | 放心尝试不同写法 | 选区润色、候选比较、明确采纳、正文历史与版本恢复 |
-| 为不同工作选择模型 | 先测试再保存模型，再为续写、润色、规划、记忆与审稿分配用途 |
+| 为不同工作选择模型 | 自动获取模型清单，支持 Chat / Responses；先测试保存，再为创作各用途分配模型 |
 | 留住并带走作品 | 本机保存、完整作品 ZIP 备份与独立恢复、Markdown 文稿和 EPUB 电子书导出 |
 
 ## 开始使用
@@ -76,11 +76,11 @@
 
 | 电脑 | 安装下载 | 版本 |
 | --- | --- | --- |
-| Mac · Apple 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.0/Moyu-0.1.0-mac-arm64.dmg) | v0.1.0 |
-| Mac · Intel 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.0/Moyu-0.1.0-mac-x64.dmg) | v0.1.0 |
-| Windows · 64 位 | [下载 EXE 安装程序](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.0/Moyu-0.1.0-win-x64.exe) | v0.1.0 |
+| Mac · Apple 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.1/Moyu-0.1.1-mac-arm64.dmg) | v0.1.1 |
+| Mac · Intel 芯片 | [下载 DMG 安装包](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.1/Moyu-0.1.1-mac-x64.dmg) | v0.1.1 |
+| Windows · 64 位 | [下载 EXE 安装程序](https://github.com/z19910928-afk/neural-network-ai-creation/releases/download/v0.1.1/Moyu-0.1.1-win-x64.exe) | v0.1.1 |
 
-> 已完成三个平台的原生构建与安装验证。备用 ZIP 和 `SHA256SUMS-*.txt` 校验文件见 [v0.1.0 发布页](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.0)。Mac 需要 macOS 15 或更新版本；首次打开提示及安装方法见[桌面安装说明](docs/desktop-packaging.md)。
+> v0.1.1 已完成三个平台的原生构建与安装验证，包含自动获取模型与 Chat / Responses 接入更新。备用 ZIP 和 `SHA256SUMS-*.txt` 校验文件见 [v0.1.1 发布页](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.1)。Mac 需要 macOS 15 或更新版本；首次打开提示及安装方法见[桌面安装说明](docs/desktop-packaging.md)。
 
 ### 从源码运行
 
