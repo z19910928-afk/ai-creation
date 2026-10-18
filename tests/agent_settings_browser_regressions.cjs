@@ -69,7 +69,10 @@ async function main(){
     draft_key_matches:request.headers.authorization==='Bearer '+draftSecret});
    response.writeHead(200,{'Content-Type':'application/json'});
    if(request.method==='GET'){
-    response.end(JSON.stringify({data:[{id:'main-browser-fixture'},{id:'independent-browser-fixture'},{id:'secondary-browser-fixture'}]}));return;
+    const models=[{id:'main-browser-fixture'},{id:'independent-browser-fixture'},{id:'secondary-browser-fixture'}];
+    if(request.url==='/compatible/models'&&request.headers['user-agent']==='MoyuBrowserFixture/2')
+     models.push({id:'compatible-list-browser-fixture'});
+    response.end(JSON.stringify({data:models}));return;
    }
    const text=input.model==='bad-browser-fixture'?'连接不正常':'连接正常。';
    response.end(JSON.stringify(request.url.endsWith('/responses')?{
@@ -162,16 +165,33 @@ async function main(){
   assert.equal(await page.locator('#agentCustomRequestPath').isVisible(),true);
   await page.locator('#agentCustomRequestPath').fill('/compatible/responses');
   await page.locator('#agentModelsPath').fill('/compatible/models');
+  const inventoryStart=calls.length;
+  const latestInventory=page.waitForResponse(response=>{
+   const request=response.request();
+   if(new URL(response.url()).pathname!=='/api/agent-chat/settings/models'||request.method()!=='POST'||!response.ok())return false;
+   const body=request.postDataJSON();
+   return body.base_url===providerBase&&body.api_protocol==='responses'&&
+    body.custom_request_path==='/compatible/responses'&&body.models_path==='/compatible/models'&&
+    body.user_agent==='MoyuBrowserFixture/2';
+  });
   await page.locator('#agentUserAgent').fill('MoyuBrowserFixture/2');await page.locator('#agentUserAgent').blur();
+  const inventoryResponse=await latestInventory;
+  assert.equal(inventoryResponse.status(),200);
+  assert.ok((await inventoryResponse.json()).models.includes('compatible-list-browser-fixture'));
   await page.locator('#agentModelListStatus[data-state="success"]').waitFor();
   await page.waitForFunction(()=>document.querySelector('#agentFetchModels')?.disabled===false);
+  await page.locator('#agentModelList [data-model-value="compatible-list-browser-fixture"]').waitFor({state:'attached'});
   assert.equal(await page.locator('#agentMaxTokens').getAttribute('min'),'16');
   assert.match(await page.locator('#agentEndpointPreview').textContent(),/\/compatible\/responses/);
+  const probeStart=calls.length;
   await probeSuccess();
-  const call=calls.at(-1);assert.equal(call.path,'/compatible/responses');assert.equal(call.has_input,true);
+  const probes=calls.slice(probeStart).filter(item=>item.method==='POST');assert.equal(probes.length,1);
+  const call=probes[0];assert.equal(call.path,'/compatible/responses');assert.equal(call.has_input,true);
   assert.equal(call.user_agent,'MoyuBrowserFixture/2');assert.equal(call.key_matches,true);
-  const listing=calls.filter(item=>item.method==='GET').at(-1);
-  assert.equal(listing.path,'/compatible/models');assert.equal(listing.user_agent,'MoyuBrowserFixture/2');
+  const listings=calls.slice(inventoryStart).filter(item=>item.method==='GET'&&item.user_agent==='MoyuBrowserFixture/2');
+  assert.equal(listings.length,1);
+  const listing=listings[0];
+  assert.equal(listing.path,'/compatible/models');assert.equal(listing.user_agent,'MoyuBrowserFixture/2');assert.equal(listing.key_matches,true);
   await save();
  });
  await test('折叠的高级字段无效时自动展开，中文请求标识不会发往提供方',async()=>{
