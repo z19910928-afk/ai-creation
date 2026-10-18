@@ -16,6 +16,11 @@
 .agent-settings-grid input,.agent-settings-grid select{display:block;min-width:0;width:100%;height:40px;margin-top:6px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);padding:9px 10px;font:inherit}
 .agent-settings-grid input:focus,.agent-settings-grid select:focus{outline:2px solid var(--accent);outline-offset:1px}
 .agent-settings-grid input::placeholder{color:var(--muted);font-size:11px}
+.agent-settings-compatibility{margin-top:16px;padding:10px 0;border-block:1px solid var(--line)}
+.agent-settings-compatibility>summary{cursor:pointer;color:var(--muted);line-height:1.7}
+.agent-settings-compatibility[open]>summary{margin-bottom:12px}
+.agent-settings-grid>.agent-settings-checkbox{display:flex;align-items:center;gap:8px;min-height:24px}
+.agent-settings-grid>.agent-settings-checkbox input{margin:0;padding:0}
 .agent-key-clear{margin-top:12px;color:var(--muted)}
 .agent-settings-scope,.agent-settings-status{margin:15px 0 0;color:var(--muted);line-height:1.8;overflow-wrap:anywhere}
 .agent-settings-status{color:var(--ink);min-height:22px}

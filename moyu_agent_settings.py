@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import hmac
 import json
 import sqlite3
 import uuid
@@ -31,7 +32,8 @@ def install_schema(conn: sqlite3.Connection) -> None:
 def _default() -> dict[str, Any]:
     return {"mode": "inherit", "base_url": "", "model": "",
             "parameters": {"temperature": 0.35, "max_tokens": 3000},
-            "_credential_ref": None, "last_probe": None}
+            "_credential_ref": None, "last_probe": None,
+            **moyu_settings._connection_options({})}
 
 
 def _saved(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
@@ -81,22 +83,36 @@ def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
             "credential_ref": saved.get("_credential_ref"),
             "credential_fingerprint": hashlib.sha256(key.encode()).hexdigest() if key else None,
             "credential_source": "private_file", "mode": "independent",
-            "connection_scope": "agent_chat"}
+            "connection_scope": "agent_chat", **moyu_settings._connection_options(saved)}
 
 
-def _signature(config: dict[str, Any]) -> str:
+def _signature(config: dict[str, Any], *, legacy: bool = False) -> str:
     fields = ("mode", "base_url", "model", "parameters", "max_tokens",
               "credential_fingerprint", "output_token_parameter")
-    encoded = json.dumps({name: config.get(name) for name in fields}, sort_keys=True,
+    values = {name: config.get(name) for name in fields}
+    if legacy:
+        values["output_token_parameter"] = None
+    else:
+        values.update(moyu_settings._connection_options(config))
+    encoded = json.dumps(values, sort_keys=True,
                          ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _signature_matches(signature: Any, config: dict[str, Any]) -> bool:
+    if not isinstance(signature, str):
+        return False
+    if hmac.compare_digest(signature, _signature(config)):
+        return True
+    return (moyu_settings._connection_options(config) == moyu_settings._connection_options({})
+            and hmac.compare_digest(signature, _signature(config, legacy=True)))
 
 
 def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
     saved = _saved(conn, project)
     config = provider_settings(conn, project)
     raw_probe = saved.get("last_probe")
-    stale = bool(raw_probe and saved.get("_probe_signature") != _signature(config))
+    stale = bool(raw_probe and not _signature_matches(saved.get("_probe_signature"), config))
     probe = None if stale else moyu_settings._public_probe(raw_probe)
     parameters = {**config["parameters"], "max_tokens": config["max_tokens"]}
     independent_key = _key(conn, project, saved)
@@ -108,12 +124,14 @@ def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
         "api_key_configured": bool(config["api_key"]),
         "api_key_masked": "已保存密钥" if config["api_key"] else "",
         "daily_limit": config["daily_limit"], "last_probe": probe, "probe_stale": stale,
+        **moyu_settings._connection_options(config),
         "credential_storage": "local_private_file",
         "credential_backup": "密钥仅保存在这台电脑，作品备份中不包含密钥。",
         "independent_settings": {
             "base_url": saved["base_url"], "model": saved["model"],
             "parameters": saved["parameters"], "api_key_configured": bool(independent_key),
             "api_key_masked": "已保存密钥" if independent_key else "",
+            **moyu_settings._connection_options(saved),
         },
     }
 
@@ -121,7 +139,8 @@ def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
 def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("写作总管设置必须为对象。")
-    if set(data) - {"mode", "base_url", "model", "parameters", "api_key", "clear_api_key"}:
+    if set(data) - {"mode", "base_url", "model", "parameters", "api_key", "clear_api_key",
+                    "output_token_parameter", "include_usage"}:
         raise ValueError("写作总管设置包含未支持的字段。")
     current = _saved(conn, project)
     mode = data.get("mode", current["mode"])
@@ -129,6 +148,7 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
         raise ValueError("请选择沿用主写作连接或独立连接。")
     base_url = moyu_settings._text(data.get("base_url", current["base_url"]), "服务地址", 2048).rstrip("/")
     model = moyu_settings._text(data.get("model", current["model"]), "模型名称", 200)
+    options = moyu_settings._connection_options({**current, **data})
     parameters = data.get("parameters", current["parameters"])
     if not isinstance(parameters, dict) or set(parameters) - moyu_settings.PARAMETERS:
         raise ValueError("写作总管模型参数设置无效。")
@@ -147,13 +167,14 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
     prepare_chat_request(
         {"base_url": base_url or "http://127.0.0.1", "model": model or "settings-validation",
          "api_key": key, "parameters": {name: value for name, value in parameters.items()
-                                      if name != "max_tokens"}},
+                                      if name != "max_tokens"}, **options},
         [{"role": "user", "content": "settings-validation"}], task="agent_chat",
         max_tokens=max_tokens,
     )
     next_payload = {**current, "mode": mode, "base_url": base_url, "model": model,
-                    "parameters": parameters}
-    changed = any(current[name] != next_payload[name] for name in ("mode", "base_url", "model", "parameters"))
+                    "parameters": parameters, **options}
+    changed = any(current[name] != next_payload[name] for name in (
+        "mode", "base_url", "model", "parameters", "output_token_parameter", "include_usage"))
     changed = changed or key != previous_key
     if key != previous_key:
         next_payload["_credential_ref"] = moyu_settings._store_key(conn, project, key) if key else None
@@ -177,7 +198,7 @@ def probe(conn: sqlite3.Connection, project: str, *, cancel_event=None) -> dict[
     messages = [{"role": "system", "content": "连接测试。只回复：连接正常"},
                 {"role": "user", "content": "请回复连接正常。"}]
     run_id = "agent_probe_" + uuid.uuid4().hex
-    prepared = prepare_chat_request(config, messages, task="probe", max_tokens=32,
+    prepared = prepare_chat_request(config, messages, task="probe", max_tokens=moyu_settings.PROBE_MAX_TOKENS,
                                    parameters={"temperature": 0}, request_id=run_id)
     day = datetime.now(timezone.utc).date().isoformat()
     used = conn.execute(
@@ -239,7 +260,8 @@ def probe(conn: sqlite3.Connection, project: str, *, cancel_event=None) -> dict[
     status = "failed"
     try:
         result = call_chat_completion(
-            config, messages, task="probe", max_tokens=32, parameters={"temperature": 0},
+            config, messages, task="probe", max_tokens=moyu_settings.PROBE_MAX_TOKENS,
+            parameters={"temperature": 0},
             cancel_event=cancel_event, request_id=run_id, on_dispatch=on_dispatch,
         )
         text = result.get("text", "")
@@ -255,11 +277,12 @@ def probe(conn: sqlite3.Connection, project: str, *, cancel_event=None) -> dict[
             "protocol_complete": complete, "response_valid": valid, "reasoning_consistent": consistent,
             "response_characters": len(text.strip()) if isinstance(text, str) else 0,
             "returned_model": result.get("returned_model"), "model_identity_match": match,
+            "identity_status": "exact" if match is True else "mismatch" if match is False else "unreported",
             "model_identity_scope": "仅比较提供方回传名称，名称相同不能证明底层模型身份。",
             "completion_state": result.get("completion_state"), "finish_reason": result.get("finish_reason"),
             "usage": result.get("usage"), "billing_state": result.get("billing_state"),
             "latency_ms": result.get("latency_ms"),
-            "success": bool(complete and valid and consistent and match is True),
+            "success": bool(complete and valid and consistent and match is not False),
         })
         if not complete:
             check.update(error_code="probe_incomplete_response", error="模型回复没有正常完整结束，连接检测未通过。")
@@ -270,10 +293,9 @@ def probe(conn: sqlite3.Connection, project: str, *, cancel_event=None) -> dict[
             check.update(error_code="probe_unexpected_reasoning",
                          error="已设置关闭思考，但思考字段类型无法校验，连接检测未通过。"
                          if invalid_reasoning else "已设置关闭思考，但模型仍返回非空思考字段，连接检测未通过。")
-        elif match is not True:
-            check.update(error_code="probe_model_mismatch" if match is False else "probe_model_unreported",
-                         error="请求模型与回传名称不一致，当前所选模型尚未验证。" if match is False
-                         else "提供方未回传模型名称，当前所选模型尚未验证。")
+        elif match is False:
+            check.update(error_code="probe_model_mismatch",
+                         error="请求模型与回传名称不一致，当前所选模型尚未验证。")
         status = "success" if check["success"] else "failed" if complete else "unknown"
     except ProviderError as exc:
         result = exc.partial_result

@@ -18,6 +18,10 @@
   if(!settings.configured)return settings.mode==='inherit'?'主写作模型尚未配置。':'独立模型尚未配置。';
   if(!probe)return settings.probe_stale?'连接设置已变化，当前连接尚未验证。':'设置已保存，当前连接尚未验证。';
   const models=probe.requested_model?` 请求 ${probe.requested_model}${probe.returned_model?`，回传 ${probe.returned_model}`:''}。`:'';
+  if(probe.identity_status==='mismatch'||probe.returned_model&&probe.model_identity_match===false)
+   return `连接检测未通过：请求模型与服务回传名称不一致。${models}按服务回传名称重新选择并测试，或向服务商确认别名。`;
+  if(probe.success&&(probe.identity_status==='unreported'||!probe.returned_model))
+   return `连接可用，服务未回传模型名称，仅验证可调用。${models}`;
   return probe.success?`写作总管实测成功。${models}`:`连接检测未通过：${probe.error||'模型回复不符合测试要求。'}${models}`;
  }
  function scopeText(settings){
@@ -48,7 +52,12 @@
      <option value="low">思考强度：低</option><option value="medium">思考强度：中</option>
      <option value="high">思考强度：高</option><option value="xhigh">思考强度：极高</option>
     </select></label>
-   </div><label class="agent-key-clear"><input id="agentClearApiKey" type="checkbox">清除已保存的独立密钥</label></fieldset>
+   </div><details class="agent-settings-compatibility"><summary>兼容设置</summary><div class="agent-settings-grid">
+    <label class="agent-settings-wide">输出长度参数<select id="agentOutputTokenParameter">
+     <option value="max_tokens" ${independent.output_token_parameter!=='max_completion_tokens'?'selected':''}>常规（max_tokens）</option>
+     <option value="max_completion_tokens" ${independent.output_token_parameter==='max_completion_tokens'?'selected':''}>兼容（max_completion_tokens）</option>
+    </select></label><label class="agent-settings-wide agent-settings-checkbox"><input id="agentIncludeUsage" type="checkbox" ${independent.include_usage===true?'checked':''}>请求流式用量统计</label>
+   </div></details><label class="agent-key-clear"><input id="agentClearApiKey" type="checkbox">清除已保存的独立密钥</label></fieldset>
    <p class="agent-settings-scope" data-agent-settings-scope>${escape(scopeText(settings))}</p>
    <p id="agentProbeStatus" class="agent-settings-status" role="status">${escape(probeText(settings))}</p>
    <p class="form-error" role="alert"></p>
@@ -72,7 +81,7 @@
     form.querySelector('[data-agent-inherit-summary]').textContent=
      settings.mode==='inherit'&&settings.model?`当前模型：${settings.model}`:'沿用主写作设置中的默认模型。';
     form.querySelector('[data-agent-settings-scope]').textContent=scopeText(settings);
-    field('agentProbeStatus').textContent=probeText(settings);
+    field('agentProbeStatus').textContent=JSON.stringify(payload())===initialDraft?probeText(settings):'连接信息已修改，请保存并重新实测。';
    }catch(error){
     if(!valid())return;
     form.querySelector('[data-agent-connection-state]').textContent='状态待核对';
@@ -100,11 +109,16 @@
    if(['enabled','disabled'].includes(thinkingMode))nextParameters.thinking={type:thinkingMode};
    else if(thinkingMode!=='default')nextParameters.reasoning_effort=thinkingMode;
    const next={mode,base_url:field('agentBaseUrl').value.trim(),model:field('agentModel').value.trim(),
-    parameters:nextParameters};
+    parameters:nextParameters,output_token_parameter:field('agentOutputTokenParameter').value,
+    include_usage:field('agentIncludeUsage').checked};
    if(field('agentApiKey').value)next.api_key=field('agentApiKey').value;
    if(field('agentClearApiKey').checked)next.clear_api_key=true;
    return next;
   }
+  const initialDraft=JSON.stringify(payload());
+  const updateDraftStatus=()=>{
+   field('agentProbeStatus').textContent=JSON.stringify(payload())===initialDraft?probeText(settings):'连接信息已修改，请保存并重新实测。';
+  };
   async function perform(test){
    if(busy||!current()||!form.reportValidity())return;
    const sent=payload();lock(true);form.querySelector('.form-error').textContent='';
@@ -133,6 +147,7 @@
    }finally{if(current()&&form.isConnected)lock(false)}
   }
   form.querySelectorAll('[name="agentConnectionMode"]').forEach(element=>element.addEventListener('change',setMode));
+  form.addEventListener('input',updateDraftStatus);form.addEventListener('change',updateDraftStatus);
   form.addEventListener('submit',event=>{event.preventDefault();perform(false)});
   field('agentConnectionProbe').addEventListener('click',()=>perform(true));
   setMode();

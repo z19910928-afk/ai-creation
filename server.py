@@ -5896,6 +5896,18 @@ class Handler(SimpleHTTPRequestHandler):
                     })
                     return self.send_json(status, result)
                 ensure_seed(conn)
+                if parsed.path == "/api/ai/connections/models":
+                    from moyu_model_connections import list_connection_models
+                    from moyu_provider import ProviderError
+                    conn.commit()
+                    try:
+                        return self.send_json(200, list_connection_models(conn, project_id(), data))
+                    except ProviderError as exc:
+                        status = (400 if exc.code == "invalid_configuration" else
+                                  504 if exc.code == "models_timeout" else 502)
+                        return self.send_json(status, {
+                            "error": str(exc), "error_code": exc.code, "http_status": exc.http_status,
+                        })
                 if parsed.path == "/api/ai/connections/probe":
                     from moyu_model_connections import probe_connection
                     conn.commit()

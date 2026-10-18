@@ -14,6 +14,7 @@ from typing import Any
 from urllib.parse import urlsplit
 
 import moyu_settings as settings
+import moyu_provider
 from moyu_provider import prepare_chat_request
 
 
@@ -67,12 +68,27 @@ def _fingerprint(key: str) -> str | None:
     return hashlib.sha256(key.encode()).hexdigest() if key else None
 
 
-def _signature(base_url: str, model: str, fingerprint: str | None) -> str:
+def _signature(base_url: str, model: str, fingerprint: str | None,
+               options: dict[str, Any] | None = None, *, legacy: bool = False) -> str:
+    fields = {"base_url": base_url, "model": model, "credential_fingerprint": fingerprint}
+    if not legacy:
+        fields.update(settings._connection_options(options or {}))
     encoded = json.dumps(
-        {"base_url": base_url, "model": model, "credential_fingerprint": fingerprint},
+        fields,
         sort_keys=True, ensure_ascii=False, allow_nan=False, separators=(",", ":"),
     ).encode()
     return hashlib.sha256(encoded).hexdigest()
+
+
+def _signature_matches(signature: Any, base_url: str, model: str, fingerprint: str | None,
+                       options: dict[str, Any]) -> bool:
+    if not isinstance(signature, str):
+        return False
+    normalized = settings._connection_options(options)
+    if hmac.compare_digest(signature, _signature(base_url, model, fingerprint, normalized)):
+        return True
+    return (normalized == settings._connection_options({})
+            and hmac.compare_digest(signature, _signature(base_url, model, fingerprint, legacy=True)))
 
 
 def _private_key(conn: sqlite3.Connection, project: str, reference: Any) -> str:
@@ -88,11 +104,9 @@ def _verified(conn: sqlite3.Connection, project: str, entry: dict[str, Any]) -> 
     try:
         key = _private_key(conn, project, entry.get("_credential_ref"))
         probe = settings._public_probe(entry.get("last_probe"))
-        expected = _signature(entry.get("base_url", ""), entry.get("model", ""), _fingerprint(key))
-        signature = entry.get("_verified_signature")
         valid = (
-            isinstance(signature, str)
-            and hmac.compare_digest(signature, expected)
+            _signature_matches(entry.get("_verified_signature"),
+                               entry.get("base_url", ""), entry.get("model", ""), _fingerprint(key), entry)
             and isinstance(probe, dict)
             and probe.get("success") is True
             and (bool(key) or _local(entry.get("base_url", "")))
@@ -113,6 +127,7 @@ def _public_connection(conn: sqlite3.Connection, project: str, entry: dict[str, 
         "id": entry["id"], "name": entry.get("name", ""), "base_url": entry.get("base_url", ""),
         "model": entry.get("model", ""), "api_key_configured": bool(key), "verified": verified,
         "last_probe": probe, "revision": entry.get("revision", 0),
+        **settings._connection_options(entry),
     }
 
 
@@ -131,7 +146,7 @@ def public_connections(conn: sqlite3.Connection, project: str) -> dict[str, Any]
         except (OSError, ValueError):
             key_configured = False
         legacy = {"base_url": payload.get("base_url", ""), "model": payload.get("model", ""),
-                  "api_key_configured": key_configured}
+                  "api_key_configured": key_configured, **settings._connection_options(payload)}
     return {
         "connections": [_public_connection(conn, project, entry) for entry in _connections(payload)],
         "legacy": legacy, "connection_workflow": payload.get("connection_workflow") is True,
@@ -157,29 +172,19 @@ def _active_pending(payload: dict[str, Any]) -> list[dict[str, Any]]:
 
 def _legacy_revision(conn: sqlite3.Connection, project: str, payload: dict[str, Any]) -> str:
     key = _legacy_key(conn, project, payload)
-    return _signature(payload.get("base_url", ""), payload.get("model", ""), _fingerprint(key))
+    return _signature(payload.get("base_url", ""), payload.get("model", ""), _fingerprint(key), payload)
 
 
-def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any],
-                     cancel_event=None) -> dict[str, Any]:
-    if not isinstance(data, dict) or set(data) - {"id", "name", "base_url", "model", "api_key"}:
-        raise ValueError("连接测试包含未支持的字段。")
+def _draft_credentials(conn: sqlite3.Connection, project: str, payload: dict[str, Any],
+                       data: dict[str, Any]) -> tuple[str | None, dict[str, Any] | None, str]:
     identifier = data.get("id")
     if identifier == "":
         identifier = None
     if identifier is not None and (not isinstance(identifier, str) or len(identifier) > 200):
         raise ValueError("连接身份无效。")
-    initial = _payload(conn, project)
-    entry = _find(initial, identifier) if identifier and identifier != "legacy" else None
+    entry = _find(payload, identifier) if identifier and identifier != "legacy" else None
     if identifier and identifier != "legacy" and entry is None:
         raise ValueError("要修改的模型连接不存在。")
-    if identifier is None and len(_connections(initial)) >= _CONNECTION_LIMIT:
-        raise ValueError("模型连接数量已达到上限，请先删除不用的连接。")
-    base_url = settings._text(data.get("base_url"), "服务地址", 2048).rstrip("/")
-    model = settings._text(data.get("model"), "模型名称", 200)
-    if not base_url or not model:
-        raise ValueError("请填写模型地址和名称后测试。")
-    name = settings._text(data.get("name", entry.get("name", "") if entry else ""), "连接名称", 100)
     supplied = data.get("api_key")
     if supplied is not None and not isinstance(supplied, str):
         raise ValueError("密钥必须为文字。")
@@ -188,9 +193,45 @@ def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any
     elif entry is not None:
         key = _private_key(conn, project, entry.get("_credential_ref"))
     elif identifier == "legacy":
-        key = _legacy_key(conn, project, initial)
+        key = _legacy_key(conn, project, payload)
     else:
         key = ""
+    return identifier, entry, key
+
+
+def list_connection_models(conn: sqlite3.Connection, project: str,
+                           data: dict[str, Any]) -> dict[str, Any]:
+    """Read the draft provider's inventory without saving or testing a connection."""
+    if not isinstance(data, dict) or set(data) - {"id", "base_url", "api_key"}:
+        raise ValueError("模型列表查询包含未支持的字段。")
+    payload = _payload(conn, project)
+    _, _, key = _draft_credentials(conn, project, payload, data)
+    base_url = settings._text(data.get("base_url"), "服务地址", 2048).rstrip("/")
+    if not base_url:
+        raise ValueError("请先填写服务地址。")
+    if not key and not _local(base_url):
+        raise ValueError("远程连接需要填写密钥后获取模型。")
+    result = moyu_provider.list_models({"base_url": base_url, "api_key": key})
+    return moyu_provider._redact(
+        {"models": result["models"], "endpoint": result["endpoint"]}, key)
+
+
+def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any],
+                     cancel_event=None) -> dict[str, Any]:
+    if not isinstance(data, dict) or set(data) - {
+            "id", "name", "base_url", "model", "api_key", "output_token_parameter", "include_usage"}:
+        raise ValueError("连接测试包含未支持的字段。")
+    initial = _payload(conn, project)
+    identifier, entry, key = _draft_credentials(conn, project, initial, data)
+    if identifier is None and len(_connections(initial)) >= _CONNECTION_LIMIT:
+        raise ValueError("模型连接数量已达到上限，请先删除不用的连接。")
+    base_url = settings._text(data.get("base_url"), "服务地址", 2048).rstrip("/")
+    model = settings._text(data.get("model"), "模型名称", 200)
+    if not base_url or not model:
+        raise ValueError("请填写模型地址和名称后测试。")
+    name = settings._text(data.get("name", entry.get("name", "") if entry else ""), "连接名称", 100)
+    option_source = entry if entry is not None else initial if identifier == "legacy" else {}
+    options = settings._connection_options({**option_source, **data})
     if not key and not _local(base_url):
         raise ValueError("远程连接需要填写密钥后测试。")
     revision = entry.get("revision") if entry is not None else None
@@ -199,11 +240,12 @@ def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any
     config = {
         "base_url": base_url, "model": model, "api_key": key, "task_models": {},
         **settings._provider_parameters(initial),
+        **options,
         "credential_ref": None, "credential_fingerprint": fingerprint, "credential_source": "private_file",
     }
     config["task_models"] = {}
     prepare_chat_request(config, [{"role": "user", "content": "连接正常"}],
-                         task="probe", max_tokens=32, parameters={"temperature": 0})
+                         task="probe", max_tokens=settings.PROBE_MAX_TOKENS, parameters={"temperature": 0})
 
     def unchanged(connection):
         latest = _payload(connection, project)
@@ -239,7 +281,9 @@ def probe_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any
         "project_id": project, "project_prefix": settings._project_prefix(conn, project),
         "existing_id": identifier, "existing_revision": revision, "legacy_revision": legacy_revision,
         "name": name, "base_url": base_url, "model": model, "_credential_ref": reference,
-        "credential_fingerprint": fingerprint, "_verified_signature": _signature(base_url, model, fingerprint),
+        "credential_fingerprint": fingerprint,
+        "_verified_signature": _signature(base_url, model, fingerprint, options),
+        **options,
         "last_probe": result["probe"],
     }
     latest["_pending_connection_probes"] = (_active_pending(latest) + [pending])[-_PENDING_LIMIT:]
@@ -272,15 +316,17 @@ def save_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any]
     if (
         fingerprint != receipt.get("credential_fingerprint")
         or (not key and not _local(receipt.get("base_url", "")))
-        or receipt.get("_verified_signature")
-        != _signature(receipt.get("base_url", ""), receipt.get("model", ""), fingerprint)
+        or not _signature_matches(receipt.get("_verified_signature"),
+                                  receipt.get("base_url", ""), receipt.get("model", ""), fingerprint, receipt)
         or not (settings._public_probe(receipt.get("last_probe")) or {}).get("success")
     ):
         raise ValueError("测试所用凭据已变化，请重新测试连接。")
     identifier = receipt.get("existing_id")
     existing = _find(payload, identifier) if identifier and identifier != "legacy" else None
     if identifier == "legacy":
-        if _legacy_revision(conn, project, payload) != receipt.get("legacy_revision"):
+        if not _signature_matches(receipt.get("legacy_revision"), payload.get("base_url", ""),
+                                  payload.get("model", ""), _fingerprint(_legacy_key(conn, project, payload)),
+                                  payload):
             raise ValueError("原连接在测试后发生变化，请重新测试。")
     elif identifier and (existing is None or existing.get("revision") != receipt.get("existing_revision")):
         raise ValueError("连接在测试后发生变化，请重新测试。")
@@ -296,6 +342,7 @@ def save_connection(conn: sqlite3.Connection, project: str, data: dict[str, Any]
         "name": name or receipt["model"][:100], "base_url": receipt["base_url"], "model": receipt["model"],
         "_credential_ref": receipt.get("_credential_ref"), "last_probe": receipt["last_probe"],
         "_verified_signature": receipt["_verified_signature"],
+        **settings._connection_options(receipt),
         "revision": previous_revision + 1,
     }
     payload["connections"] = [entry if item["id"] == entry["id"] else item for item in entries]
@@ -360,6 +407,7 @@ def _route(conn: sqlite3.Connection, project: str, payload: dict[str, Any],
         "base_url": entry["base_url"], "model": entry["model"],
         "credential_ref": entry.get("_credential_ref"), "credential_fingerprint": _fingerprint(key),
         "credential_source": "private_file", "_verified_signature": entry.get("_verified_signature"),
+        **settings._connection_options(entry),
         "_invalid": not verified,
     }
 
@@ -403,8 +451,8 @@ def resolve_task_config(config: dict[str, Any], task: str) -> dict[str, Any]:
     if (
         fingerprint != route.get("credential_fingerprint")
         or (not key and not _local(route.get("base_url", "")))
-        or route.get("_verified_signature")
-        != _signature(route.get("base_url", ""), route.get("model", ""), fingerprint)
+        or not _signature_matches(route.get("_verified_signature"),
+                                  route.get("base_url", ""), route.get("model", ""), fingerprint, route)
     ):
         raise ValueError("所选模型连接凭据已变化，请重新测试后继续。")
     resolved = {key: value for key, value in config.items() if key != "_connection_routes"}

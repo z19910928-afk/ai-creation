@@ -126,6 +126,7 @@ def main() -> None:
                     break
                 except Exception:
                     time.sleep(0.05)
+            request(base, "PUT", "/api/ai/settings", {"include_usage": True})
             frames = live_generation(base)
             deltas = [item for item in frames if item["event"] == "delta"]
             done = next(item["data"] for item in frames if item["event"] == "done")

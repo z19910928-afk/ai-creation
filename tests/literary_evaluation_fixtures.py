@@ -29,7 +29,7 @@ class EvaluationTests(unittest.TestCase):
         evaluation.GLOBAL_RESERVATION_PATH = self.out / "global-reservations.json"
         self.plan = evaluation.default_plan()
         self.config = {"base_url": "http://127.0.0.1:9/v1", "model": "writer-fixture",
-                       "api_key": "fixture-literary-private-credential"}
+                       "api_key": "fixture-literary-private-credential", "include_usage": True}
         self.plan_path = self.out / "plan.json"
         evaluation.write_json(self.plan_path, self.plan)
         self.calls = []

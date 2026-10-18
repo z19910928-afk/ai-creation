@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 import sqlite3
 import stat
@@ -19,6 +20,7 @@ sys.path.insert(0, str(ROOT))
 import moyu_agent_settings as agent
 import moyu_settings
 import moyu_workspace
+from moyu_provider import call_chat_completion
 
 MAIN_KEY = "synthetic-main-connection-private-key"
 AGENT_KEY = "synthetic-agent-connection-private-key"
@@ -215,6 +217,9 @@ class AgentSettingsTests(unittest.TestCase):
                 {"api_key": "invalid\nkey"},
                 {"clear_api_key": "yes"},
                 {"clear_api_key": True, "api_key": AGENT_KEY},
+                {"output_token_parameter": "unknown"},
+                {"output_token_parameter": []},
+                {"include_usage": 1},
             ):
                 with self.subTest(payload=payload), self.assertRaises(ValueError):
                     agent.save_settings(conn, self.project, payload)
@@ -230,7 +235,7 @@ class AgentSettingsTests(unittest.TestCase):
         self.assertEqual(before, self.stored_main())
         call = Provider.calls[-1]
         self.assertEqual(call["authorization"], "Bearer " + AGENT_KEY)
-        self.assertEqual(call["payload"]["max_tokens"], 32)
+        self.assertEqual(call["payload"]["max_tokens"], moyu_settings.PROBE_MAX_TOKENS)
         self.assertEqual(call["payload"]["temperature"], 0)
         self.assertEqual(call["ledger"][0], "dispatched")
         self.assertEqual(call["ledger"][1]["connection_scope"], "agent_chat")
@@ -267,7 +272,7 @@ class AgentSettingsTests(unittest.TestCase):
 
     def test_failed_protocol_and_identity_checks_never_report_healthy(self) -> None:
         for case, code in (
-            ("mismatch", "probe_model_mismatch"), ("unreported", "probe_model_unreported"),
+            ("mismatch", "probe_model_mismatch"),
             ("extra", "probe_unexpected_response"), ("truncated", "probe_incomplete_response"),
             ("reasoning", "probe_unexpected_reasoning"),
             ("invalid-reasoning", "probe_unexpected_reasoning"), ("unauthorized", "provider_http_error"),
@@ -280,6 +285,70 @@ class AgentSettingsTests(unittest.TestCase):
                 self.assertEqual(result["settings"]["last_probe"], result["probe"])
                 self.assertNotIn("fixture-private-reasoning", json.dumps(result))
                 self.assertNotIn(AGENT_KEY, json.dumps(result))
+
+    def test_unreported_model_is_usable_without_claiming_identity_verification(self) -> None:
+        self.save_independent("unreported")
+        result = self.probe()
+        self.assertTrue(result["probe"]["success"])
+        self.assertEqual(result["probe"]["identity_status"], "unreported")
+        self.assertIsNone(result["probe"]["model_identity_match"])
+        self.assertNotIn("error_code", result["probe"])
+        self.assertEqual(result["settings"]["last_probe"], result["probe"])
+
+    def test_independent_connection_options_reach_actual_calls_and_frozen_settings(self) -> None:
+        self.save_main(output_token_parameter="max_tokens", include_usage=False)
+        public = self.save_independent(output_token_parameter="max_completion_tokens", include_usage=True)
+        self.assertEqual(public["output_token_parameter"], "max_completion_tokens")
+        self.assertTrue(public["independent_settings"]["include_usage"])
+        self.assertTrue(self.probe()["probe"]["success"])
+        self.assertEqual(Provider.calls[-1]["payload"]["max_completion_tokens"], moyu_settings.PROBE_MAX_TOKENS)
+        self.assertNotIn("max_tokens", Provider.calls[-1]["payload"])
+        with self.connect() as conn:
+            config = agent.provider_settings(conn, self.project)
+            frozen = moyu_settings.frozen_provider_settings(
+                conn, self.project, {name: value for name, value in config.items() if name != "api_key"})
+        self.assertEqual(frozen["output_token_parameter"], "max_completion_tokens")
+        self.assertTrue(frozen["include_usage"])
+        call_chat_completion(
+            frozen, [{"role": "user", "content": "synthetic chat"}],
+            task="agent_chat", max_tokens=123, stream=True)
+        payload = Provider.calls[-1]["payload"]
+        self.assertEqual(payload["max_completion_tokens"], 123)
+        self.assertEqual(payload["stream_options"], {"include_usage": True})
+        with self.connect() as conn:
+            inherited = agent.save_settings(conn, self.project, {"mode": "inherit"})
+            changed = agent.save_settings(conn, self.project, {
+                "mode": "independent", "include_usage": False})
+        self.assertEqual(inherited["output_token_parameter"], "max_tokens")
+        self.assertFalse(inherited["include_usage"])
+        self.assertIsNone(changed["last_probe"])
+
+    def test_legacy_default_probe_signature_remains_valid_until_options_change(self) -> None:
+        self.save_independent()
+        self.probe()
+        with self.connect() as conn:
+            config = agent.provider_settings(conn, self.project)
+            fields = ("mode", "base_url", "model", "parameters", "max_tokens", "credential_fingerprint")
+            original = {name: config.get(name) for name in fields}
+            original["output_token_parameter"] = None
+            signature = hashlib.sha256(json.dumps(
+                original, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                separators=(",", ":")).encode()).hexdigest()
+            saved = json.loads(conn.execute("SELECT settings_json FROM app_agent_connection").fetchone()[0])
+            saved.pop("output_token_parameter")
+            saved.pop("include_usage")
+            saved["_probe_signature"] = signature
+            conn.execute("UPDATE app_agent_connection SET settings_json=?", (json.dumps(saved),))
+            before = conn.total_changes
+            public = agent.public_settings(conn, self.project)
+            self.assertEqual(before, conn.total_changes)
+            self.assertTrue(public["last_probe"]["success"])
+            self.assertFalse(public["probe_stale"])
+            saved["include_usage"] = True
+            conn.execute("UPDATE app_agent_connection SET settings_json=?", (json.dumps(saved),))
+            changed = agent.public_settings(conn, self.project)
+        self.assertTrue(changed["probe_stale"])
+        self.assertIsNone(changed["last_probe"])
 
     def test_partial_usage_keeps_connection_verified_and_charge_unknown(self) -> None:
         self.save_independent("partial-usage")

@@ -202,20 +202,40 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .settings-connection-info>small{font-size:11px;color:var(--muted);line-height:1.6}
 .settings-connection-state{font-size:10px;font-weight:400;color:#916224;background:#faf0dc;padding:2px 5px;border-radius:3px;white-space:nowrap}
 .settings-connection-state[data-verified="true"]{color:#1b6758;background:#e8f3ec}
+.settings-connection-state[data-identity="unreported"]{color:#916224;background:#faf0dc}
+.settings-connection-info>.settings-connection-identity-warning{color:#916224}
 .settings-connection-actions{display:flex;gap:6px;flex-shrink:0}
 .settings-connection-actions .icon-btn{display:grid;place-items:center;width:34px;height:34px;padding:0;font-size:19px;background:#fff;border-radius:5px}
 .settings-connection-form-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:14px}
 .settings-connection-form-heading h4{margin:0;font-size:14px;font-weight:500}
 .settings-connection-form-heading .ghost-btn{font-size:12px}
+.settings-model-field{min-width:0}
+.settings-model-field>label{display:block}
+.settings-model-picker{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;gap:8px;margin-top:6px}
+.settings-model-picker input{margin-top:0}
+.settings-model-picker button{min-height:39px;height:auto;padding:8px 10px;font-size:12px;white-space:nowrap}
+.settings-model-list-status{margin:8px 0 0;min-height:20px;font-size:12px;color:var(--muted);line-height:1.7;overflow-wrap:anywhere}
+.settings-model-list-status[hidden]{display:none}
+.settings-model-list-status[data-state="failed"]{color:#a43640}
+.settings-compatibility{margin-top:16px;border-block:1px solid var(--line);padding:10px 0;font-size:12px}
+.settings-compatibility>summary{cursor:pointer;color:var(--muted);line-height:1.7}
+.settings-compatibility[open]>summary{margin-bottom:12px}
+.settings-fields .settings-checkbox{display:flex;align-items:center;gap:8px;align-self:end;min-height:39px}
+.settings-fields .settings-checkbox input{width:14px;height:14px;padding:0;margin:0;flex:none;accent-color:var(--accent)}
 .settings-connection-status{font-size:12px;color:var(--muted);line-height:1.7;min-height:21px;margin:15px 0 0;overflow-wrap:anywhere}
 .settings-connection-status[data-state="success"],.settings-connection-status[data-state="saved"]{color:#1b6758}
+.settings-connection-status[data-identity="unreported"]{color:#916224}
 .settings-connection-status[data-state="failed"]{color:#a43640}
+.settings-returned-model-action{margin-top:8px;font-size:12px}
+.settings-returned-model-action[hidden]{display:none}
 .settings-connection-form .form-error,.settings-form .form-error{overflow-wrap:anywhere}
 .settings-connection-form .settings-actions,.settings-form .settings-actions{flex-wrap:wrap}
-.settings-connection-form input:focus,.settings-form input:focus,.settings-form textarea:focus,.settings-form select:focus{outline:2px solid var(--accent);outline-offset:1px}
+.settings-connection-form input:focus,.settings-connection-form select:focus,.settings-form input:focus,.settings-form textarea:focus,.settings-form select:focus{outline:2px solid var(--accent);outline-offset:1px}
 .settings-form select{max-width:100%;text-overflow:ellipsis}
 #settingsHost{container-type:inline-size}
 @container (max-width:650px){
+ .settings-model-picker{grid-template-columns:minmax(0,1fr)}
+ .settings-model-picker button{justify-self:start}
  #modelSettings .settings-task-header{display:none}
  #modelSettings .settings-task-row{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px;padding:14px 0;position:relative}
  #modelSettings .settings-task-row>strong{grid-column:1/-1;min-height:28px;padding-right:44px;display:flex;align-items:center}

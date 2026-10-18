@@ -824,7 +824,8 @@ def provider_config(model: str) -> dict[str, Any]:
     key = os.environ.get("MOYU_AI_API_KEY", "")
     if not base or not model or not key:
         raise ValueError("真实评测需要由运行环境提供模型地址、名称与密钥。")
-    return {"base_url": base, "model": model, "api_key": key, "total_timeout": 180}
+    return {"base_url": base, "model": model, "api_key": key, "total_timeout": 180,
+            "include_usage": True}
 
 
 class Ledger:

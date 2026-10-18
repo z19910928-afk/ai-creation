@@ -200,10 +200,13 @@ def _load_json(raw: bytes | str, code: str = "invalid_response") -> Any:
         raise ProviderError("提供方返回的 JSON 格式无效。", code=code) from None
 
 
-def _endpoint(base_url: str) -> tuple[str, str, int, str]:
+def _endpoint(base_url: str, resource: str = "chat/completions") -> tuple[str, str, int, str]:
     if not isinstance(base_url, str) or len(base_url) > 2048 or any(ord(char) < 33 for char in base_url):
         raise ProviderError("模型服务地址无效。", code="invalid_configuration")
-    parsed = urlsplit(base_url.rstrip("/"))
+    try:
+        parsed = urlsplit(base_url.rstrip("/"))
+    except ValueError:
+        raise ProviderError("模型服务地址无效。", code="invalid_configuration") from None
     host = parsed.hostname
     if parsed.scheme not in {"http", "https"} or not host or parsed.username or parsed.password or parsed.query or parsed.fragment:
         raise ProviderError("模型服务地址必须为没有密码或查询参数的 HTTP/HTTPS 地址。",
@@ -211,11 +214,138 @@ def _endpoint(base_url: str) -> tuple[str, str, int, str]:
     if parsed.scheme == "http" and host.lower() not in {"localhost", "127.0.0.1", "::1"}:
         raise ProviderError("远程模型服务必须使用 HTTPS。", code="invalid_configuration")
     try:
-        port = parsed.port or (443 if parsed.scheme == "https" else 80)
+        port = parsed.port if parsed.port is not None else (443 if parsed.scheme == "https" else 80)
+        if not 1 <= port <= 65535:
+            raise ValueError()
     except ValueError:
         raise ProviderError("模型服务端口无效。", code="invalid_configuration") from None
-    path = parsed.path.rstrip("/") + "/chat/completions"
+    path = parsed.path.rstrip("/")
+    # A copied full chat endpoint and an API base describe the same service.
+    if path.endswith("/chat/completions"):
+        path = path[:-len("/chat/completions")]
+    path += "/" + resource
     return urlunsplit((parsed.scheme, parsed.netloc, path, "", "")), host, port, path
+
+
+def list_models(config: Mapping[str, Any]) -> dict[str, Any]:
+    """Read bounded model identifiers once, without generating or following redirects."""
+    endpoint, host, port, path = _endpoint(config.get("base_url", ""), "models")
+    secret = config.get("api_key", "")
+    if not isinstance(secret, str) or len(secret) > 4096 or any(
+            ord(char) < 32 or ord(char) == 127 for char in secret):
+        raise ProviderError("模型密钥格式无效。", code="invalid_configuration")
+    timeout = _finite_number(config.get("connect_timeout", 10), "连接超时", 0.1, 90)
+    total_timeout = _finite_number(config.get("total_timeout", 30), "总超时", 0.1, 90)
+    headers = {"Accept": "application/json", "User-Agent": "Moyu/1"}
+    if secret:
+        headers["Authorization"] = "Bearer " + secret
+    connection = (
+        http.client.HTTPSConnection(host, port, timeout=timeout, context=ssl.create_default_context())
+        if endpoint.startswith("https:") else http.client.HTTPConnection(host, port, timeout=timeout)
+    )
+    response = None
+    started = time.monotonic()
+    timed_out = threading.Event()
+
+    def abort() -> None:
+        timed_out.set()
+        _abort_connection(connection, response)
+
+    deadline = threading.Timer(total_timeout, abort)
+    deadline.daemon = True
+    deadline.start()
+    try:
+        connection.connect()
+        if connection.sock:
+            connection.sock.settimeout(max(0.1, total_timeout - (time.monotonic() - started)))
+        connection.request("GET", path, headers=headers)
+        response = connection.getresponse()
+        if timed_out.is_set():
+            raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
+                                code="models_timeout")
+        if response.status != 200:
+            descriptions = {
+                401: "密钥无效或已过期，请检查访问密钥。",
+                403: "当前密钥没有访问权限，或被服务商拒绝。",
+                404: "服务没有提供标准模型列表，可继续手动填写模型名称。",
+                429: "服务暂时限流或账户额度不足，请稍后再试。",
+            }
+            message = descriptions.get(response.status, "请检查服务地址，或稍后再试。")
+            raise ProviderError(f"获取模型列表失败（HTTP {response.status}）：{message}",
+                                code="models_http_error", http_status=response.status)
+        content_type = response.getheader("Content-Type", "").partition(";")[0].strip().lower()
+        if content_type not in {"application/json", ""}:
+            raise ProviderError("模型列表接口未返回 JSON，请检查服务地址，也可手动填写模型名称。",
+                                code="invalid_models_response")
+        parts: list[bytes] = []
+        total = 0
+        while True:
+            remaining = total_timeout - (time.monotonic() - started)
+            if remaining <= 0:
+                raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
+                                    code="models_timeout")
+            if connection.sock:
+                connection.sock.settimeout(max(0.1, remaining))
+            raw = response.read1(min(65_536, MAX_RESPONSE_BYTES - total + 1))
+            if not raw:
+                break
+            total += len(raw)
+            if total > MAX_RESPONSE_BYTES:
+                raise ProviderError("模型列表超过大小上限，请手动填写模型名称。",
+                                    code="models_too_large")
+            parts.append(raw)
+        if timed_out.is_set():
+            raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
+                                code="models_timeout")
+        value = _load_json(b"".join(parts), "invalid_models_response")
+        data = value.get("data") if isinstance(value, dict) else None
+        if not isinstance(data, list):
+            raise ProviderError("服务返回的模型列表格式无效，可继续手动填写模型名称。",
+                                code="invalid_models_response")
+        models: list[str] = []
+        for row in data:
+            model = row.get("id") if isinstance(row, dict) else None
+            if (not isinstance(model, str) or not model.strip() or len(model) > 200
+                    or any(ord(char) < 32 or ord(char) == 127 for char in model)):
+                raise ProviderError("模型列表包含无效名称，请手动填写模型名称。",
+                                    code="invalid_models_response")
+            safe = _redact(model, secret)
+            if safe not in models:
+                models.append(safe)
+        return {"models": sorted(models, key=str.casefold), "endpoint": _redact(endpoint, secret)}
+    except ProviderError:
+        raise
+    except (TimeoutError, socket.timeout):
+        raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
+                            code="models_timeout") from None
+    except (OSError, http.client.HTTPException):
+        if timed_out.is_set():
+            raise ProviderError("获取模型列表超时，请稍后重试或手动填写模型名称。",
+                                code="models_timeout") from None
+        raise ProviderError("获取模型列表时连接中断，请检查服务地址或网络，也可手动填写模型名称。",
+                            code="models_connection_interrupted") from None
+    finally:
+        deadline.cancel()
+        connection.close()
+        if response is not None:
+            response.close()
+        deadline.join(timeout=1)
+
+
+def _returned_model(data: Mapping[str, Any], choice: Mapping[str, Any] | None = None) -> str | None:
+    """Accept known gateway placements, never infer a model from a request ID."""
+    observed = []
+    for source in (data, choice or {}):
+        if "model" not in source:
+            continue
+        value = source["model"]
+        if (not isinstance(value, str) or not value.strip() or len(value) > 200
+                or any(ord(char) < 32 or ord(char) == 127 for char in value)):
+            raise ProviderError("提供方返回的模型名称无效。", code="invalid_response")
+        observed.append(value)
+    if len(set(observed)) > 1:
+        raise ProviderError("同一回复中的模型名称发生改变。", code="invalid_response")
+    return observed[0] if observed else None
 
 
 def prepare_chat_request(
@@ -302,7 +432,7 @@ def prepare_chat_request(
     payload = {"model": model, "messages": messages, token_parameter: max_tokens,
                **effective, "stream": stream}
     if stream:
-        include_usage = config.get("include_usage", True)
+        include_usage = config.get("include_usage", False)
         if not isinstance(include_usage, bool):
             raise ProviderError("用量回报开关无效。", code="invalid_configuration")
         if include_usage:
@@ -654,12 +784,16 @@ class _Accumulator:
             self.observe_usage(data["usage"])
         if data.get("error") is not None or event == "error":
             raise ProviderError("提供方在生成途中返回错误。", code="provider_stream_error")
-        if "model" in data:
-            if not isinstance(data["model"], str) or not data["model"] or len(data["model"]) > 200:
-                raise ProviderError("提供方返回的模型名称无效。", code="invalid_response")
-            if self.returned_model is not None and self.returned_model != data["model"]:
+        def observe_model(choice=None):
+            model = _returned_model(data, choice)
+            if model is None:
+                return
+            model = _redact(model, self.secret)
+            if self.returned_model is not None and self.returned_model != model:
                 raise ProviderError("同一回复中的模型名称发生改变。", code="invalid_response")
-            self.returned_model = _redact(data["model"], self.secret)
+            self.returned_model = model
+
+        observe_model()
         if "id" in data:
             if not isinstance(data["id"], str) or len(data["id"]) > 512:
                 raise ProviderError("提供方返回的请求身份无效。", code="invalid_response")
@@ -674,6 +808,7 @@ class _Accumulator:
         if len(choices) != 1 or not isinstance(choices[0], dict):
             raise ProviderError("提供方返回的候选数量或类型无效。", code="invalid_response")
         choice = choices[0]
+        observe_model(choice)
         if "index" in choice and (isinstance(choice["index"], bool)
                                   or not isinstance(choice["index"], int)
                                   or choice["index"] != 0):

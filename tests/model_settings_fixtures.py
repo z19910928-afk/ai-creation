@@ -52,9 +52,12 @@ class Provider(BaseHTTPRequestHandler):
                 message["reasoning"] = []
             elif case == "reasoning-null":
                 message["reasoning"] = None
+            budget_limited = (case == "reasoning-budget"
+                              and payload.get("max_completion_tokens", payload.get("max_tokens", 0)) < 128)
             body = {
                 "model": "different-fixture" if case == "model-mismatch" else payload["model"],
-                "choices": [{"message": message, "finish_reason": "length" if case == "truncated" else "stop"}],
+                "choices": [{"message": message, "finish_reason": "length"
+                             if case == "truncated" or budget_limited else "stop"}],
                 "usage": {"completion_tokens": 7} if case == "partial-usage" else
                          {"prompt_tokens": 13, "completion_tokens": 7, "total_tokens": 20},
             }
@@ -111,7 +114,8 @@ class ModelSettingsTests(unittest.TestCase):
             moyu_settings.save_settings(conn, self.project, {
                 "base_url": self.base + "/" + case, "model": "requested-fixture",
                 "parameters": {"temperature": 0, "max_tokens": 3000,
-                               "thinking": {"type": "enabled" if case == "reasoning-allowed" else "disabled"}},
+                               "thinking": {"type": "enabled" if case in {
+                                   "reasoning-allowed", "reasoning-budget"} else "disabled"}},
                 "daily_limit": 100,
             })
 
@@ -131,9 +135,10 @@ class ModelSettingsTests(unittest.TestCase):
         self.assertTrue(probe["response_valid"])
         self.assertTrue(probe["reasoning_consistent"])
         self.assertTrue(probe["model_identity_match"])
+        self.assertEqual(probe["identity_status"], "exact")
         self.assertEqual(result["run_status"], "success")
         self.assertEqual(result["settings"]["last_probe"], probe)
-        self.assertEqual(Provider.calls[-1]["payload"]["max_tokens"], 32)
+        self.assertEqual(Provider.calls[-1]["payload"]["max_tokens"], moyu_settings.PROBE_MAX_TOKENS)
         self.assertEqual(Provider.calls[-1]["payload"]["temperature"], 0)
 
     def test_one_character_stop_records_completion_but_fails_response(self) -> None:
@@ -167,15 +172,53 @@ class ModelSettingsTests(unittest.TestCase):
         self.assertEqual(probe["requested_model"], "requested-fixture")
         self.assertEqual(probe["returned_model"], "different-fixture")
         self.assertFalse(probe["model_identity_match"])
+        self.assertEqual(probe["identity_status"], "mismatch")
         self.assertFalse(probe["success"])
         self.assertEqual(probe["error_code"], "probe_model_mismatch")
 
-    def test_missing_model_name_cannot_verify_requested_identity(self) -> None:
-        probe = self.probe("model-unreported")["probe"]
+    def test_missing_model_name_keeps_connection_usable_without_claiming_identity(self) -> None:
+        result = self.probe("model-unreported")
+        probe = result["probe"]
         self.assertTrue(probe["response_valid"])
         self.assertIsNone(probe["model_identity_match"])
-        self.assertFalse(probe["success"])
-        self.assertEqual(probe["error_code"], "probe_model_unreported")
+        self.assertEqual(probe["identity_status"], "unreported")
+        self.assertTrue(probe["success"])
+        self.assertNotIn("error_code", probe)
+        self.assertEqual(result["run_status"], "success")
+        self.assertEqual(result["settings"]["last_probe"], probe)
+
+    def test_reasoning_probe_has_sufficient_budget_without_retrying(self) -> None:
+        before = len(Provider.calls)
+        result = self.probe("reasoning-budget")
+        self.assertTrue(result["probe"]["success"])
+        self.assertEqual(len(Provider.calls), before + 1)
+        self.assertGreaterEqual(Provider.calls[-1]["payload"]["max_tokens"], 128)
+
+    def test_connection_options_validate_and_flow_into_probe_and_frozen_config(self) -> None:
+        self.settings()
+        with server.connect() as conn:
+            public = moyu_settings.save_settings(conn, self.project, {
+                "output_token_parameter": "max_completion_tokens", "include_usage": True,
+            })
+            config = moyu_settings.provider_settings(conn, self.project)
+            frozen = moyu_settings.frozen_provider_settings(
+                conn, self.project, {name: value for name, value in config.items() if name != "api_key"})
+            result = moyu_settings.probe_settings(conn, self.project)
+        self.assertEqual(public["output_token_parameter"], "max_completion_tokens")
+        self.assertTrue(public["include_usage"])
+        self.assertEqual(frozen["output_token_parameter"], "max_completion_tokens")
+        self.assertTrue(frozen["include_usage"])
+        self.assertTrue(result["probe"]["success"])
+        payload = Provider.calls[-1]["payload"]
+        self.assertEqual(payload["max_completion_tokens"], moyu_settings.PROBE_MAX_TOKENS)
+        self.assertNotIn("max_tokens", payload)
+        with server.connect() as conn:
+            changed = moyu_settings.save_settings(conn, self.project, {"include_usage": False})
+            self.assertIsNone(changed["last_probe"])
+            for invalid in ({"output_token_parameter": "other"}, {"output_token_parameter": []},
+                            {"include_usage": 1}, {"include_usage": None}):
+                with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                    moyu_settings.save_settings(conn, self.project, invalid)
 
     def test_disabled_thinking_with_reasoning_fails_without_exposing_reasoning(self) -> None:
         probe = self.probe("reasoning")["probe"]

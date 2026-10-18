@@ -22,6 +22,7 @@ TASKS = {"continue", "polish", "outline", "scene", "summary", "check", "brainsto
          "chapter_analysis", "semantic_review"}
 PARAMETERS = {"temperature", "max_tokens", "top_p", "presence_penalty",
               "frequency_penalty", "seed", "stop", "reasoning_effort", "thinking"}
+PROBE_MAX_TOKENS = 256
 _REF = re.compile(r"^[a-f0-9]{64}-[a-f0-9]{32}$")
 
 
@@ -117,6 +118,16 @@ def _text(value: Any, name: str, length: int) -> str:
     return value.strip()
 
 
+def _connection_options(payload: dict[str, Any]) -> dict[str, Any]:
+    token_parameter = payload.get("output_token_parameter", "max_tokens")
+    if not isinstance(token_parameter, str) or token_parameter not in {"max_tokens", "max_completion_tokens"}:
+        raise ValueError("输出长度参数无效。")
+    include_usage = payload.get("include_usage", False)
+    if not isinstance(include_usage, bool):
+        raise ValueError("用量回报开关无效。")
+    return {"output_token_parameter": token_parameter, "include_usage": include_usage}
+
+
 def _provider_parameters(payload: dict[str, Any]) -> dict[str, Any]:
     parameters = dict(payload.get("parameters") or {})
     max_tokens = parameters.pop("max_tokens", 3000)
@@ -137,7 +148,8 @@ def _provider_parameters(payload: dict[str, Any]) -> dict[str, Any]:
                         for task, values in task_parameters.items()}
     return {"task_models": task_models, "parameters": parameters, "max_tokens": max_tokens,
             "task_parameters": sampling_by_task, "task_max_tokens": task_max_tokens,
-            "styles": payload.get("styles") or {}, "daily_limit": payload.get("daily_limit", 0)}
+            "styles": payload.get("styles") or {}, "daily_limit": payload.get("daily_limit", 0),
+            **_connection_options(payload)}
 
 
 def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
@@ -181,7 +193,7 @@ def frozen_provider_settings(conn: sqlite3.Connection, project: str,
     fingerprint = hashlib.sha256(key.encode()).hexdigest() if key else None
     if snapshot.get("credential_fingerprint") != fingerprint and "credential_fingerprint" in snapshot:
         raise ValueError("任务所用密钥已变化，请重新建立任务。")
-    return {**snapshot, "api_key": key}
+    return {**snapshot, **_connection_options(snapshot), "api_key": key}
 
 
 def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
@@ -217,6 +229,7 @@ def public_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
         **library,
         "default_connection_id": payload.get("default_connection_id") or "",
         "task_connections": payload.get("task_connections") or {},
+        **_connection_options(selected if workflow and selected else payload),
     }
     if workflow:
         result["models"] = {}
@@ -227,13 +240,21 @@ def _public_probe(probe: Any) -> dict[str, Any] | None:
     if not isinstance(probe, dict):
         return None
     public = dict(probe)
+    identity_accepted = public.get("model_identity_match") is True or (
+        public.get("identity_status") == "unreported"
+        and public.get("model_identity_match") is None
+        and not public.get("returned_model"))
+    if public.get("model_identity_match") is True:
+        public.setdefault("identity_status", "exact")
+    elif public.get("model_identity_match") is False:
+        public.setdefault("identity_status", "mismatch")
     if public.get("success") and not (
             public.get("protocol_complete") is True and public.get("response_valid") is True
-            and public.get("model_identity_match") is True
+            and identity_accepted and public.get("identity_status") != "mismatch"
             and public.get("reasoning_consistent") is True
             and public.get("configuration_stale") is not True):
         public.update(success=False, error_code="probe_legacy_unverified",
-                      error="历史连接记录未校验回复与模型名称，当前设置尚未按现行要求验证。")
+                      error="历史连接记录缺少完整回复验证，当前设置尚未按现行要求验证。")
     return public
 
 
@@ -286,13 +307,14 @@ def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str
     if not isinstance(data, dict):
         raise ValueError("设置必须为对象。")
     allowed = {"base_url", "model", "api_key", "models", "styles", "parameters", "task_parameters",
-               "daily_limit", "clear_api_key"}
+               "daily_limit", "clear_api_key", "output_token_parameter", "include_usage"}
     if set(data) - allowed:
         raise ValueError("设置包含未支持的字段。")
     original = _saved(conn, project)
     current = dict(original) if original is not None else _environment()
     base_url = _text(data.get("base_url", current["base_url"]), "服务地址", 2048).rstrip("/")
     model = _text(data.get("model", current["model"]), "模型名称", 200)
+    connection_options = _connection_options({**current, **data})
     models = data.get("models", current.get("models", {}))
     if not isinstance(models, dict) or set(models) - TASKS:
         raise ValueError("用途模型设置无效。")
@@ -329,7 +351,8 @@ def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str
         effective_key = ""
     validation_config = {"base_url": base_url or "http://127.0.0.1",
                          "model": model or "settings-validation", "api_key": effective_key,
-                         "parameters": {name: value for name, value in parameters.items() if name != "max_tokens"}}
+                         "parameters": {name: value for name, value in parameters.items() if name != "max_tokens"},
+                         **connection_options}
     prepare_chat_request(validation_config, [{"role": "user", "content": "settings-validation"}],
                          max_tokens=max_tokens)
     for task, overrides in next_task_parameters.items():
@@ -343,10 +366,13 @@ def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str
         "parameters": {**parameters, "max_tokens": max_tokens}, "task_parameters": next_task_parameters,
         "daily_limit": daily_limit,
         "last_probe": current.get("last_probe"), "_credential_ref": current.get("_credential_ref"),
+        **connection_options,
     }
     previous_public = {name: current.get(name) for name in (
         "base_url", "model", "models", "styles", "parameters", "task_parameters")}
-    if previous_public != {name: next_payload.get(name) for name in previous_public} or key is not None or data.get("clear_api_key"):
+    if (previous_public != {name: next_payload.get(name) for name in previous_public}
+            or _connection_options(current) != connection_options
+            or key is not None or data.get("clear_api_key")):
         next_payload["last_probe"] = None
     if key is not None or data.get("clear_api_key") or (original is None and effective_key):
         next_payload["_credential_ref"] = _store_key(conn, project, effective_key) if effective_key else None
@@ -365,7 +391,7 @@ def probe_settings(conn: sqlite3.Connection, project: str,
     messages = [{"role": "system", "content": "连接测试。只回复：连接正常"},
                 {"role": "user", "content": "请回复连接正常。"}]
     run_id = "probe_" + uuid.uuid4().hex
-    prepared = prepare_chat_request(config, messages, task="probe", max_tokens=32,
+    prepared = prepare_chat_request(config, messages, task="probe", max_tokens=PROBE_MAX_TOKENS,
                                     parameters={"temperature": 0}, request_id=run_id)
     day = datetime.now(timezone.utc).date().isoformat()
     if not conn.in_transaction:
@@ -410,7 +436,7 @@ def probe_settings(conn: sqlite3.Connection, project: str,
     result: dict[str, Any] = {}
     status = "failed"
     try:
-        result = call_chat_completion(config, messages, task="probe", max_tokens=32,
+        result = call_chat_completion(config, messages, task="probe", max_tokens=PROBE_MAX_TOKENS,
                                       parameters={"temperature": 0}, cancel_event=cancel_event,
                                       request_id=run_id)
         text = result.get("text", "")
@@ -432,9 +458,12 @@ def probe_settings(conn: sqlite3.Connection, project: str,
                       "billing_state": result.get("billing_state"), "latency_ms": result.get("latency_ms")})
         probe["model_identity_match"] = (
             result.get("returned_model") == config["model"] if result.get("returned_model") else None)
+        probe["identity_status"] = ("exact" if probe["model_identity_match"] is True
+                                    else "mismatch" if probe["model_identity_match"] is False
+                                    else "unreported")
         probe["model_identity_scope"] = "仅比较提供方回传名称，名称相同不能证明底层模型身份。"
         probe["success"] = bool(protocol_complete and response_valid and reasoning_consistent
-                                and probe["model_identity_match"] is True)
+                                and probe["model_identity_match"] is not False)
         if not protocol_complete:
             probe.update(error_code="probe_incomplete_response",
                          error="模型回复没有正常完整结束，连接检测未通过。")
@@ -447,12 +476,9 @@ def probe_settings(conn: sqlite3.Connection, project: str,
                          error="已设置关闭思考，但思考字段类型无法校验，连接检测未通过。"
                          if invalid_reasoning > 0 else
                          "已设置关闭思考，但模型仍返回非空思考字段，连接检测未通过。")
-        elif probe["model_identity_match"] is not True:
-            probe.update(error_code="probe_model_mismatch" if probe["model_identity_match"] is False
-                         else "probe_model_unreported",
-                         error="请求模型与回传名称不一致，当前所选模型尚未验证。"
-                         if probe["model_identity_match"] is False
-                         else "提供方未回传模型名称，当前所选模型尚未验证。")
+        elif probe["model_identity_match"] is False:
+            probe.update(error_code="probe_model_mismatch",
+                         error="请求模型与回传名称不一致，当前所选模型尚未验证。")
         status = "success" if probe["success"] else "failed" if protocol_complete else "unknown"
     except ProviderError as exc:
         result = exc.partial_result

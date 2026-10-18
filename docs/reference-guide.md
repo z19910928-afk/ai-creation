@@ -120,6 +120,23 @@ MOYU_DB=/path/to/story.sqlite3 MOYU_PORT=4173 python3 server.py
 
 [`.env.example`](../.env.example)列出可用的启动配置，不含真实密钥；服务不会自动加载 `.env`。一般作者可直接在“模型与风格”页面配置，不必编辑环境文件。
 
+## 模型配置
+
+在「模型与风格」填写连接名称、服务地址和密钥，点击「获取模型列表」后选择或手动填写模型名称。列表请求只查询可选名称，不保存连接、不生成正文，也不能证明实际推理所用模型。服务未提供列表时仍可手动填写。
+
+地址既可填写基础地址（例如 `https://example.com/v1`），也可粘贴完整的 `https://example.com/v1/chat/completions`。两者调用同一个聊天入口，不会重复追加路径。
+
+按「测试连接 → 保存模型 → 分配用途」完成配置。修改地址、密钥、模型或兼容设置后，必须重新测试。测试结果分别显示：
+
+| 结果 | 保存与用途分配 |
+| --- | --- |
+| 回复完整且回传名称相同 | 可保存；只核对服务回传名称，不证明底层模型身份 |
+| 回复完整但未提供模型名称 | 可保存；模型库和用途中保留名称未核实的提示 |
+| 回传名称与输入不同 | 暂不可保存；可点「使用回传名称」改填，再自行点击测试，或向服务商确认别名 |
+| 断线、超时、无权限或回复不完整 | 暂不可保存；按具体错误检查，程序不会自动重复生成请求 |
+
+「兼容设置」可选择 `max_tokens` 或 `max_completion_tokens`（不同服务使用的输出长度字段），以及是否额外请求流式用量。默认使用前者、关闭额外用量请求；服务实际返回的用量照常记录，未提供或互相矛盾的用量仍标为未知。设置随连接保存，写作、用途任务与总管均使用对应连接的配置。
+
 ## 数据保存
 
 下表列出浏览器版的默认位置。桌面版统一使用上方独立数据目录，其中 `credentials/` 保存连接凭据，`backups/` 保存完整备份。
@@ -153,6 +170,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - `GET/POST /api/planning-workflows`、`GET /api/planning-workflows/:id`、`POST /api/planning-workflows/:id/start|confirm|cancel|apply`：四阶段候选规划、作者确认、停止和完整采用；最终采用只更新蓝图
 - `GET/PUT /api/ai/settings`、`POST /api/ai/settings/probe`：作品模型、用途模型、风格、参数和每日次数设置；连接测试是真实模型调用，消耗额度
 - `GET/POST /api/ai/connections`、`POST /api/ai/connections/probe`、`DELETE /api/ai/connections/:id`：模型库的查看、测试、凭测试凭证保存与移除；用途只能新选当前作品已测试保存的有效连接，失效原分配保留并要求作者处理
+- `POST /api/ai/connections/models`：以当前草稿地址和密钥查询模型名称；支持当前作品已存连接或旧连接的密钥，不保存草稿、不占生成配额、不跟随重定向
 - `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；支持 `retrieval_profile` 配置预算、章节召回数、近章窗口和记忆/设定上限，并返回分层计数与证据来源。续写和润色可携带 `reference_selections` 的来源身份、范围和指纹，由服务端重新取原句；不接受客户端自填原文
 - `GET /api/ai/status`、`GET /api/ai/quota`、`GET /api/ai/runs/:id`、`GET /api/ai/runs/:id/stream?after_seq=N`、`POST /api/ai/runs/:id/retry|cancel`：查看模型、用量和运行审计；SSE（服务持续分段发送文本）支持实时分片与按序号重放，每块先落盘；非流式返回、离线、截断、取消和未知结果分别标记
 - `POST /api/ai/runs/:id/revise`：作者确认整理未采纳的续写或润色原候选；保留父候选全文，冻结原模型、参数、输出预算、字数与稿件范围，为同一父候选建立一个独立计用量的子候选；重复请求返回已有任务，不重复生成
