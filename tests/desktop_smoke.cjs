@@ -24,8 +24,10 @@ const screenshotDirectory = process.env.MOYU_DESKTOP_SCREENSHOTS_DIR ?
   path.resolve(process.env.MOYU_DESKTOP_SCREENSHOTS_DIR) : null;
 let temporary, dataDirectory, downloadDirectory, environment, executable, argumentsForApp;
 let application, page, trap, trapURL, trapRequests = 0, currentCase = 'initialization', helpRequested = false;
+let modelProvider;
 let currentStep = 'initialization';
 const childServices = [];
+const modelProviderRequests = [];
 
 function options() {
   const args = process.argv.slice(2);
@@ -254,7 +256,137 @@ async function assertNoModelJobs() {
   assert.equal(queue.jobs.length, 0, 'SMOKE_MUST_NOT_CREATE_MODEL_JOBS');
   const status = await readAPI('/api/ai/status');
   assert.notEqual(status.mode, 'provider', 'SMOKE_MUST_NOT_CONFIGURE_A_MODEL');
+  assert.ok(modelProviderRequests.every(request => request.method === 'GET' &&
+    request.path === '/v1/models' && request.key_matches),
+  'SMOKE_MODEL_DISCOVERY_MUST_ONLY_READ_AUTHENTICATED_LOCAL_INVENTORY');
   report.provider_jobs = queue.jobs.length;
+}
+
+async function modelSettingsDiscovery() {
+  currentStep = 'open-packaged-model-settings';
+  await page.locator('#modelConnectionForm').waitFor();
+  await page.locator('#agentConnectionSettings').waitFor();
+  const before = {
+    main: (await readAPI('/api/ai/settings')).settings,
+    agent: (await readAPI('/api/agent-chat/settings')).settings,
+    connections: (await readAPI('/api/ai/connections')).connections,
+  };
+  const secret = 'synthetic-desktop-model-list-key';
+  const models = ['desktop-fixture-alpha', 'desktop-fixture-beta', 'desktop-fixture-gamma'];
+  modelProvider = http.createServer((request, response) => {
+    request.resume();
+    const row = {method: request.method, path: request.url,
+      key_matches: request.headers.authorization === 'Bearer ' + secret};
+    modelProviderRequests.push(row);
+    const allowed = row.method === 'GET' && row.path === '/v1/models' && row.key_matches;
+    response.writeHead(allowed ? 200 : 405, {'Content-Type': 'application/json'});
+    response.end(JSON.stringify(allowed ? {data: models.map(id => ({id}))} :
+      {error: {message: 'Synthetic inventory only; generation is disabled.'}}));
+  });
+  await new Promise((resolve, reject) => {
+    modelProvider.once('error', reject);
+    modelProvider.listen(0, '127.0.0.1', resolve);
+  });
+  const providerBase = 'http://127.0.0.1:' + modelProvider.address().port + '/v1';
+  const discovered = [];
+  async function automaticList(prefix, protocol, edit) {
+    currentStep = 'automatic-model-list-' + prefix + '-' + protocol.replaceAll('_', '-');
+    const endpoint = prefix === 'connection' ?
+      '/api/ai/connections/models' : '/api/agent-chat/settings/models';
+    const beforeRequests = modelProviderRequests.length;
+    const [response] = await Promise.all([
+      page.waitForResponse(value => {
+        if (value.url() !== 'moyu://app' + endpoint || value.request().method() !== 'POST') return false;
+        const body = value.request().postDataJSON();
+        return body?.base_url === providerBase && body.api_protocol === protocol &&
+          body.api_key === secret;
+      }),
+      edit(),
+    ]);
+    assert.equal(response.status(), 200, 'DESKTOP_MODEL_LIST_API_FAILED');
+    assert.deepEqual((await response.json()).models, models);
+    await page.locator('#' + prefix + 'ModelListStatus[data-state="success"]').waitFor();
+    await page.waitForFunction(id => document.getElementById(id)?.disabled === false,
+      prefix + 'FetchModels');
+    assert.equal(await page.locator('#' + prefix + 'ModelList [role="option"]').count(), models.length);
+    assert.equal(modelProviderRequests.length, beforeRequests + 1,
+      'DESKTOP_MODEL_LIST_MUST_BE_AUTOMATIC_AND_SINGLE');
+    discovered.push({target: prefix, protocol});
+  }
+  async function searchAndSelect(prefix, query, model, keyboard) {
+    currentStep = 'search-select-model-' + prefix + '-' + (keyboard ? 'keyboard' : 'mouse');
+    const input = page.locator('#' + prefix + 'Model');
+    await input.fill(query);
+    assert.equal(await input.getAttribute('role'), 'combobox');
+    assert.equal(await input.getAttribute('aria-expanded'), 'true');
+    const options = page.locator('#' + prefix + 'ModelList [role="option"]');
+    assert.equal(await options.count(), 1, 'DESKTOP_MODEL_SEARCH_NOT_FILTERED');
+    if (keyboard) {
+      await input.press('ArrowDown');
+      assert.ok(await input.getAttribute('aria-activedescendant'));
+      await input.press('Enter');
+    } else {
+      await options.filter({hasText: model}).click();
+    }
+    assert.equal(await input.inputValue(), model);
+    assert.equal(await input.getAttribute('aria-expanded'), 'false');
+  }
+
+  assert.equal(await page.locator('#connectionApiProtocol').inputValue(), 'chat_completions');
+  await page.locator('#connectionName').fill('Synthetic desktop inventory');
+  await page.locator('#connectionKey').fill(secret);
+  await automaticList('connection', 'chat_completions', async () => {
+    await page.locator('#connectionBaseUrl').fill(providerBase);
+    await page.locator('#connectionBaseUrl').blur();
+  });
+  assert.equal(await page.locator('#connectionModel').inputValue(), '',
+    'DESKTOP_MODEL_LIST_MUST_NOT_SELECT_FOR_AUTHOR');
+  await searchAndSelect('connection', 'beta', models[1], true);
+  await automaticList('connection', 'responses', async () => {
+    await page.locator('#connectionApiProtocol').selectOption('responses');
+    await page.locator('#connectionApiProtocol').blur();
+  });
+  assert.equal(await page.locator('.settings-compatibility').isVisible(), false);
+  await searchAndSelect('connection', 'gamma', models[2], false);
+  assert.equal(await page.locator('#connectionSave').isDisabled(), true,
+    'DESKTOP_MODEL_LIST_MUST_NOT_VERIFY_CONNECTION');
+
+  await page.locator('[name="agentConnectionMode"][value="independent"]').check();
+  assert.equal(await page.locator('#agentApiProtocol').inputValue(), 'chat_completions');
+  await page.locator('#agentApiKey').fill(secret);
+  await automaticList('agent', 'chat_completions', async () => {
+    await page.locator('#agentBaseUrl').fill(providerBase);
+    await page.locator('#agentBaseUrl').blur();
+  });
+  assert.equal(await page.locator('#agentModel').inputValue(), '');
+  await searchAndSelect('agent', 'alpha', models[0], false);
+  await automaticList('agent', 'responses', async () => {
+    await page.locator('#agentApiProtocol').selectOption('responses');
+    await page.locator('#agentApiProtocol').blur();
+  });
+  assert.equal(await page.locator('.agent-settings-compatibility').isVisible(), false);
+  assert.equal(await page.locator('#agentMaxTokens').getAttribute('min'), '16');
+  await searchAndSelect('agent', 'gamma', models[2], true);
+
+  currentStep = 'discard-unsaved-model-settings';
+  await page.locator('#connectionReset').click();
+  await page.locator('#agentBaseUrl').fill('');
+  await page.locator('#agentApiKey').fill('');
+  await page.locator('#agentModel').fill('');
+  await page.locator('#agentApiProtocol').selectOption('chat_completions');
+  await page.locator('[name="agentConnectionMode"][value="inherit"]').check();
+  for (const id of ['connectionBaseUrl', 'connectionKey', 'connectionModel',
+    'agentBaseUrl', 'agentApiKey', 'agentModel']) {
+    assert.equal(await page.locator('#' + id).inputValue(), '');
+  }
+  assert.deepEqual((await readAPI('/api/ai/settings')).settings, before.main);
+  assert.deepEqual((await readAPI('/api/agent-chat/settings')).settings, before.agent);
+  assert.deepEqual((await readAPI('/api/ai/connections')).connections, before.connections);
+  await assertNoModelJobs();
+  report.model_discovery = {passed: true, automatic_lists: discovered,
+    local_inventory_requests: modelProviderRequests.length, models_per_list: models.length,
+    search_keyboard_and_mouse: true, saved_settings_unchanged: true,
+    generation_requests: modelProviderRequests.filter(request => request.method !== 'GET').length};
 }
 
 async function main() {
@@ -318,6 +450,7 @@ async function main() {
     await page.locator('[data-view="settings"]').click();
     assert.equal(await page.locator('#agentChatInput').inputValue(),
       chatDraft + ' 草稿在记忆页仍可编辑。');
+    await modelSettingsDiscovery();
     await page.locator('#agentChatInput').fill(chatDraft);
     await page.locator('[data-view="editor"]').click();
     assert.equal(await page.locator('#agentChatInput').inputValue(), chatDraft);
@@ -614,6 +747,10 @@ async function cleanup() {
     }
   }
   if (trap) await new Promise(resolve => trap.close(resolve));
+  if (modelProvider) {
+    modelProvider.closeAllConnections();
+    await new Promise(resolve => modelProvider.close(resolve));
+  }
   if (temporary) fs.rmSync(temporary, {recursive: true, force: true, maxRetries: 10, retryDelay: 100});
   if (clipboardRestoreFailed) throw new Error('CLIPBOARD_RESTORE_FAILED');
 }

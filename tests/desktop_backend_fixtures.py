@@ -57,18 +57,47 @@ class GoodProvider(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass
 
+    def do_GET(self):
+        self.server.calls.append({
+            "method": "GET", "path": self.path,
+            "authorization": self.headers.get("Authorization"),
+        })
+        if self.path != "/v1/models":
+            self.send_error(404)
+            return
+        self.reply({"data": [{"id": "desktop-chat-model"}, {"id": "desktop-responses-model"}]})
+
     def do_POST(self):
         payload = json.loads(self.rfile.read(int(self.headers.get("Content-Length", "0"))))
         self.server.calls.append({
-            "path": self.path, "payload": payload,
+            "method": "POST", "path": self.path, "payload": payload,
             "authorization": self.headers.get("Authorization"),
         })
-        raw = json.dumps({
-            "model": payload["model"],
-            "choices": [{"message": {"content": "\u8fde\u63a5\u6b63\u5e38"},
-                         "finish_reason": "stop"}],
-            "usage": {"prompt_tokens": 8, "completion_tokens": 4, "total_tokens": 12},
-        }).encode("utf-8")
+        if self.path == "/v1/responses":
+            self.reply({
+                "id": "resp_desktop_fixture", "object": "response", "status": "completed",
+                "model": payload["model"],
+                "output": [{
+                    "id": "msg_desktop_fixture", "type": "message", "role": "assistant",
+                    "status": "completed", "content": [{
+                        "type": "output_text", "text": "\u8fde\u63a5\u6b63\u5e38",
+                        "annotations": [],
+                    }],
+                }],
+                "usage": {"input_tokens": 8, "output_tokens": 4, "total_tokens": 12},
+            })
+        elif self.path == "/v1/chat/completions":
+            self.reply({
+                "model": payload["model"],
+                "choices": [{"message": {"content": "\u8fde\u63a5\u6b63\u5e38"},
+                             "finish_reason": "stop"}],
+                "usage": {"prompt_tokens": 8, "completion_tokens": 4, "total_tokens": 12},
+            })
+        else:
+            self.send_error(404)
+
+    def reply(self, value):
+        raw = json.dumps(value).encode("utf-8")
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
         self.send_header("Content-Length", str(len(raw)))
@@ -227,6 +256,17 @@ class DesktopBackendFixtures(unittest.TestCase):
         self.assertEqual(UnexpectedProvider.calls, 0)
         self.temporary.cleanup()
 
+    def good_provider(self):
+        provider = ThreadingHTTPServer(("127.0.0.1", 0), GoodProvider)
+        provider.daemon_threads = True
+        provider.calls = []
+        thread = threading.Thread(target=provider.serve_forever, daemon=True)
+        thread.start()
+        self.addCleanup(thread.join, timeout=2)
+        self.addCleanup(provider.server_close)
+        self.addCleanup(provider.shutdown)
+        return provider
+
     def test_health_is_private_and_minimal(self):
         status, data = self.backend.json_request("GET", "/api/desktop/health")
         self.assertEqual(status, 200)
@@ -382,14 +422,7 @@ class DesktopBackendFixtures(unittest.TestCase):
         self.assertFalse((self.root / "home" / ".moyu").exists())
 
     def test_verified_model_library_assignment_and_preview_use_desktop_endpoints(self):
-        provider = ThreadingHTTPServer(("127.0.0.1", 0), GoodProvider)
-        provider.daemon_threads = True
-        provider.calls = []
-        thread = threading.Thread(target=provider.serve_forever, daemon=True)
-        thread.start()
-        self.addCleanup(thread.join, timeout=2)
-        self.addCleanup(provider.server_close)
-        self.addCleanup(provider.shutdown)
+        provider = self.good_provider()
         key = "desktop-library-synthetic-" + secrets.token_hex(12)
         model = "desktop-library-model"
         base_url = f"http://127.0.0.1:{provider.server_port}/v1"
@@ -496,6 +529,162 @@ class DesktopBackendFixtures(unittest.TestCase):
                          "Desktop database included a private credential")
         self.assertFalse(receipt.encode() in (self.backend.data / "moyu.sqlite3").read_bytes(),
                          "Desktop database included a plaintext verification token")
+        self.backend.stop()
+        outputs = "".join(self.backend.stdout + self.backend.stderr)
+        self.assertFalse(any(secret in outputs for secret in (key, receipt)),
+                         "Desktop output included a private credential or verification token")
+
+    def test_model_inventory_does_not_save_or_generate_through_desktop_endpoints(self):
+        provider = self.good_provider()
+        key = "desktop-inventory-synthetic-" + secrets.token_hex(12)
+        base_url = f"http://127.0.0.1:{provider.server_port}/v1"
+        with closing(sqlite3.connect(self.backend.data / "moyu.sqlite3")) as conn:
+            before = "\n".join(conn.iterdump())
+        status, value = self.backend.json_request(
+            "POST", "/api/ai/connections/models",
+            {"base_url": base_url, "api_key": key}, token=False,
+        )
+        self.assertEqual(status, 401)
+        self.assertFalse(key in json.dumps(value), "Rejected request included a private credential")
+        self.assertEqual(provider.calls, [])
+
+        for protocol in ("chat_completions", "responses"):
+            with self.subTest(protocol=protocol):
+                status, value = self.backend.json_request(
+                    "POST", "/api/ai/connections/models", {
+                        "base_url": base_url + "/responses", "api_key": key,
+                        "api_protocol": protocol,
+                    },
+                )
+                self.assertEqual(status, 200)
+                self.assertEqual(value["models"], ["desktop-chat-model", "desktop-responses-model"])
+                self.assertEqual(value["endpoint"], base_url + "/models")
+                self.assertFalse(key in json.dumps(value),
+                                 "Model inventory included a private credential")
+                self.assertNotIn("verification_token", value)
+
+        self.assertEqual([(call["method"], call["path"]) for call in provider.calls],
+                         [("GET", "/v1/models")] * 2)
+        self.assertTrue(all(call["authorization"] == "Bearer " + key for call in provider.calls),
+                        "Model inventory used the wrong private credential")
+        status, library = self.backend.json_request("GET", "/api/ai/connections")
+        self.assertEqual(status, 200)
+        self.assertEqual(library["connections"], [])
+        status, settings = self.backend.json_request("GET", "/api/ai/settings")
+        self.assertEqual(status, 200)
+        self.assertFalse(settings["settings"]["configured"])
+        self.assertFalse(list((self.backend.data / "credentials").glob("*.json")))
+        with closing(sqlite3.connect(self.backend.data / "moyu.sqlite3")) as conn:
+            self.assertEqual("\n".join(conn.iterdump()), before)
+            for table in ("app_model_settings", "app_quota_reservation", "ai_run", "app_ai_job"):
+                self.assertEqual(conn.execute(f'SELECT COUNT(*) FROM "{table}"').fetchone()[0], 0)
+        self.backend.stop()
+        self.assertFalse(key in "".join(self.backend.stdout + self.backend.stderr),
+                         "Desktop output included an inventory credential")
+
+    def test_responses_model_library_assignment_and_preview_use_desktop_endpoints(self):
+        provider = self.good_provider()
+        key = "desktop-responses-synthetic-" + secrets.token_hex(12)
+        model = "desktop-responses-model"
+        base_url = f"http://127.0.0.1:{provider.server_port}/v1"
+        candidate = {
+            "name": "Desktop Responses model", "base_url": base_url, "model": model,
+            "api_key": key, "api_protocol": "responses",
+        }
+        receipt = None
+
+        def assert_public(value, *, probe_response=False):
+            serialized = json.dumps(value)
+            self.assertFalse(key in serialized, "Desktop response included a private credential")
+            if receipt and not probe_response:
+                self.assertFalse(receipt in serialized,
+                                 "Desktop response included a consumed verification token")
+
+        status, value = self.backend.json_request(
+            "POST", "/api/ai/connections", candidate,
+        )
+        self.assertEqual(status, 400)
+        assert_public(value)
+        self.assertEqual(provider.calls, [])
+        status, probe = self.backend.json_request(
+            "POST", "/api/ai/connections/probe", candidate,
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(probe["probe"]["success"])
+        receipt = probe["verification_token"]
+        self.assertTrue(receipt)
+        assert_public(probe, probe_response=True)
+        self.assertEqual(len(provider.calls), 1)
+        actual = provider.calls[0]
+        self.assertEqual((actual["method"], actual["path"]), ("POST", "/v1/responses"))
+        self.assertTrue(actual["authorization"] == "Bearer " + key,
+                        "Responses probe used the wrong private credential")
+        self.assertEqual(actual["payload"]["model"], model)
+        self.assertIsInstance(actual["payload"]["input"], list)
+        self.assertFalse(actual["payload"]["store"])
+        self.assertGreaterEqual(actual["payload"]["max_output_tokens"], 16)
+        self.assertNotIn("messages", actual["payload"])
+        self.assertNotIn("max_tokens", actual["payload"])
+        status, library = self.backend.json_request("GET", "/api/ai/connections")
+        self.assertEqual(status, 200)
+        self.assertEqual(library["connections"], [])
+        assert_public(library)
+
+        status, saved = self.backend.json_request(
+            "POST", "/api/ai/connections", {"verification_token": receipt},
+        )
+        self.assertEqual(status, 200)
+        self.assertTrue(saved["connection"]["verified"])
+        self.assertEqual(saved["connection"]["api_protocol"], "responses")
+        identifier = saved["connection"]["id"]
+        assert_public(saved)
+        self.assertFalse(saved["settings"]["configured"])
+        self.assertFalse(saved["settings"]["connection_workflow"])
+        self.assertEqual(saved["settings"]["default_connection_id"], "")
+        self.assertEqual(saved["settings"]["task_connections"], {})
+        status, assigned = self.backend.json_request("PUT", "/api/ai/settings", {
+            "default_connection_id": "", "task_connections": {"continue": identifier},
+            "task_parameters": {"continue": {
+                "temperature": 0.25, "max_tokens": 640, "reasoning_effort": "low",
+            }},
+        })
+        self.assertEqual(status, 200)
+        self.assertEqual(assigned["settings"]["task_connections"], {"continue": identifier})
+        self.assertTrue(assigned["settings"]["connection_workflow"])
+        assert_public(assigned)
+        status, preview = self.backend.json_request("POST", "/api/ai/prompt-preview", {
+            "task": "continue", "instruction": "Continue the synthetic Responses scene.",
+        })
+        self.assertEqual(status, 200)
+        self.assertEqual(preview["request"]["model"], model)
+        self.assertEqual(preview["request"]["input"], preview["messages"])
+        self.assertEqual(preview["request"]["temperature"], 0.25)
+        self.assertEqual(preview["request"]["max_output_tokens"], 640)
+        self.assertEqual(preview["request"]["reasoning"], {"effort": "low"})
+        self.assertFalse(preview["request"]["store"])
+        self.assertNotIn("messages", preview["request"])
+        self.assertNotIn("max_tokens", preview["request"])
+        self.assertEqual(preview["request_audit"]["api_protocol"], "responses")
+        self.assertEqual(preview["request_audit"]["endpoint"], base_url + "/responses")
+        self.assertEqual(preview["request_audit"]["payload"], preview["request"])
+        assert_public(preview)
+        self.assertEqual(len(provider.calls), 1, "Saving, assigning, or preview sent a model request")
+        with closing(sqlite3.connect(self.backend.data / "moyu.sqlite3")) as conn:
+            self.assertEqual(conn.execute(
+                "SELECT ai_run_id,status FROM app_quota_reservation",
+            ).fetchall(), [(probe["ai_run_id"], "consumed")])
+            self.assertEqual(conn.execute(
+                "SELECT id,status FROM ai_run",
+            ).fetchall(), [(probe["ai_run_id"], "success")])
+            consent = json.loads(conn.execute(
+                "SELECT consent_json FROM ai_run WHERE id=?", (probe["ai_run_id"],),
+            ).fetchone()[0])
+            self.assertEqual(consent["task"], "probe")
+            self.assertEqual(consent["request_audit"]["api_protocol"], "responses")
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM app_ai_job").fetchone()[0], 0)
+        raw_database = (self.backend.data / "moyu.sqlite3").read_bytes()
+        self.assertFalse(any(secret.encode() in raw_database for secret in (key, receipt)),
+                         "Desktop database included a credential or plaintext verification token")
         self.backend.stop()
         outputs = "".join(self.backend.stdout + self.backend.stderr)
         self.assertFalse(any(secret in outputs for secret in (key, receipt)),

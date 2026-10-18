@@ -1,0 +1,24 @@
+test_all_static_resources_match_source (__main__.DesktopBackendFixtures.test_all_static_resources_match_source) ... ok
+test_backup_snapshot_fsync_uses_writable_handle_and_propagates_failure (__main__.DesktopBackendFixtures.test_backup_snapshot_fsync_uses_writable_handle_and_propagates_failure) ... ok
+test_backup_snapshot_is_closed_before_cleanup_on_success_and_failure (__main__.DesktopBackendFixtures.test_backup_snapshot_is_closed_before_cleanup_on_success_and_failure) ... ok
+test_credential_file_validation_stays_strict (__main__.DesktopBackendFixtures.test_credential_file_validation_stays_strict) ... ok
+test_health_is_private_and_minimal (__main__.DesktopBackendFixtures.test_health_is_private_and_minimal) ... ok
+test_host_must_match_bound_loopback_port (__main__.DesktopBackendFixtures.test_host_must_match_bound_loopback_port) ... ok
+test_inherited_model_settings_are_cleared (__main__.DesktopBackendFixtures.test_inherited_model_settings_are_cleared) ... ok
+test_invalid_configuration_exits_without_sensitive_output (__main__.DesktopBackendFixtures.test_invalid_configuration_exits_without_sensitive_output) ... ok
+test_missing_wrong_and_duplicate_tokens_are_rejected (__main__.DesktopBackendFixtures.test_missing_wrong_and_duplicate_tokens_are_rejected) ... ok
+test_model_inventory_does_not_save_or_generate_through_desktop_endpoints (__main__.DesktopBackendFixtures.test_model_inventory_does_not_save_or_generate_through_desktop_endpoints) ... ok
+test_origin_and_referer_are_same_origin (__main__.DesktopBackendFixtures.test_origin_and_referer_are_same_origin) ... ok
+test_parent_pipe_eof_stops_backend (__main__.DesktopBackendFixtures.test_parent_pipe_eof_stops_backend) ... ok
+test_private_credentials_survive_restart_and_stay_out_of_backup (__main__.DesktopBackendFixtures.test_private_credentials_survive_restart_and_stay_out_of_backup) ... ok
+test_private_files_are_hidden_for_get_and_head (__main__.DesktopBackendFixtures.test_private_files_are_hidden_for_get_and_head) ... ok
+test_responses_model_library_assignment_and_preview_use_desktop_endpoints (__main__.DesktopBackendFixtures.test_responses_model_library_assignment_and_preview_use_desktop_endpoints) ... ok
+test_saved_manuscript_and_graph_survive_restart (__main__.DesktopBackendFixtures.test_saved_manuscript_and_graph_survive_restart) ... ok
+test_symlinked_private_storage_is_rejected_before_startup (__main__.DesktopBackendFixtures.test_symlinked_private_storage_is_rejected_before_startup) ... ok
+test_unauthorized_write_cannot_change_manuscript (__main__.DesktopBackendFixtures.test_unauthorized_write_cannot_change_manuscript) ... ok
+test_verified_model_library_assignment_and_preview_use_desktop_endpoints (__main__.DesktopBackendFixtures.test_verified_model_library_assignment_and_preview_use_desktop_endpoints) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 25.098s
+
+OK
