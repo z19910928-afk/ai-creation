@@ -1,7 +1,7 @@
 'use strict';
 
 (() => {
- let sequence=0,refreshCurrent=null;
+ let sequence=0,refreshCurrent=null,disposeCurrent=null;
  const escape=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
  const scope=()=>({project:requestedProject||state.project?.id||'',branch:state.branch_id||state.project?.branch_id||'main'});
  const sameScope=(a,b)=>a.project===b.project&&a.branch===b.branch;
@@ -28,7 +28,8 @@
   return '独立连接用于总管对话；续写、润色和创作规划使用主写作设置中的默认模型或对应的用途模型。'+
    (settings.daily_limit?`每日共享上限 ${settings.daily_limit} 次。`:'与主写作共用每日额度。');
  }
- function draw(host,settings,captured,token){
+ function draw(host,settings,captured,token,{discover=true}={}){
+  disposeCurrent?.();disposeCurrent=null;
   const current=()=>token===sequence&&host.isConnected&&sameScope(captured,scope());
   const independent=settings.independent_settings||{};
   const parameters=independent.parameters||{temperature:0.35,max_tokens:3000};
@@ -42,8 +43,17 @@
    <p class="agent-connection-summary" data-agent-inherit-summary>${escape(settings.mode==='inherit'&&settings.model?`当前模型：${settings.model}`:'沿用主写作设置中的默认模型。')}</p>
    <fieldset class="agent-independent-fields"><legend>独立对话模型</legend><div class="agent-settings-grid">
     <label class="agent-settings-wide">服务地址<input id="agentBaseUrl" type="url" maxlength="2048" autocomplete="off" spellcheck="false" value="${escape(independent.base_url||'')}" placeholder="https://…/v1"></label>
-    <label class="agent-settings-wide">模型名称<input id="agentModel" maxlength="200" autocomplete="off" spellcheck="false" value="${escape(independent.model||'')}"></label>
     <label class="agent-settings-wide">本地密钥<input id="agentApiKey" type="password" maxlength="4096" autocomplete="new-password" spellcheck="false" placeholder="${independent.api_key_configured?'已保存；留空保留原密钥':'本机免密模型可留空'}"></label>
+    <label class="agent-settings-wide">接入方式<select id="agentApiProtocol">
+     <option value="chat_completions" ${independent.api_protocol!=='responses'?'selected':''}>通用兼容（Chat）</option>
+     <option value="responses" ${independent.api_protocol==='responses'?'selected':''}>Responses</option>
+    </select></label>
+    <div class="moyu-model-field"><label for="agentModel">模型名称</label><div class="moyu-model-row"><div class="moyu-model-combobox">
+     <input id="agentModel" maxlength="200" autocomplete="off" spellcheck="false" value="${escape(independent.model||'')}" placeholder="搜索、选择或手动填写模型名称" aria-describedby="agentModelListStatus">
+     <button type="button" class="ghost-btn" id="agentModelToggle" aria-label="显示总管模型列表">选择模型</button>
+     <div id="agentModelList" class="moyu-model-options" hidden></div></div>
+     <button type="button" class="ghost-btn" id="agentFetchModels">获取模型列表</button></div>
+     <p id="agentModelListStatus" class="moyu-model-status" role="status" hidden></p></div>
     <label>温度<input id="agentTemperature" type="number" min="0" max="2" step="0.05" value="${escape(parameters.temperature??0.35)}" required></label>
     <label>输出长度上限<input id="agentMaxTokens" type="number" min="1" max="128000" step="1" value="${escape(parameters.max_tokens??3000)}" required></label>
     <label class="agent-settings-wide">思考设置<select id="agentThinking">
@@ -52,7 +62,8 @@
      <option value="low">思考强度：低</option><option value="medium">思考强度：中</option>
      <option value="high">思考强度：高</option><option value="xhigh">思考强度：极高</option>
     </select></label>
-   </div><details class="agent-settings-compatibility"><summary>兼容设置</summary><div class="agent-settings-grid">
+   </div><p id="agentProtocolWarning" class="settings-protocol-warning" role="status" hidden></p>
+   <details class="agent-settings-compatibility"><summary>兼容设置</summary><div class="agent-settings-grid">
     <label class="agent-settings-wide">输出长度参数<select id="agentOutputTokenParameter">
      <option value="max_tokens" ${independent.output_token_parameter!=='max_completion_tokens'?'selected':''}>常规（max_tokens）</option>
      <option value="max_completion_tokens" ${independent.output_token_parameter==='max_completion_tokens'?'selected':''}>兼容（max_completion_tokens）</option>
@@ -67,6 +78,24 @@
   const thinking=parameters.thinking?.type||parameters.reasoning_effort||'default';
   field('agentThinking').value=thinking;
   let busy=false,refreshSequence=0;
+  const discoverySnapshot=()=>{
+   const body={base_url:field('agentBaseUrl').value.trim(),api_protocol:field('agentApiProtocol').value};
+   const key=field('agentApiKey').value.trim(),clear=field('agentClearApiKey').checked;
+   const reusable=independent.api_key_configured&&MoyuModelPicker.sameService(body.base_url,independent.base_url);
+   if(key||!reusable||clear)body.api_key=key;
+   if(clear)body.clear_api_key=true;
+   const result=MoyuModelPicker.connection(body,!!reusable);
+   return independent.api_key_configured&&!reusable&&!key&&!clear?
+    {...result,ready:false,hint:'服务地址已变更，请重新填写该服务的密钥。'}:result;
+  };
+  const modelPicker=MoyuModelPicker.mount({
+   input:field('agentModel'),list:field('agentModelList'),toggle:field('agentModelToggle'),
+   refresh:field('agentFetchModels'),status:field('agentModelListStatus'),snapshot:discoverySnapshot,
+   current:()=>current()&&form.isConnected&&form.querySelector('[name="agentConnectionMode"]:checked')?.value==='independent',
+   request:(body,signal)=>request('/models',{method:'POST',body:JSON.stringify(body),signal},captured),
+   onDispose:()=>{field('agentApiKey').value=''},
+  });
+  disposeCurrent=()=>modelPicker.dispose();
   refreshCurrent=async target=>{
    if((target&&target!==host)||busy||!current()||!form.isConnected)return;
    const revision=++refreshSequence;
@@ -93,11 +122,27 @@
    form.querySelector('.agent-independent-fields').hidden=inherited;
    form.querySelector('.agent-independent-fields').disabled=inherited||busy;
    form.querySelector('[data-agent-inherit-summary]').hidden=!inherited;
+   modelPicker.setDisabled(inherited||busy,{clear:inherited});
+   updateProtocol();if(!inherited&&!busy)modelPicker.changed();
   }
   function lock(value){
    busy=value;
    form.querySelectorAll('input,select,button').forEach(element=>element.disabled=value);
    setMode();
+  }
+  function updateProtocol(){
+   const responses=field('agentApiProtocol').value==='responses';
+   form.querySelector('.agent-settings-compatibility').hidden=responses;
+   field('agentMaxTokens').min=responses?'16':'1';
+   const thinking=field('agentThinking');
+   for(const option of thinking.options)if(['enabled','disabled'].includes(option.value))
+    option.hidden=responses&&option.value!==thinking.value;
+   const invalid=responses&&['enabled','disabled'].includes(thinking.value);
+   thinking.setCustomValidity(invalid?'Responses 不支持 DeepSeek 专用思考设置，请选择通用思考强度。':'');
+   const warnings=[];
+   if(invalid)warnings.push('当前 DeepSeek 专用思考设置不适用于 Responses，请调整后保存。');
+   if(responses&&Number(field('agentMaxTokens').value)<16)warnings.push('Responses 的输出长度上限至少为 16。');
+   field('agentProtocolWarning').hidden=!warnings.length;field('agentProtocolWarning').textContent=warnings.join(' ');
   }
   function payload(){
    const mode=form.querySelector('[name="agentConnectionMode"]:checked').value;
@@ -109,9 +154,11 @@
    if(['enabled','disabled'].includes(thinkingMode))nextParameters.thinking={type:thinkingMode};
    else if(thinkingMode!=='default')nextParameters.reasoning_effort=thinkingMode;
    const next={mode,base_url:field('agentBaseUrl').value.trim(),model:field('agentModel').value.trim(),
+    api_protocol:field('agentApiProtocol').value,
     parameters:nextParameters,output_token_parameter:field('agentOutputTokenParameter').value,
     include_usage:field('agentIncludeUsage').checked};
-   if(field('agentApiKey').value)next.api_key=field('agentApiKey').value;
+   const key=field('agentApiKey').value.trim();
+   if(key||!independent.api_key_configured)next.api_key=key;
    if(field('agentClearApiKey').checked)next.clear_api_key=true;
    return next;
   }
@@ -121,6 +168,11 @@
   };
   async function perform(test){
    if(busy||!current()||!form.reportValidity())return;
+   if(form.querySelector('[name="agentConnectionMode"]:checked').value==='independent'&&
+    independent.api_key_configured&&!field('agentApiKey').value.trim()&&!field('agentClearApiKey').checked&&
+    !MoyuModelPicker.sameService(field('agentBaseUrl').value.trim(),independent.base_url)){
+    form.querySelector('.form-error').textContent='服务地址已变更，请重新填写该服务的密钥后保存或测试。';return;
+   }
    const sent=payload();lock(true);form.querySelector('.form-error').textContent='';
    if(test)field('agentProbeStatus').textContent='正在保存并实测连接…';
    try{
@@ -136,7 +188,7 @@
      latest=result.settings||latest;override=result.probe||result;
      window.dispatchEvent(new CustomEvent('moyu:agent-settings-changed'));
     }
-    draw(host,latest,captured,token);
+    draw(host,latest,captured,token,{discover:false});
     if(override)host.querySelector('#agentProbeStatus').textContent=probeText(latest,override);
     else host.querySelector('#agentProbeStatus').textContent='总管设置已保存。'+probeText(latest);
    }catch(error){
@@ -148,13 +200,20 @@
   }
   form.querySelectorAll('[name="agentConnectionMode"]').forEach(element=>element.addEventListener('change',setMode));
   form.addEventListener('input',updateDraftStatus);form.addEventListener('change',updateDraftStatus);
+  for(const id of ['agentBaseUrl','agentApiKey','agentApiProtocol','agentClearApiKey']){
+   field(id).addEventListener('input',()=>modelPicker.changed());
+   field(id).addEventListener('change',()=>{updateProtocol();modelPicker.changed()});
+   field(id).addEventListener('blur',()=>modelPicker.changed({immediate:true}));
+  }
+  for(const id of ['agentThinking','agentMaxTokens'])field(id).addEventListener('input',updateProtocol);
   form.addEventListener('submit',event=>{event.preventDefault();perform(false)});
   field('agentConnectionProbe').addEventListener('click',()=>perform(true));
-  setMode();
+  setMode();if(!discover)modelPicker.changed({suppress:true});
  }
  async function mount(host){
   if(!host)return;
   const token=++sequence,captured=scope();
+  disposeCurrent?.();disposeCurrent=null;
   refreshCurrent=null;
   const current=()=>token===sequence&&host.isConnected&&sameScope(captured,scope());
   host.innerHTML='<p class="agent-settings-loading" role="status">正在读取写作总管连接…</p>';

@@ -125,6 +125,10 @@ async function main(){
  provider=http.createServer((request,response)=>{
   let raw='';request.on('data',chunk=>raw+=chunk);
   request.on('end',async()=>{
+   if(request.method==='GET'&&request.url.endsWith('/models')){
+    response.writeHead(200,{'Content-Type':'application/json'});
+    response.end(JSON.stringify({data:[{id:'model-a-fixture'},{id:'model-b-fixture'}]}));return;
+   }
    const payload=JSON.parse(raw),current=mode;
    calls.push({model:payload.model,path:request.url,key_matches:request.headers.authorization==='Bearer '+secret});
    if(current==='held')await new Promise(resolve=>release=resolve);
@@ -366,6 +370,7 @@ async function main(){
   assert.equal(await page.locator('#connectionKey').inputValue(),'');
   await page.locator('#connectionModel').fill('edited-fixture');
   await page.locator('#connectionBaseUrl').fill(providerBase+'/edited');
+  await page.locator('#connectionKey').fill(secret);
   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
   assert.equal((await probeDraft()).probe.success,true);await waitProbe();
   const updated=await saveConnection();assert.equal(updated.id,extra.id);

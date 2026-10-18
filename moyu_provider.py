@@ -1,4 +1,4 @@
-"""Bounded, cancellable OpenAI-compatible chat-completions transport.
+"""Bounded, cancellable OpenAI-compatible Chat and Responses transport.
 
 This module owns no database transaction. The caller must reserve its budget
 before dispatch and persist each ``on_chunk`` callback in a short transaction.
@@ -25,6 +25,7 @@ MAX_RESPONSE_BYTES = 2_000_000
 MAX_LINE_BYTES = 256_000
 MAX_JSON_DEPTH = 24
 FINISH_REASONS = {"stop", "length", "content_filter", "tool_calls", "function_call"}
+API_PROTOCOLS = {"chat_completions", "responses"}
 _STRING = {"type": "string", "maxLength": 200_000}
 _SHORT_STRING = {"type": "string", "maxLength": 12_000}
 _STRINGS = {"type": "array", "items": _SHORT_STRING, "maxItems": 100}
@@ -200,6 +201,39 @@ def _load_json(raw: bytes | str, code: str = "invalid_response") -> Any:
         raise ProviderError("提供方返回的 JSON 格式无效。", code=code) from None
 
 
+def _api_protocol(config: Mapping[str, Any]) -> str:
+    if not isinstance(config, Mapping):
+        raise ProviderError("模型请求设置无效。", code="invalid_configuration")
+    value = config.get("api_protocol", "chat_completions")
+    if not isinstance(value, str) or value not in API_PROTOCOLS:
+        raise ProviderError("接口协议必须为 Chat Completions 或 Responses。",
+                            code="invalid_configuration")
+    return value
+
+
+def request_messages(payload: Mapping[str, Any],
+                     api_protocol: str = "chat_completions") -> list[dict[str, str]]:
+    """Read an explicitly chosen protocol's unchanged text-message list."""
+    protocol = _api_protocol({"api_protocol": api_protocol})
+    key, other = ("input", "messages") if protocol == "responses" else ("messages", "input")
+    if not isinstance(payload, Mapping) or other in payload:
+        raise ProviderError("模型请求的消息字段与接口协议冲突。",
+                            code="invalid_request")
+    messages = payload.get(key)
+    if not isinstance(messages, list) or not 1 <= len(messages) <= 100:
+        raise ProviderError("模型请求缺少有效消息列表。", code="invalid_request")
+    for message in messages:
+        if (not isinstance(message, dict)
+                or not isinstance(message.get("role"), str)
+                or message["role"] not in {"system", "developer", "user", "assistant"}
+                or not isinstance(message.get("content"), str)
+                or set(message) - {"role", "content", "name"}
+                or protocol == "responses" and "name" in message):
+            raise ProviderError("模型请求必须保留有效的角色和文字消息。",
+                                code="invalid_request")
+    return messages
+
+
 def _endpoint(base_url: str, resource: str = "chat/completions") -> tuple[str, str, int, str]:
     if not isinstance(base_url, str) or len(base_url) > 2048 or any(ord(char) < 33 for char in base_url):
         raise ProviderError("模型服务地址无效。", code="invalid_configuration")
@@ -220,15 +254,18 @@ def _endpoint(base_url: str, resource: str = "chat/completions") -> tuple[str, s
     except ValueError:
         raise ProviderError("模型服务端口无效。", code="invalid_configuration") from None
     path = parsed.path.rstrip("/")
-    # A copied full chat endpoint and an API base describe the same service.
-    if path.endswith("/chat/completions"):
-        path = path[:-len("/chat/completions")]
+    # A copied endpoint identifies the API base; protocol is chosen explicitly.
+    for suffix in ("/chat/completions", "/responses"):
+        if path.endswith(suffix):
+            path = path[:-len(suffix)]
+            break
     path += "/" + resource
     return urlunsplit((parsed.scheme, parsed.netloc, path, "", "")), host, port, path
 
 
 def list_models(config: Mapping[str, Any]) -> dict[str, Any]:
     """Read bounded model identifiers once, without generating or following redirects."""
+    _api_protocol(config)
     endpoint, host, port, path = _endpoint(config.get("base_url", ""), "models")
     secret = config.get("api_key", "")
     if not isinstance(secret, str) or len(secret) > 4096 or any(
@@ -357,7 +394,10 @@ def prepare_chat_request(
     """Return the exact safe payload and audit fields used for preview and send."""
     if not isinstance(config, Mapping) or response_format not in {"text", "json"}:
         raise ProviderError("模型请求设置无效。", code="invalid_request")
-    endpoint, host, port, path = _endpoint(config.get("base_url", ""))
+    protocol = _api_protocol(config)
+    endpoint, host, port, path = _endpoint(
+        config.get("base_url", ""),
+        "responses" if protocol == "responses" else "chat/completions")
     task_models = config.get("task_models", {})
     if not isinstance(task_models, Mapping):
         raise ProviderError("用途模型设置无效。", code="invalid_configuration")
@@ -367,14 +407,22 @@ def prepare_chat_request(
     if not isinstance(messages, list) or not 1 <= len(messages) <= 100:
         raise ProviderError("模型输入消息无效。", code="invalid_request")
     for message in messages:
-        if not isinstance(message, dict) or message.get("role") not in {"system", "developer", "user", "assistant"} or not isinstance(message.get("content"), str):
+        if (not isinstance(message, dict) or not isinstance(message.get("role"), str)
+                or message["role"] not in {"system", "developer", "user", "assistant"}
+                or not isinstance(message.get("content"), str)):
             raise ProviderError("模型消息必须含有角色和文字。", code="invalid_request")
         if set(message) - {"role", "content", "name"}:
             raise ProviderError("模型消息包含未允许的字段。", code="invalid_request")
         if "name" in message and (not isinstance(message["name"], str) or len(message["name"]) > 100):
             raise ProviderError("模型消息名称无效。", code="invalid_request")
+        if protocol == "responses" and "name" in message:
+            raise ProviderError("Responses 接口不支持消息名称，请移除消息中的 name 字段。",
+                                code="invalid_request")
     if isinstance(max_tokens, bool) or not isinstance(max_tokens, int) or not 1 <= max_tokens <= 128_000:
         raise ProviderError("生成长度必须为 1 至 128000 的整数。", code="invalid_request")
+    if protocol == "responses" and max_tokens < 16:
+        raise ProviderError("Responses 接口的生成长度至少为 16。",
+                            code="invalid_request")
     if not isinstance(stream, bool):
         raise ProviderError("分段回复开关无效。", code="invalid_request")
     defaults = config.get("parameters", {})
@@ -427,18 +475,39 @@ def prepare_chat_request(
             raise ProviderError("思考开关与思考强度冲突，请统一设置。", code="invalid_request")
         effective["thinking"] = {"type": thinking["type"]}
     token_parameter = config.get("output_token_parameter", "max_tokens")
-    if token_parameter not in {"max_tokens", "max_completion_tokens"}:
+    if not isinstance(token_parameter, str) or token_parameter not in {"max_tokens", "max_completion_tokens"}:
         raise ProviderError("输出长度参数无效。", code="invalid_configuration")
-    payload = {"model": model, "messages": messages, token_parameter: max_tokens,
-               **effective, "stream": stream}
+    if protocol == "responses":
+        unsupported = set(effective) & {
+            "presence_penalty", "frequency_penalty", "seed", "stop", "thinking",
+        }
+        if unsupported:
+            names = "、".join(sorted(unsupported))
+            raise ProviderError(
+                f"Responses 接口不支持这些 Chat 参数：{names}。请在用途设置中移除后重新测试。",
+                code="invalid_request")
+        token_parameter = "max_output_tokens"
+        transmitted = {key: value for key, value in effective.items()
+                       if key != "reasoning_effort"}
+        if "reasoning_effort" in effective:
+            transmitted["reasoning"] = {"effort": effective["reasoning_effort"]}
+        payload = {"model": model, "input": messages, token_parameter: max_tokens,
+                   **transmitted, "stream": stream, "store": False}
+    else:
+        transmitted = effective
+        payload = {"model": model, "messages": messages, token_parameter: max_tokens,
+                   **transmitted, "stream": stream}
     if stream:
         include_usage = config.get("include_usage", False)
         if not isinstance(include_usage, bool):
             raise ProviderError("用量回报开关无效。", code="invalid_configuration")
-        if include_usage:
+        if include_usage and protocol == "chat_completions":
             payload["stream_options"] = {"include_usage": True}
     if response_format == "json":
-        payload["response_format"] = {"type": "json_object"}
+        if protocol == "responses":
+            payload["text"] = {"format": {"type": "json_object"}}
+        else:
+            payload["response_format"] = {"type": "json_object"}
     body = _encoded(payload)
     if len(body) > MAX_REQUEST_BYTES:
         raise ProviderError("模型输入超过请求大小上限。", code="invalid_request")
@@ -449,14 +518,16 @@ def prepare_chat_request(
     if not isinstance(identifier, str) or not identifier or len(identifier) > 128 or any(ord(char) < 33 or ord(char) > 126 for char in identifier):
         raise ProviderError("请求身份无效。", code="invalid_request")
     audit = {"request_id": identifier, "endpoint": endpoint, "method": "POST",
+             "api_protocol": protocol,
              "requested_model": model, "request_sha256": _sha(body),
              "messages_sha256": _sha(_encoded(messages)), "request_bytes": len(body),
-             "effective_parameters": {**effective, token_parameter: max_tokens,
+             "effective_parameters": {**transmitted, token_parameter: max_tokens,
                                       "stream": stream, "response_format": response_format},
              "payload": _redact(payload, secret),
              "created_at": datetime.now(timezone.utc).isoformat(),
              "dispatched": False}
     return {"endpoint": endpoint, "host": host, "port": port, "path": path,
+            "api_protocol": protocol,
             "payload": payload, "body": body, "request_audit": _redact(audit, secret)}
 
 
@@ -684,6 +755,8 @@ class _SecretStream:
 
 
 class _Accumulator:
+    api_protocol = "chat_completions"
+
     def __init__(self, task: str, response_format: str, secret: str,
                  on_chunk: ChunkCallback | None, schema: Mapping[str, Any] | None,
                  *, thinking_disabled: bool = False) -> None:
@@ -871,6 +944,7 @@ class _Accumulator:
             structured = _redact(structured, self.secret)
         accounting = self.current_usage_accounting()
         return {"text": self.text, "structured": structured, "response_format": self.response_format,
+                "api_protocol": self.api_protocol,
                 "truncated": state != "complete", "finish_reason": finish,
                 "completion_state": state, "safe_to_apply": state == "complete",
                 "usage": self.usage, "usage_state": accounting["state"],
@@ -896,6 +970,411 @@ class _Accumulator:
                 }}
 
 
+class _ResponsesAccumulator(_Accumulator):
+    """Reconcile native Responses text events with their authoritative output."""
+
+    api_protocol = "responses"
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.response_status: str | None = None
+        self.incomplete_reason: str | None = None
+        self.saw_tool_call = False
+        self.sequence: int | None = None
+        self.output_items: dict[int, tuple[str, str]] = {}
+        self.parts: dict[tuple[int, int], dict[str, Any]] = {}
+        self.raw_text = ""
+        self.last_text_key: tuple[int, int] | None = None
+
+    def observe_usage(self, value: Any) -> None:
+        # Retain native counters and add the aliases used by the shared ledger.
+        conflict = False
+        if isinstance(value, dict):
+            value = dict(value)
+            native = {
+                target: value[source] for source, target in (
+                    ("input_tokens", "prompt_tokens"), ("output_tokens", "completion_tokens"),
+                    ("total_tokens", "total_tokens")) if source in value
+            }
+            self.usage_lower_bound = max(
+                self.usage_lower_bound,
+                usage_accounting(native)["reported_tokens_lower_bound"])
+            for source, target in (
+                    ("input_tokens", "prompt_tokens"),
+                    ("output_tokens", "completion_tokens"),
+                    ("input_tokens_details", "prompt_tokens_details"),
+                    ("output_tokens_details", "completion_tokens_details")):
+                if source not in value:
+                    continue
+                if target in value and value[source] != value[target]:
+                    self.usage_sequence_inconsistent = True
+                    conflict = True
+                else:
+                    value[target] = value[source]
+        super().observe_usage(value)
+        if conflict:
+            raise ProviderError("Responses 用量字段存在冲突。",
+                                code="invalid_response")
+
+    @staticmethod
+    def _index(value: Any) -> int:
+        if isinstance(value, bool) or not isinstance(value, int) or not 0 <= value < 1000:
+            raise ProviderError("Responses 正文分片序号无效。", code="invalid_response")
+        return value
+
+    @staticmethod
+    def _identity(value: Any) -> str:
+        if (not isinstance(value, str) or not value or len(value) > 512
+                or any(ord(char) < 32 or ord(char) == 127 for char in value)):
+            raise ProviderError("Responses 返回的身份标识无效。",
+                                code="invalid_response")
+        return value
+
+    def _metadata(self, value: Mapping[str, Any]) -> None:
+        if value.get("usage") is not None:
+            self.observe_usage(value["usage"])
+        model = _returned_model(value)
+        if model is not None:
+            model = _redact(model, self.secret)
+            if self.returned_model is not None and self.returned_model != model:
+                raise ProviderError("同一回复中的模型名称发生改变。",
+                                    code="invalid_response")
+            self.returned_model = model
+        if "id" in value:
+            identifier = _redact(self._identity(value["id"]), self.secret)
+            if self.provider_id and self.provider_id != identifier:
+                raise ProviderError("Responses 回复的身份标识发生改变。",
+                                    code="invalid_response")
+            self.provider_id = identifier
+
+    def _item_identity(self, index: int, identifier: Any, kind: str) -> str:
+        identifier = self._identity(identifier)
+        previous = self.output_items.get(index)
+        if previous is not None and previous != (identifier, kind):
+            raise ProviderError("Responses 输出项目的身份或类型发生改变。",
+                                code="invalid_response")
+        for other, (known_id, _kind) in self.output_items.items():
+            if other != index and known_id == identifier:
+                raise ProviderError("Responses 输出项目的身份重复。",
+                                    code="invalid_response")
+        self.output_items[index] = (identifier, kind)
+        return identifier
+
+    def _text(self, output_index: Any, content_index: Any, item_id: Any,
+              text: Any, *, cumulative: bool, closed: bool = False) -> None:
+        key = (self._index(output_index), self._index(content_index))
+        self._item_identity(key[0], item_id, "message")
+        if not isinstance(text, str):
+            raise ProviderError("Responses 正文分片必须为文字。",
+                                code="invalid_response")
+        part = self.parts.setdefault(key, {"text": "", "closed": False})
+        if cumulative:
+            if not text.startswith(part["text"]) or part["closed"] and text != part["text"]:
+                raise ProviderError("Responses 最终正文与已收到的分片不一致。",
+                                    code="invalid_response")
+            piece = text[len(part["text"]):]
+        else:
+            if part["closed"]:
+                raise ProviderError("Responses 在正文结束后继续发送分片。",
+                                    code="invalid_response")
+            piece = text
+        if piece:
+            if self.last_text_key is not None and key < self.last_text_key:
+                raise ProviderError("Responses 正文分片顺序无效。",
+                                    code="invalid_response")
+            self.last_text_key = key
+            part["text"] += piece
+            self.raw_text += piece
+            self.feed(piece, event="response.output_text", provider_id=self.provider_id)
+        part["closed"] = part["closed"] or closed
+
+    def _reasoning(self, value: Any) -> None:
+        self.reasoning_field_events += 1
+        if isinstance(value, str):
+            self.reasoning_characters += len(value)
+            self.reasoning_nonempty_events += bool(value.strip())
+        elif value is not None:
+            self.reasoning_invalid_events += 1
+            raise ProviderError("Responses 思考分片格式无效。",
+                                code="invalid_response")
+
+    def _part(self, part: Any, output_index: int, content_index: int,
+              item_id: str, *, closed: bool) -> str:
+        if not isinstance(part, dict):
+            raise ProviderError("Responses 正文部分格式无效。",
+                                code="invalid_response")
+        kind = part.get("type")
+        if kind == "output_text":
+            text = part.get("text")
+            self._text(output_index, content_index, item_id, text,
+                       cumulative=True, closed=closed)
+            return text
+        if kind == "refusal":
+            self._item_identity(output_index, item_id, "message")
+            if not isinstance(part.get("refusal"), str):
+                raise ProviderError("Responses 拒绝信息格式无效。",
+                                    code="invalid_response")
+            self.refused = True
+            return ""
+        if kind == "reasoning_text":
+            self._item_identity(output_index, item_id, "reasoning")
+            self._reasoning(part.get("text"))
+            return ""
+        raise ProviderError("Responses 返回了不支持的正文类型。",
+                            code="invalid_response")
+
+    def _item(self, item: Any, index: int, *, closed: bool,
+              completed: bool = False) -> tuple[str, set[tuple[int, int]]]:
+        if not isinstance(item, dict) or not isinstance(item.get("type"), str):
+            raise ProviderError("Responses 输出项目格式无效。",
+                                code="invalid_response")
+        kind = item["type"]
+        identifier = self._item_identity(index, item.get("id"), kind)
+        if kind == "reasoning":
+            summary = item.get("summary", [])
+            if not isinstance(summary, list):
+                raise ProviderError("Responses 思考摘要格式无效。",
+                                    code="invalid_response")
+            for part in summary:
+                if not isinstance(part, dict) or part.get("type") != "summary_text":
+                    raise ProviderError("Responses 思考摘要格式无效。",
+                                        code="invalid_response")
+                self._reasoning(part.get("text"))
+            if "content" in item:
+                content = item["content"]
+                if not isinstance(content, list) or len(content) > 1000:
+                    raise ProviderError("Responses 思考内容格式无效。",
+                                        code="invalid_response")
+                for part in content:
+                    if not isinstance(part, dict) or part.get("type") != "reasoning_text":
+                        raise ProviderError("Responses 思考内容格式无效。",
+                                            code="invalid_response")
+                    self._reasoning(part.get("text"))
+            return "", set()
+        if kind != "message":
+            if kind.endswith("_call") or kind in {
+                    "function_call_output", "computer_call_output",
+                    "local_shell_call_output", "shell_call_output", "mcp_list_tools",
+                    "mcp_approval_request", "mcp_approval_response"}:
+                self.saw_tool_call = True
+                return "", set()
+            raise ProviderError("Responses 返回了不支持的输出项目。",
+                                code="invalid_response")
+        if item.get("role") != "assistant":
+            raise ProviderError("Responses 返回了错误的正文角色。",
+                                code="invalid_response")
+        status = item.get("status")
+        if not isinstance(status, str) or status not in {"in_progress", "completed", "incomplete"}:
+            raise ProviderError("Responses 正文项目缺少有效状态。",
+                                code="invalid_response")
+        if completed and status != "completed":
+            raise ProviderError("Responses 声称完成，但正文项目尚未完成。",
+                                code="invalid_response")
+        content = item.get("content")
+        if not isinstance(content, list) or len(content) > 1000:
+            raise ProviderError("Responses 正文列表格式无效。",
+                                code="invalid_response")
+        texts = []
+        keys = set()
+        for content_index, part in enumerate(content):
+            text = self._part(part, index, content_index, identifier, closed=closed)
+            if part.get("type") == "output_text":
+                keys.add((index, content_index))
+            texts.append(text)
+        return "".join(texts), keys
+
+    def _snapshot(self, value: Any, *, terminal: bool,
+                  expected_status: str | None = None) -> None:
+        if not isinstance(value, dict):
+            raise ProviderError("Responses 事件缺少回复对象。",
+                                code="invalid_response")
+        self._metadata(value)
+        status = value.get("status")
+        if not isinstance(status, str) or status not in {
+                "completed", "incomplete", "failed", "in_progress", "queued", "cancelled"}:
+            raise ProviderError("Responses 回复状态无效。",
+                                code="invalid_response")
+        if expected_status is not None and status != expected_status:
+            raise ProviderError("Responses 结束事件与回复状态不一致。",
+                                code="invalid_response")
+        if value.get("error") is not None or status == "failed":
+            self.response_status = "failed"
+            raise ProviderError("Responses 提供方生成失败；不会自动重复发送。",
+                                code="provider_stream_error")
+        if not terminal:
+            if status not in {"queued", "in_progress"}:
+                raise ProviderError("Responses 中间事件包含错误的结束状态。",
+                                    code="invalid_response")
+            return
+        output = value.get("output")
+        if not isinstance(output, list) or len(output) > 1000:
+            raise ProviderError("Responses 回复缺少有效输出列表。",
+                                code="invalid_response")
+        previous_keys = set(self.parts)
+        previous_outputs = set(self.output_items)
+        texts = []
+        final_keys: set[tuple[int, int]] = set()
+        for index, item in enumerate(output):
+            text, keys = self._item(item, index, closed=True,
+                                    completed=status == "completed")
+            texts.append(text)
+            final_keys.update(keys)
+        if (previous_keys - final_keys or previous_outputs - set(range(len(output)))
+                or "".join(texts) != self.raw_text):
+            raise ProviderError("Responses 最终正文与流式正文不一致。",
+                                code="invalid_response")
+        details = value.get("incomplete_details")
+        if status == "incomplete":
+            if (not isinstance(details, dict) or not isinstance(details.get("reason"), str)
+                    or details["reason"] not in {"max_output_tokens", "content_filter"}):
+                raise ProviderError("Responses 截断原因无效。",
+                                    code="invalid_response")
+            self.incomplete_reason = details["reason"]
+            self.finish_reason = (
+                "length" if self.incomplete_reason == "max_output_tokens" else "content_filter")
+        elif details is not None:
+            raise ProviderError("Responses 回复状态与截断信息冲突。",
+                                code="invalid_response")
+        else:
+            self.finish_reason = "tool_calls" if self.saw_tool_call else (
+                "stop" if status == "completed" else None)
+        self.response_status = status
+
+    def payload(self, data: Any, *, sse: bool, event: str = "message",
+                provider_id: str = "") -> None:
+        self.events_observed += 1
+        shape = {**_protocol_shape(data, self.secret), "event_sequence": self.events_observed}
+        if len(self.protocol_events) == 128:
+            del self.protocol_events[112]
+        self.protocol_events.append(shape)
+        if not isinstance(data, dict):
+            raise ProviderError("Responses 回复必须为对象。",
+                                code="invalid_response")
+        if not sse:
+            self._snapshot(data, terminal=True)
+            return
+        kind = data.get("type")
+        if not isinstance(kind, str) or event not in {"message", kind}:
+            raise ProviderError("Responses 流式事件类型无效或冲突。",
+                                code="invalid_response")
+        sequence = data.get("sequence_number")
+        if sequence is not None:
+            if (not _token_count(sequence)
+                    or self.sequence is not None and sequence <= self.sequence):
+                raise ProviderError("Responses 流式事件序号无效。",
+                                    code="invalid_response")
+            self.sequence = sequence
+        if data.get("usage") is not None:
+            self.observe_usage(data["usage"])
+        # Metadata normally lives inside response.* events, but do not accept
+        # conflicting gateway model fields on the outer event either.
+        if "model" in data:
+            self._metadata({"model": data["model"]})
+        if kind == "error" or data.get("error") is not None:
+            raise ProviderError("Responses 提供方在生成途中返回错误。",
+                                code="provider_stream_error")
+        terminals = {
+            "response.completed": "completed", "response.incomplete": "incomplete",
+            "response.failed": "failed",
+        }
+        if kind in terminals:
+            self._snapshot(data.get("response"), terminal=True,
+                           expected_status=terminals[kind])
+            self.saw_done = True
+            return
+        if kind in {"response.created", "response.in_progress", "response.queued"}:
+            self._snapshot(data.get("response"), terminal=False)
+            return
+        if kind in {"response.output_text.delta", "response.output_text.done"}:
+            done = kind.endswith(".done")
+            self._text(data.get("output_index"), data.get("content_index"),
+                       data.get("item_id"), data.get("text" if done else "delta"),
+                       cumulative=done, closed=done)
+            return
+        if kind in {"response.content_part.added", "response.content_part.done"}:
+            self._part(data.get("part"), self._index(data.get("output_index")),
+                       self._index(data.get("content_index")),
+                       self._identity(data.get("item_id")), closed=kind.endswith(".done"))
+            return
+        if kind in {"response.output_item.added", "response.output_item.done"}:
+            self._item(data.get("item"), self._index(data.get("output_index")),
+                       closed=kind.endswith(".done"))
+            return
+        if kind in {"response.refusal.delta", "response.refusal.done"}:
+            self._index(data.get("output_index"))
+            self._index(data.get("content_index"))
+            self._item_identity(data["output_index"], data.get("item_id"), "message")
+            if not isinstance(data.get("refusal" if kind.endswith(".done") else "delta"), str):
+                raise ProviderError("Responses 拒绝分片格式无效。",
+                                    code="invalid_response")
+            self.refused = True
+            return
+        if kind in {"response.reasoning_text.delta", "response.reasoning_text.done",
+                    "response.reasoning_summary_text.delta",
+                    "response.reasoning_summary_text.done"}:
+            self._item_identity(self._index(data.get("output_index")),
+                                data.get("item_id"), "reasoning")
+            self._index(data.get("summary_index" if "summary_text" in kind else "content_index"))
+            self._reasoning(data.get("text" if kind.endswith(".done") else "delta"))
+            return
+        if kind in {"response.reasoning_summary_part.added",
+                    "response.reasoning_summary_part.done"}:
+            self._item_identity(self._index(data.get("output_index")),
+                                data.get("item_id"), "reasoning")
+            self._index(data.get("summary_index"))
+            part = data.get("part")
+            if not isinstance(part, dict) or part.get("type") != "summary_text":
+                raise ProviderError("Responses 思考摘要部分格式无效。",
+                                    code="invalid_response")
+            self._reasoning(part.get("text"))
+            return
+        if kind == "response.output_text.annotation.added":
+            self._item_identity(self._index(data.get("output_index")),
+                                data.get("item_id"), "message")
+            self._index(data.get("content_index"))
+            if not isinstance(data.get("annotation"), dict):
+                raise ProviderError("Responses 正文注释格式无效。",
+                                    code="invalid_response")
+            return
+        if kind in {"response.function_call_arguments.delta", "response.function_call_arguments.done"}:
+            self._item_identity(self._index(data.get("output_index")),
+                                data.get("item_id"), "function_call")
+            if not isinstance(data.get("arguments" if kind.endswith(".done") else "delta"), str):
+                raise ProviderError("Responses 工具调用参数格式无效。",
+                                    code="invalid_response")
+            self.saw_tool_call = True
+            return
+        if kind.startswith("response.") and "_call." in kind:
+            if "output_index" in data or "item_id" in data:
+                self._item_identity(self._index(data.get("output_index")),
+                                    data.get("item_id"), kind.split(".")[1])
+            self.saw_tool_call = True
+            return
+        raise ProviderError("Responses 返回了不支持的流式事件。",
+                            code="invalid_response")
+
+    def result(self, *, sse: bool, state: str | None = None,
+               finalize: bool = False) -> dict[str, Any]:
+        if state is None:
+            if sse and not self.saw_done:
+                state = "unknown"
+            elif self.response_status == "completed":
+                state = "refused" if self.refused else (
+                    "tool_call" if self.saw_tool_call else "complete")
+            elif self.response_status == "incomplete":
+                state = "filtered" if self.incomplete_reason == "content_filter" else "truncated"
+            elif self.response_status == "cancelled":
+                state = "canceled"
+            else:
+                state = "unknown"
+        result = super().result(sse=sse, state=state, finalize=finalize)
+        if state == "complete" and not result["text"].strip():
+            raise ProviderError("Responses 模型没有返回正文。", code="empty_response")
+        result["responses_status"] = self.response_status
+        result["incomplete_reason"] = self.incomplete_reason
+        return result
+
+
 def _read_sse(response: Any, accumulator: _Accumulator,
               account: Callable[[bytes], None], assert_running: Callable[[], None]) -> None:
     data_lines: list[str] = []
@@ -911,6 +1390,9 @@ def _read_sse(response: Any, accumulator: _Accumulator,
         saved_name, saved_id = event_name, event_id
         data_lines, event_name, event_id = [], "message", ""
         if raw_event.strip() == "[DONE]":
+            if accumulator.api_protocol == "responses":
+                raise ProviderError("Responses 缺少原生结束事件，不能把 [DONE] 当作生成完成。",
+                                    code="invalid_response")
             accumulator.saw_done = True
             return
         accumulator.payload(_load_json(raw_event), sse=True,
@@ -948,17 +1430,23 @@ def _read_sse(response: Any, accumulator: _Accumulator,
 
 def normalize_json_completion(data: Any, task: str = "continue",
                               response_format: str = "text",
-                              schema: Mapping[str, Any] | None = None) -> dict[str, Any]:
-    accumulator = _Accumulator(task, response_format, "", None, schema)
+                              schema: Mapping[str, Any] | None = None, *,
+                              api_protocol: str = "chat_completions") -> dict[str, Any]:
+    protocol = _api_protocol({"api_protocol": api_protocol})
+    accumulator_type = _ResponsesAccumulator if protocol == "responses" else _Accumulator
+    accumulator = accumulator_type(task, response_format, "", None, schema)
     accumulator.payload(data, sse=False)
     return accumulator.result(sse=False, finalize=True)
 
 
 def parse_sse_completion(response: Any, task: str = "continue",
                          response_format: str = "text", max_bytes: int = MAX_RESPONSE_BYTES,
-                         schema: Mapping[str, Any] | None = None) -> dict[str, Any]:
+                         schema: Mapping[str, Any] | None = None, *,
+                         api_protocol: str = "chat_completions") -> dict[str, Any]:
     """Compatibility parser for already-opened streams and offline fixtures."""
-    accumulator = _Accumulator(task, response_format, "", None, schema)
+    protocol = _api_protocol({"api_protocol": api_protocol})
+    accumulator_type = _ResponsesAccumulator if protocol == "responses" else _Accumulator
+    accumulator = accumulator_type(task, response_format, "", None, schema)
     total = 0
 
     def account(raw: bytes) -> None:
@@ -1016,9 +1504,12 @@ def call_chat_completion(
     secret = config.get("api_key", "")
     effective = prepared["payload"]
     thinking_disabled = (effective.get("thinking") == {"type": "disabled"}
-                         or effective.get("reasoning_effort") == "none")
-    accumulator = _Accumulator(task, response_format, secret, on_chunk, schema,
-                               thinking_disabled=thinking_disabled)
+                         or effective.get("reasoning_effort") == "none"
+                         or effective.get("reasoning", {}).get("effort") == "none")
+    accumulator_type = (
+        _ResponsesAccumulator if prepared["api_protocol"] == "responses" else _Accumulator)
+    accumulator = accumulator_type(task, response_format, secret, on_chunk, schema,
+                                   thinking_disabled=thinking_disabled)
     headers = {"Content-Type": "application/json", "Accept": "text/event-stream" if stream else "application/json",
                "User-Agent": "Moyu/1", "X-Client-Request-Id": prepared["request_audit"]["request_id"]}
     if secret:

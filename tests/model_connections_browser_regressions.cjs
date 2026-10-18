@@ -14,6 +14,7 @@ const temporary=fs.mkdtempSync(path.join(os.tmpdir(),'moyu-connections-browser-'
 const secret='synthetic-connection-compatibility-key';
 const identityWarning='连接可用，服务未回传模型名称，仅验证可调用';
 const calls=[],pageErrors=[],holds=new Set();
+const generatedCalls=()=>calls.filter(call=>call.method==='POST').length;
 const report={passed:false,scope:'模型列表、连接兼容与身份警示的独立桌面浏览器回归',
  cases:[],artifacts:temporary,synthetic_data_only:true,paid_provider_calls:0};
 const pause=milliseconds=>new Promise(resolve=>setTimeout(resolve,milliseconds));
@@ -49,6 +50,8 @@ async function fillConnection(model,url=providerBase){
  await page.locator('#connectionBaseUrl').fill(url);
  await page.locator('#connectionModel').fill(model);
  await page.locator('#connectionKey').fill(secret);
+ await page.locator('#connectionKey').blur();
+ await page.locator('#connectionModelListStatus[data-state="success"]').waitFor();
 }
 async function openCompatibility(){
  await page.locator('.settings-compatibility').evaluate(details=>details.open=true);
@@ -63,15 +66,16 @@ async function probeDraft(){
  const result=await (await response).json();await waitIdle();return result;
 }
 async function saveConnection(){
- const before=calls.length;
+ const before=generatedCalls();
  const response=page.waitForResponse(response=>
   new URL(response.url()).pathname==='/api/ai/connections'&&response.request().method()==='POST');
  await page.locator('#connectionSave').click();
  const result=await (await response).json();await waitIdle();
  assert.ok(result.connection?.id,'保存成功必须返回连接身份');
- assert.equal(calls.length,before,'保存模型不能再次调用模型');return result.connection;
+ assert.equal(generatedCalls(),before,'保存模型不能再次调用模型');return result.connection;
 }
 async function fetchModels(expected='success'){
+ await page.waitForFunction(()=>document.querySelector('#connectionFetchModels')?.disabled===false);
  const response=page.waitForResponse(response=>
   new URL(response.url()).pathname==='/api/ai/connections/models'&&response.request().method()==='POST');
  await page.locator('#connectionFetchModels').click();
@@ -80,10 +84,10 @@ async function fetchModels(expected='success'){
  assert.equal(await page.locator('#connectionFetchModels').isEnabled(),true);return result;
 }
 async function modelChoices(){
- return page.locator('#connectionModelList option').evaluateAll(options=>options.map(option=>option.value));
+ return page.locator('#connectionModelList [role="option"]').evaluateAll(options=>options.map(option=>option.dataset.modelValue));
 }
 async function saveSettings(){
- const before=calls.length;
+ const before=generatedCalls();
  await page.evaluate(()=>{
   const form=document.querySelector('#modelSettings'),submit=form.onsubmit;
   form.onsubmit=event=>{form.onsubmit=submit;window.__compatibilitySave=submit.call(form,event)};
@@ -93,14 +97,14 @@ async function saveSettings(){
  await page.evaluate(()=>window.__compatibilitySave);
  await page.waitForFunction(()=>document.querySelector('#modelSettings [type="submit"]')?.disabled===false);
  assert.equal(await page.locator('#modelSettings .form-error').textContent(),'');
- assert.equal(calls.length,before,'用途保存不能外发模型请求');
+ assert.equal(generatedCalls(),before,'用途保存不能外发模型请求');
  return (await api('/api/ai/settings')).settings;
 }
 async function saveAgentSettings(){
- const before=calls.length;
+ const before=generatedCalls();
  await page.locator('#agentConnectionSettings [type="submit"]').click();
  await page.locator('#agentProbeStatus').filter({hasText:'总管设置已保存'}).waitFor();
- assert.equal(calls.length,before,'保存总管设置不能调用模型');
+ assert.equal(generatedCalls(),before,'保存总管设置不能调用模型');
  return (await api('/api/agent-chat/settings')).settings;
 }
 async function probeAgent(){
@@ -112,13 +116,13 @@ async function probeAgent(){
  return result;
 }
 async function frozenRequest(task){
- const before=calls.length,state=await api('/api/state');
+ const before=generatedCalls(),state=await api('/api/state');
  const queued=await api('/api/ai/queue','POST',{task,chapter_id:state.chapters[0].id,defer:true});
  try{
   assert.equal(queued.auto_started,false);
   const run=await api('/api/ai/runs/'+queued.ai_run_id);
   assert.equal(run.consent.request_audit.dispatched,false);
-  assert.equal(calls.length,before,'冻结请求用于检查配置，不应调用模型');
+  assert.equal(generatedCalls(),before,'冻结请求用于检查配置，不应调用模型');
   return run.consent.request_audit.payload;
  }finally{await api('/api/ai/runs/'+queued.ai_run_id+'/cancel','POST',{})}
 }
@@ -220,7 +224,7 @@ async function main(){
   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
   assert.equal(await page.locator('#modelDefault option[value]:not([value=""])').count(),0);
   assert.equal((await api('/api/ai/connections')).connections.length,0);
-  assert.equal(calls.length,0);
+  assert.equal(generatedCalls(),0);
  });
  await test('获取模型列表只查询清单，不自动改模型、不测试、不保存',async()=>{
   const before=(await api('/api/ai/settings')).settings;
@@ -231,7 +235,7 @@ async function main(){
   ]));
   assert.equal(await page.locator('#connectionModel').inputValue(),'manual-fixture-model');
   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
-  assert.equal(calls.length,1);assert.equal(calls[0].method,'GET');
+  assert.equal(generatedCalls(),0);assert.ok(calls.some(call=>call.method==='GET'));
   assert.deepEqual((await api('/api/ai/settings')).settings,before);
  });
  await test('列表服务失败仍可手填模型，重新获取可恢复',async()=>{
@@ -348,9 +352,9 @@ async function main(){
   assert.equal((await probeDraft()).probe.success,false);
   const apply=page.locator('#connectionUseReturnedModel');
   assert.equal(await apply.isVisible(),true);
-  const before=calls.length;await apply.click();
+  const before=generatedCalls();await apply.click();
   assert.equal(await page.locator('#connectionModel').inputValue(),'wrong-fixture-model');
-  assert.equal(calls.length,before,'采用回传名称只修改草稿，不应调用模型');
+  assert.equal(generatedCalls(),before,'采用回传名称只修改草稿，不应调用模型');
   assert.equal(await page.locator('#connectionSave').isDisabled(),true);
   assert.equal(await apply.isVisible(),false);
   assert.equal((await api('/api/ai/connections')).connections.length,2);
@@ -513,7 +517,7 @@ async function main(){
   }
   const storage=await page.evaluate(()=>[...Object.values(localStorage),...Object.values(sessionStorage)].join('\n'));
   assert.equal(storage.includes(secret),false);assert.equal(serverLog.includes(secret),false);
-  assert.equal(calls.every(call=>call.key_matches),true);
+  assert.equal(calls.filter(call=>call.method==='POST').every(call=>call.key_matches),true);
  });
  assert.deepEqual(pageErrors,[]);report.provider_requests=calls.length;
  report.inventory_queries=calls.filter(call=>call.method==='GET').length;

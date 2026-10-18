@@ -402,7 +402,13 @@ def validate_frozen_reference_context(context: Mapping[str, Any], audit: Any, *,
         if hashlib.sha256(encoded.encode("utf-8")).hexdigest() != input_hash:
             raise ValueError(issue)
     payload = audit.get("payload") if isinstance(audit, Mapping) else None
-    messages = payload.get("messages") if isinstance(payload, Mapping) else None
+    messages = None
+    if isinstance(payload, Mapping):
+        from moyu_provider import request_messages
+        try:
+            messages = request_messages(payload, audit.get("api_protocol", "chat_completions"))
+        except ValueError:
+            messages = None
     materials = []
     if isinstance(messages, list):
         for message in messages:

@@ -2,6 +2,7 @@
 """Real SQLite + local HTTP provider tests for settings, budgets and workers."""
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import sqlite3
@@ -862,6 +863,50 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(status, 409, rejected)
         self.assertIn("完整请求缺失", rejected["error"])
         self.assertEqual(len(Handler.calls), before)
+
+    def test_worker_rejects_modified_frozen_request_or_audit_before_dispatch(self) -> None:
+        self.settings(limit=1)
+        for changed in ("payload", "endpoint", "request_sha256", "messages_sha256",
+                        "api_protocol", "prompt_hash", "rehashed_payload", "missing_payload",
+                        "missing_audit"):
+            with self.subTest(changed=changed):
+                job = self.enqueue()
+                with server.connect() as conn:
+                    consent = json.loads(conn.execute("SELECT consent_json FROM ai_run WHERE id=?",
+                                                     (job["ai_run_id"],)).fetchone()[0])
+                    audit = consent["request_audit"]
+                    if changed in {"payload", "rehashed_payload"}:
+                        audit["payload"]["messages"][-1]["content"] += " changed"
+                        if changed == "rehashed_payload":
+                            for field, value in (
+                                ("request_sha256", audit["payload"]),
+                                ("messages_sha256", audit["payload"]["messages"]),
+                            ):
+                                audit[field] = hashlib.sha256(json.dumps(
+                                    value, ensure_ascii=False, separators=(",", ":"),
+                                    allow_nan=False).encode()).hexdigest()
+                    elif changed == "prompt_hash":
+                        conn.execute("UPDATE ai_run SET prompt_hash=? WHERE id=?",
+                                     ("0" * 64, job["ai_run_id"]))
+                    elif changed == "missing_payload":
+                        audit.pop("payload")
+                    elif changed == "missing_audit":
+                        consent.pop("request_audit")
+                    else:
+                        audit[changed] = "responses" if changed == "api_protocol" else "modified"
+                    conn.execute("UPDATE ai_run SET consent_json=? WHERE id=?",
+                                 (server.json_text(consent), job["ai_run_id"]))
+                before = len(Handler.calls)
+                completed = server.process_ai_job(job["id"])
+                self.assertEqual(completed["status"], "failed")
+                self.assertEqual(completed["result"]["billing_state"], "not_dispatched")
+                self.assertEqual(completed["result"]["error_code"], "dispatch_precondition_failed")
+                self.assertEqual(len(Handler.calls), before)
+                with server.connect() as conn:
+                    self.assertEqual(server.ai_quota_snapshot(conn)["remaining_runs"], 1)
+                    self.assertEqual(conn.execute(
+                        "SELECT status FROM app_quota_reservation WHERE ai_run_id=?",
+                        (job["ai_run_id"],)).fetchone()[0], "released")
 
     def wait_chunks(self, job: dict, minimum: int = 1) -> None:
         for _ in range(100):

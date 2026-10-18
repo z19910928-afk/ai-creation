@@ -1173,10 +1173,10 @@ function authorRenderSettings(){
  const taskParameters=s.task_parameters||{},tasks=Object.entries(AI_TASK_NAMES),clearedTasks=new Set();
  let connections=Array.isArray(s.connections)?s.connections:[],legacy=!s.connection_workflow?
   (s.legacy||(s.base_url&&s.model?{base_url:s.base_url,model:s.model,api_key_configured:s.api_key_configured,
-   output_token_parameter:s.output_token_parameter,include_usage:s.include_usage}:null)):null;
- let editingId=legacy?'legacy':'',editingKeyConfigured=!!legacy?.api_key_configured;
+   api_protocol:s.api_protocol,output_token_parameter:s.output_token_parameter,include_usage:s.include_usage}:null)):null;
+ let editingId=legacy?'legacy':'',editingKeyConfigured=!!legacy?.api_key_configured,editingBaseUrl=legacy?.base_url||'';
  let receipt=null,busy=false,disposed=false,deletionDialog=null,returnedModelCandidate='';
- let modelListSequence=0,modelListController=null,modelListLoading=false;
+ let modelPicker=null;
  const frozenControls=new Map();
  const reasoningOptions=[['','服务默认'],['none','关闭（通用）'],['minimal','最少'],['low','较少'],['medium','适中'],
   ['high','较多'],['xhigh','充分'],['deepseek_disabled','关闭（DeepSeek）'],['deepseek_enabled','开启（DeepSeek）']];
@@ -1201,13 +1201,17 @@ function authorRenderSettings(){
  <div class="settings-connection-form-heading"><h4 id="connectionEditorHeading">${legacy?'登记现有模型':'新增模型'}</h4>
  <button type="button" class="ghost-btn" id="connectionReset">新增模型</button></div>
  <div class="settings-fields">
- <label>连接名称<input id="connectionName" maxlength="100" required value="${esc(legacy?.model||'')}" placeholder="例如：主力写作模型"></label>
- <div class="settings-model-field"><label for="connectionModel">模型名称</label><div class="settings-model-picker">
- <input id="connectionModel" list="connectionModelList" maxlength="200" required value="${esc(legacy?.model||'')}" placeholder="选择或填写模型名称" autocomplete="off" spellcheck="false">
- <button type="button" class="ghost-btn" id="connectionFetchModels">获取模型列表</button></div><datalist id="connectionModelList"></datalist></div>
  <label>服务地址<input id="connectionBaseUrl" type="url" required value="${esc(legacy?.base_url||'')}" placeholder="https://example.com/v1"></label>
- <label>访问密钥<input id="connectionKey" type="password" autocomplete="new-password" value="" placeholder="${legacy?.api_key_configured?'已保存密钥，留空继续使用':'填写密钥'}"></label></div>
- <p id="connectionModelListStatus" class="settings-model-list-status" role="status" hidden></p>
+ <label>访问密钥<input id="connectionKey" type="password" autocomplete="new-password" value="" placeholder="${legacy?.api_key_configured?'已保存密钥，留空继续使用':'本机免密模型可留空'}"></label>
+ <label>接入方式<select id="connectionApiProtocol"><option value="chat_completions" ${legacy?.api_protocol!=='responses'?'selected':''}>通用兼容（Chat）</option>
+ <option value="responses" ${legacy?.api_protocol==='responses'?'selected':''}>Responses</option></select></label>
+ <label>连接名称<input id="connectionName" maxlength="100" required value="${esc(legacy?.model||'')}" placeholder="例如：主力写作模型"></label>
+ <div class="moyu-model-field"><label for="connectionModel">模型名称</label><div class="moyu-model-row"><div class="moyu-model-combobox">
+ <input id="connectionModel" maxlength="200" required value="${esc(legacy?.model||'')}" placeholder="搜索、选择或手动填写模型名称" autocomplete="off" spellcheck="false" aria-describedby="connectionModelListStatus">
+ <button type="button" class="ghost-btn" id="connectionModelToggle" aria-label="显示模型列表">选择模型</button>
+ <div id="connectionModelList" class="moyu-model-options" hidden></div></div>
+ <button type="button" class="ghost-btn" id="connectionFetchModels">获取模型列表</button></div>
+ <p id="connectionModelListStatus" class="moyu-model-status" role="status" hidden></p></div></div>
  <details class="settings-compatibility"><summary>兼容设置</summary><div class="settings-fields">
  <label>输出长度参数<select id="connectionOutputTokenParameter"><option value="max_tokens" ${legacy?.output_token_parameter!=='max_completion_tokens'?'selected':''}>常规（max_tokens）</option>
  <option value="max_completion_tokens" ${legacy?.output_token_parameter==='max_completion_tokens'?'selected':''}>兼容（max_completion_tokens）</option></select></label>
@@ -1226,6 +1230,7 @@ function authorRenderSettings(){
  <label>每次输出上限<input id="modelMaxTokens" type="number" min="1" max="128000" step="1" value="${parameters.max_tokens??3000}"></label>
  <label>模型思考程度<select id="modelReasoning">${reasoningSelect(parameters,'服务默认')}</select></label>
  <label>每日生成上限<input id="modelDailyLimit" type="number" min="0" max="100000" value="${s.daily_limit??50}"></label></div>
+ <p id="modelProtocolWarning" class="settings-protocol-warning" role="status" hidden></p>
  <section class="settings-task-section" aria-labelledby="modelTaskHeading"><h3 id="modelTaskHeading">用途设置</h3>
  <div class="settings-task-table" role="table" aria-label="用途模型与参数"><div class="settings-task-header" role="row">
  <span role="columnheader">用途</span><span role="columnheader">模型</span><span role="columnheader">变化程度</span>
@@ -1246,33 +1251,52 @@ function authorRenderSettings(){
  const connectionKey=connectionForm.querySelector('#connectionKey'),connectionStatus=connectionForm.querySelector('#connectionProbeStatus');
  const connectionSave=connectionForm.querySelector('#connectionSave');
  const returnedModelButton=connectionForm.querySelector('#connectionUseReturnedModel');
- const modelList=connectionForm.querySelector('#connectionModelList'),modelListStatus=connectionForm.querySelector('#connectionModelListStatus');
  const fetchModelsButton=connectionForm.querySelector('#connectionFetchModels');
  const current=sequence=>!disposed&&owner===requestedProject&&branch===(state.branch_id||'main')&&
   sequence===authorSettingsSeq&&view==='settings'&&form.isConnected&&connectionForm.isConnected;
  authorSettingsDispose=()=>{
-  disposed=true;receipt=null;connectionKey.value='';clearReturnedModel();cancelModelList(true);deletionDialog?.remove();
+  disposed=true;receipt=null;connectionKey.value='';clearReturnedModel();modelPicker?.dispose();deletionDialog?.remove();
   authorSettingsDispose=null;
  };
  const draft=()=>{
   const value=id=>connectionForm.querySelector('#'+id).value.trim();
   return {id:editingId,base_url:value('connectionBaseUrl'),model:value('connectionModel'),api_key:value('connectionKey'),
+   api_protocol:value('connectionApiProtocol'),
    output_token_parameter:value('connectionOutputTokenParameter'),include_usage:connectionForm.querySelector('#connectionIncludeUsage').checked};
  };
- const cancelModelList=(clear=false)=>{
-  ++modelListSequence;modelListController?.abort();modelListController=null;
-  if(modelListLoading){
-   modelListStatus.textContent='连接信息已变化，请重新获取模型列表。';
-   modelListStatus.dataset.state='untested';
-  }
-  modelListLoading=false;fetchModelsButton.disabled=busy;
-  if(clear){modelList.innerHTML='';modelListStatus.textContent='';modelListStatus.hidden=true}
+ const discoverySnapshot=()=>{
+  const submitted=draft(),body={base_url:submitted.base_url,api_protocol:submitted.api_protocol};
+  const reusable=editingKeyConfigured&&MoyuModelPicker.sameService(submitted.base_url,editingBaseUrl);
+  if(submitted.id)body.id=submitted.id;
+  if(submitted.api_key||!reusable)body.api_key=submitted.api_key;
+  const result=MoyuModelPicker.connection(body,reusable);
+  return editingKeyConfigured&&!reusable&&!submitted.api_key?
+   {...result,ready:false,hint:'服务地址已变更，请重新填写该服务的密钥。'}:result;
+ };
+ modelPicker=MoyuModelPicker.mount({
+  input:connectionForm.querySelector('#connectionModel'),list:connectionForm.querySelector('#connectionModelList'),
+  toggle:connectionForm.querySelector('#connectionModelToggle'),refresh:fetchModelsButton,
+  status:connectionForm.querySelector('#connectionModelListStatus'),snapshot:discoverySnapshot,
+  current:()=>current(authorSettingsSeq),
+  request:async(body,signal)=>{
+   const response=await fetch('/api/ai/connections/models',{method:'POST',headers:{
+    'Content-Type':'application/json','X-Moyu-Project':owner,'X-Moyu-Branch':branch},body:JSON.stringify(body),signal});
+   const result=await response.json().catch(()=>({}));
+   if(!response.ok)throw new Error(result.error||`服务暂时没有返回模型列表（${response.status}）`);
+   return result;
+  },
+ });
+ const updateConnectionProtocol=()=>{
+  connectionForm.querySelector('.settings-compatibility').hidden=
+   connectionForm.querySelector('#connectionApiProtocol').value==='responses';
  };
  const sameReceipt=()=>!!receipt&&receipt.tuple===JSON.stringify(draft());
  const updateSaveButton=()=>{connectionSave.disabled=busy||!sameReceipt()};
  const clearReturnedModel=()=>{returnedModelCandidate='';returnedModelButton.hidden=true};
  const invalidateProbe=event=>{
-  cancelModelList(['connectionBaseUrl','connectionKey'].includes(event?.target?.id));
+  if(['connectionBaseUrl','connectionKey','connectionApiProtocol'].includes(event?.target?.id)){
+   updateConnectionProtocol();modelPicker.changed();
+  }
   clearReturnedModel();receipt=null;updateSaveButton();connectionForm.querySelector('.form-error').textContent='';
   connectionStatus.textContent='连接信息已修改，需要重新测试。';
   connectionStatus.dataset.state='untested';delete connectionStatus.dataset.identity;
@@ -1335,25 +1359,27 @@ function authorRenderSettings(){
   connections=Array.isArray(settings?.connections)?settings.connections:fallback;
   if(settings)legacy=!settings.connection_workflow?(settings.legacy||(settings.base_url&&settings.model?
    {base_url:settings.base_url,model:settings.model,api_key_configured:settings.api_key_configured,
-    output_token_parameter:settings.output_token_parameter,include_usage:settings.include_usage}:null)):null;
+    api_protocol:settings.api_protocol,output_token_parameter:settings.output_token_parameter,include_usage:settings.include_usage}:null)):null;
   renderLibrary();refreshConnectionOptions();
  };
- const fillConnection=(id,item)=>{
-  cancelModelList(true);clearReturnedModel();editingId=id;editingKeyConfigured=!!item.api_key_configured;receipt=null;connectionKey.value='';
+ const fillConnection=(id,item,{discover=true}={})=>{
+  clearReturnedModel();editingId=id;editingKeyConfigured=!!item.api_key_configured;editingBaseUrl=item.base_url||'';receipt=null;connectionKey.value='';
   connectionForm.querySelector('#connectionName').value=item.name||item.model||'';
   connectionForm.querySelector('#connectionBaseUrl').value=item.base_url||'';
   connectionForm.querySelector('#connectionModel').value=item.model||'';
+  connectionForm.querySelector('#connectionApiProtocol').value=item.api_protocol==='responses'?'responses':'chat_completions';
   connectionForm.querySelector('#connectionOutputTokenParameter').value=
    item.output_token_parameter==='max_completion_tokens'?'max_completion_tokens':'max_tokens';
   connectionForm.querySelector('#connectionIncludeUsage').checked=item.include_usage===true;
-  connectionKey.placeholder=editingKeyConfigured?'已保存密钥，留空继续使用':'填写密钥';
+  connectionKey.placeholder=editingKeyConfigured?'已保存密钥，留空继续使用':'本机免密模型可留空';
   connectionForm.querySelector('#connectionEditorHeading').textContent=id==='legacy'?'登记现有模型':id?'编辑模型连接':'新增模型';
   connectionForm.querySelector('.form-error').textContent='';
   connectionStatus.textContent=id?'编辑后需要重新测试并保存。':'尚未测试连接。';
   connectionStatus.dataset.state='untested';delete connectionStatus.dataset.identity;updateSaveButton();
+  updateConnectionProtocol();modelPicker.changed({suppress:!discover,reset:true});
  };
  const setBusy=value=>{
-  if(value)cancelModelList();
+  modelPicker.setDisabled(value);
   busy=value;host.setAttribute('aria-busy',String(value));
   if(value){
    for(const control of host.querySelectorAll('input,textarea,select,button')){
@@ -1363,7 +1389,7 @@ function authorRenderSettings(){
   }else{
    for(const [control,disabled] of frozenControls)control.disabled=disabled;
    frozenControls.clear();
-   if(!disposed){renderLibrary();refreshConnectionOptions();updateSaveButton();fetchModelsButton.disabled=modelListLoading}
+   if(!disposed){renderLibrary();refreshConnectionOptions();updateSaveButton();modelPicker.setDisabled(false)}
   }
  };
  const setNumber=(target,name,value)=>{
@@ -1378,6 +1404,43 @@ function authorRenderSettings(){
   const task=row.dataset.taskRow,next=clearedTasks.has(task)?{}:{...taskParameters[task]};
   for(const name of ['temperature','max_tokens'])setNumber(next,name,row.querySelector(`[data-task-parameter="${name}"]`).value);
   setReasoning(next,row.querySelector('[data-task-parameter="reasoning"]').value);return next;
+ };
+ const updateProtocolHints=()=>{
+  const defaultId=form.querySelector('#modelDefault').value;
+  const protocol=id=>(connections.find(item=>item.id===id)||(id?'':legacy))?.api_protocol||'chat_completions';
+  const defaultResponses=protocol(defaultId)==='responses',warnings=[];
+  const globalThinking=form.querySelector('#modelReasoning');
+  const globalLength=form.querySelector('#modelMaxTokens');
+  const markThinking=(control,responses,label,value=control.value)=>{
+   for(const option of control.options)if(option.value.startsWith('deepseek_'))
+    option.hidden=responses&&option.value!==control.value;
+   const invalid=responses&&value.startsWith('deepseek_');
+   control.setCustomValidity(invalid?'Responses 不支持 DeepSeek 专用思考设置，请选择通用思考程度。':'');
+   if(invalid)warnings.push(`${label}仍使用 DeepSeek 专用思考设置，请调整后保存。`);
+  };
+  const markLength=(control,responses,label,effective=control.value)=>{
+   control.min=responses?'16':'1';
+   const invalid=responses&&effective!==''&&Number(effective)<16;
+   control.setCustomValidity(invalid?'Responses 的有效输出上限至少为 16；请调整该用途或它沿用的设置。':'');
+   if(invalid)warnings.push(`${label}的 Responses ${control.value?'':'沿用'}输出上限至少为 16。`);
+  };
+  markThinking(globalThinking,defaultResponses,'默认模型');
+  markLength(globalLength,defaultResponses,'默认模型');
+  for(const row of form.querySelectorAll('[data-task-row]')){
+   const task=row.dataset.taskRow,alias=aliases[task];
+   const assigned=row.querySelector('[data-task-model]').value;
+   const inheritedId=alias?form.querySelector(`[data-task-model="${alias}"]`)?.value:'';
+   const responses=protocol(assigned||inheritedId||defaultId)==='responses';
+   const control=row.querySelector('[data-task-parameter="reasoning"]');
+   const inheritsAlias=alias&&!Object.keys(rowParameters(row)).length;
+   const aliasThinking=inheritsAlias?form.querySelector(`[data-task-row="${alias}"] [data-task-parameter="reasoning"]`)?.value:'';
+   const aliasLength=inheritsAlias?form.querySelector(`[data-task-row="${alias}"] [data-task-parameter="max_tokens"]`)?.value:'';
+   markThinking(control,responses,AI_TASK_NAMES[task],control.value||aliasThinking||globalThinking.value);
+   const length=row.querySelector('[data-task-parameter="max_tokens"]');
+   markLength(length,responses,AI_TASK_NAMES[task],length.value||aliasLength||globalLength.value);
+  }
+  const warning=form.querySelector('#modelProtocolWarning');
+  warning.hidden=!warnings.length;warning.textContent=warnings.join(' ');
  };
  const updateTaskHints=()=>{
   const rows=[...form.querySelectorAll('[data-task-row]')];
@@ -1394,13 +1457,14 @@ function authorRenderSettings(){
    if(alias)row.querySelector('[data-task-model]').options[0].textContent=
     form.querySelector(`[data-task-model="${alias}"]`).value?'沿用'+aliasLabels[alias]+'模型':'沿用默认模型';
   }
+  updateProtocolHints();
  };
  form.querySelectorAll('[data-task-clear]').forEach(button=>button.onclick=()=>{
   const row=button.closest('[data-task-row]');clearedTasks.add(button.dataset.taskClear);
   row.querySelectorAll('[data-task-parameter]').forEach(control=>control.value='');
   updateTaskHints();
  });
- form.querySelectorAll('[data-task-parameter],[data-task-model]').forEach(control=>{
+ form.querySelectorAll('[data-task-parameter],[data-task-model],#modelDefault,#modelReasoning,#modelMaxTokens').forEach(control=>{
   control.addEventListener('input',updateTaskHints);control.addEventListener('change',updateTaskHints);
  });
  const payload=()=>{
@@ -1446,8 +1510,11 @@ function authorRenderSettings(){
   finally{setBusy(false)}
  };
  connectionForm.querySelector('#connectionReset').onclick=()=>{if(!busy)fillConnection('',{})};
- connectionForm.querySelectorAll('#connectionBaseUrl,#connectionModel,#connectionKey,#connectionOutputTokenParameter,#connectionIncludeUsage').forEach(input=>{
+ connectionForm.querySelectorAll('#connectionBaseUrl,#connectionModel,#connectionKey,#connectionApiProtocol,#connectionOutputTokenParameter,#connectionIncludeUsage').forEach(input=>{
   input.addEventListener('input',invalidateProbe);input.addEventListener('change',invalidateProbe);
+ });
+ connectionForm.querySelectorAll('#connectionBaseUrl,#connectionKey,#connectionApiProtocol').forEach(input=>{
+  input.addEventListener('blur',()=>modelPicker.changed({immediate:true}));
  });
  connectionForm.querySelector('#connectionName').addEventListener('input',updateSaveButton);
  returnedModelButton.onclick=()=>{
@@ -1458,47 +1525,6 @@ function authorRenderSettings(){
   connectionStatus.textContent=`已填入服务回传名称 ${model}，请点击“测试连接”重新验证。`;
   connectionForm.querySelector('#connectionModel').focus();
  };
- fetchModelsButton.onclick=async()=>{
-  if(busy||disposed||modelListLoading)return;
-  const submitted=draft(),tuple=JSON.stringify(submitted),sequence=authorSettingsSeq;
-  cancelModelList();
-  const revision=modelListSequence,controller=new AbortController();
-  const valid=()=>current(sequence)&&revision===modelListSequence&&tuple===JSON.stringify(draft());
-  modelListController=controller;modelListLoading=true;fetchModelsButton.disabled=true;
-  modelListStatus.hidden=false;modelListStatus.textContent='正在获取模型列表…';modelListStatus.dataset.state='loading';
-  let timedOut=false;
-  const timeout=setTimeout(()=>{timedOut=true;controller.abort()},30000);
-  try{
-   if(!submitted.base_url)throw new Error('请先填写服务地址。');
-   let address;try{address=new URL(submitted.base_url)}catch{throw new Error('请填写完整的服务地址。')}
-   if(!['http:','https:'].includes(address.protocol))throw new Error('服务地址需要以 http:// 或 https:// 开头。');
-   const body={base_url:submitted.base_url};
-   if(submitted.id)body.id=submitted.id;if(submitted.api_key)body.api_key=submitted.api_key;
-   const response=await fetch('/api/ai/connections/models',{method:'POST',headers:{
-    'Content-Type':'application/json','X-Moyu-Project':owner,'X-Moyu-Branch':branch},
-    body:JSON.stringify(body),signal:controller.signal});
-   const result=await response.json().catch(()=>({}));
-   if(!valid())return;
-   if(!response.ok)throw new Error(result.error||`服务暂时没有返回模型列表（${response.status}）`);
-   if(!Array.isArray(result.models))throw new Error('服务返回的模型列表格式不正确。');
-   const models=[...new Set(result.models.filter(value=>typeof value==='string').map(value=>value.trim())
-    .filter(value=>value&&value.length<=200))].slice(0,1000);
-   modelList.innerHTML=models.map(value=>`<option value="${esc(value)}"></option>`).join('');
-   modelListStatus.textContent=models.length?`已获取 ${models.length} 个模型，可选择或手动填写。`:'服务未提供可选模型，请手动填写模型名称。';
-   modelListStatus.dataset.state='success';
-  }catch(error){
-   if(valid()){
-    modelListStatus.textContent=timedOut?'获取模型列表超时，请稍后重试。':`获取模型列表失败：${error.message||'网络连接中断，请重试。'}`;
-    modelListStatus.dataset.state='failed';
-   }
-  }finally{
-   clearTimeout(timeout);
-   if(revision===modelListSequence){
-    modelListController=null;modelListLoading=false;
-    if(!disposed&&connectionForm.isConnected)fetchModelsButton.disabled=busy;
-   }
-  }
- };
  connectionForm.querySelector('#connectionProbe').onclick=async()=>{
   if(busy||!connectionForm.reportValidity())return;
   const submitted=draft(),tuple=JSON.stringify(submitted);
@@ -1508,10 +1534,12 @@ function authorRenderSettings(){
   try{
    if(!connectionForm.querySelector('#connectionName').value.trim())throw new Error('请填写连接名称');
    if(!submitted.model)throw new Error('请填写模型名称');
+   if(editingKeyConfigured&&!submitted.api_key&&!MoyuModelPicker.sameService(submitted.base_url,editingBaseUrl))
+    throw new Error('服务地址已变更，请重新填写该服务的密钥后测试。');
    if(!['http:','https:'].includes(new URL(submitted.base_url).protocol))throw new Error('服务地址需要以 http:// 或 https:// 开头');
    const body={name:connectionForm.querySelector('#connectionName').value.trim(),base_url:submitted.base_url,model:submitted.model,
-    output_token_parameter:submitted.output_token_parameter,include_usage:submitted.include_usage};
-   if(submitted.id)body.id=submitted.id;if(submitted.api_key)body.api_key=submitted.api_key;
+    api_protocol:submitted.api_protocol,output_token_parameter:submitted.output_token_parameter,include_usage:submitted.include_usage};
+   if(submitted.id)body.id=submitted.id;if(submitted.api_key||!editingKeyConfigured)body.api_key=submitted.api_key;
    const result=await durableOperation('/api/ai/connections/probe','POST',body,()=>current(sequence));
    if(!current(sequence)||tuple!==JSON.stringify(draft()))return;
    if(result.probe?.success===true&&typeof result.verification_token==='string'&&result.verification_token){
@@ -1547,7 +1575,7 @@ function authorRenderSettings(){
    receipt=null;connectionKey.value='';
    const updated=result.connection;
    updateLibrary(result.settings,updated?[...connections.filter(item=>item.id!==updated.id),updated]:connections);
-   if(updated)fillConnection(updated.id,updated);
+   if(updated)fillConnection(updated.id,updated,{discover:false});
    const identity=authorProbeIdentityStatus(updated?.last_probe||approved.probe);
    connectionStatus.textContent=identity==='unreported'?`模型已保存；${identityWarning}。`:'模型已测试并保存，可在下方选择用途。';
    connectionStatus.dataset.state='saved';connectionStatus.dataset.identity=identity;
@@ -1560,7 +1588,7 @@ function authorRenderSettings(){
   }}
   finally{setBusy(false)}
  };
- renderLibrary();refreshConnectionOptions();updateSaveButton();
+ renderLibrary();refreshConnectionOptions();updateSaveButton();updateConnectionProtocol();modelPicker.changed();
 }
 
 function authorRenderBackups(){

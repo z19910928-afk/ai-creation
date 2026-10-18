@@ -7,7 +7,7 @@ from collections.abc import Mapping
 from typing import Any
 
 import moyu_output
-from moyu_provider import MAX_REQUEST_BYTES
+from moyu_provider import MAX_REQUEST_BYTES, request_messages
 
 
 _BODY_TASKS = frozenset({"continue", "polish"})
@@ -70,6 +70,8 @@ def build_revision_request(
     parent_text: str,
     contract: Mapping[str, Any],
     notes: str = "",
+    *,
+    api_protocol: str = "chat_completions",
 ) -> dict[str, Any]:
     """Copy the frozen payload and append data for one explicit revision."""
     if not isinstance(task, str) or task not in _BODY_TASKS:
@@ -80,7 +82,7 @@ def build_revision_request(
         raise ValueError("整理要求必须是最多2000个字符的文字。")
     if not isinstance(parent_payload, Mapping):
         raise ValueError("原任务完整请求必须是对象。")
-    messages = parent_payload.get("messages")
+    messages = request_messages(parent_payload, api_protocol)
     if not isinstance(messages, list) or not 1 <= len(messages) < 100:
         raise ValueError("原任务消息缺失或无法追加整理要求。")
     first_system = None
@@ -100,7 +102,8 @@ def build_revision_request(
     _check_contract(task, contract)
 
     payload = copy.deepcopy(dict(parent_payload))
-    payload["messages"][first_system]["content"] += "\n\n候选整理要求：\n" + _REVISION_REQUIREMENTS
+    revision_messages = request_messages(payload, api_protocol)
+    revision_messages[first_system]["content"] += "\n\n候选整理要求：\n" + _REVISION_REQUIREMENTS
     material = {
         "operation": "revise_candidate",
         "task": task,
@@ -111,7 +114,7 @@ def build_revision_request(
         "author_notes": notes,
     }
     try:
-        payload["messages"].append({
+        revision_messages.append({
             "role": "user",
             "content": json.dumps(material, ensure_ascii=False, separators=(",", ":"),
                                   allow_nan=False),

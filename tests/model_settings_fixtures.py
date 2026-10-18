@@ -63,6 +63,16 @@ class Provider(BaseHTTPRequestHandler):
             }
             if case == "model-unreported":
                 body.pop("model")
+            if self.path.endswith("/responses"):
+                body = {
+                    **({"model": body["model"]} if "model" in body else {}),
+                    "id": "resp-settings-fixture", "object": "response",
+                    "status": "completed",
+                    "output": [{"id": "msg-settings-fixture", "type": "message", "role": "assistant",
+                                "status": "completed", "content": [
+                                    {"type": "output_text", "text": message["content"], "annotations": []}]}],
+                    "usage": {"input_tokens": 13, "output_tokens": 7, "total_tokens": 20},
+                }
         try:
             self.wfile.write(json.dumps(body, ensure_ascii=False).encode())
         except (BrokenPipeError, ConnectionResetError):
@@ -216,9 +226,34 @@ class ModelSettingsTests(unittest.TestCase):
             changed = moyu_settings.save_settings(conn, self.project, {"include_usage": False})
             self.assertIsNone(changed["last_probe"])
             for invalid in ({"output_token_parameter": "other"}, {"output_token_parameter": []},
-                            {"include_usage": 1}, {"include_usage": None}):
+                            {"include_usage": 1}, {"include_usage": None},
+                            {"api_protocol": "other"}, {"api_protocol": []}, {"api_protocol": None}):
                 with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                     moyu_settings.save_settings(conn, self.project, invalid)
+
+    def test_protocol_is_explicit_in_probe_public_settings_and_old_frozen_snapshots(self) -> None:
+        self.settings()
+        with server.connect() as conn:
+            previous = moyu_settings.provider_settings(conn, self.project)
+            snapshot = {name: value for name, value in previous.items()
+                        if name not in {"api_key", "api_protocol"}}
+            self.assertEqual(moyu_settings.frozen_provider_settings(
+                conn, self.project, snapshot)["api_protocol"], "chat_completions")
+            public = moyu_settings.save_settings(conn, self.project, {
+                "api_protocol": "responses", "parameters": {"temperature": 0, "max_tokens": 3000},
+            })
+            result = moyu_settings.probe_settings(conn, self.project)
+            self.assertTrue(result["probe"]["success"], result)
+            config = moyu_settings.provider_settings(conn, self.project)
+            self.assertEqual(config["api_protocol"], "responses")
+            self.assertEqual(public["api_protocol"], "responses")
+            self.assertEqual(result["settings"]["api_protocol"], "responses")
+            payload = Provider.calls[-1]["payload"]
+            self.assertIn("input", payload)
+            self.assertNotIn("messages", payload)
+            self.assertEqual(payload["max_output_tokens"], moyu_settings.PROBE_MAX_TOKENS)
+            changed = moyu_settings.save_settings(conn, self.project, {"api_protocol": "chat_completions"})
+            self.assertIsNone(changed["last_probe"])
 
     def test_disabled_thinking_with_reasoning_fails_without_exposing_reasoning(self) -> None:
         probe = self.probe("reasoning")["probe"]

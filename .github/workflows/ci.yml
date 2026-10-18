@@ -67,6 +67,11 @@ jobs:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
           MOYU_TEST_PYTHON: python
         run: node tests/model_connections_browser_regressions.cjs
+      - name: Automatic model discovery regressions
+        env:
+          MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright
+          MOYU_TEST_PYTHON: python
+        run: node tests/model_discovery_browser_regressions.cjs
       - name: Five chapter author flow
         env:
           MOYU_PLAYWRIGHT_MODULE: ${{ runner.temp }}/moyu-browser-runtime/node_modules/playwright

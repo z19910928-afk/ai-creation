@@ -8,8 +8,10 @@ import sqlite3
 import uuid
 from datetime import datetime, timezone
 from typing import Any
+from urllib.parse import urlsplit
 
 import moyu_settings
+import moyu_provider
 from moyu_provider import (
     ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts,
     usage_accounting,
@@ -86,7 +88,8 @@ def provider_settings(conn: sqlite3.Connection, project: str) -> dict[str, Any]:
             "connection_scope": "agent_chat", **moyu_settings._connection_options(saved)}
 
 
-def _signature(config: dict[str, Any], *, legacy: bool = False) -> str:
+def _signature(config: dict[str, Any], *, legacy: bool = False,
+               protocol_legacy: bool = False) -> str:
     fields = ("mode", "base_url", "model", "parameters", "max_tokens",
               "credential_fingerprint", "output_token_parameter")
     values = {name: config.get(name) for name in fields}
@@ -94,6 +97,8 @@ def _signature(config: dict[str, Any], *, legacy: bool = False) -> str:
         values["output_token_parameter"] = None
     else:
         values.update(moyu_settings._connection_options(config))
+        if protocol_legacy:
+            values.pop("api_protocol")
     encoded = json.dumps(values, sort_keys=True,
                          ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode()
     return hashlib.sha256(encoded).hexdigest()
@@ -103,6 +108,10 @@ def _signature_matches(signature: Any, config: dict[str, Any]) -> bool:
     if not isinstance(signature, str):
         return False
     if hmac.compare_digest(signature, _signature(config)):
+        return True
+    if moyu_settings._connection_options(config)["api_protocol"] != "chat_completions":
+        return False
+    if hmac.compare_digest(signature, _signature(config, protocol_legacy=True)):
         return True
     return (moyu_settings._connection_options(config) == moyu_settings._connection_options({})
             and hmac.compare_digest(signature, _signature(config, legacy=True)))
@@ -140,7 +149,7 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
     if not isinstance(data, dict):
         raise ValueError("写作总管设置必须为对象。")
     if set(data) - {"mode", "base_url", "model", "parameters", "api_key", "clear_api_key",
-                    "output_token_parameter", "include_usage"}:
+                    "output_token_parameter", "include_usage", "api_protocol"}:
         raise ValueError("写作总管设置包含未支持的字段。")
     current = _saved(conn, project)
     mode = data.get("mode", current["mode"])
@@ -164,6 +173,8 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
         raise ValueError("请勿同时填写新密钥并清除密钥。")
     previous_key = _key(conn, project, current)
     key = "" if clear else supplied_key if supplied_key is not None else previous_key
+    if key and supplied_key is None:
+        moyu_settings._validate_saved_key_target(base_url, current["base_url"])
     prepare_chat_request(
         {"base_url": base_url or "http://127.0.0.1", "model": model or "settings-validation",
          "api_key": key, "parameters": {name: value for name, value in parameters.items()
@@ -174,7 +185,7 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
     next_payload = {**current, "mode": mode, "base_url": base_url, "model": model,
                     "parameters": parameters, **options}
     changed = any(current[name] != next_payload[name] for name in (
-        "mode", "base_url", "model", "parameters", "output_token_parameter", "include_usage"))
+        "mode", "base_url", "model", "parameters", "output_token_parameter", "include_usage", "api_protocol"))
     changed = changed or key != previous_key
     if key != previous_key:
         next_payload["_credential_ref"] = moyu_settings._store_key(conn, project, key) if key else None
@@ -182,6 +193,40 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
         next_payload.update(last_probe=None, _probe_signature=None, _revision=uuid.uuid4().hex)
     _write(conn, project, next_payload)
     return public_settings(conn, project)
+
+
+def list_models(conn: sqlite3.Connection, project: str, data: dict[str, Any]) -> dict[str, Any]:
+    """Read an independent draft's inventory without changing saved settings."""
+    if not isinstance(data, dict) or set(data) - {
+            "base_url", "api_key", "api_protocol", "clear_api_key"}:
+        raise ValueError("总管模型列表查询包含未支持的字段。")
+    saved = _saved(conn, project)
+    base_url = moyu_settings._text(
+        data.get("base_url", saved["base_url"]), "服务地址", 2048).rstrip("/")
+    options = moyu_settings._connection_options({**saved, **data})
+    supplied = data.get("api_key")
+    if supplied is not None and not isinstance(supplied, str):
+        raise ValueError("密钥必须为文字。")
+    clear = data.get("clear_api_key", False)
+    if not isinstance(clear, bool):
+        raise ValueError("清除密钥开关无效。")
+    if clear and supplied:
+        raise ValueError("请勿同时填写新密钥并清除密钥。")
+    key = "" if clear else supplied if supplied is not None else _key(conn, project, saved)
+    if not base_url:
+        raise ValueError("请先填写服务地址。")
+    if key and supplied is None:
+        moyu_settings._validate_saved_key_target(base_url, saved["base_url"])
+    try:
+        local = urlsplit(base_url).hostname in {"localhost", "127.0.0.1", "::1"}
+    except ValueError:
+        raise ProviderError("模型服务地址无效。", code="invalid_configuration") from None
+    if not key and not local:
+        raise ValueError("远程连接需要填写密钥后获取模型。")
+    result = moyu_provider.list_models({
+        "base_url": base_url, "api_key": key, "api_protocol": options["api_protocol"]})
+    return moyu_provider._redact(
+        {"models": result["models"], "endpoint": result["endpoint"]}, key)
 
 
 def probe(conn: sqlite3.Connection, project: str, *, cancel_event=None) -> dict[str, Any]:

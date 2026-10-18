@@ -103,6 +103,10 @@ async function main(){
  providerPort=await freePort();
  provider=http.createServer((request,response)=>{
   let raw='';request.on('data',chunk=>raw+=chunk);request.on('end',()=>{
+   if(request.method==='GET'&&request.url.endsWith('/models')){
+    response.writeHead(200,{'Content-Type':'application/json'});
+    response.end(JSON.stringify({data:[{id:'browser-mock'},{id:'browser-special-continue'}]}));return;
+   }
    const input=JSON.parse(raw||'{}');providerRequests.push(input);const text=providerOutput(input);
    const finishReason=providerFinishReason,omitDone=providerOmitDone;
    if(input.stream){

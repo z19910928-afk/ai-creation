@@ -270,14 +270,16 @@ def tables(conn):
 
 
 def _portable_model_settings(raw):
-    from moyu_settings import PARAMETERS, TASKS
+    from moyu_settings import PARAMETERS, TASKS, _connection_options
 
     settings = _strict_json(raw)
     if not isinstance(settings, dict):
         raise ValueError("备份中的模型设置格式无效")
     public = {"base_url", "model", "models", "styles", "parameters", "task_parameters", "daily_limit",
+              "api_protocol", "output_token_parameter", "include_usage",
               "connections", "connection_workflow", "default_connection_id", "task_connections"}
     settings = {key: value for key, value in settings.items() if key in public}
+    settings.update(_connection_options(settings))
     for key in ("models", "styles", "parameters", "task_parameters"):
         if key in settings and not isinstance(settings[key], dict):
             raise ValueError("备份中的模型设置格式无效")
@@ -329,6 +331,7 @@ def _portable_model_settings(raw):
             if not clean["id"] or clean["id"] in identifiers:
                 raise ValueError("备份中的模型连接身份无效")
             identifiers.add(clean["id"])
+            clean.update(_connection_options(connection))
             clean.update(_credential_ref=None, last_probe=None, revision="restored")
             connections.append(clean)
         settings["connections"] = connections

@@ -9,6 +9,7 @@ import sqlite3
 import stat
 import tempfile
 import uuid
+from urllib.parse import urlsplit
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -119,13 +120,28 @@ def _text(value: Any, name: str, length: int) -> str:
 
 
 def _connection_options(payload: dict[str, Any]) -> dict[str, Any]:
+    api_protocol = payload.get("api_protocol", "chat_completions")
+    if not isinstance(api_protocol, str) or api_protocol not in {"chat_completions", "responses"}:
+        raise ValueError("模型接口协议无效。")
     token_parameter = payload.get("output_token_parameter", "max_tokens")
     if not isinstance(token_parameter, str) or token_parameter not in {"max_tokens", "max_completion_tokens"}:
         raise ValueError("输出长度参数无效。")
     include_usage = payload.get("include_usage", False)
     if not isinstance(include_usage, bool):
         raise ValueError("用量回报开关无效。")
-    return {"output_token_parameter": token_parameter, "include_usage": include_usage}
+    return {"api_protocol": api_protocol, "output_token_parameter": token_parameter,
+            "include_usage": include_usage}
+
+
+def _validate_saved_key_target(base_url: str, saved_base_url: str) -> None:
+    from moyu_provider import _endpoint
+
+    def service(value: str) -> tuple[str, str, int, str]:
+        endpoint, host, port, path = _endpoint(value, "models")
+        return urlsplit(endpoint).scheme, host.lower(), port, path
+
+    if service(base_url) != service(saved_base_url):
+        raise ValueError("服务地址已改变，请重新填写密钥；已保存的密钥不会发送到新地址。")
 
 
 def _provider_parameters(payload: dict[str, Any]) -> dict[str, Any]:
@@ -266,7 +282,7 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
     workflow = bool(original and original.get("connection_workflow") is True) or bool(set(data) & assignments)
     if not workflow:
         return _save_legacy_settings(conn, project, data)
-    if set(data) & {"base_url", "model", "api_key", "models", "clear_api_key"}:
+    if set(data) & {"base_url", "model", "api_key", "models", "clear_api_key", "api_protocol"}:
         raise ValueError("请先测试并保存模型连接，再从已验证的连接中分配用途。")
     allowed = assignments | {"styles", "parameters", "task_parameters", "daily_limit"}
     if set(data) - allowed:
@@ -280,7 +296,8 @@ def save_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any]) 
     conn.execute("SAVEPOINT " + savepoint)
     try:
         _save_legacy_settings(conn, project, {key: value for key, value in data.items()
-                                            if key not in assignments}, return_public=False)
+                                            if key not in assignments},
+                              return_public=False, validate_for_routing=True)
         payload = _saved(conn, project)
         payload.update(validate_assignments(conn, project, payload, data))
         payload["connection_workflow"] = True
@@ -303,11 +320,12 @@ def _write_settings(conn: sqlite3.Connection, project: str, payload: dict[str, A
 
 
 def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str, Any],
-                          *, return_public: bool = True) -> dict[str, Any]:
+                          *, return_public: bool = True,
+                          validate_for_routing: bool = False) -> dict[str, Any]:
     if not isinstance(data, dict):
         raise ValueError("设置必须为对象。")
     allowed = {"base_url", "model", "api_key", "models", "styles", "parameters", "task_parameters",
-               "daily_limit", "clear_api_key", "output_token_parameter", "include_usage"}
+               "daily_limit", "clear_api_key", "output_token_parameter", "include_usage", "api_protocol"}
     if set(data) - allowed:
         raise ValueError("设置包含未支持的字段。")
     original = _saved(conn, project)
@@ -349,10 +367,13 @@ def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str
         _read_key(current.get("_credential_ref")) if original is not None else os.environ.get("MOYU_AI_API_KEY", ""))
     if data.get("clear_api_key"):
         effective_key = ""
+    # Assigned connections validate their own protocols after common parameter ranges.
+    validation_options = ({**connection_options, "api_protocol": "chat_completions"}
+                          if validate_for_routing else connection_options)
     validation_config = {"base_url": base_url or "http://127.0.0.1",
                          "model": model or "settings-validation", "api_key": effective_key,
                          "parameters": {name: value for name, value in parameters.items() if name != "max_tokens"},
-                         **connection_options}
+                         **validation_options}
     prepare_chat_request(validation_config, [{"role": "user", "content": "settings-validation"}],
                          max_tokens=max_tokens)
     for task, overrides in next_task_parameters.items():

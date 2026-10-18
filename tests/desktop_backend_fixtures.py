@@ -36,7 +36,7 @@ STATIC_FILES = (
     "index.html", "app.js", "editor-sync.js", "author-workspace.js", "styles.css",
     "knowledge-workspace.js", "writing-inbox.js", "knowledge-workspace.css",
     "editor-preferences.css", "agent-chat.js", "agent-chat.css", "agent-settings.js",
-    "agent-settings.css",
+    "agent-settings.css", "model-picker.js", "model-picker.css",
 )
 BODY = "Desktop fixture manuscript. A door opens in the rain."
 

@@ -19,6 +19,8 @@ static_files = (
     "agent-chat.css",
     "agent-settings.js",
     "agent-settings.css",
+    "model-picker.js",
+    "model-picker.css",
 )
 schema_files = ("docs/schema-v1.sql", "docs/schema-v1.1-migration.sql")
 datas = []

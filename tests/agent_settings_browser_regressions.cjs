@@ -61,6 +61,10 @@ async function assignMain(page,connection){
 async function main(){
  provider=http.createServer((request,response)=>{
   let raw='';request.on('data',chunk=>raw+=chunk);request.on('end',()=>{
+   if(request.method==='GET'&&request.url.endsWith('/models')){
+    response.writeHead(200,{'Content-Type':'application/json'});
+    response.end(JSON.stringify({data:[{id:'main-browser-fixture'},{id:'independent-browser-fixture'}]}));return;
+   }
    const input=JSON.parse(raw);modelCalls++;
    response.writeHead(200,{'Content-Type':'application/json'});
    response.end(JSON.stringify({model:input.model,

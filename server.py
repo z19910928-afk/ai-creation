@@ -299,9 +299,10 @@ def ai_output_limit(value: Any = _UNSET, config: dict[str, Any] | None = None, *
 
 def retry_provider_config(conn: sqlite3.Connection, snapshot: Any) -> dict[str, Any]:
     """Check the provider identity before reading the original private key."""
-    from moyu_settings import frozen_provider_settings
+    from moyu_settings import _connection_options, frozen_provider_settings
     if not isinstance(snapshot, dict) or "api_key" in snapshot:
         raise ValueError("原任务模型设置缺失，请建立新任务。")
+    snapshot = {**snapshot, **_connection_options(snapshot)}
     source = snapshot.get("credential_source")
     if source not in {"private_file", "environment"}:
         raise ValueError("原任务密钥来源不明确，请建立新任务。")
@@ -326,20 +327,24 @@ def retry_provider_config(conn: sqlite3.Connection, snapshot: Any) -> dict[str, 
                     or not (_public_probe(connection.get("last_probe")) or {}).get("success")
                     or connection.get("base_url", "").rstrip("/") != snapshot["base_url"].rstrip("/")
                     or connection.get("model") != snapshot["model"]
+                    or _connection_options(connection) != _connection_options(snapshot)
                     or connection.get("_credential_ref") != snapshot.get("credential_ref")
                     or connection.get("revision") != snapshot.get("connection_revision")):
                 raise ValueError("原任务所用模型连接已变化或失效，请重新测试后建立新任务。")
             return frozen_provider_settings(conn, project_id(), snapshot)
         current_url = current.get("base_url", "")
         current_model = current.get("model", "")
+        current_protocol = _connection_options(current)["api_protocol"]
         if (source == "private_file" and snapshot.get("credential_ref")
                 and not current.get("_credential_ref")):
             raise ValueError("原模型密钥已清除，请重新配置并建立新任务。")
     else:
         current_url = os.environ.get("MOYU_AI_BASE_URL", "").strip()
         current_model = os.environ.get("MOYU_AI_MODEL", "").strip()
+        current_protocol = "chat_completions"
     if (not isinstance(current_url, str) or
-            current_url.rstrip("/") != snapshot["base_url"].rstrip("/") or not current_model):
+            current_url.rstrip("/") != snapshot["base_url"].rstrip("/") or not current_model
+            or current_protocol != snapshot["api_protocol"]):
         raise ValueError("模型服务地址已改变或不可用，不能重试原请求；请建立新任务。")
     return frozen_provider_settings(conn, project_id(), snapshot)
 
@@ -348,12 +353,22 @@ def prepare_frozen_ai_request(task: str, response_format: str, max_tokens: int,
                               config: dict[str, Any], payload: Any,
                               request_id: str | None = None) -> dict[str, Any]:
     """Rebuild the original body exactly, permitting only a new request ID."""
-    from moyu_provider import prepare_chat_request
-    if not isinstance(payload, dict) or not isinstance(payload.get("messages"), list):
-        raise ValueError("原任务完整请求缺失，请建立新任务。")
+    from moyu_provider import ProviderError, prepare_chat_request, request_messages
+    from moyu_settings import _connection_options
+    options = _connection_options(config)
+    responses = options["api_protocol"] == "responses"
+    try:
+        messages = request_messages(payload, options["api_protocol"])
+    except ProviderError:
+        raise ValueError("原任务完整请求缺失或不符合当前协议，请建立新任务。") from None
     parameters = {key: value for key, value in payload.items()
                   if key in {"temperature", "top_p", "presence_penalty", "frequency_penalty",
                              "seed", "stop", "reasoning_effort", "thinking"}}
+    if responses and "reasoning" in payload:
+        reasoning = payload["reasoning"]
+        if not isinstance(reasoning, dict) or set(reasoning) != {"effort"}:
+            raise ValueError("原任务思考设置无效，请建立新任务。")
+        parameters["reasoning_effort"] = reasoning["effort"]
     stream_options = payload.get("stream_options", {})
     if not isinstance(stream_options, dict):
         raise ValueError("原任务分段回复设置无效，请建立新任务。")
@@ -362,17 +377,33 @@ def prepare_frozen_ai_request(task: str, response_format: str, max_tokens: int,
         **config, "base_url": config["base_url"] if configured else "http://127.0.0.1",
         "model": payload.get("model"), "task_models": {}, "parameters": {}, "task_parameters": {},
         "task_max_tokens": {},
-        "output_token_parameter": "max_completion_tokens" if "max_completion_tokens" in payload else "max_tokens",
-        "include_usage": stream_options.get("include_usage", False),
+        **options,
+        "output_token_parameter": options["output_token_parameter"] if responses else (
+            "max_completion_tokens" if "max_completion_tokens" in payload else "max_tokens"),
+        "include_usage": options["include_usage"] if responses else stream_options.get("include_usage", False),
     }
     prepared = prepare_chat_request(
-        frozen_config, payload["messages"], task=task, response_format=response_format,
+        frozen_config, messages, task=task, response_format=response_format,
         max_tokens=ai_output_limit(max_tokens), stream=payload.get("stream"),
         parameters=parameters, request_id=request_id,
     )
     if prepared["payload"] != payload:
         raise ValueError("原任务请求已不符合当前规则，不能改写后重试；请建立新任务。")
-    return {**prepared, "config": frozen_config, "parameters": parameters}
+    return {**prepared, "config": frozen_config, "parameters": parameters, "messages": messages}
+
+
+def validate_frozen_request_audit(audit: Any, prepared: dict[str, Any],
+                                  prompt_hash: Any) -> None:
+    """Bind a queued body to its independent persisted request fingerprints."""
+    if not isinstance(audit, dict):
+        raise ValueError("原任务完整请求缺失，请建立新任务。")
+    regenerated = prepared["request_audit"]
+    if (audit.get("api_protocol", "chat_completions") != prepared["api_protocol"] or
+            audit.get("endpoint") != prepared["endpoint"] or
+            audit.get("request_sha256") != regenerated["request_sha256"] or
+            audit.get("messages_sha256") != regenerated["messages_sha256"] or
+            prompt_hash != regenerated["request_sha256"]):
+        raise ValueError("原任务完整请求校验失败，请建立新任务。")
 
 
 def ai_public_settings() -> dict[str, Any]:
@@ -1109,10 +1140,10 @@ def call_ai_provider(config: dict[str, Any], task: str, context: dict[str, Any],
     contract = context_task_contract(task, context, response_format)
     frozen = context.get("_frozen_request")
     parameters = None
-    if isinstance(frozen, dict) and isinstance(frozen.get("messages"), list):
+    if frozen is not None:
         prepared = prepare_frozen_ai_request(task, response_format, max_tokens,
                                              config, frozen, request_id)
-        messages, config = prepared["payload"]["messages"], prepared["config"]
+        messages, config = prepared["messages"], prepared["config"]
         parameters, stream = prepared["parameters"], prepared["payload"]["stream"]
     else:
         preview = ai_prompt_preview(task, context, instruction, response_format,
@@ -1392,7 +1423,7 @@ def create_ai_job(
                                              config, frozen_request, run_id)
         preview = {"request": prepared["request_audit"]["payload"],
                    "request_audit": prepared["request_audit"],
-                   "system": prepared["payload"]["messages"][0]["content"]}
+                   "system": prepared["messages"][0]["content"]}
     else:
         preview = ai_prompt_preview(task, context, instruction, response_format,
                                     max_tokens=max_tokens, config=config, stream=True)
@@ -1498,13 +1529,11 @@ def revise_ai_candidate(conn: sqlite3.Connection, run_id: str,
     audit = consent.get("request_audit") or {}
     prepared = prepare_frozen_ai_request(job["task"], job["response_format"], job["max_tokens"],
                                          config, audit.get("payload"))
-    if (audit.get("endpoint") != prepared["endpoint"] or
-            audit.get("request_sha256") != prepared["request_audit"]["request_sha256"] or
-            audit.get("messages_sha256") != prepared["request_audit"]["messages_sha256"]):
-        raise ValueError("原任务完整请求校验失败，未发送整理")
+    validate_frozen_request_audit(audit, prepared, run["prompt_hash"])
     contract = prose_output_contract(job["task"], context, job["instruction"])
     payload = moyu_revision.build_revision_request(
-        prepared["payload"], job["task"], text, contract, notes)
+        prepared["payload"], job["task"], text, contract, notes,
+        api_protocol=config.get("api_protocol", "chat_completions"))
     binding = {"operation": "revise_candidate", "parent_run_id": run_id,
                "root_run_id": (context.get("_candidate_revision") or {}).get("root_run_id", run_id),
                "parent_hash": candidate_hash, "parent_characters": moyu_output.count_characters(text),
@@ -1540,7 +1569,7 @@ def retry_ai_job(conn: sqlite3.Connection, job_id: str,
     if row["task"] == "assistant_chat":
         raise ValueError("对话回复不能从通用任务入口重试，请在对话中发送新的消息。")
     old_run = conn.execute(
-        "SELECT status,consent_json FROM ai_run WHERE id=? AND project_id=? AND branch_id=?",
+        "SELECT status,consent_json,prompt_hash FROM ai_run WHERE id=? AND project_id=? AND branch_id=?",
         (row["ai_run_id"], project_id(), branch_id()),
     ).fetchone()
     if old_run is None:
@@ -1592,10 +1621,10 @@ def retry_ai_job(conn: sqlite3.Connection, job_id: str,
                                              config, frozen_request)
     except ValueError as exc:
         raise RuntimeError(str(exc)) from None
-    if (audit.get("endpoint") != prepared["endpoint"] or
-            audit.get("request_sha256") != prepared["request_audit"]["request_sha256"] or
-            audit.get("messages_sha256") != prepared["request_audit"]["messages_sha256"]):
-        raise RuntimeError("原任务请求记录校验失败，请建立新任务。")
+    try:
+        validate_frozen_request_audit(audit, prepared, old_run["prompt_hash"])
+    except ValueError as exc:
+        raise RuntimeError(str(exc)) from None
     if "stream" in data and (not isinstance(data["stream"], bool) or
                             data["stream"] != frozen_request["stream"]):
         raise ValueError("重试保留原任务分段回复设置，请建立新任务。")
@@ -1741,7 +1770,7 @@ def _process_ai_job_claimed(job_id: str) -> dict[str, Any]:
         if row["cancel_requested"]:
             result = {"billing_state": "not_dispatched", "safe_to_apply": False}
             return finish_ai_job(conn, row, result, ProviderCanceled(), 0)
-        run = conn.execute("SELECT consent_json FROM ai_run WHERE id=?", (row["ai_run_id"],)).fetchone()
+        run = conn.execute("SELECT consent_json,prompt_hash FROM ai_run WHERE id=?", (row["ai_run_id"],)).fetchone()
         consent = json.loads(run["consent_json"] or "{}")
         snapshot = consent.get("provider_config")
         try:
@@ -1759,6 +1788,13 @@ def _process_ai_job_claimed(job_id: str) -> dict[str, Any]:
             else:
                 config = (frozen_provider_settings(conn, project_id(), snapshot) if snapshot
                           else ai_task_settings(ai_settings(conn), row["task"]))
+            if snapshot is not None or "request_audit" in consent:
+                audit = consent.get("request_audit")
+                prepared = prepare_frozen_ai_request(
+                    row["task"], row["response_format"], int(row["max_tokens"]), config,
+                    audit.get("payload") if isinstance(audit, dict) else None,
+                    row["ai_run_id"])
+                validate_frozen_request_audit(audit, prepared, run["prompt_hash"])
             reserve_ai_budget(conn, row["ai_run_id"], config)
         except (ValueError, BranchHeadConflict, agent_chat.ChatNotFound) as exc:
             error = ProviderError(
@@ -5170,7 +5206,7 @@ class Handler(SimpleHTTPRequestHandler):
     STATIC_FILES = {"/", "/index.html", "/app.js", "/editor-sync.js", "/author-workspace.js", "/styles.css",
                     "/knowledge-workspace.js", "/writing-inbox.js", "/knowledge-workspace.css",
                     "/editor-preferences.css", "/agent-chat.js", "/agent-chat.css",
-                    "/agent-settings.js", "/agent-settings.css"}
+                    "/agent-settings.js", "/agent-settings.css", "/model-picker.js", "/model-picker.css"}
 
     def log_message(self, fmt: str, *args: Any) -> None:
         sys.stderr.write("%s - - [%s] %s\n" % (self.address_string(), now(), fmt % args))
@@ -5909,12 +5945,15 @@ class Handler(SimpleHTTPRequestHandler):
                     })
                     return self.send_json(status, result)
                 ensure_seed(conn)
-                if parsed.path == "/api/ai/connections/models":
+                if parsed.path in {"/api/ai/connections/models", "/api/agent-chat/settings/models"}:
                     from moyu_model_connections import list_connection_models
                     from moyu_provider import ProviderError
                     conn.commit()
                     try:
-                        return self.send_json(200, list_connection_models(conn, project_id(), data))
+                        models = (agent_connection.list_models(conn, project_id(), data)
+                                  if parsed.path == "/api/agent-chat/settings/models" else
+                                  list_connection_models(conn, project_id(), data))
+                        return self.send_json(200, models)
                     except ProviderError as exc:
                         status = (400 if exc.code == "invalid_configuration" else
                                   504 if exc.code == "models_timeout" else 502)

@@ -25,7 +25,7 @@ sys.path.insert(0, str(ROOT))
 import moyu_backups as backups
 import moyu_model_connections as connections
 import moyu_settings as settings
-from moyu_provider import call_chat_completion
+from moyu_provider import call_chat_completion, request_messages
 import server
 
 
@@ -65,7 +65,7 @@ class Provider(BaseHTTPRequestHandler):
             ).fetchone()
         with self.server.calls_lock:
             self.server.calls.append({
-                "case": case, "payload": payload, "request_id": request_id,
+                "case": case, "path": self.path, "payload": payload, "request_id": request_id,
                 "authorization": self.headers.get("Authorization"),
                 "ledger": ledger[0] if ledger else None,
             })
@@ -91,6 +91,15 @@ class Provider(BaseHTTPRequestHandler):
             }
             if case == "unreported":
                 body.pop("model")
+            if self.path.endswith("/responses"):
+                body = {
+                    **({"model": body["model"]} if "model" in body else {}),
+                    "id": "resp-library-fixture", "object": "response", "status": "completed",
+                    "output": [{"id": "msg-library-fixture", "type": "message", "role": "assistant",
+                                "status": "completed", "content": [
+                                    {"type": "output_text", "text": message["content"], "annotations": []}]}],
+                    "usage": {"input_tokens": 13, "output_tokens": 7, "total_tokens": 20},
+                }
         try:
             self.wfile.write(json.dumps(body, ensure_ascii=False).encode("utf-8"))
         except (BrokenPipeError, ConnectionResetError):
@@ -388,7 +397,8 @@ class ModelConnectionTests(unittest.TestCase):
             self.active()
 
     def test_receipt_options_cannot_be_changed_between_probe_and_save(self) -> None:
-        for field, replacement in (("output_token_parameter", "max_tokens"), ("include_usage", False)):
+        for field, replacement in (("output_token_parameter", "max_tokens"), ("include_usage", False),
+                                   ("api_protocol", "responses")):
             with self.subTest(field=field):
                 result = self.probe(output_token_parameter="max_completion_tokens", include_usage=True)
                 with self.connect() as conn:
@@ -423,10 +433,172 @@ class ModelConnectionTests(unittest.TestCase):
 
     def test_invalid_compatibility_options_fail_before_dispatch(self) -> None:
         for invalid in ({"output_token_parameter": "other"}, {"output_token_parameter": []},
-                        {"include_usage": 1}, {"include_usage": None}):
+                        {"include_usage": 1}, {"include_usage": None},
+                        {"api_protocol": "other"}, {"api_protocol": []}, {"api_protocol": None}):
             with self.subTest(invalid=invalid), self.assertRaises(ValueError):
                 self.probe(**invalid)
         self.assertEqual(sum(len(provider.calls) for provider, _ in self.providers), 0)
+
+    def test_previous_two_option_signatures_keep_chat_but_never_accept_a_protocol_change(self) -> None:
+        connection = self.saved(output_token_parameter="max_completion_tokens", include_usage=True)
+        with self.connect() as conn:
+            payload = settings._saved(conn, PROJECT)
+            entry = payload["connections"][0]
+            old_fields = {
+                "base_url": entry["base_url"], "model": entry["model"],
+                "credential_fingerprint": hashlib.sha256(FIRST_KEY.encode()).hexdigest(),
+                "output_token_parameter": "max_completion_tokens", "include_usage": True,
+            }
+            entry["_verified_signature"] = hashlib.sha256(json.dumps(
+                old_fields, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                separators=(",", ":")).encode()).hexdigest()
+            entry.pop("api_protocol")
+            settings._write_settings(conn, PROJECT, payload)
+            self.assertTrue(connections.public_connections(conn, PROJECT)["connections"][0]["verified"])
+        self.assign(connection["id"])
+        self.assertEqual(self.active()["api_protocol"], "chat_completions")
+        with self.connect() as conn:
+            payload = settings._saved(conn, PROJECT)
+            payload["connections"][0]["api_protocol"] = "responses"
+            settings._write_settings(conn, PROJECT, payload)
+            self.assertFalse(connections.public_connections(conn, PROJECT)["connections"][0]["verified"])
+        with self.assertRaises(ValueError):
+            self.active()
+
+    def test_previous_two_option_receipt_can_be_saved_but_not_reinterpreted_as_responses(self) -> None:
+        result = self.probe(output_token_parameter="max_completion_tokens", include_usage=True)
+        with self.connect() as conn:
+            payload = settings._saved(conn, PROJECT)
+            receipt = payload["_pending_connection_probes"][-1]
+            fields = {
+                "base_url": receipt["base_url"], "model": receipt["model"],
+                "credential_fingerprint": hashlib.sha256(FIRST_KEY.encode()).hexdigest(),
+                "output_token_parameter": "max_completion_tokens", "include_usage": True,
+            }
+            receipt["_verified_signature"] = hashlib.sha256(json.dumps(
+                fields, sort_keys=True, ensure_ascii=False, allow_nan=False,
+                separators=(",", ":")).encode()).hexdigest()
+            receipt.pop("api_protocol")
+            settings._write_settings(conn, PROJECT, payload)
+        connection = self.save_probe(result)["connection"]
+        self.assertTrue(connection["verified"])
+        self.assertEqual(connection["api_protocol"], "chat_completions")
+        self.assertEqual(connection["output_token_parameter"], "max_completion_tokens")
+        self.assertTrue(connection["include_usage"])
+
+    def test_responses_connection_reaches_generation_and_retains_identity_checks(self) -> None:
+        second = self.saved(1, api_protocol="responses", include_usage=True)
+        self.assertEqual(second["api_protocol"], "responses")
+        self.assertEqual(self.providers[1][0].calls[-1]["path"], "/normal/responses")
+        self.assign(second["id"])
+        config = self.active()
+        generated = call_chat_completion(
+            config, [{"role": "user", "content": "synthetic response generation"}],
+            task="continue", max_tokens=128, stream=True)
+        self.assertTrue(generated["safe_to_apply"])
+        payload = self.providers[1][0].calls[-1]["payload"]
+        self.assertEqual(payload["max_output_tokens"], 128)
+        self.assertIn("input", payload)
+        self.assertNotIn("messages", payload)
+        self.assertNotIn("stream_options", payload)
+        rejected = self.probe(case="mismatch", api_protocol="responses")
+        self.assertFalse(rejected["probe"]["success"])
+        self.assertNotIn("verification_token", rejected)
+        unreported = self.probe(case="unreported", api_protocol="responses")
+        self.assertTrue(unreported["probe"]["success"])
+        self.assertEqual(unreported["probe"]["identity_status"], "unreported")
+
+    def test_model_inventory_inherits_saved_protocol_and_allows_an_explicit_draft_override(self) -> None:
+        connection = self.saved(api_protocol="responses")
+        before = self.payload()
+        with self.connect() as conn, patch.object(
+                connections.moyu_provider, "list_models",
+                return_value={"models": ["fixture"], "endpoint": "synthetic-endpoint"}) as listing:
+            connections.list_connection_models(conn, PROJECT, {
+                "id": connection["id"], "base_url": self.bases[0] + "/normal",
+            })
+            self.assertEqual(listing.call_args.args[0]["api_protocol"], "responses")
+            connections.list_connection_models(conn, PROJECT, {
+                "id": connection["id"], "base_url": self.bases[0] + "/normal",
+                "api_protocol": "chat_completions",
+            })
+            self.assertEqual(listing.call_args.args[0]["api_protocol"], "chat_completions")
+        self.assertEqual(self.payload(), before)
+
+    def test_assignment_checks_effective_response_parameters_and_rolls_back_invalid_settings(self) -> None:
+        connection = self.saved(api_protocol="responses")
+        before = self.payload()
+        calls_before = sum(len(provider.calls) for provider, _ in self.providers)
+        for parameters in (
+            {"temperature": 0, "max_tokens": 8},
+            {"temperature": 0, "max_tokens": 3000, "thinking": {"type": "disabled"}},
+            {"temperature": 0, "max_tokens": 3000, "seed": 0},
+            {"temperature": 0, "max_tokens": 3000, "stop": ["stop"]},
+            {"temperature": 0, "max_tokens": 3000, "presence_penalty": 0},
+            {"temperature": 0, "max_tokens": 3000, "frequency_penalty": 0},
+        ):
+            with self.subTest(parameters=parameters), self.assertRaises(ValueError):
+                self.assign(connection["id"], parameters=parameters)
+            self.assertEqual(self.payload(), before)
+        saved = self.assign(connection["id"], parameters={
+            "temperature": 0, "max_tokens": 16, "reasoning_effort": "none"})
+        self.assertEqual(saved["default_connection_id"], connection["id"])
+        self.assertEqual(sum(len(provider.calls) for provider, _ in self.providers), calls_before)
+
+    def test_response_connection_probe_ignores_chat_only_writing_parameters_but_assignment_checks_them(self) -> None:
+        self.legacy()
+        parameters = {"temperature": 0, "max_tokens": 3000, "stop": ["END"],
+                      "thinking": {"type": "disabled"}}
+        with self.connect() as conn:
+            settings.save_settings(conn, PROJECT, {"parameters": parameters})
+        calls_before = sum(len(provider.calls) for provider, _ in self.providers)
+        connection = self.saved(1, api_protocol="responses")
+        payload = self.providers[1][0].calls[-1]["payload"]
+        self.assertEqual(payload["temperature"], 0)
+        self.assertEqual(payload["max_output_tokens"], settings.PROBE_MAX_TOKENS)
+        self.assertNotIn("thinking", payload)
+        self.assertNotIn("stop", payload)
+        self.assertNotIn("reasoning", payload)
+        self.assertTrue(connection["verified"])
+        before = self.payload()
+        with self.assertRaises(ValueError):
+            self.assign(connection["id"])
+        self.assertEqual(self.payload(), before)
+        saved = self.assign(connection["id"], parameters={
+            "temperature": 0, "max_tokens": 3000, "reasoning_effort": "none"})
+        self.assertEqual(saved["default_connection_id"], connection["id"])
+        self.assertEqual(sum(len(provider.calls) for provider, _ in self.providers), calls_before + 1)
+
+    def test_task_assignment_validates_its_overrides_and_parent_alias_protocol(self) -> None:
+        chat, responses = self.saved(), self.saved(1, api_protocol="responses")
+        shared = {"temperature": 0, "max_tokens": 8, "thinking": {"type": "disabled"}}
+        saved = self.assign(
+            chat["id"], {"summary": responses["id"]}, parameters=shared,
+            task_parameters={"summary": {"max_tokens": 32, "reasoning_effort": "none"}})
+        self.assertEqual(saved["task_connections"], {"summary": responses["id"]})
+        self.assertEqual(self.active("chapter_analysis")["api_protocol"], "responses")
+        before = self.payload()
+        for task_parameters in (
+            {"summary": {"max_tokens": 32}},
+            {"summary": {"max_tokens": 8, "reasoning_effort": "none"}},
+            {"summary": {"max_tokens": 32, "reasoning_effort": "none"},
+             "chapter_analysis": {"max_tokens": 8, "reasoning_effort": "none"}},
+        ):
+            with self.subTest(task_parameters=task_parameters), self.assertRaises(ValueError):
+                self.assign(chat["id"], {"summary": responses["id"]},
+                            parameters=shared, task_parameters=task_parameters)
+            self.assertEqual(self.payload(), before)
+
+    def test_assignment_uses_chosen_protocol_instead_of_obsolete_legacy_protocol(self) -> None:
+        with self.connect() as conn:
+            settings.save_settings(conn, PROJECT, {
+                "base_url": self.bases[0] + "/normal", "model": "first-model", "api_key": FIRST_KEY,
+                "api_protocol": "responses", "parameters": {"temperature": 0, "max_tokens": 3000}})
+        connection = self.saved()
+        saved = self.assign(connection["id"], parameters={
+            "temperature": 0, "max_tokens": 8, "thinking": {"type": "disabled"}})
+        self.assertEqual(saved["default_connection_id"], connection["id"])
+        self.assertEqual(self.active()["api_protocol"], "chat_completions")
 
     def test_model_inventory_uses_unsaved_form_without_model_or_side_effects(self) -> None:
         with self.connect() as conn:
@@ -450,23 +622,77 @@ class ModelConnectionTests(unittest.TestCase):
         credentials = set((self.root / "credentials").iterdir())
         for identifier in ("legacy", first["id"]):
             with self.subTest(identifier=identifier), self.connect() as conn:
-                result = connections.list_connection_models(conn, PROJECT, {
-                    "id": identifier, "base_url": self.bases[1] + "/inventory/v1/chat/completions",
-                })
-                self.assertEqual(result["endpoint"], self.bases[1] + "/inventory/v1/models")
-                self.assertTrue(self.providers[1][0].model_gets[-1]["authorization"] == "Bearer " + FIRST_KEY)
+                for suffix in ("", "/", "/chat/completions", "/responses"):
+                    result = connections.list_connection_models(conn, PROJECT, {
+                        "id": identifier, "base_url": self.bases[0] + "/normal" + suffix})
+                    self.assertEqual(result["endpoint"], self.bases[0] + "/normal/models")
+                    self.assertTrue(
+                        self.providers[0][0].model_gets[-1]["authorization"] == "Bearer " + FIRST_KEY)
+                for changed_base in (
+                    self.bases[1] + "/normal", self.bases[0] + "/inventory/v1",
+                    self.bases[0].replace("127.0.0.1", "localhost") + "/normal",
+                ):
+                    gets_before = sum(len(provider.model_gets) for provider, _ in self.providers)
+                    with self.assertRaisesRegex(ValueError, "服务地址已改变"):
+                        connections.list_connection_models(conn, PROJECT, {
+                            "id": identifier, "base_url": changed_base})
+                    self.assertEqual(
+                        sum(len(provider.model_gets) for provider, _ in self.providers), gets_before)
                 override = connections.list_connection_models(conn, PROJECT, {
                     "id": identifier, "base_url": self.bases[1] + "/inventory/v1",
                     "api_key": SECOND_KEY,
                 })
                 self.assertTrue(self.providers[1][0].model_gets[-1]["authorization"] == "Bearer " + SECOND_KEY)
                 self.assert_private(override)
+                connections.list_connection_models(conn, PROJECT, {
+                    "id": identifier, "base_url": self.bases[1] + "/inventory/v1", "api_key": ""})
+                self.assertIsNone(self.providers[1][0].model_gets[-1]["authorization"])
         self.assertEqual(self.payload(), before)
         self.assertEqual(set((self.root / "credentials").iterdir()), credentials)
         other = self.seed_other_project()
         with self.connect() as conn, self.assertRaises(ValueError):
             connections.list_connection_models(conn, other, {
                 "id": first["id"], "base_url": self.bases[0] + "/inventory/v1"})
+
+    def test_saved_key_service_matching_normalizes_host_port_and_endpoint_suffixes(self) -> None:
+        for base_url in (
+            "https://example.invalid/v1", "https://EXAMPLE.invalid:443/v1/",
+            "https://example.invalid/v1/chat/completions",
+            "https://example.invalid/v1/responses/",
+        ):
+            with self.subTest(base_url=base_url):
+                settings._validate_saved_key_target(base_url, "https://example.invalid:443/v1")
+        for base_url in (
+            "https://example.invalid:444/v1", "https://elsewhere.invalid/v1",
+            "https://example.invalid/v2", "http://localhost/v1",
+        ):
+            with self.subTest(base_url=base_url), self.assertRaisesRegex(ValueError, "服务地址已改变"):
+                settings._validate_saved_key_target(base_url, "https://example.invalid/v1")
+
+    def test_probe_cannot_reuse_saved_key_for_a_different_service_without_explicit_key(self) -> None:
+        self.legacy()
+        connection = self.saved()
+        for identifier in ("legacy", connection["id"]):
+            with self.subTest(identifier=identifier):
+                before = self.payload()
+                calls_before = sum(len(provider.calls) for provider, _ in self.providers)
+                with self.assertRaisesRegex(ValueError, "服务地址已改变"):
+                    self.probe(1, id=identifier, api_key=None)
+                self.assertEqual(self.payload(), before)
+                self.assertEqual(sum(len(provider.calls) for provider, _ in self.providers), calls_before)
+                result = self.probe(
+                    0, id=identifier, api_key=None,
+                    base_url=self.bases[0] + "/normal/chat/completions")
+                self.assertTrue(result["probe"]["success"])
+                self.assertTrue(
+                    self.providers[0][0].calls[-1]["authorization"] == "Bearer " + FIRST_KEY)
+                result = self.probe(1, id=identifier, api_key="")
+                self.assertTrue(result["probe"]["success"])
+                self.assertIsNone(self.providers[1][0].calls[-1]["authorization"])
+                result = self.probe(1, id=identifier, api_key=SECOND_KEY)
+                self.assertTrue(result["probe"]["success"])
+                self.assertTrue(
+                    self.providers[1][0].calls[-1]["authorization"] == "Bearer " + SECOND_KEY)
 
     def test_model_inventory_rejects_unknown_fields_missing_credentials_and_invalid_ids(self) -> None:
         for data in (
@@ -816,7 +1042,8 @@ class ModelConnectionTests(unittest.TestCase):
 
     def test_all_nine_server_tasks_freeze_only_their_selected_provider(self) -> None:
         first = self.saved()
-        second = self.saved(1, output_token_parameter="max_completion_tokens", include_usage=True)
+        second = self.saved(1, output_token_parameter="max_completion_tokens", include_usage=True,
+                            api_protocol="responses")
         selected = {
             "continue": first["id"], "polish": second["id"], "outline": first["id"],
             "scene": second["id"], "summary": first["id"], "check": second["id"],
@@ -834,7 +1061,8 @@ class ModelConnectionTests(unittest.TestCase):
                     job = server.create_ai_job(conn, task, context, "", response_format)
                     row = conn.execute("SELECT consent_json FROM ai_run WHERE id=?",
                                        (job["ai_run_id"],)).fetchone()
-                    frozen = json.loads(row[0])["provider_config"]
+                    consent = json.loads(row[0])
+                    frozen = consent["provider_config"]
                     self.assertEqual(frozen["connection_id"], identifier)
                     self.assertNotIn("_connection_routes", frozen)
                     self.assertNotIn("api_key", frozen)
@@ -846,6 +1074,12 @@ class ModelConnectionTests(unittest.TestCase):
                     self.assertEqual(frozen["output_token_parameter"],
                                      ("max_tokens", "max_completion_tokens")[index])
                     self.assertEqual(frozen["include_usage"], index == 1)
+                    self.assertEqual(frozen["api_protocol"], ("chat_completions", "responses")[index])
+                    prepared = server.prepare_frozen_ai_request(
+                        task, response_format, 3000, frozen, consent["request_audit"]["payload"])
+                    self.assertEqual(prepared["payload"], consent["request_audit"]["payload"])
+                    self.assertEqual(prepared["messages"], request_messages(
+                        prepared["payload"], frozen["api_protocol"]))
                     self.assertTrue(server.retry_provider_config(conn, frozen)["api_key"] ==
                                     (FIRST_KEY, SECOND_KEY)[index])
         self.assertEqual(sum(len(provider.calls) for provider, _ in self.providers), calls_before)
