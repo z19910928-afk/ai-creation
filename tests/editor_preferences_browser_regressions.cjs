@@ -137,7 +137,8 @@ async function main() {
   await page.goto(base); await page.waitForFunction(() => backendOnline);
   await page.evaluate(() => authorSwitchProject('default-project'));
   await page.locator('[data-view="editor"]').click(); await selectChapter(page, first.id); await saved(page);
-  await page.waitForFunction(() => [...document.styleSheets].some(sheet => sheet.href?.endsWith('/editor-preferences.css')));
+  await page.waitForFunction(() => [...document.styleSheets].some(sheet =>
+    sheet.href && new URL(sheet.href).pathname === '/editor-preferences.css'));
 
   await test('1440x1000 与 1280x800 阅读偏好即时应用，不替换正文节点或修改稿件', async () => {
     for (const viewport of [{width: 1440, height: 1000}, {width: 1280, height: 800}]) {
