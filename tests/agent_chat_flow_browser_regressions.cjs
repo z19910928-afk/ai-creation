@@ -17,6 +17,8 @@ const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const providerRequests = [];
 const prose = '林岚把手从门缝前收回，将铜钥匙平放在门槛上。她向后退了一步，等守卫自己作出选择。\n\n门里响起金属落地的轻声。守卫低下头，终于看见了钥匙齿间没有擦净的红泥。';
 const revised = '她把铜钥匙留在门槛上，掌心收拢，退到了守卫能够看清的地方。';
+const multilineReply = '## 方向三：渡口的最后一盏灯\n\n林岚决定先向船工问清铜钥匙的来历。\n\n- 保留守卫的秘密\n- 让第一次选择带来代价';
+const multilineInspiration = '林岚带着铜钥匙来到渡口，船工却认出了门槛上的红泥。\n\n- 核心冲突：救出失踪者，还是守住唯一的开门机会。\n- 开篇动作：先灭掉渡口最后一盏灯。';
 let app, provider, browser, base, port, providerPort, log = '', chatDelay = 50;
 let holdChat = false, chatRelease = null;
 let firstId, selectedQuote;
@@ -67,6 +69,14 @@ function output(input) {
   if (system.includes('你是墨屿的写作总管')) {
     const question = user.split('作者消息：')[1];
     if (question.includes('自然语言回复')) return {text: '## 人物的选择\n\n让林岚先决定是否相信守卫。\n\n- 保留疑点\n- 给出代价', chat: true};
+    if (question.includes('多行方案')) {
+      const text = JSON.stringify({reply: multilineReply,
+        actions: [{kind: 'save_inspiration', label: '保存方向三的创作方案',
+          instruction: '保留为作者灵感，等待后续创作确认。',
+          title: '渡口的最后一盏灯', content: multilineInspiration}]}).replace(/\\n/g, '\n');
+      assert.throws(() => JSON.parse(text), SyntaxError, '模拟模型必须包含未转义的字符串换行');
+      return {text, chat: true};
+    }
     if (question.includes('保存为灵感')) return {text: JSON.stringify({
       reply: '这个方向可以先存成灵感，后续再接入创作规划。',
       actions: [{kind: 'save_inspiration', label: '保存铜钥匙的秘密',
@@ -249,6 +259,56 @@ async function main() {
     await page.getByText('铜钥匙的秘密', {exact: true}).first().waitFor();
     await page.locator('[data-view="editor"]').click();
     await page.locator('#agentChatIncludeChapter').check();
+  });
+
+  await test('完整多行JSON中的原始换行正常排版并保存灵感，确认与刷新不重复生成', async () => {
+    const before = await api('/api/state'), callsBefore = providerRequests.length;
+    const tasksBefore = (await api('/api/writing-agent')).sessions.length;
+    await send(page, '请根据方向三开始我的创作，先给我多行方案。');
+    assert.equal(providerRequests.length, callsBefore + 1, '作者消息只生成一轮回复');
+    const reply = page.locator('.agent-chat-message[data-role="assistant"]').last();
+    const body = reply.locator('.agent-chat-message-body');
+    assert.equal(await body.locator('h4').textContent(), '方向三：渡口的最后一盏灯');
+    assert.equal(await body.locator('li').count(), 2);
+    assert.match(await body.textContent(), /林岚决定先向船工问清铜钥匙的来历/);
+    assert.equal(await reply.locator('.agent-chat-message-state').count(), 0);
+    assert.equal(await reply.locator('[data-chat-copy]').count(), 1);
+    assert.equal(await reply.locator('[data-chat-followup]').count(), 1);
+    const proposal = reply.locator('[data-chat-action]');
+    const actionId = await proposal.getAttribute('data-chat-action');
+    const session = (await api('/api/agent-chat/sessions')).sessions[0];
+    const bundle = await api('/api/agent-chat/sessions/' + session.id);
+    assert.equal(bundle.active_run.status, 'success');
+    assert.equal(bundle.messages.at(-1).content, multilineReply);
+    assert.equal(bundle.messages.at(-1).actions[0].content, multilineInspiration);
+    assert.equal((await api('/api/state')).records.length, before.records.length);
+    await proposal.locator('[data-chat-confirm]').click();
+    await until(async () => (await api('/api/state')).records.length === before.records.length + 1,
+      'raw multiline inspiration saved');
+    const record = (await api('/api/state')).records.find(row => row.name === '渡口的最后一盏灯');
+    assert.equal(record.type, '灵感');
+    assert.equal(record.epistemic_mode, 'author_plan');
+    assert.equal(record.description, multilineInspiration, '灵感原文保留段落和换行');
+    await proposal.getByText('已保存为灵感草稿', {exact: true}).waitFor();
+    const repeated = await api('/api/agent-chat/actions/' + actionId + '/confirm', 'POST', {confirm: true});
+    assert.equal(repeated.idempotent, true);
+    assert.equal(repeated.action.result.record_id, record.id);
+    assert.equal((await api('/api/state')).records.length, before.records.length + 1);
+    assert.equal((await api('/api/writing-agent')).sessions.length, tasksBefore);
+    assert.equal((await api('/api/state')).chapters[0].body, before.chapters[0].body);
+    assert.equal(providerRequests.length, callsBefore + 1, '保存和重复确认不会再调用模型');
+    await page.reload(); await page.waitForFunction(() => backendOnline);
+    await page.locator('[data-view="editor"]').click();
+    const restored = page.locator('[data-chat-action="' + actionId + '"]');
+    await restored.getByText('已保存为灵感草稿', {exact: true}).waitFor();
+    await restored.locator('summary').click();
+    assert.equal(await restored.locator('.agent-chat-inspiration li').count(), 2);
+    assert.equal(await restored.locator('[data-chat-confirm]').count(), 0);
+    assert.equal(await page.locator('.agent-chat-message[data-role="assistant"]').last()
+      .locator('.agent-chat-message-state').count(), 0);
+    assert.equal(providerRequests.length, callsBefore + 1, '刷新只恢复已保存回复');
+    await restored.locator('[data-chat-open-result]').scrollIntoViewIfNeeded();
+    await screenshot(page, 'agent-chat-raw-multiline-inspiration-1440x1000.png');
   });
 
   await test('聊天原卡显示准确任务与调用上限，作者手动启动和采纳后再接续章后流程', async () => {

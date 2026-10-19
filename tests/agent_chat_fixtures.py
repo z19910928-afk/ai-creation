@@ -111,8 +111,18 @@ class Provider(BaseHTTPRequestHandler):
                 {"kind": "save_inspiration", "label": "混入未知字段", "instruction": "",
                  "title": "未知字段", "content": "尚未采用的方案。", "execute": True},
             ]
-        reply = json.dumps({"reply": "门内的两下轻响提供了可追踪线索，应先保留不确定性。",
+        elif case == "multiline-inspiration":
+            actions = [{"kind": "save_inspiration", "label": "保存多行灵感",
+                        "instruction": "保留这个方向。\n先不修改正文。",
+                        "title": "铜盒的第三个方向",
+                        "content": "第一幕：铜盒发出声音。\n第二幕：人物决定开门。"}]
+        reply_text = ("保留第三个方向。\n\n先让人物面对选择，再进入创作。"
+                      if case == "multiline-inspiration" else
+                      "门内的两下轻响提供了可追踪线索，应先保留不确定性。")
+        reply = json.dumps({"reply": reply_text,
                             "actions": actions}, ensure_ascii=False)
+        if case == "multiline-inspiration":
+            reply = reply.replace("\\n", "\n")
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Connection", "close")
@@ -1527,14 +1537,43 @@ class ChatTests(unittest.TestCase):
         server.process_ai_job(result["active_run"]["id"])
         self.assertEqual(len(Provider.calls), 1)
 
+    def test_complete_multiline_json_reply_and_inspiration_work_without_replaying_request(self):
+        result = self.complete("multiline-inspiration")
+        message = result["messages"][-1]
+        self.assertIn("\n\n", message["content"])
+        self.assertEqual(len(message["actions"]), 1)
+        action = message["actions"][0]
+        self.assertEqual(action["kind"], "save_inspiration")
+        self.assertEqual(action["status"], "proposed")
+        with closing(server.connect()) as conn:
+            raw_result = json.loads(conn.execute(
+                "SELECT result_json FROM app_ai_job WHERE id=?",
+                (result["active_run"]["id"],)).fetchone()[0])
+            self.assertEqual(raw_result["completion_state"], "complete")
+            self.assertFalse(raw_result["truncated"])
+            with self.assertRaises(json.JSONDecodeError):
+                json.loads(raw_result["text"])
+            chunks = conn.execute(
+                "SELECT text FROM app_ai_chunk WHERE ai_run_id=("
+                "SELECT ai_run_id FROM app_ai_job WHERE id=?) ORDER BY seq",
+                (result["active_run"]["id"],)).fetchall()
+            self.assertEqual("".join(row["text"] for row in chunks), raw_result["text"])
+        status, confirmed = self.confirm(action)
+        self.assertEqual(status, 200, confirmed)
+        self.assertEqual(confirmed["action"]["status"], "confirmed")
+        status, repeated = self.confirm(action)
+        self.assertEqual(status, 200, repeated)
+        self.assertEqual(repeated["action"]["result"], confirmed["action"]["result"])
+        self.assertEqual(len(Provider.calls), 1)
+
     def test_complete_legacy_format_failure_recovers_read_only_reply_without_actions_or_writes(self):
         result = self.complete()
         job_id = result["active_run"]["id"]
         raw = "```json\n" + json.dumps({
-            "reply": "可以让铜盒与主角的旧账产生关联，再比较两种代价。",
+            "reply": "可以让铜盒与主角的旧账产生关联。\n\n再比较两种代价。",
             "actions": [{"kind": "save_inspiration", "label": "保存", "instruction": "",
-                         "title": "旧账", "content": "一个尚未发生的设想。"}],
-        }, ensure_ascii=False) + "\n```"
+                         "title": "旧账", "content": "一个尚未发生的设想。\n先保留为作者计划。"}],
+        }, ensure_ascii=False).replace("\\n", "\n") + "\n```"
         for transport, metadata in (
             ("provider_native_sse", {"provider_sse_complete": True}),
             ("provider_json", {}),

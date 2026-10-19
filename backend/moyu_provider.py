@@ -212,6 +212,9 @@ _CHAT_INTERNAL_MARKER = re.compile(r"</?(?:think|analysis)(?:\s|>)", re.IGNORECA
 
 def normalize_chat_reply(raw: str, schema: Mapping[str, Any]) -> dict[str, Any]:
     """Keep a complete conversation readable without inventing tool actions."""
+    format_issue = "总管回复中的 JSON 格式无效，请重新发送消息。"
+    if any(ord(character) < 32 and character not in "\t\r\n" for character in raw):
+        raise ProviderError(format_issue, code="invalid_structured_output")
     text = raw.strip().lstrip("\ufeff").strip()
     if not text or len(text) > 100_000:
         raise ProviderError("总管未返回有效回复。", code="invalid_structured_output")
@@ -220,14 +223,19 @@ def normalize_chat_reply(raw: str, schema: Mapping[str, Any]) -> dict[str, Any]:
     candidate = fenced.group(1).strip() if fenced else text
     structured, parsed = None, False
     try:
-        structured = _load_json(candidate, "invalid_structured_output")
+        # Some models emit literal line breaks inside JSON strings; only chat
+        # permits them, after excluding every other raw C0 control character.
+        structured = json.loads(
+            candidate, strict=False,
+            parse_constant=lambda _item: (_ for _ in ()).throw(ValueError()))
+        validate_json(structured, {})
         parsed = True
-    except ProviderError:
+    except (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError):
         # Broken protocol objects must never become author-facing prose or actions.
         if (candidate.startswith(("{", "[")) or fenced
                 or re.search(r"```[ \t]*json\b|[\"'](?:reply|actions)[\"']\s*:",
                              candidate, re.IGNORECASE)):
-            raise
+            raise ProviderError(format_issue, code="invalid_structured_output") from None
     if not parsed:
         reply, actions = text, []
     else:

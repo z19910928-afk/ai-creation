@@ -82,6 +82,75 @@ class ReplyCompatibilityTests(unittest.TestCase):
                     self.assertEqual(result["structured"]["actions"], [])
                     self.assertIn(REPLY, result["structured"]["reply"])
 
+    def test_raw_line_breaks_and_tabs_work_on_four_transports_without_rewriting_evidence(self):
+        for control in ("\n", "\r", "\t", "\r\n"):
+            reply = REPLY + control + '人物说："我选择留下。"'
+            action = {**ACTION, "instruction": "先讨论。" + control + "不要直接修改。"}
+            raw = json.dumps({"reply": reply, "actions": [action]}, ensure_ascii=False)
+            raw = raw.replace("\\n", "\n").replace("\\r", "\r").replace("\\t", "\t")
+            with self.assertRaises(json.JSONDecodeError):
+                json.loads(raw)
+            for protocol in ("chat_completions", "responses"):
+                for stream in (False, True):
+                    with self.subTest(control=repr(control), protocol=protocol, stream=stream):
+                        result = self.parse(raw, protocol=protocol, stream=stream)
+                        self.assertTrue(result["safe_to_apply"])
+                        self.assertEqual(result["completion_state"], "complete")
+                        self.assertEqual(result["structured"], {"reply": reply, "actions": [action]})
+                        self.assertEqual(result["text"], raw)
+                        self.assertEqual("".join(chunk["text"] for chunk in result["_chunks"]), raw)
+                        self.assertEqual(normalize_chat_reply(
+                            "```json\n" + raw + "\n```", SCHEMA), result["structured"])
+
+    def test_other_raw_control_characters_are_rejected_in_reply_action_and_edges(self):
+        for code in range(32):
+            if code in (9, 10, 13):
+                continue
+            control = chr(code)
+            samples = [
+                '{"reply":"正文' + control + '","actions":[]}',
+                '{"reply":"正文","actions":[{"kind":"open","label":"查看' + control
+                + '","instruction":"","view":"blueprint"}]}',
+                control + REPLY, REPLY + control,
+            ]
+            for raw in samples:
+                with self.subTest(code=code, location=samples.index(raw)), self.assertRaises(ProviderError):
+                    normalize_chat_reply(raw, SCHEMA)
+
+    def test_multiline_tolerance_does_not_repair_syntax_or_allow_nonfinite_numbers(self):
+        for raw in (
+            '{"reply":"第一行\n第二行","actions":[],}',
+            '{"reply":"第一行\n"坏引号"","actions":[]}',
+            '{"reply":"第一行\n第二行","actions":[]',
+            '{"reply":"第一行\n第二行","actions":[]} {"reply":"另一条"}',
+            '{"reply":"第一行\n第二行","actions":[],"unused":NaN}',
+            '{"reply":"第一行\n第二行","actions":[],"unused":Infinity}',
+        ):
+            with self.subTest(raw=repr(raw)), self.assertRaises(ProviderError) as caught:
+                normalize_chat_reply(raw, SCHEMA)
+            self.assertEqual(caught.exception.code, "invalid_structured_output")
+            self.assertIn("总管回复", str(caught.exception))
+
+    def test_multiline_tolerance_keeps_cancel_truncation_and_transport_boundaries(self):
+        raw = '{"reply":"第一行\n第二行","actions":[]}'
+        for finish in ("length", "content_filter", "tool_calls", None):
+            with self.subTest(finish=finish):
+                result = self.parse(raw, stream=True, finish=finish)
+                self.assertFalse(result["safe_to_apply"])
+                self.assertIsNone(result["structured"])
+        result = self.parse(raw, stream=True, done=False)
+        self.assertFalse(result["safe_to_apply"])
+        self.assertIsNone(result["structured"])
+        with self.assertRaises(ProviderError):
+            self.parse(raw, task="continue", schema={
+                "type": "object", "required": ["reply"],
+                "properties": {"reply": {"type": "string"}}})
+        with self.assertRaises(ProviderError) as caught:
+            parse_sse_completion(io.BytesIO(
+                b'data: {"choices":[{"delta":{"content":"line\tbreak"}}]}\n\n'),
+                "assistant_chat", "json", schema=SCHEMA)
+        self.assertEqual(caught.exception.code, "invalid_response")
+
     def test_missing_actions_and_extra_metadata_preserve_reply(self):
         self.assertEqual(normalize_chat_reply(json.dumps({
             "reply": REPLY, "unused": {"kind": "delete"}}, ensure_ascii=False), SCHEMA),
