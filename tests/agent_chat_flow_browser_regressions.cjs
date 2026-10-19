@@ -18,6 +18,7 @@ const providerRequests = [];
 const prose = '林岚把手从门缝前收回，将铜钥匙平放在门槛上。她向后退了一步，等守卫自己作出选择。\n\n门里响起金属落地的轻声。守卫低下头，终于看见了钥匙齿间没有擦净的红泥。';
 const revised = '她把铜钥匙留在门槛上，掌心收拢，退到了守卫能够看清的地方。';
 let app, provider, browser, base, port, providerPort, log = '', chatDelay = 50;
+let holdChat = false, chatRelease = null;
 let firstId, selectedQuote;
 
 async function freePort() {
@@ -65,6 +66,13 @@ function output(input) {
   const material = JSON.parse(user.split('<manuscript>\n')[1].split('\n</manuscript>')[0]);
   if (system.includes('你是墨屿的写作总管')) {
     const question = user.split('作者消息：')[1];
+    if (question.includes('自然语言回复')) return {text: '## 人物的选择\n\n让林岚先决定是否相信守卫。\n\n- 保留疑点\n- 给出代价', chat: true};
+    if (question.includes('保存为灵感')) return {text: JSON.stringify({
+      reply: '这个方向可以先存成灵感，后续再接入创作规划。',
+      actions: [{kind: 'save_inspiration', label: '保存铜钥匙的秘密',
+        instruction: '把讨论方案保留为作者灵感，不写入已发生事实。',
+        title: '铜钥匙的秘密', content: '铜钥匙只能开门一次。林岚必须先选择救人，还是保住最后一次开门的机会。'}]
+    }), chat: true};
     const actions = question.includes('选区改写') ?
       [{kind: 'polish', label: '改写这处动作', instruction: '只改写引用中的动作，保留位置和人物意图。',
         reference_index: 0}] : question.includes('建议续写') ?
@@ -114,13 +122,15 @@ async function main() {
         res.writeHead(200, {'Content-Type': 'text/event-stream'});
         res.write(`data: ${JSON.stringify({model: 'agent-chat-flow-local',
           choices: [{delta: {content: result.text.slice(0, 12)}, finish_reason: null}]})}\n\n`);
-        setTimeout(() => {
+        const finish = () => {
           if (res.destroyed) return;
           res.write(`data: ${JSON.stringify({model: 'agent-chat-flow-local',
             choices: [{delta: {content: result.text.slice(12)}, finish_reason: 'stop'}],
             usage: {prompt_tokens: 140, completion_tokens: 80, total_tokens: 220}})}\n\n`);
           res.end('data: [DONE]\n\n');
-        }, delay);
+        };
+        if (result.chat && holdChat) chatRelease = finish;
+        else setTimeout(finish, delay);
       } catch (error) {
         res.writeHead(500, {'Content-Type': 'application/json'}); res.end(JSON.stringify({error: error.message}));
       }
@@ -196,6 +206,51 @@ async function main() {
     assert.equal((await api('/api/state')).chapters[0].body, initialBody);
   });
 
+  await test('真实模型接口返回普通文字时正常排版，不产生虚构操作', async () => {
+    await send(page, '请用自然语言回复，给我一个人物选择。');
+    const reply = page.locator('.agent-chat-message[data-role="assistant"]').last();
+    assert.equal(await reply.locator('.agent-chat-message-state').count(), 0);
+    assert.equal(await reply.locator('h4').first().textContent(), '人物的选择');
+    assert.equal(await reply.locator('li').count(), 2);
+    assert.equal(await reply.locator('[data-chat-action]').count(), 0);
+    assert.equal((await api('/api/ai/queue')).jobs.find(job => job.task === 'assistant_chat').status, 'success');
+    assert.equal((await api('/api/state')).chapters[0].body, initialBody);
+  });
+
+  await test('不带章节也能讨论作品并确认保存灵感，重复点击只保存一次', async () => {
+    await page.locator('#agentChatIncludeChapter').uncheck();
+    await send(page, '请把铜钥匙只能开一次门这个方向保存为灵感。');
+    const proposal = page.locator('[data-chat-action]').last();
+    const actionId = await proposal.getAttribute('data-chat-action');
+    const before = (await api('/api/state')).records.length;
+    assert.equal((await api('/api/state')).chapters[0].body, initialBody);
+    const lastRequest = providerRequests.filter(row => row.chat).at(-1).input;
+    const lastMaterial = JSON.parse(lastRequest.messages.at(-1).content.split('<manuscript>\n')[1].split('\n</manuscript>')[0]);
+    assert.equal(lastMaterial.project.title, initial.project.title);
+    assert.equal(lastMaterial.chapter_context_included, false);
+    assert.ok(!JSON.stringify(lastMaterial).includes(initialBody), '不勾选正文时没有暗中发送章节内容');
+    await proposal.locator('[data-chat-confirm]').click();
+    await until(async () => (await api('/api/state')).records.length === before + 1, 'inspiration saved');
+    const record = (await api('/api/state')).records.find(row => row.name === '铜钥匙的秘密');
+    assert.equal(record.type, '灵感');
+    assert.equal(record.epistemic_mode, 'author_plan');
+    assert.equal(await page.evaluate(() => view), 'editor', '保存后保留当前创作页面');
+    const calls = providerRequests.length;
+    const repeated = await api('/api/agent-chat/actions/' + actionId + '/confirm', 'POST', {confirm: true});
+    assert.equal(repeated.idempotent, true);
+    assert.equal(repeated.action.result.record_id, record.id);
+    assert.equal((await api('/api/state')).records.length, before + 1);
+    assert.equal(providerRequests.length, calls);
+    assert.equal((await api('/api/state')).chapters[0].body, initialBody);
+    assert.equal((await api('/api/writing-agent')).sessions.length, 0);
+    await screenshot(page, 'agent-chat-inspiration-saved-1440x1000.png');
+    await proposal.locator('[data-chat-open-result]').click();
+    await page.waitForFunction(() => view === 'world');
+    await page.getByText('铜钥匙的秘密', {exact: true}).first().waitFor();
+    await page.locator('[data-view="editor"]').click();
+    await page.locator('#agentChatIncludeChapter').check();
+  });
+
   await test('聊天原卡显示准确任务与调用上限，作者手动启动和采纳后再接续章后流程', async () => {
     await page.locator('[data-view="editor"]').click();
     const proposal = await action(page, 'continue');
@@ -235,10 +290,10 @@ async function main() {
     assert.equal(providerRequests.length, callsBefore + 1, '手动启动仅生成当前正文候选');
     assert.equal((await api('/api/state')).chapters[0].body, initialBody);
     await card.locator('[data-chat-open-result]').click();
-    await page.locator('#workbenchAgentSection:visible').waitFor();
+    await page.locator('#workbenchCandidateSection:visible').waitFor();
     assert.equal(await page.locator('#agentSessions [data-agent-session]').count(), 1);
     assert.equal(await page.locator('#agentSessions [data-agent-session]').getAttribute('data-agent-session'), row.id);
-    await page.locator(`[data-agent-session="${row.id}"] [data-agent-open]`).click();
+    assert.equal(await page.locator('#aiOutput').inputValue(), prose);
     await page.locator('#aiAdopt:not([disabled])').waitFor(); await page.locator('#aiAdopt').click();
     await page.locator('.candidate-columns').waitFor(); await screenshot(page, 'agent-chat-compare-1440x1000.png');
     await page.locator('[data-apply]').click(); await saved(page);
@@ -318,6 +373,40 @@ async function main() {
     assert.equal((await api('/api/writing-agent')).sessions.length, count);
   });
 
+  await test('等待聊天时改稿仍保留完整回复，并取消过期建议和保留旧参考提示', async () => {
+    const replies = await page.locator('.agent-chat-message[data-role="assistant"]').count();
+    const beforeBody = await page.locator('#chapterBody').inputValue();
+    const taskCount = (await api('/api/writing-agent')).sessions.length;
+    holdChat = true;
+    await page.locator('#agentChatInput').fill('请建议续写门外冲突，我会同时修改稿件。');
+    await page.locator('#agentChatSend').click();
+    await until(() => chatRelease, 'held chat provider entered');
+    const editedBody = beforeBody + '\n\n作者写下：守卫已经把钥匙拾起。';
+    await page.locator('#chapterBody').fill(editedBody);
+    await saved(page);
+    chatRelease(); chatRelease = null; holdChat = false;
+    await until(() => page.locator('.agent-chat-message[data-role="assistant"]').count()
+      .then(count => count === replies + 1), 'stale-source complete reply');
+    await page.locator('#agentChatSend[data-stopping="false"]').waitFor();
+    const reply = page.locator('.agent-chat-message[data-role="assistant"]').last();
+    assert.match(await reply.locator('.agent-chat-message-body').textContent(), /保留门外的位置关系/);
+    assert.match(await reply.locator('.agent-chat-message-state').textContent(), /发送时的资料.*操作建议已取消/);
+    assert.equal(await reply.locator('[data-chat-action]').count(), 0);
+    assert.equal(await reply.locator('[data-chat-copy]').count(), 1);
+    assert.equal(await reply.locator('[data-chat-followup]').count(), 1);
+    const session = (await api('/api/agent-chat/sessions')).sessions[0];
+    const bundle = await api('/api/agent-chat/sessions/' + session.id);
+    assert.equal(bundle.active_run.status, 'success');
+    assert.equal(bundle.messages.at(-1).context_stale, true);
+    assert.deepEqual(bundle.messages.at(-1).actions, []);
+    assert.equal((await api('/api/writing-agent')).sessions.length, taskCount);
+    assert.equal((await api('/api/state')).chapters[0].body, editedBody);
+    await page.reload(); await page.waitForFunction(() => backendOnline);
+    await page.locator('.agent-chat-message[data-role="assistant"]').last()
+      .getByText('回复依据是发送时的资料；资料已更新，本轮操作建议已取消。', {exact: true}).waitFor();
+    await screenshot(page, 'agent-chat-reply-after-manuscript-edit-1440x1000.png');
+  });
+
   await test('停止迟到回复、重启会话恢复与切作品隔离均由真实服务处理', async () => {
     const baseline = (await api('/api/state')).chapters[0].body;
     chatDelay = 1800;
@@ -351,6 +440,7 @@ async function main() {
 main().catch(error => {
   report.error = error.stack; report.server_log = log.slice(-5000); process.exitCode = 1;
 }).finally(async () => {
+  if (chatRelease) chatRelease();
   if (browser) await browser.close(); await stopApp();
   if (provider) await new Promise(resolve => provider.close(resolve));
   fs.writeFileSync(path.join(temporary, 'results.json'), JSON.stringify(report, null, 2));

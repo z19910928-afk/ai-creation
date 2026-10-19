@@ -11,6 +11,7 @@ import hashlib
 import http.client
 import json
 import math
+import re
 import socket
 import ssl
 import threading
@@ -204,6 +205,59 @@ def _load_json(raw: bytes | str, code: str = "invalid_response") -> Any:
         return value
     except (UnicodeDecodeError, json.JSONDecodeError, ValueError, RecursionError):
         raise ProviderError("提供方返回的 JSON 格式无效。", code=code) from None
+
+
+_CHAT_INTERNAL_MARKER = re.compile(r"</?(?:think|analysis)(?:\s|>)", re.IGNORECASE)
+
+
+def normalize_chat_reply(raw: str, schema: Mapping[str, Any]) -> dict[str, Any]:
+    """Keep a complete conversation readable without inventing tool actions."""
+    text = raw.strip().lstrip("\ufeff").strip()
+    if not text or len(text) > 100_000:
+        raise ProviderError("总管未返回有效回复。", code="invalid_structured_output")
+    fenced = re.fullmatch(r"```(?:json)?[ \t]*\r?\n([\s\S]*?)\r?\n```", text,
+                          re.IGNORECASE)
+    candidate = fenced.group(1).strip() if fenced else text
+    structured, parsed = None, False
+    try:
+        structured = _load_json(candidate, "invalid_structured_output")
+        parsed = True
+    except ProviderError:
+        # Broken protocol objects must never become author-facing prose or actions.
+        if (candidate.startswith(("{", "[")) or fenced
+                or re.search(r"```[ \t]*json\b|[\"'](?:reply|actions)[\"']\s*:",
+                             candidate, re.IGNORECASE)):
+            raise
+    if not parsed:
+        reply, actions = text, []
+    else:
+        if not isinstance(structured, dict):
+            raise ProviderError("总管回复不是有效的对话内容。",
+                                code="invalid_structured_output")
+        reply, actions = structured.get("reply"), structured.get("actions", [])
+    validate_json(reply, schema["properties"]["reply"])
+    if not reply.strip():
+        raise ProviderError("总管未返回有效回复。", code="invalid_structured_output")
+    if _CHAT_INTERNAL_MARKER.search(reply):
+        raise ProviderError("总管回复混入内部标记，请重新发送消息。",
+                            code="invalid_structured_output")
+    accepted = []
+    action_schema = schema["properties"]["actions"]["items"]
+    if isinstance(actions, list):
+        for action in actions[:20]:
+            try:
+                validate_json(action, action_schema)
+            except ProviderError:
+                continue
+            if any(_CHAT_INTERNAL_MARKER.search(value) for value in action.values()
+                   if isinstance(value, str)):
+                continue
+            accepted.append(action)
+            if len(accepted) == 4:
+                break
+    result = {"reply": reply.strip(), "actions": accepted}
+    validate_json(result, schema)
+    return result
 
 
 def _api_protocol(config: Mapping[str, Any]) -> str:
@@ -1035,8 +1089,11 @@ class _Accumulator:
                 state = "unknown"
         structured = None
         if self.response_format == "json" and self.text and state == "complete":
-            structured = _load_json(self.text, "invalid_structured_output")
-            validate_json(structured, self.schema)
+            if self.task == "assistant_chat":
+                structured = normalize_chat_reply(self.text, self.schema)
+            else:
+                structured = _load_json(self.text, "invalid_structured_output")
+                validate_json(structured, self.schema)
             structured = _redact(structured, self.secret)
         accounting = self.current_usage_accounting()
         return {"text": self.text, "structured": structured, "response_format": self.response_format,

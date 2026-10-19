@@ -95,12 +95,15 @@ async function api(route, method = 'GET', body, project = 'default-project') {
 function workspace(project, branch) {
   const key = JSON.stringify([project, branch]);
   if (!store.has(key)) store.set(key, {sessions: [], messages: new Map(), runs: new Map(),
-    creations: new Map(), sends: new Map(), writing: new Map(), writingFaults: new Map()});
+    creations: new Map(), sends: new Map(), writing: new Map(), writingFaults: new Map(),
+    settings: {configured: true, mode: 'inherit', model: 'chat-ui-local'},
+    summaries: new Map(), savedInspirations: new Map()});
   return store.get(key);
 }
 function bundle(data, session) {
   const runs = [...data.runs.values()].filter(row => row.session_id === session.id);
   return {session, messages: data.messages.get(session.id) || [],
+    settings: data.settings, context_summary: data.summaries.get(session.id) || null,
     active_run: runs.find(row => ['queued', 'running'].includes(row.status)) || runs.at(-1) || null};
 }
 async function chatRoute(route) {
@@ -112,8 +115,8 @@ async function chatRoute(route) {
   const observation = {project, branch, suffix, method, body, request_id: headers['x-moyu-ui-request']};
   requests.push(observation);
   const reply = value => respond(route, observation, value);
-  if (suffix === '/settings') return reply({settings: {mode: 'inherit'}});
-  if (suffix === '/sessions' && method === 'GET') return reply({sessions: data.sessions});
+  if (suffix === '/settings') return reply({settings: data.settings});
+  if (suffix === '/sessions' && method === 'GET') return reply({sessions: data.sessions, settings: data.settings});
   if (suffix === '/sessions' && method === 'POST') {
     let session = data.creations.get(body.request_id);
     if (!session) {
@@ -136,6 +139,9 @@ async function chatRoute(route) {
         const messages = data.messages.get(session.id);
         messages.push({id: crypto.randomUUID(), role: 'user', content: body.content,
           references: body.references, created_at: timestamp()});
+        data.summaries.set(session.id, {project_materials_included: true,
+          chapter_included: !!body.include_chapter && !!body.chapter_id, chapter_title: '本轮章节正文',
+          reference_count: body.references?.length || 0});
         session.title = body.content.slice(0, 24); session.updated_at = timestamp();
         const run = {id: crypto.randomUUID(), session_id: session.id,
           status: delayedReply ? 'running' : 'success'};
@@ -173,6 +179,11 @@ async function chatRoute(route) {
     if (segments[2] === 'confirm' && ['continue', 'polish', 'inspect', 'plan'].includes(action.kind)) {
       writingSession = writingTask(data, action);
       if (interruptAction === action.id) {interruptAction = ''; return route.abort('failed');}
+    } else if (segments[2] === 'confirm' && action.kind === 'save_inspiration') {
+      if (!data.savedInspirations.has(action.id)) data.savedInspirations.set(action.id, {
+        id: 'ui_inspiration_' + action.id, title: action.title, content: action.content,
+      });
+      action.result = {record_id: data.savedInspirations.get(action.id).id, view: 'world'};
     }
     return reply({action, writing_session: writingSession});
   }
@@ -318,6 +329,42 @@ async function main() {
   await page.route('**/api/writing-agent**', writingRoute);
   await page.goto(base); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
   await page.evaluate(() => authorSwitchProject('default-project'));
+
+  await test('灵感起问只填写草稿，保留作者输入且不会自动发送', async () => {
+    const before = requests.filter(row => row.method === 'POST').length;
+    for (const id of ['idea', 'character', 'plot']) {
+      await page.locator('#agentChatInput').fill('保留我自己的构思。');
+      await page.locator('[data-chat-starter="' + id + '"]').click();
+      const text = await page.locator('#agentChatInput').inputValue();
+      assert.ok(text.startsWith('保留我自己的构思。\n\n'));
+      assert.ok(text.length > 30);
+    }
+    assert.equal(requests.filter(row => row.method === 'POST').length, before);
+    assert.equal(workspace('default-project', 'main').sessions.length, 0);
+    assert.match(await page.locator('.agent-chat-materials').textContent(), /参考范围.*作品资料/);
+    await page.locator('[data-chat-new]').click();
+  });
+
+  await test('总管未连接时给出设置入口，保留草稿并阻止发送', async () => {
+    const data = workspace('default-project', 'main');
+    data.settings = {...data.settings, configured: false};
+    await page.evaluate(() => MoyuAgentChat.refresh());
+    await page.locator('.agent-chat-connection').waitFor();
+    await page.locator('#agentChatInput').fill('还没有发出的故事念头。');
+    assert.equal(await page.locator('#agentChatSend').isDisabled(), true);
+    const before = requests.filter(row => row.method === 'POST').length;
+    await page.locator('#agentChatInput').press('Control+Enter');
+    assert.equal(requests.filter(row => row.method === 'POST').length, before);
+    await page.locator('[data-chat-configure]').click();
+    assert.equal(await page.evaluate(() => view), 'settings');
+    assert.equal(await page.locator('#agentChatInput').inputValue(), '还没有发出的故事念头。');
+    data.settings = {...data.settings, configured: true};
+    await page.evaluate(() => MoyuAgentChat.refresh());
+    await page.locator('.agent-chat-connection').waitFor({state: 'hidden'});
+    assert.equal(await page.locator('#agentChatSend').isEnabled(), true);
+    await page.locator('[data-view="dashboard"]').click();
+    await page.locator('[data-chat-new]').click();
+  });
 
   await test('切换功能页保留同一个聊天面板和未发送草稿', async () => {
     await page.locator('#agentChatInput').fill('讨论林岚为什么没有进门。');
@@ -864,6 +911,145 @@ async function main() {
     assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
     assert.deepEqual(report.page_errors, []);
   });
+  await test('灵感回复安全排版，继续追问保留草稿且复制原文不触发执行', async () => {
+    delayedReply = false;
+    const data = workspace('default-project', 'main');
+    const fixture = fixtureSession(data, null, '暗河中的来信', {proposed: true, mode: 'save_inspiration'});
+    const message = data.messages.get(fixture.session.id)[0];
+    message.content = '# 暗河中的来信\n\n**核心冲突**\n\n1. 寻找失踪父亲。\n2. 保护渡口的秘密。\n\n> 守住人物动机。\n\n`<img src=x onerror="globalThis.__moyuChatXss=1">`\n\n<script>globalThis.__moyuChatXss=2</script>\n\n[危险链接](javascript:globalThis.__moyuChatXss=3)';
+    Object.assign(fixture.action, {title: '暗河来信的故事方向',
+      content: '## 灵感草稿\n\n一封来自失踪父亲的信，指向没有出现在地图上的渡口。'});
+    await page.locator('[data-view="memory"]').click();
+    await selectChat(page, fixture);
+    const article = page.locator('[data-chat-message="' + message.id + '"]');
+    const body = article.locator('.agent-chat-message-body');
+    assert.equal(await body.locator('h4').textContent(), '暗河中的来信');
+    assert.equal(await body.locator('strong').textContent(), '核心冲突');
+    assert.equal(await body.locator('ol li').count(), 2);
+    assert.equal(await body.locator('blockquote').textContent(), '守住人物动机。');
+    assert.equal(await body.locator('code').textContent(), '<img src=x onerror="globalThis.__moyuChatXss=1">');
+    assert.equal(await body.locator('script,img,a,iframe').count(), 0);
+    assert.equal(await page.evaluate(() => globalThis.__moyuChatXss || 0), 0);
+    const before = requests.filter(row => row.method === 'POST').length;
+    await page.locator('#agentChatInput').fill('保留我自己的追问。');
+    await article.locator('[data-chat-followup]').click();
+    assert.ok((await page.locator('#agentChatInput').inputValue()).startsWith('保留我自己的追问。\n\n关于你提到的'));
+    assert.equal(requests.filter(row => row.method === 'POST').length, before);
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'clipboard', {configurable: true,
+        value: {writeText: async text => {globalThis.__moyuCopiedReply = text;}}});
+    });
+    await article.locator('[data-chat-copy]').click();
+    await until(() => page.evaluate(() => typeof globalThis.__moyuCopiedReply === 'string'), 'copied reply');
+    assert.equal(await page.evaluate(() => globalThis.__moyuCopiedReply), message.content);
+    assert.equal(requests.filter(row => row.method === 'POST').length, before);
+    report.inspiration_fixture = {session_id: fixture.session.id, message_id: message.id, action_id: fixture.action.id};
+  });
+
+  await test('灵感保存无须来源章节，原卡显示保存状态并保留当前页面', async () => {
+    const data = workspace('default-project', 'main'), current = report.inspiration_fixture;
+    const card = page.locator('[data-chat-action="' + current.action_id + '"]');
+    assert.equal(await card.locator('[data-chat-confirm]').textContent(), '保存为灵感');
+    await card.locator('.agent-chat-inspiration summary').click();
+    assert.match(await card.locator('.agent-chat-inspiration .agent-chat-markdown').textContent(), /失踪父亲/);
+    const before = writingRequests.filter(row => row.method === 'POST').length;
+    await card.locator('[data-chat-confirm]').click();
+    await card.getByText('已保存为灵感草稿', {exact: true}).waitFor();
+    assert.equal(data.savedInspirations.size, 1);
+    assert.equal(await page.evaluate(() => view), 'memory');
+    assert.equal(writingRequests.filter(row => row.method === 'POST').length, before);
+    assert.equal(await card.locator('[data-chat-start]').count(), 0);
+    assert.equal(await card.locator('[data-chat-open-result]').textContent(), '查看灵感');
+    await card.locator('[data-chat-open-result]').click();
+    await page.waitForFunction(() => view === 'world');
+    assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
+  });
+
+  await test('上一轮参考范围准确区分作品资料、整章正文和正文引用', async () => {
+    await page.locator('#agentChatIncludeChapter').uncheck();
+    await sent(page, '只根据作品资料继续讨论，不带入整章。');
+    const summary = page.locator('#agentChatContextSummary');
+    await summary.waitFor();
+    assert.equal(await summary.textContent(), '上一轮参考：作品资料');
+    const payload = requests.filter(row => row.suffix.endsWith('/messages')).at(-1).body;
+    assert.equal(payload.include_chapter, false);
+    assert.deepEqual(payload.references, []);
+    const data = workspace('default-project', 'main'), current = report.inspiration_fixture;
+    data.summaries.set(current.session_id, {project_materials_included: true, chapter_included: true,
+      chapter_title: firstTitle, reference_count: 2});
+    await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+    await until(() => summary.textContent().then(value => value.includes(firstTitle) && value.includes('2处正文引用')), 'reference summary');
+    await page.locator('[data-chat-new]').click();
+    assert.equal(await summary.isHidden(), true);
+  });
+
+  await test('历史格式错误恢复为文字后可阅读追问，不再重复展示格式错误', async () => {
+    const data = workspace('default-project', 'main'), current = report.inspiration_fixture;
+    const session = data.sessions.find(row => row.id === current.session_id);
+    const message = {id: crypto.randomUUID(), role: 'assistant', content: '## 人物灵感\n\n主角最想保护的，恰好是她最大的弱点。',
+      status: 'failed', response_recovered: true, created_at: timestamp(), actions: []};
+    data.messages.get(session.id).push(message);
+    data.runs.set('ui_recovered_reply', {id: 'ui_recovered_reply', session_id: session.id,
+      status: 'failed', error: '模型回复不是要求的 JSON 格式'});
+    await page.locator('[data-chat-history]').click();
+    await page.locator('[data-chat-session="' + session.id + '"]').click();
+    const article = page.locator('[data-chat-message="' + message.id + '"]');
+    await article.waitFor();
+    assert.equal(await article.locator('.agent-chat-message-state').textContent(), '已恢复为文字，未执行任何操作');
+    assert.equal(await article.locator('[data-chat-followup]').count(), 1);
+    assert.equal(await article.locator('[data-chat-copy]').count(), 1);
+    assert.equal(await article.locator('[data-chat-action]').count(), 0);
+    assert.equal(await page.locator('#agentChatFeed').getByText('模型回复不是要求的 JSON 格式', {exact: true}).count(), 0);
+    assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
+    assert.deepEqual(report.page_errors, []);
+  });
+
+  await test('发送后资料已更新仍保留完整回复，取消所有操作建议并可复制追问', async () => {
+    const data = workspace('default-project', 'main'), current = report.inspiration_fixture;
+    const session = data.sessions.find(row => row.id === current.session_id);
+    const message = {id: crypto.randomUUID(), role: 'assistant',
+      content: '## 渡口的秘密\n\n让主角在救出父亲与保护渡口之间选择。\n\n1. 先追查来信。\n2. 再确认船工的动机。',
+      status: 'success', context_stale: true, created_at: timestamp(), actions: [
+        {id: 'ui-stale-continue', kind: 'continue', label: '旧资料续写',
+          instruction: '按发送时的资料续写。', chapter_id: firstId, status: 'confirmed',
+          result: {writing_session_id: 'ui-stale-writing-task'}},
+        {id: 'ui-stale-inspiration', kind: 'save_inspiration', label: '旧资料灵感',
+          title: '已经过时的设定', content: '保留在回复中，不能直接执行。', status: 'proposed'},
+      ]};
+    data.messages.set(session.id, [message]);
+    data.runs.set('ui_stale_reply', {id: 'ui_stale_reply', session_id: session.id, status: 'success'});
+    const beforePosts = requests.filter(row => row.method === 'POST').length;
+    const beforeWriting = writingRequests.length;
+    await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+    const article = page.locator('[data-chat-message="' + message.id + '"]');
+    await article.waitFor();
+    assert.equal(await article.locator('.agent-chat-message-state').textContent(),
+      '回复依据是发送时的资料；资料已更新，本轮操作建议已取消。');
+    assert.equal(await article.getByText('这条回复未完成', {exact: true}).count(), 0);
+    assert.equal(await article.locator('.agent-chat-message-body h4').textContent(), '渡口的秘密');
+    assert.equal(await article.locator('[data-chat-action],[data-chat-confirm],[data-chat-start]').count(), 0);
+    assert.equal(await article.locator('[data-chat-followup]').count(), 1);
+    assert.equal(await article.locator('[data-chat-copy]').count(), 1);
+    await page.locator('#agentChatInput').fill('请依据最新人物设定继续。');
+    await article.locator('[data-chat-followup]').click();
+    assert.ok((await page.locator('#agentChatInput').inputValue()).startsWith('请依据最新人物设定继续。\n\n关于你提到的'));
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, 'clipboard', {configurable: true,
+        value: {writeText: async text => {globalThis.__moyuCopiedStaleReply = text;}}});
+    });
+    await article.locator('[data-chat-copy]').click();
+    await until(() => page.evaluate(() => typeof globalThis.__moyuCopiedStaleReply === 'string'), 'copied stale reply');
+    assert.equal(await page.evaluate(() => globalThis.__moyuCopiedStaleReply), message.content);
+    assert.equal(requests.filter(row => row.method === 'POST').length, beforePosts);
+    assert.equal(writingRequests.length, beforeWriting);
+    await page.setViewportSize({width: 1280, height: 900});
+    await article.scrollIntoViewIfNeeded();
+    const screenshot = path.join(temporary, 'agent-chat-context-updated-1280x900.png');
+    await page.screenshot({path: screenshot}); report.screenshots.push(screenshot);
+    assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
+    assert.deepEqual(report.page_errors, []);
+  });
+
   report.passed = true;
   await context.close();
 }

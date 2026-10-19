@@ -531,7 +531,7 @@ function authorAgentCurrentFocus(){
  if(authorAgentFocus&&!authorAgentEditorScopeCurrent(authorAgentFocus))authorAgentFocus=null;
  return authorAgentFocus;
 }
-async function authorOpenAgentSession(sessionId,chapterId,chatCurrent=()=>true){
+async function authorOpenAgentSession(sessionId,chapterId,chatCurrent=()=>true,targetSection='workbenchAgentSection'){
  const scope=authorAgentScope(),startingChapter=activeChapter;
  const current=()=>scope.owner===requestedProject&&scope.branch===(state.branch_id||'main')&&activeChapter===startingChapter&&chatCurrent();
  if(!current())return false;
@@ -547,7 +547,11 @@ async function authorOpenAgentSession(sessionId,chapterId,chatCurrent=()=>true){
  activeChapter=chapterId;storage.set(cacheKey(':active'),chapterId);view='editor';render();
  const host=document.querySelector('#agentSessions');
  if(authorAgentEditorScopeCurrent(authorAgentFocus)&&host){
-  authorAgentRows=[row];authorRenderAgent(scope,host);authorRevealWorkbenchSection('workbenchAgentSection');
+  authorAgentRows=[row];authorRenderAgent(scope,host);
+  const candidate=row.status==='awaiting_adoption'&&targetSection==='workbenchCandidateSection'&&row.current_job?
+   receiveCandidateJob(row.current_job):null;
+  if(candidate)displayCandidate(candidate);
+  authorRevealWorkbenchSection(candidate?'workbenchCandidateSection':'workbenchAgentSection');
  }
  return true;
 }

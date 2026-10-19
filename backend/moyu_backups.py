@@ -110,7 +110,7 @@ JSON_REFERENCES = {
     "project_id": "project", "branch_id": "branch", "chapter_id": "document_node",
     "document_node_id": "document_node", "source_chapter_id": "document_node",
     "revision_id": "document_revision", "source_revision_id": "document_revision",
-    "result_revision_id": "document_revision", "entity_id": "entity",
+    "result_revision_id": "document_revision", "entity_id": "entity", "record_id": "entity",
     "subject_entity_id": "entity", "from_entity_id": "entity", "to_entity_id": "entity",
     "source_span_id": "source_span", "candidate_memory_id": "candidate_memory",
     "assertion_id": "assertion", "source_assertion_id": "assertion",
@@ -768,7 +768,7 @@ def _check_chat_graph(data, indexes, project, branch_of):
                             or binding.get("chat_turn_id") != row["id"]):
                         raise ValueError("备份中的聊天消息与模型任务归属不一致")
             if table == "app_agent_chat_action":
-                if (row["kind"] not in {"continue", "polish", "inspect", "plan", "next_chapter", "open"}
+                if (row["kind"] not in {"continue", "polish", "inspect", "plan", "next_chapter", "open", "save_inspiration"}
                         or row["status"] not in {"proposed", "confirming", "confirmed", "dismissed"}):
                     raise ValueError("备份中的聊天动作类型或状态无效")
 

@@ -1033,7 +1033,7 @@ def ai_context(conn, chapter_id, material_controls=None, retrieval_profile=None,
     return context, chapter
 
 
-def validate_material_source(conn, context, *, run_id=None):
+def validate_material_source(conn, context, *, run_id=None, validate_current=True):
     if run_id is not None:
         saved = conn.execute(
             "SELECT r.input_hash,r.prompt_hash,r.consent_json,j.task FROM ai_run r "
@@ -1047,10 +1047,13 @@ def validate_material_source(conn, context, *, run_id=None):
         consent = _json_object(saved["consent_json"], {})
         moyu_materials.validate_frozen_reference_context(
             context, consent.get("request_audit"),
-            input_hash=saved["input_hash"], prompt_hash=saved["prompt_hash"])
+            input_hash=saved["input_hash"], prompt_hash=saved["prompt_hash"],
+            require_full_request=saved["task"] == "assistant_chat")
         if context.get("reference_passages") and (
                 saved["task"] not in {"continue", "polish"} or consent.get("task") != saved["task"]):
             raise ValueError("本次参考片段的任务用途已变化，请重新生成续写或润色候选。")
+    if not validate_current:
+        return
     moyu_materials.validate_reference_context(conn, project_id(), branch_id(), context)
     if context.get("planning_workflow") and "_material_source" not in context:
         return
@@ -1663,6 +1666,8 @@ def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, 
                    error: str | Exception | None, latency_ms: int) -> dict[str, Any]:
     """Retain partial diagnostics but never promote an incomplete candidate."""
     from .moyu_provider import ProviderCanceled, ProviderError
+    if job["task"] == "assistant_chat" and not conn.in_transaction:
+        conn.execute("BEGIN IMMEDIATE")
     current = conn.execute("SELECT status,cancel_requested,ai_run_id FROM app_ai_job WHERE id=? AND project_id=? AND branch_id=?", (job["id"], project_id(), branch_id())).fetchone()
     if current is None:
         raise ValueError("AI job not found")
@@ -1687,8 +1692,10 @@ def finish_ai_job(conn: sqlite3.Connection, job: sqlite3.Row, result: dict[str, 
         error_text = "候选未完整生成，保留已有片段供查看，不能直接采纳。"
     else:
         status, run_status, error_text = "success", "success", None
-        validate_material_source(conn, context, run_id=job["ai_run_id"])
-        validate_guidance_source(conn, context)
+        validate_material_source(conn, context, run_id=job["ai_run_id"],
+                                 validate_current=job["task"] != "assistant_chat")
+        if job["task"] != "assistant_chat":
+            validate_guidance_source(conn, context)
         if job["task"] in {"chapter_analysis", "semantic_review"} and result.get("mode") == "provider":
             persist_structured_result(conn, job, result)
     if job["task"] == "assistant_chat":

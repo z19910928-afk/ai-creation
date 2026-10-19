@@ -34,7 +34,7 @@
 
 ### 随时能聊，也能把讨论接进创作
 
-写作总管常驻主界面。带上当前章节或选中的原文，就能讨论人物动机、情节走向和具体写法。需要行动时，建议会进入原聊天中的任务卡；确认计划并启动任务后，接续续写、修订、规划或检查，进度与结果都能回看。
+写作总管常驻主界面。结合作品资料讨论灵感、人物和情节，也可以带上当前章节或选中的原文，继续追问和复制回复。满意的构思确认后保存到设定库，标记为尚未发生的作者计划。需要行动时，建议会进入原聊天中的任务卡；确认计划并启动任务后，接续续写、修订、规划或检查，进度与结果都能回看。
 
 ### 资料有关联，记忆可追溯
 
@@ -62,7 +62,7 @@
 | 创作中的事情 | 墨屿怎样帮你 |
 | --- | --- |
 | 管好一部长篇 | 多作品书架，卷、章、场景规划，章节任务卡与写作进度 |
-| 随时讨论与安排任务 | 常驻总管对话、当前章与选区引用、任务进度、保存后接续 |
+| 随时讨论与安排任务 | 灵感讨论与确认保存、常驻总管对话、当前章与选区引用、任务进度与结果直达 |
 | 保持人物与情节连贯 | 关联知识卡、章后记忆、原句证据、人物关系、时间线与伏笔 |
 | 放心尝试不同写法 | 选区润色、候选比较、明确采纳、正文历史与版本恢复 |
 | 为不同工作选择模型 | 自动获取模型清单，支持 Chat / Responses；先测试保存，再为创作各用途分配模型 |
@@ -150,8 +150,8 @@ py -3.11 -m venv .venv
 | 聊天、写作、记忆、备份和详细操作 | [使用与开发参考](docs/reference-guide.md) |
 | 接口、运行配置和开发检查 | [本机接口](docs/reference-guide.md#本地-api) · [开发验证](docs/reference-guide.md#验证) |
 | 产品方向和下一步能力 | [产品蓝图](docs/master-product-blueprint-v2.md) · [能力对照](docs/audits/2026-10-14/comprehensive/capability-matrix.md) |
-| 已做过哪些检查 | [产品验收记录](docs/audits/2026-10-14/comprehensive/README.md) · [文学评测说明](docs/evaluations/README.md) |
-| 借鉴了哪些产品 | [NovelForge 流程研究](docs/research/novelforge-writing-flow-and-interface-2026-10-16.md) · [设计参考](docs/design-references.md) · [第三方边界](docs/third-party-audit.md) |
+| 已做过哪些检查 | [写作总管与灵感验收](docs/audits/agent-chat-inspiration-repair-20261019.md) · [产品验收记录](docs/audits/2026-10-14/comprehensive/README.md) · [文学评测说明](docs/evaluations/README.md) |
+| 借鉴了哪些产品 | [NovelForge 流程研究](docs/research/novelforge-writing-flow-and-interface-2026-10-16.md) · [灵感助手研究](docs/research/novelforge-inspiration-assistant-2026-10-19.md) · [设计参考](docs/design-references.md) · [第三方边界](docs/third-party-audit.md) |
 
 <details>
 <summary><strong>项目目录</strong></summary>

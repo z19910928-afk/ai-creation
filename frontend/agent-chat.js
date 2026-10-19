@@ -49,18 +49,25 @@
  host.innerHTML=`<header class="agent-chat-head"><div class="agent-chat-heading">${icon('chat')}<div><strong>写作总管</strong><small id="agentChatTitle">新对话</small></div></div>
   <div class="agent-chat-head-actions">${button('plus','新对话','data-chat-new')}${button('history','历史对话','data-chat-history')}${button('settings','写作总管连接设置','data-chat-settings')}</div></header>
   <div class="agent-chat-scope"><span id="agentChatProject"></span><span class="agent-chat-branch" id="agentChatBranch"></span></div>
+  <div class="agent-chat-connection" role="status" hidden><span>写作总管还没有连接模型</span><button type="button" data-chat-configure>连接模型</button></div>
+  <div id="agentChatContextSummary" class="agent-chat-context-summary" aria-label="上一轮参考范围" hidden></div>
   <nav class="agent-chat-results" aria-label="当前章节结果" hidden><button type="button" data-chat-result="workbenchAgentSection">任务进度</button><button type="button" data-chat-result="workbenchCandidateSection">正文候选</button><button type="button" data-chat-result="workbenchContextSection">本章依据</button></nav>
   <div id="agentChatFeed" class="agent-chat-feed" role="log" aria-label="创作对话" aria-live="polite" aria-relevant="additions text"></div>
   <section class="agent-chat-history" aria-label="历史对话" hidden><div class="agent-chat-history-head"><strong>历史对话</strong>${button('close','关闭历史对话','data-chat-history-close')}</div><div class="agent-chat-history-list"></div></section>
-  <form id="agentChatForm" class="agent-chat-composer"><div class="agent-chat-context"><label title="将当前章节与相关资料带入本次对话"><input id="agentChatIncludeChapter" type="checkbox" checked><span id="agentChatChapter">当前章节</span></label><button type="button" data-chat-quote title="引用所选正文">${icon('quote')}引用选区</button></div>
+  <form id="agentChatForm" class="agent-chat-composer"><div class="agent-chat-materials"><span>参考范围</span><strong>作品资料</strong><span id="agentChatReferenceCount"></span></div><div class="agent-chat-context"><label title="可额外带入当前章节正文"><input id="agentChatIncludeChapter" type="checkbox" checked><span id="agentChatChapter">当前章节</span></label><button type="button" data-chat-quote title="引用所选正文">${icon('quote')}引用选区</button></div>
   <div id="agentChatReferences" class="agent-chat-references"></div><p id="agentChatNotice" class="agent-chat-notice" role="status"></p>
   <textarea id="agentChatInput" aria-label="给写作总管的消息" maxlength="6000" placeholder="想写什么，或哪里需要调整？" rows="3"></textarea>
   <div class="agent-chat-send-row"><span id="agentChatSaveState" class="agent-chat-save-state">正在连接本机…</span><button class="agent-chat-send" id="agentChatSend" type="submit" title="发送消息" aria-label="发送消息">${icon('send')}</button></div></form>`;
  const $=selector=>host.querySelector(selector),feed=$('#agentChatFeed'),input=$('#agentChatInput');
- let observed='',observedScope=null,epoch=0,sessionEpoch=0,session=null,sessions=[],messages=[],activeRun=null,settings=null;
+ let observed='',observedScope=null,epoch=0,sessionEpoch=0,session=null,sessions=[],messages=[],activeRun=null,settings=null,contextSummary=null;
  let timer=null,loading=false,sendOperation=null,actionOperation=null,creating=false,polling=false,bundleRevision=0;
  let references=[],draftRevision=0,pendingSend=null,pendingCreation=null,historyOpen=false,messageSignature='',notice='',loadError='';
  const writingTasks=new Map(),actionErrors=new Map();
+ const starters=[
+  {id:'idea',label:'构思灵感',prompt:'我想构思一个故事。请结合已有作品资料，先给我三个有区别的故事方向，分别说清主角、核心冲突和独特看点，再和我一起打磨。'},
+  {id:'character',label:'打磨人物',prompt:'我想把人物写得更鲜活。请结合已有设定，和我讨论人物的欲望、弱点、秘密和改变；资料没有明确的地方先问我。'},
+  {id:'plot',label:'讨论情节',prompt:'我想讨论接下来的情节。请根据作品资料给我三个不同走向，比较人物动机、冲突和代价，先讨论，不直接改正文。'}
+ ];
  const writingLabels={awaiting_authorization:'等待启动',awaiting_job:'正在执行',awaiting_adoption:'正文候选待采纳',
   awaiting_memory:'等待章后确认',awaiting_plan_confirmation:'本阶段候选待确认',awaiting_plan_application:'完整规划待采用',
   requires_action:'需要处理',review_ready:'记忆与审稿已就绪',canceled:'已停止',restored:'历史记录',unknown:'任务结果尚未确认'};
@@ -71,7 +78,7 @@
  const capture=()=>({...scope(),epoch,sessionEpoch,bundleRevision,sessionId:session?.id||null});
  const current=value=>value.epoch===epoch&&value.sessionEpoch===sessionEpoch&&scopeKey(value)===observed&&scopeKey(value)===scopeKey()&&
   value.sessionId===(session?.id||null);
- const allActions=()=>messages.flatMap(message=>message.actions||[]);
+ const allActions=()=>messages.flatMap(message=>message.context_stale?[]:message.actions||[]);
  const boundAction=action=>allActions().find(item=>item.id===action.id&&item.kind===action.kind&&
   item.chapter_id===action.chapter_id&&item.instruction===action.instruction&&item.result?.writing_session_id===action.result?.writing_session_id);
  const taskCurrent=(action,captured,entry)=>current(captured)&&!!boundAction(action)&&writingTasks.get(action.result?.writing_session_id)===entry;
@@ -83,6 +90,59 @@
  const lastKey=()=>localKey(`:agent-chat-last:${(observedScope||scope()).branch}`);
  const publicError=error=>error?.message||'连接暂时没有回应，请稍后重试';
  function notify(message=''){notice=message;$('#agentChatNotice').textContent=message}
+ function openSettings(){view='settings';render();document.querySelector('#agentSettingsHost')?.scrollIntoView()}
+ function fillDraft(text){
+  if(session?.restored_read_only||sendOperation||creating)return;
+  const previous=input.value.trim(),addition=String(text||'').trim();
+  if(!addition)return;
+  const combined=previous?previous+'\n\n'+addition:addition;
+  if(combined.length>input.maxLength){notify('输入草稿较长，请先整理后再添加。');return}
+  input.value=combined;pendingSend=null;++draftRevision;rememberDraft();notify('');updateControls();input.focus();
+  input.setSelectionRange(input.value.length,input.value.length);
+ }
+ function inlineMarkdown(text){
+  // Only our own formatting tags enter HTML; model text is always escaped.
+  return String(text).split(/(`[^`\n]+`)/g).map(part=>{
+   if(part.startsWith('`')&&part.endsWith('`'))return '<code>'+esc(part.slice(1,-1))+'</code>';
+   return esc(part).replace(/\*\*([^*\n]+)\*\*/g,'<strong>$1</strong>').replace(/__([^_\n]+)__/g,'<strong>$1</strong>');
+  }).join('');
+ }
+ function markdown(text){
+  const lines=String(text||'').replace(/\r\n?/g,'\n').split('\n'),blocks=[];
+  let paragraph=[],list=[],listTag='',quote=[],code=null;
+  const flushParagraph=()=>{if(paragraph.length){blocks.push('<p>'+paragraph.map(inlineMarkdown).join('<br>')+'</p>');paragraph=[]}};
+  const flushList=()=>{if(list.length){blocks.push('<'+listTag+'>'+list.map(line=>'<li>'+inlineMarkdown(line)+'</li>').join('')+'</'+listTag+'>');list=[];listTag=''}};
+  const flushQuote=()=>{if(quote.length){blocks.push('<blockquote>'+quote.map(inlineMarkdown).join('<br>')+'</blockquote>');quote=[]}};
+  const flush=()=>{flushParagraph();flushList();flushQuote()};
+  for(const line of lines){
+   if(code!==null){if(/^\s*```/.test(line)){blocks.push('<pre><code>'+esc(code.join('\n'))+'</code></pre>');code=null}else code.push(line);continue}
+   if(/^\s*```/.test(line)){flush();code=[];continue}
+   if(!line.trim()){flush();continue}
+   const heading=line.match(/^#{1,6}\s+(.+)$/),item=line.match(/^\s*(?:[-+*]|\d+[.)])\s+(.+)$/),quoted=line.match(/^\s*>\s?(.*)$/);
+   if(heading){flush();blocks.push('<h4>'+inlineMarkdown(heading[1])+'</h4>');continue}
+   if(item){flushParagraph();flushQuote();const tag=/^\s*\d/.test(line)?'ol':'ul';if(listTag&&tag!==listTag)flushList();listTag=tag;list.push(item[1]);continue}
+   if(quoted){flushParagraph();flushList();quote.push(quoted[1]);continue}
+   flushList();flushQuote();paragraph.push(line);
+  }
+  flush();if(code!==null)blocks.push('<pre><code>'+esc(code.join('\n'))+'</code></pre>');
+  return blocks.join('');
+ }
+ function messageComplete(message){
+  return message.role==='assistant'&&!!String(message.content||'').trim()&&(message.response_recovered||!message.status||['success','complete','completed'].includes(message.status));
+ }
+ async function copyMessage(message){
+  const captured=capture(),content=String(message?.content||'');if(!content)return;
+  try{
+   if(navigator.clipboard?.writeText)await navigator.clipboard.writeText(content);
+   else throw new Error('clipboard unavailable');
+   if(current(captured))notify('回复已复制。');
+  }catch{
+   const previous=document.activeElement,temporary=document.createElement('textarea');
+   temporary.value=content;temporary.className='agent-chat-copy-buffer';temporary.setAttribute('aria-label','待复制的回复');document.body.append(temporary);
+   temporary.select();let copied=false;try{copied=document.execCommand('copy')}catch{}temporary.remove();previous?.focus();
+   if(current(captured))notify(copied?'回复已复制。':'复制暂时不可用，请选中回复文字后复制。');
+  }
+ }
  function rememberDraft(){
   const value={content:input.value,references,include_chapter:$('#agentChatIncludeChapter').checked,pending:pendingSend,
    session_request_id:pendingCreation};
@@ -114,6 +174,7 @@
   if(activeRun?.status==='unknown')return '本次回复结果尚未确认';
   if(pendingSend)return '发送结果尚未确认';
   if(session?.restored_read_only)return '备份中的历史对话';
+  if(settings?.configured===false)return '请先连接写作总管模型';
   return session?'对话已保存在本机':'新对话';
  }
  function updateControls(){
@@ -121,10 +182,22 @@
   const send=$('#agentChatSend');
   send.innerHTML=icon(active?'stop':'send');send.type=active?'button':'submit';
   send.dataset.stopping=String(active);send.title=active?'停止本次回复':'发送消息';send.setAttribute('aria-label',send.title);
-  send.disabled=!backendOnline||!!sendOperation||!!actionOperation||creating||readOnly||(!active&&!input.value.trim());
+  send.disabled=!backendOnline||!!sendOperation||!!actionOperation||creating||readOnly||(!active&&(settings?.configured===false||!input.value.trim()));
   input.disabled=readOnly;
   input.placeholder=readOnly?'这是恢复的历史对话，请新建对话继续。':'想写什么，或哪里需要调整？';
   $('#agentChatSaveState').textContent=savedState();
+  $('.agent-chat-connection').hidden=settings?.configured!==false||!backendOnline;
+  const summary=$('#agentChatContextSummary');
+  summary.hidden=!contextSummary||!messages.length;
+  if(contextSummary){
+   const parts=[];
+   if(contextSummary.project_materials_included)parts.push('作品资料');
+   if(contextSummary.chapter_included)parts.push(contextSummary.chapter_title||'章节正文');
+   if(Number(contextSummary.reference_count)>0)parts.push(contextSummary.reference_count+'处正文引用');
+   summary.textContent='上一轮参考：'+(parts.length?parts.join(' · '):'对话内容');
+  }
+  $('#agentChatReferenceCount').textContent=references.length?references.length+'处引用':'';
+  host.querySelectorAll('[data-chat-starter],[data-chat-followup]').forEach(element=>element.disabled=readOnly||!!sendOperation||creating);
   $('[data-chat-new]').disabled=creating||!!sendOperation;
   const c=chapter(),included=$('#agentChatIncludeChapter');
   included.disabled=!c||readOnly;
@@ -176,11 +249,13 @@
   const done=['confirmed','executed','completed','applied'].includes(action.status),dismissed=['dismissed','rejected','canceled'].includes(action.status);
   const confirming=action.status==='confirming',canConfirm=!done&&!dismissed&&!session?.restored_read_only;
   const entry=taskEntry(action),disabled=!!actionOperation||!!sendOperation||creating||!backendOnline;
+  const inspiration=action.kind==='save_inspiration',candidateReady=entry?.verified&&entry.row?.status==='awaiting_adoption';
+  const resultLabel=inspiration?'查看灵感':action.kind==='open'?'再次打开':candidateReady?'查看正文候选':entry?'查看本次结果':'查看结果';
   return `<section class="agent-chat-action" data-chat-action="${esc(action.id)}"><h4>${esc(action.label||'创作建议')}</h4>
-   ${action.instruction?`<p>${esc(action.instruction)}</p>`:''}<small>${dismissed?'已放弃':done?'已确认，处理结果已保存':confirming?'确认结果待恢复，请恢复此步骤后查看进度':action.kind==='open'?'查看当前作品内容':action.kind==='next_chapter'?'检查通过后归档本章，打开下一章；本步骤不生成正文':'确认后进入相应创作流程'}</small>
-   ${taskMarkup(action)}<div class="agent-chat-action-buttons">${canConfirm?`<button type="button" class="primary-btn" data-chat-confirm ${disabled?'disabled':''}>${confirming?'恢复此步骤':action.kind==='open'?'打开':'确认此步骤'}</button>${action.kind!=='open'&&!confirming?`<button type="button" class="ghost-btn" data-chat-dismiss ${disabled?'disabled':''}>放弃</button>`:''}`:''}
+   ${inspiration?`<p class="agent-chat-inspiration-title">${esc(action.title||'故事灵感')}</p>${action.content?`<details class="agent-chat-inspiration"><summary>查看灵感草稿</summary><div class="agent-chat-markdown">${markdown(action.content)}</div></details>`:''}`:action.instruction?`<p>${esc(action.instruction)}</p>`:''}<small>${dismissed?'已放弃':done?inspiration?'已保存为灵感草稿':'已确认，处理结果已保存':confirming?'确认结果待恢复，请恢复此步骤后查看进度':inspiration?'保存到设定库，供后续创作参考':action.kind==='open'?'查看当前作品内容':action.kind==='next_chapter'?'检查通过后归档本章，打开下一章；本步骤不生成正文':'确认后进入相应创作流程'}</small>
+   ${taskMarkup(action)}<div class="agent-chat-action-buttons">${canConfirm?`<button type="button" class="primary-btn" data-chat-confirm ${disabled?'disabled':''}>${confirming?'恢复此步骤':inspiration?'保存为灵感':action.kind==='open'?'打开':'确认此步骤'}</button>${action.kind!=='open'&&!confirming?`<button type="button" class="ghost-btn" data-chat-dismiss ${disabled?'disabled':''}>放弃</button>`:''}`:''}
    ${done&&taskCanStart(entry,action)?`<button type="button" class="primary-btn" data-chat-start ${disabled?'disabled':''}>启动本次任务</button>`:''}
-   ${done?`<button type="button" class="ghost-btn" data-chat-open-result ${disabled?'disabled':''}>${action.kind==='open'?'再次打开':entry?'查看本次结果':'查看结果'}</button>`:''}
+   ${done?`<button type="button" class="ghost-btn" data-chat-open-result ${disabled?'disabled':''}>${resultLabel}</button>`:''}
    ${entry?`<button type="button" class="ghost-btn" data-chat-task-refresh ${disabled||entry.pending?'disabled':''}>核对进度</button>`:''}</div><p class="form-error" data-chat-action-error role="alert">${esc(actionErrors.get(action.id)?.message||'')}</p></section>`;
  }
  function renderMessages(force=false){
@@ -195,14 +270,21 @@
    const role=message.role==='user'?'user':message.role==='tool'?'tool':'assistant';
    const label={user:'你',assistant:'写作总管',tool:'执行记录'}[role];
    return `<article class="agent-chat-message" data-chat-message="${esc(message.id)}" data-role="${role}"><div class="agent-chat-message-head"><strong>${label}</strong><time>${esc(relativeDate(message.created_at))}</time></div>
-    <div class="agent-chat-message-body">${esc(message.content||'')}</div>
+    <div class="agent-chat-message-body ${role==='assistant'?'agent-chat-markdown':''}">${role==='assistant'?markdown(message.content):esc(message.content||'')}</div>
     ${message.references?.length?`<div class="agent-chat-message-refs">${message.references.map(ref=>`<span>${esc(chapter(ref.chapter_id)?.title||'正文引用')} · ${Array.from(ref.range?.quote||'').length} 字</span>`).join('')}</div>`:''}
-    ${message.status&&['failed','canceled','cancelled','interrupted','unknown'].includes(message.status)?`<p class="agent-chat-message-state">${esc({failed:'这条回复未完成',canceled:'已停止本次回复',cancelled:'已停止本次回复',interrupted:'回复中断，请查看连接状态',unknown:'本次回复结果尚未确认，请先查看任务记录'}[message.status])}</p>`:''}
-    ${(message.actions||[]).map(actionMarkup).join('')}</article>`;
-  }).join(''):`<div class="agent-chat-empty">${icon('chat')}<strong>${loadError?'对话暂时没有读取':loading?'正在读取对话…':'从眼前这个故事开始'}</strong><p>${esc(loadError||'')}</p>${loadError?'<button type="button" data-chat-retry>重新连接</button>':''}</div>`;
+    ${message.context_stale?'<p class="agent-chat-message-state">回复依据是发送时的资料；资料已更新，本轮操作建议已取消。</p>':message.response_recovered?'<p class="agent-chat-message-state">已恢复为文字，未执行任何操作</p>':message.status&&['failed','canceled','cancelled','interrupted','unknown'].includes(message.status)?`<p class="agent-chat-message-state">${esc({failed:'这条回复未完成',canceled:'已停止本次回复',cancelled:'已停止本次回复',interrupted:'回复中断，请查看连接状态',unknown:'本次回复结果尚未确认，请先查看任务记录'}[message.status])}</p>`:''}
+    ${(message.context_stale?[]:message.actions||[]).map(actionMarkup).join('')}${messageComplete(message)?`<div class="agent-chat-message-tools"><button type="button" data-chat-followup="${esc(message.id)}">继续追问</button><button type="button" data-chat-copy="${esc(message.id)}">复制回复</button></div>`:''}</article>`;
+  }).join(''):`<div class="agent-chat-empty">${icon('chat')}<strong>${loadError?'对话暂时没有读取':loading?'正在读取对话…':'故事从一个念头开始'}</strong><p>${esc(loadError||'')}</p>${loadError?'<button type="button" data-chat-retry>重新连接</button>':loading?'':`<div class="agent-chat-starters">${starters.map(item=>`<button type="button" data-chat-starter="${item.id}">${item.label}</button>`).join('')}</div>`}</div>`;
   if(running())feed.insertAdjacentHTML('beforeend','<div class="agent-chat-running" role="status"><span></span><span>消息已保存，正在查阅资料并组织回复…</span></div>');
-  if(activeRun?.error)feed.insertAdjacentHTML('beforeend',`<p class="agent-chat-message-state">${esc(activeRun.error)}</p>`);
+  if(activeRun?.error&&!messages.filter(message=>message.role==='assistant').at(-1)?.response_recovered)feed.insertAdjacentHTML('beforeend',`<p class="agent-chat-message-state">${esc(activeRun.error)}</p>`);
   feed.querySelector('[data-chat-retry]')?.addEventListener('click',()=>loadSessions(true));
+  feed.querySelectorAll('[data-chat-starter]').forEach(element=>element.onclick=()=>fillDraft(starters.find(item=>item.id===element.dataset.chatStarter)?.prompt));
+  feed.querySelectorAll('[data-chat-followup]').forEach(element=>element.onclick=()=>{
+   const message=messages.find(item=>item.id===element.dataset.chatFollowup);if(!messageComplete(message||{}))return;
+   const excerpt=Array.from(String(message.content).replace(/\s+/g,' ')).slice(0,120).join('');
+   fillDraft('关于你提到的“'+excerpt+'”，我想继续讨论：');
+  });
+  feed.querySelectorAll('[data-chat-copy]').forEach(element=>element.onclick=()=>copyMessage(messages.find(item=>item.id===element.dataset.chatCopy)));
   feed.querySelectorAll('[data-chat-action]').forEach(element=>{
    const action=allActions().find(item=>item.id===element.dataset.chatAction);
    element.querySelector('[data-chat-confirm]')?.addEventListener('click',()=>performAction(action,'confirm'));
@@ -221,7 +303,7 @@
   if(data.session){session=data.session;storage.set(lastKey(),session.id)}
   if(Array.isArray(data.messages))messages=data.messages;
   for(const action of allActions())if(action.status==='confirmed'&&actionErrors.get(action.id)?.kind==='confirm')actionErrors.delete(action.id);
-  activeRun=data.active_run||null;settings=data.settings||settings;loadError='';loading=false;
+  activeRun=data.active_run||null;settings=data.settings||settings;contextSummary=data.context_summary||null;loadError='';loading=false;
   $('#agentChatTitle').textContent=session?.title||'新对话';
   renderMessages();schedule();return true;
  }
@@ -269,7 +351,7 @@
  async function selectSession(id){
   rememberDraft();++sessionEpoch;clearTimeout(timer);session=sessions.find(item=>item.id===id)||{id};
   writingTasks.clear();actionErrors.clear();actionOperation=null;++bundleRevision;
-  messages=[];activeRun=null;pendingSend=null;pendingCreation=null;loadError='';loading=true;notify('');historyOpen=false;
+  messages=[];activeRun=null;contextSummary=null;pendingSend=null;pendingCreation=null;loadError='';loading=true;notify('');historyOpen=false;
   $('.agent-chat-history').hidden=true;restoreDraft();renderMessages(true);
   const captured=capture();
   try{applyBundle(await request('/sessions/'+encodeURIComponent(id),{},captured),captured)}
@@ -277,7 +359,7 @@
  }
  async function newSession(){
   if(creating||sendOperation)return;
-  rememberDraft();++sessionEpoch;clearTimeout(timer);session=null;messages=[];activeRun=null;pendingSend=null;pendingCreation=null;
+  rememberDraft();++sessionEpoch;clearTimeout(timer);session=null;messages=[];activeRun=null;contextSummary=null;pendingSend=null;pendingCreation=null;
   writingTasks.clear();actionErrors.clear();actionOperation=null;++bundleRevision;
   loading=false;loadError='';historyOpen=false;$('.agent-chat-history').hidden=true;notify('');
   references=[];input.value='';++draftRevision;renderReferences();renderMessages(true);
@@ -340,6 +422,7 @@
   sendOperation=operation;captured.bundleRevision=++bundleRevision;notify('');renderMessages();
   try{
    if(!backendOnline)throw new Error('请先连接本机服务。');
+   if(settings?.configured===false)throw new Error('请先连接写作总管模型。');
    if(!await syncBackend())throw new Error('请先保存或合并当前稿件。');
    if(!current(captured))return;
    if(!await ensureSession(captured))return;
@@ -452,7 +535,8 @@
      const entry=taskEntry(updated);
      if(result.writing_session&&taskMatches(updated,result.writing_session))entry.row=result.writing_session;
      renderMessages();await readWritingTask(updated,{force:true,captured});
-    }else await openActionResult(updated,captured);
+    }else if(updated.kind==='save_inspiration')notify('灵感已保存到设定库。');
+    else await openActionResult(updated,captured);
    }
   }catch(error){if(current(captured))actionErrors.set(action.id,{kind,message:publicError(error)})}
   finally{
@@ -466,7 +550,13 @@
    const row=await readWritingTask(action,{force:true,captured});
    if(!resultCurrent())return;
    if(!row)throw new Error(taskEntry(action)?.error||'任务状态尚未核实，请先核对进度。');
-   await authorOpenAgentSession(result.writing_session_id,cid,resultCurrent);return;
+   await authorOpenAgentSession(result.writing_session_id,cid,resultCurrent,row.status==='awaiting_adoption'?'workbenchCandidateSection':undefined);return;
+  }
+  if(action.kind==='save_inspiration'&&result.record_id){
+   if(!await hydrate())throw new Error('灵感已保存，页面暂未读到，请恢复连接后再查看。');
+   if(!current(captured))return;
+   if(mergePending)throw new Error('灵感已保存，请先处理当前稿件的合并再查看。');
+   view='world';render();return;
   }
   if(action.kind==='next_chapter'&&result.chapter_id){
    if(!await hydrate())throw new Error('章节交接已保存，页面暂未读到。恢复连接后可再查看结果。');
@@ -494,7 +584,7 @@
   const next=scopeKey();
   if(next!==observed){
    if(observed)rememberDraft();
-   observed=next;observedScope={...scope()};++epoch;++sessionEpoch;clearTimeout(timer);session=null;sessions=[];messages=[];activeRun=null;settings=null;
+   observed=next;observedScope={...scope()};++epoch;++sessionEpoch;clearTimeout(timer);session=null;sessions=[];messages=[];activeRun=null;settings=null;contextSummary=null;
    writingTasks.clear();actionErrors.clear();++bundleRevision;
    loading=backendOnline;loadError='';sendOperation=null;actionOperation=null;creating=false;references=[];pendingSend=null;pendingCreation=null;
    historyOpen=false;$('.agent-chat-history').hidden=true;notify('');restoreDraft();renderMessages(true);loadSessions(true);
@@ -510,10 +600,11 @@
  input.addEventListener('keydown',event=>{
   if(event.key==='Enter'&&(event.metaKey||event.ctrlKey)&&!event.isComposing){event.preventDefault();if(!running())send()}
  });
- $('#agentChatIncludeChapter').addEventListener('change',()=>{pendingSend=null;++draftRevision;rememberDraft()});
+ $('#agentChatIncludeChapter').addEventListener('change',()=>{pendingSend=null;++draftRevision;rememberDraft();updateControls()});
  $('[data-chat-quote]').onclick=quoteSelection;
  $('[data-chat-new]').onclick=newSession;
- $('[data-chat-settings]').onclick=()=>{view='settings';render();document.querySelector('#agentSettingsHost')?.scrollIntoView()};
+ $('[data-chat-settings]').onclick=openSettings;
+ $('[data-chat-configure]').onclick=openSettings;
  $('[data-chat-history]').onclick=()=>{historyOpen=!historyOpen;$('.agent-chat-history').hidden=!historyOpen;if(historyOpen){renderHistory();loadSessions(false)}};
  $('[data-chat-history-close]').onclick=()=>{historyOpen=false;$('.agent-chat-history').hidden=true};
  host.querySelectorAll('[data-chat-result]').forEach(element=>element.onclick=()=>authorRevealWorkbenchSection(element.dataset.chatResult));

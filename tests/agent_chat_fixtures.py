@@ -70,7 +70,7 @@ class Provider(BaseHTTPRequestHandler):
             "ledger": (ledger[0], ledger[1], json.loads(ledger[2])) if ledger else None,
         })
         actions = []
-        if case in {"actions", "held-actions"}:
+        if case in {"actions", "held-actions", "held-length"}:
             actions = [
                 {"kind": kind, "label": label, "instruction": "检查门内声音并保持林岚视角。"}
                 for kind, label in (("continue", "接着写"), ("inspect", "检查本章"),
@@ -92,6 +92,25 @@ class Provider(BaseHTTPRequestHandler):
             ]
         elif case == "bad-action":
             actions = [{"kind": "delete", "label": "删除", "instruction": "删除原稿。"}]
+        elif case in {"inspiration", "held-inspiration"}:
+            actions = [
+                {"kind": "save_inspiration", "label": "保存铜盒方案", "instruction": "保留待选方案。",
+                 "title": "铜盒与旧账", "content": "设想让铜盒保存一份有代价的旧账；尚未发生，等待作者采用。"},
+                {"kind": "save_inspiration", "label": "保存声音方案", "instruction": "保留另一种方向。",
+                 "title": "门内的声音", "content": "另一种设想：门内声音来自录音，主角必须判断录音的时间。"},
+                {"kind": "continue", "label": "直接续写", "instruction": "继续尚未提供的章节。"},
+                {"kind": "open", "label": "查看设定库", "instruction": "", "view": "world"},
+            ]
+        elif case == "bad-inspiration":
+            actions = [
+                {"kind": "save_inspiration", "label": "缺少内容", "instruction": "", "title": "空方案"},
+                {"kind": "save_inspiration", "label": "内容越界", "instruction": "",
+                 "title": "过长方案", "content": "甲" * 6001},
+                {"kind": "save_inspiration", "label": "标题为空", "instruction": "",
+                 "title": "  ", "content": "尚未采用的方案。"},
+                {"kind": "save_inspiration", "label": "混入未知字段", "instruction": "",
+                 "title": "未知字段", "content": "尚未采用的方案。", "execute": True},
+            ]
         reply = json.dumps({"reply": "门内的两下轻响提供了可追踪线索，应先保留不确定性。",
                             "actions": actions}, ensure_ascii=False)
         self.send_response(200)
@@ -103,13 +122,13 @@ class Provider(BaseHTTPRequestHandler):
             midpoint = len(reply) // 2
             self.event({"model": payload["model"], "choices": [
                 {"index": 0, "delta": {"content": reply[:midpoint]}, "finish_reason": None}]})
-            if case in {"held", "held-actions"}:
+            if case in {"held", "held-actions", "held-inspiration", "held-eof", "held-length"}:
                 self.started.set()
                 self.release.wait(timeout=8)
-            if case == "eof":
+            if case in {"eof", "held-eof"}:
                 return
             self.event({"choices": [{"index": 0, "delta": {"content": reply[midpoint:]},
-                                      "finish_reason": "stop"}]})
+                                      "finish_reason": "length" if case == "held-length" else "stop"}]})
             self.event({"choices": [], "usage": {
                 "prompt_tokens": 21, "completion_tokens": 13, "total_tokens": 34}})
             self.wfile.write(b"data: [DONE]\n\n")
@@ -237,6 +256,28 @@ class ChatTests(unittest.TestCase):
         job, result = self.process(queued)
         self.assertEqual(job["status"], "success", job)
         return result
+
+    def complete_with_change(self, change, *, case="held-actions", **overrides):
+        self.configure(case)
+        Provider.started.clear()
+        Provider.release.clear()
+        session = self.create("held_session_" + str(len(Provider.calls)))["session"]
+        status, queued = self.send(session, **overrides)
+        self.assertEqual(status, 202, queued)
+        completed = []
+        job = threading.Thread(target=lambda: completed.append(
+            server.process_ai_job(queued["active_run"]["id"])))
+        self.jobs.append(job)
+        job.start()
+        try:
+            self.assertTrue(Provider.started.wait(timeout=5))
+            change(queued)
+        finally:
+            Provider.release.set()
+            job.join(timeout=10)
+        self.assertFalse(job.is_alive())
+        self.assertEqual(len(completed), 1, completed)
+        return completed[0], self.read(session)
 
     def counts(self):
         tables = ("app_agent_chat_session", "app_agent_chat_turn", "app_agent_chat_action",
@@ -595,14 +636,302 @@ class ChatTests(unittest.TestCase):
         self.assertEqual(self.counts(), (1, 1, 4, 1, 1, 1, 1))
         self.assertEqual(len(Provider.calls), 1)
 
-    def test_chat_without_a_chapter_sends_only_minimal_verified_context(self):
+    def test_chat_without_a_chapter_sends_verified_project_materials_without_prose(self):
         result = self.complete(include_chapter=False, chapter_id=None)
         self.assertEqual(result["messages"][-1]["status"], "success")
         material = self.provider_material()
         self.assertEqual(material["project"]["id"], self.project)
         self.assertFalse(material["chapter_context_included"])
-        self.assertNotIn("body", material.get("current_chapter", {}))
+        self.assertTrue(material["project_materials_included"])
+        self.assertTrue(material["project"]["title"])
+        self.assertNotIn("body", material.get("current_chapter") or {})
         self.assertNotIn(MANUSCRIPT, json.dumps(material, ensure_ascii=False))
+        self.assertEqual(material["previous_chapters"], [])
+        self.assertEqual(material["retrieved_chapters"], [])
+        self.assertEqual(material["confirmed_memory"], [])
+        self.assertTrue(result["context_summary"]["project_materials_included"])
+        self.assertFalse(result["context_summary"]["chapter_included"])
+
+    def test_no_chapter_discussion_contains_relevant_setting_and_separate_author_plans(self):
+        card = self.request("POST", "/api/records", {
+            "type": "物品", "name": "铜盒", "description": "铜盒需要两枚不同的钥匙。"
+        })[1]
+        plan = self.request("POST", "/api/records", {
+            "type": "灵感", "name": "铜盒交换", "description": "设想以铜盒换回失踪者。",
+            "epistemic_mode": "author_plan", "branch_id": self.branch,
+        })[1]
+        with closing(server.connect()) as conn, conn:
+            workspace.put_blueprint(conn, self.project, self.branch, {
+                "expected_version": 0, "blueprint": {
+                    "premise": "围绕铜盒展开的悬疑故事。",
+                    "outline": "先交换线索，再揭示两把钥匙的代价。",
+                },
+            })
+        result = self.complete(include_chapter=False, chapter_id=None,
+                               content="给铜盒交换这个情节想几个具体走向。")
+        material = self.provider_material()
+        self.assertIn(card["id"], [item["id"] for item in material["story_cards"]])
+        saved_plan = next(item for item in material["author_plans"] if item["id"] == plan["id"])
+        self.assertEqual(saved_plan["epistemic_mode"], "author_plan")
+        self.assertEqual(saved_plan["use"], "planning_only_not_occurred")
+        self.assertIn("两把钥匙", material["author_guidance"]["outline"])
+        self.assertNotIn(MANUSCRIPT, json.dumps(material, ensure_ascii=False))
+        self.assertGreaterEqual(result["context_summary"]["material_count"], 2)
+        with closing(server.connect()) as conn:
+            context = json.loads(conn.execute("SELECT context_json FROM app_agent_chat_turn").fetchone()[0])
+        self.assertIn(("record", card["id"]), {
+            (item["kind"], item["id"]) for item in context["_material_source"]["dependencies"]})
+        self.assertNotIn("chapter", {
+            item["kind"] for item in context["_material_source"]["dependencies"]})
+
+    def test_project_overview_is_bounded_with_large_summary_plans_and_settings(self):
+        with closing(server.connect()) as conn, conn:
+            conn.execute("UPDATE app_project_meta SET summary=? WHERE project_id=?",
+                         ("很长的作品简介" * 5000, self.project))
+            workspace.put_blueprint(conn, self.project, self.branch, {
+                "expected_version": 0, "blueprint": {
+                    "premise": "设想" * 3000, "contract": "约定" * 6000,
+                    "outline": "规划" * 30000,
+                    "volumes": [{"id": "long_volume_" + str(index), "title": "长卷" * 100,
+                                 "summary": "分卷设想" * 2000} for index in range(8)],
+                },
+            })
+        for index in range(28):
+            status, card = self.request("POST", "/api/records", {
+                "type": "灵感" if index % 2 else "物品", "name": f"铜盒{index}",
+                "description": "尚待讨论的铜盒方案。" * 1000,
+                **({"epistemic_mode": "author_plan"} if index % 2 else {}),
+            })
+            self.assertEqual(status, 201, card)
+        self.complete(include_chapter=False, chapter_id=None, content="比较铜盒的方案。")
+        material = self.provider_material()
+        self.assertLess(len(json.dumps(material, ensure_ascii=False).encode()), 26000)
+        self.assertTrue(material["context_budget"]["truncation"]["applied"]
+                        or material["project_material_selection"]["initial_budget_items_omitted"])
+        self.assertNotIn(MANUSCRIPT, json.dumps(material, ensure_ascii=False))
+
+    def test_project_material_changes_prevent_unsent_inspiration_dispatch(self):
+        self.configure("inspiration")
+        session = self.create()["session"]
+        status, queued = self.send(session, include_chapter=False, chapter_id=None)
+        self.assertEqual(status, 202, queued)
+        with closing(server.connect()) as conn, conn:
+            workspace.put_blueprint(conn, self.project, self.branch, {
+                "expected_version": 0, "blueprint": {"premise": "作者改成了另一部故事。"}})
+        job, result = self.process(queued)
+        self.assertEqual(job["status"], "failed", job)
+        self.assertEqual(job["result"]["billing_state"], "not_dispatched")
+        self.assertEqual(Provider.calls, [])
+        self.assertEqual(result["messages"][-1]["actions"], [])
+
+    def test_inspiration_confirmation_saves_author_plan_once_without_changing_prose(self):
+        before = self.reference(end=len(MANUSCRIPT))
+        result = self.complete("inspiration", include_chapter=False, chapter_id=None)
+        actions = result["messages"][-1]["actions"]
+        self.assertEqual([item["kind"] for item in actions],
+                         ["save_inspiration", "save_inspiration", "open"])
+        self.assertTrue(actions[0]["title"])
+        self.assertIn("尚未发生", actions[0]["content"])
+        with closing(server.connect()) as conn:
+            before_records = conn.execute("SELECT COUNT(*) FROM entity").fetchone()[0]
+            before_events = conn.execute("SELECT COUNT(*) FROM event_log").fetchone()[0]
+            before_memory = server.memory_rows(conn)
+        for index, action in enumerate(actions[:2], start=1):
+            status, confirmed = self.confirm(action)
+            self.assertEqual(status, 200, confirmed)
+            self.assertIsNone(confirmed["writing_session"])
+            self.assertIsNone(confirmed["job"])
+            receipt = confirmed["action"]["result"]
+            self.assertEqual(receipt["view"], "world")
+            self.assertEqual(receipt["epistemic_mode"], "author_plan")
+            with closing(server.connect()) as conn:
+                state = server.state_from_db(conn)
+                record = next(item for item in state["records"] if item["id"] == receipt["record_id"])
+                self.assertEqual(record["type"], "灵感")
+                self.assertEqual(record["name"], action["title"])
+                self.assertEqual(record["description"], action["content"])
+                self.assertEqual(record["epistemic_mode"], "author_plan")
+                self.assertEqual(record["branch_id"], self.branch)
+                self.assertEqual(conn.execute("SELECT COUNT(*) FROM entity").fetchone()[0],
+                                 before_records + index)
+                self.assertEqual(conn.execute("SELECT COUNT(*) FROM event_log").fetchone()[0],
+                                 before_events + index)
+                self.assertEqual(state["memory"], before_memory)
+                writing_context, _ = server.ai_context(conn, self.chapter, task="continue")
+                self.assertNotIn(record["id"], [
+                    item["id"] for item in writing_context.get("story_cards") or []])
+            status, repeated = self.confirm(action)
+            self.assertEqual(status, 200, repeated)
+            self.assertTrue(repeated["idempotent"])
+            self.assertEqual(repeated["action"]["result"], receipt)
+        self.assertEqual(self.reference(end=len(MANUSCRIPT)), before)
+        self.assertEqual(len(Provider.calls), 1)
+        self.assertEqual(self.counts()[3], 0)
+        self.assertEqual(self.counts()[4:], (1, 1, 1))
+
+    def test_concurrent_inspiration_confirmations_create_one_record_and_event(self):
+        result = self.complete("inspiration", include_chapter=False, chapter_id=None)
+        action = result["messages"][-1]["actions"][0]
+        with closing(server.connect()) as conn:
+            before_records = conn.execute("SELECT COUNT(*) FROM entity").fetchone()[0]
+            before_events = conn.execute("SELECT COUNT(*) FROM event_log").fetchone()[0]
+        gate, outcomes = threading.Barrier(3), []
+
+        def confirm():
+            gate.wait(timeout=5)
+            outcomes.append(self.confirm(action))
+
+        threads = [threading.Thread(target=confirm) for _ in range(2)]
+        for thread in threads:
+            thread.start()
+        gate.wait(timeout=5)
+        for thread in threads:
+            thread.join(timeout=8)
+            self.assertFalse(thread.is_alive())
+        self.assertEqual(len(outcomes), 2)
+        self.assertTrue(all(status == 200 for status, _ in outcomes), outcomes)
+        self.assertEqual(len({
+            outcome["action"]["result"]["record_id"] for _, outcome in outcomes}), 1)
+        with closing(server.connect()) as conn:
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM entity").fetchone()[0],
+                             before_records + 1)
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM event_log").fetchone()[0],
+                             before_events + 1)
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_inspiration_save_failure_rolls_back_record_event_and_confirmation(self):
+        result = self.complete("inspiration", include_chapter=False, chapter_id=None)
+        action = result["messages"][-1]["actions"][0]
+        before = self.snapshot()
+        with patch.object(server, "append_event", side_effect=ValueError("合成保存失败")):
+            status, failed = self.confirm(action)
+        self.assertEqual(status, 400, failed)
+        self.assertEqual(self.snapshot(), before)
+        status, recovered = self.confirm(action)
+        self.assertEqual(status, 200, recovered)
+        self.assertEqual(recovered["action"]["status"], "confirmed")
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_other_projects_and_branches_cannot_confirm_inspiration(self):
+        result = self.complete("inspiration", include_chapter=False, chapter_id=None)
+        action = result["messages"][-1]["actions"][0]
+        with closing(server.connect()) as conn, conn:
+            other = server.new_project(conn, {"title": "隔离灵感作品"})["project"]
+            conn.execute("INSERT INTO branch VALUES(?,?,NULL,NULL,NULL,'active','{}')",
+                         ("inspiration_other_branch", self.project))
+        for scope in ({"project": other["id"], "branch": other["branch_id"]},
+                      {"branch": "inspiration_other_branch"}):
+            with self.subTest(scope=scope):
+                before = self.snapshot()
+                status, rejected = self.request(
+                    "POST", f"/api/agent-chat/actions/{action['id']}/confirm",
+                    {"confirm": True}, **scope)
+                self.assertEqual(status, 404, rejected)
+                self.assertEqual(self.snapshot(), before)
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_inspiration_backup_restore_remaps_record_receipt_and_stays_read_only(self):
+        result = self.complete("inspiration", include_chapter=False, chapter_id=None)
+        action = result["messages"][-1]["actions"][0]
+        status, confirmed = self.confirm(action)
+        self.assertEqual(status, 200, confirmed)
+        record_id = confirmed["action"]["result"]["record_id"]
+        with closing(server.connect()) as conn, conn:
+            original_body = server.chapter_rows(conn)[0]["body"]
+            payload = backups.capture(conn, self.project)
+            restored = backups.transplant(conn, payload, "inspiration_restored_book")
+        mapping = restored["identity_map"]
+        scope = {"project": restored["project_id"], "branch": restored["branch_id"]}
+        status, historical = self.request(
+            "GET", f"/api/agent-chat/sessions/{mapping[result['session']['id']]}", **scope)
+        self.assertEqual(status, 200, historical)
+        self.assertTrue(historical["session"]["restored_read_only"])
+        restored_action = next(item for item in historical["messages"][-1]["actions"]
+                               if item["id"] == mapping[action["id"]])
+        self.assertEqual(restored_action["result"]["record_id"], mapping[record_id])
+        status, records = self.request("GET", "/api/records", **scope)
+        self.assertEqual(status, 200, records)
+        restored_record = next(item for item in records["records"] if item["id"] == mapping[record_id])
+        self.assertEqual(restored_record["epistemic_mode"], "author_plan")
+        self.assertEqual(restored_record["branch_id"], restored["branch_id"])
+        before = self.snapshot()
+        status, rejected = self.request(
+            "POST", f"/api/agent-chat/actions/{mapping[action['id']]}/confirm",
+            {"confirm": True}, **scope)
+        self.assertEqual(status, 400, rejected)
+        self.assertIn("仅供回看", rejected["error"])
+        self.assertEqual(self.snapshot(), before)
+        with closing(server.connect()) as conn:
+            self.assertEqual(server.chapter_rows(conn)[0]["body"], original_body)
+            self.assertEqual(conn.execute(
+                "SELECT project_id FROM entity WHERE id=?", (record_id,)).fetchone()[0], self.project)
+
+    def test_inspiration_invalid_payloads_are_not_savable_and_reply_is_preserved(self):
+        result = self.complete("bad-inspiration", include_chapter=False, chapter_id=None)
+        self.assertTrue(result["messages"][-1]["content"])
+        self.assertEqual(result["messages"][-1]["actions"], [])
+        self.assertEqual(self.counts()[2:4], (0, 0))
+
+    def test_inspiration_confirmation_rejects_changed_blueprint_and_can_be_dismissed(self):
+        result = self.complete("inspiration", include_chapter=False, chapter_id=None)
+        action = result["messages"][-1]["actions"][0]
+        with closing(server.connect()) as conn, conn:
+            workspace.put_blueprint(conn, self.project, self.branch, {
+                "expected_version": 0, "blueprint": {"premise": "作者重新设定了主要冲突。"}})
+        before = self.snapshot()
+        status, rejected = self.confirm(action)
+        self.assertEqual(status, 400, rejected)
+        self.assertIn("规划已变化", rejected["error"])
+        self.assertEqual(self.snapshot(), before)
+        status, dismissed = self.request(
+            "POST", f"/api/agent-chat/actions/{action['id']}/dismiss", {})
+        self.assertEqual(status, 200, dismissed)
+        self.assertEqual(self.confirm(action)[0], 400)
+
+    def test_large_historical_quotes_preserve_recent_question_and_reply_with_budget_marker(self):
+        long_body = "甲" * 12000 + "\n" + "乙" * 12000
+        with closing(server.connect()) as conn, conn:
+            server.update_chapter(conn, self.chapter, {"body": long_body})
+        sources = [self.reference(0, 12000), self.reference(12001, 24001)]
+        result = self.complete(include_chapter=False, references=sources,
+                               content="比较这两段，并推荐一个方案。")
+        session = result["session"]
+        status, queued = self.send(session, request_id="history_followup", include_chapter=False,
+                                   content="把推荐方案再具体展开。", references=[])
+        self.assertEqual(status, 202, queued)
+        job, _ = self.process(queued)
+        self.assertEqual(job["status"], "success", job)
+        messages = Provider.calls[-1]["payload"]["messages"]
+        self.assertEqual([item["role"] for item in messages],
+                         ["system", "user", "assistant", "user"])
+        self.assertIn("推荐一个方案", messages[1]["content"])
+        self.assertIn("两下轻响", messages[2]["content"])
+        self.assertNotIn("甲" * 1000, messages[1]["content"])
+        self.assertIn('"quote_truncated":true', messages[1]["content"].replace(" ", ""))
+        history = self.provider_material()["conversation_history"]
+        self.assertTrue(history["truncated"])
+        self.assertEqual(history["turns_included"], 1)
+        self.assertLessEqual(history["characters_used"], 24000)
+
+    def test_long_recent_reply_keeps_recent_turn_even_when_full_pair_exceeds_history_budget(self):
+        self.configure()
+        session = self.create()["session"]
+        status, queued = self.send(session, content="甲" * 5990, include_chapter=False)
+        self.assertEqual(status, 202, queued)
+        self.process(queued)
+        with closing(server.connect()) as conn, conn:
+            conn.execute("UPDATE app_agent_chat_turn SET reply=? WHERE session_id=?",
+                         ("最近方案" * 3990, session["id"]))
+        status, queued = self.send(session, request_id="long_history_followup",
+                                   content="继续最近方案。", include_chapter=False)
+        self.assertEqual(status, 202, queued)
+        job, _ = self.process(queued)
+        self.assertEqual(job["status"], "success", job)
+        history = Provider.calls[-1]["payload"]["messages"][1:-1]
+        self.assertEqual([item["role"] for item in history], ["user", "assistant"])
+        self.assertIn("最近方案", history[1]["content"])
+        self.assertIn("history_truncated", history[1]["content"])
+        self.assertLessEqual(sum(len(item["content"]) for item in history), 24000)
 
     def test_no_chapter_chat_cannot_propose_unsourced_writing_tasks(self):
         result = self.complete("actions", include_chapter=False, chapter_id=None)
@@ -749,27 +1078,225 @@ class ChatTests(unittest.TestCase):
         self.assertEqual(Provider.calls, [])
 
     def test_manuscript_change_during_reply_cannot_publish_stale_proposals(self):
-        self.configure("held-actions")
-        session = self.create()["session"]
-        status, queued = self.send(session)
-        self.assertEqual(status, 202, queued)
-        completed = []
-        job = threading.Thread(target=lambda: completed.append(
-            server.process_ai_job(queued["active_run"]["id"])))
-        self.jobs.append(job)
-        job.start()
-        self.assertTrue(Provider.started.wait(timeout=5))
-        with closing(server.connect()) as conn, conn:
-            server.update_chapter(conn, self.chapter, {"body": MANUSCRIPT + "\n门开了，里面空无一人。"})
-        Provider.release.set()
-        job.join(timeout=8)
-        self.assertFalse(job.is_alive())
-        self.assertEqual(completed[0]["status"], "failed", completed)
-        self.assertFalse(completed[0]["result"]["safe_to_apply"])
-        historical = self.read(session)
+        def change(_queued):
+            with closing(server.connect()) as conn, conn:
+                server.update_chapter(
+                    conn, self.chapter, {"body": MANUSCRIPT + "\n门开了，里面空无一人。"})
+
+        job, historical = self.complete_with_change(change)
+        self.assertEqual(job["status"], "success", job)
+        self.assertTrue(job["result"]["chat_source_stale"])
+        self.assertFalse(job["result"]["safe_to_apply"])
+        self.assertEqual(job["result"]["completion_state"], "complete")
+        self.assertEqual(job["result"]["structured"]["actions"], [])
+        self.assertTrue(historical["messages"][-1]["context_stale"])
         self.assertEqual(historical["messages"][-1]["actions"], [])
-        self.assertEqual(historical["messages"][-1]["content"], "")
+        self.assertIn("两下轻响", historical["messages"][-1]["content"])
+        raw = job["result"]["text"]
+        self.assertEqual(len(json.loads(raw)["actions"]), 4)
+        with closing(server.connect()) as conn:
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM app_agent_chat_action").fetchone()[0], 0)
+            self.assertEqual(conn.execute(
+                "SELECT status FROM app_quota_reservation").fetchone()[0], "consumed")
+            run = conn.execute("SELECT status,output_hash,consent_json FROM ai_run").fetchone()
+            self.assertEqual(run["status"], "success")
+            self.assertEqual(run["output_hash"], server.hash_text(raw))
+            self.assertFalse(json.loads(run["consent_json"])["safe_to_apply"])
+            chunks = conn.execute(
+                "SELECT text,cumulative_hash FROM app_ai_chunk ORDER BY seq").fetchall()
+            self.assertEqual("".join(chunk["text"] for chunk in chunks), raw)
+            self.assertEqual(chunks[-1]["cumulative_hash"], server.hash_text(raw))
         self.assertEqual(len(Provider.calls), 1)
+
+    def test_setting_change_during_inspiration_reply_keeps_only_old_reference_text(self):
+        status, card = self.request("POST", "/api/records", {
+            "type": "物品", "name": "铜盒", "description": "铜盒必须同时使用两把钥匙。"})
+        self.assertEqual(status, 201, card)
+
+        def change(_queued):
+            status, changed = self.request("PATCH", f"/api/records/{card['id']}", {
+                "description": "作者决定铜盒只需要一把钥匙。"})
+            self.assertEqual(status, 200, changed)
+
+        job, historical = self.complete_with_change(
+            change, case="held-inspiration", include_chapter=False, chapter_id=None,
+            content="比较铜盒的不同方案，并给出可以保存的灵感。")
+        self.assertIn(card["id"], [item["id"] for item in self.provider_material()["story_cards"]])
+        self.assertEqual(job["status"], "success", job)
+        self.assertTrue(job["result"]["chat_source_stale"])
+        self.assertFalse(job["result"]["safe_to_apply"])
+        self.assertEqual(job["result"]["structured"]["actions"], [])
+        self.assertTrue(historical["messages"][-1]["context_stale"])
+        self.assertIn("两下轻响", historical["messages"][-1]["content"])
+        self.assertEqual(historical["messages"][-1]["actions"], [])
+        self.assertEqual(self.counts()[2:4], (0, 0))
+        with closing(server.connect()) as conn:
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM entity WHERE kind='灵感'").fetchone()[0], 0)
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_blueprint_change_during_reply_keeps_text_for_chapter_and_project_discussion(self):
+        for include in (True, False):
+            with self.subTest(include_chapter=include):
+                def change(_queued):
+                    with closing(server.connect()) as conn, conn:
+                        current = workspace.blueprint_row(conn, self.project, self.branch)
+                        workspace.put_blueprint(conn, self.project, self.branch, {
+                            "expected_version": current["version"],
+                            "blueprint": {"premise": "作者改成另一种主要冲突：" + str(include)}})
+
+                job, historical = self.complete_with_change(
+                    change, case="held-inspiration", include_chapter=include,
+                    chapter_id=self.chapter if include else None)
+                self.assertEqual(job["status"], "success", job)
+                self.assertTrue(job["result"]["chat_source_stale"])
+                self.assertEqual(job["result"]["structured"]["actions"], [])
+                self.assertTrue(historical["messages"][-1]["context_stale"])
+                self.assertTrue(historical["messages"][-1]["content"])
+                self.assertEqual(historical["messages"][-1]["actions"], [])
+                self.assertEqual(self.counts()[2:4], (0, 0))
+        self.assertEqual(len(Provider.calls), 2)
+
+    def test_old_reference_reply_is_marked_in_the_next_turn_history(self):
+        def change(_queued):
+            with closing(server.connect()) as conn, conn:
+                server.update_chapter(conn, self.chapter, {"body": MANUSCRIPT + "\n门开了。"})
+
+        _, historical = self.complete_with_change(change)
+        status, queued = self.send(historical["session"], request_id="old_reference_followup",
+                                   content="按现在的稿件继续讨论。")
+        self.assertEqual(status, 202, queued)
+        job, current = self.process(queued)
+        self.assertEqual(job["status"], "success", job)
+        history = Provider.calls[-1]["payload"]["messages"][1:-1]
+        self.assertEqual([item["role"] for item in history], ["user", "assistant"])
+        previous = json.loads(history[-1]["content"])
+        self.assertTrue(previous["context_stale"])
+        self.assertEqual(previous["context_note"], chat.STALE_REPLY_NOTE)
+        self.assertEqual(previous["actions"], [])
+        self.assertIn("两下轻响", previous["reply"])
+        self.assertNotIn("context_stale", current["messages"][-1])
+        self.assertEqual(len(Provider.calls), 2)
+
+    def test_saved_chat_tampering_during_reply_still_fails_instead_of_becoming_old_reference(self):
+        for field in ("job_context", "both_contexts", "source", "references",
+                      "job_chapter", "request_audit", "session_binding"):
+            with self.subTest(field=field):
+                def tamper(queued):
+                    with closing(server.connect()) as conn, conn:
+                        job = conn.execute(
+                            "SELECT * FROM app_ai_job WHERE id=?",
+                            (queued["active_run"]["id"],)).fetchone()
+                        context = json.loads(job["context_json"])
+                        if field in {"job_context", "both_contexts"}:
+                            context["project"]["summary"] = "伪造的发送时资料。"
+                            encoded = server.json_text(context)
+                            conn.execute("UPDATE app_ai_job SET context_json=? WHERE id=?",
+                                         (encoded, job["id"]))
+                            if field == "both_contexts":
+                                conn.execute(
+                                    "UPDATE app_agent_chat_turn SET context_json=? WHERE job_id=?",
+                                    (encoded, job["id"]))
+                        elif field == "source":
+                            source = {**context["_source"], "source_body_hash": "0" * 64}
+                            conn.execute(
+                                "UPDATE app_agent_chat_turn SET source_json=? WHERE job_id=?",
+                                (server.json_text(source), job["id"]))
+                        elif field == "references":
+                            references = json.loads(json.dumps(context["quoted_manuscript"]))
+                            references[0]["range"]["quote"] = "伪造的引用。"
+                            conn.execute(
+                                "UPDATE app_agent_chat_turn SET references_json=? WHERE job_id=?",
+                                (server.json_text(references), job["id"]))
+                        elif field == "job_chapter":
+                            conn.execute("UPDATE app_ai_job SET chapter_id=NULL WHERE id=?",
+                                         (job["id"],))
+                        elif field == "request_audit":
+                            consent = json.loads(conn.execute(
+                                "SELECT consent_json FROM ai_run WHERE id=?",
+                                (job["ai_run_id"],)).fetchone()[0])
+                            consent["request_audit"]["payload"]["messages"][-1]["content"] += "伪造"
+                            conn.execute("UPDATE ai_run SET consent_json=? WHERE id=?",
+                                         (server.json_text(consent), job["ai_run_id"]))
+                        elif field == "session_binding":
+                            conn.execute(
+                                "UPDATE app_agent_chat_turn SET session_id=? WHERE job_id=?",
+                                (other["id"], job["id"]))
+
+                other = self.create("other_tamper_session_" + field)["session"]
+                job, historical = self.complete_with_change(tamper, references=[self.reference()])
+                self.assertEqual(job["status"], "failed", job)
+                self.assertFalse(job["result"]["safe_to_apply"])
+                self.assertFalse(job["result"].get("chat_source_stale", False))
+                message = (self.read(other) if field == "session_binding" else historical)["messages"][-1]
+                self.assertEqual(message["status"], "failed")
+                self.assertEqual(message["content"], "")
+                self.assertEqual(message["actions"], [])
+                self.assertNotIn("context_stale", message)
+                self.assertEqual(self.counts()[2:4], (0, 0))
+        self.assertEqual(len(Provider.calls), 7)
+
+    def test_old_reference_reply_survives_backup_restore_without_any_actions(self):
+        def change(_queued):
+            with closing(server.connect()) as conn, conn:
+                server.update_chapter(conn, self.chapter, {"body": MANUSCRIPT + "\n门开了。"})
+
+        job, historical = self.complete_with_change(change)
+        with closing(server.connect()) as conn, conn:
+            payload = backups.capture(conn, self.project)
+            restored = backups.transplant(conn, payload, "old_reference_restored_book")
+        mapping = restored["identity_map"]
+        scope = {"project": restored["project_id"], "branch": restored["branch_id"]}
+        session_id = mapping[historical["session"]["id"]]
+        status, recovered = self.request(
+            "GET", f"/api/agent-chat/sessions/{session_id}", **scope)
+        self.assertEqual(status, 200, recovered)
+        self.assertTrue(recovered["session"]["restored_read_only"])
+        message = recovered["messages"][-1]
+        self.assertEqual(message["content"], historical["messages"][-1]["content"])
+        self.assertTrue(message["context_stale"])
+        self.assertEqual(message["actions"], [])
+        with closing(server.connect()) as conn:
+            saved = json.loads(conn.execute(
+                "SELECT result_json FROM app_ai_job WHERE id=?", (mapping[job["id"]],)
+            ).fetchone()[0])
+            self.assertTrue(saved["chat_source_stale"])
+            self.assertFalse(saved["safe_to_apply"])
+            self.assertEqual(saved["structured"]["actions"], [])
+            self.assertEqual(saved["text"], job["result"]["text"])
+            self.assertEqual(conn.execute(
+                "SELECT COUNT(*) FROM app_agent_chat_action").fetchone()[0], 0)
+        before = self.snapshot()
+        status, rejected = self.request(
+            "POST", f"/api/agent-chat/sessions/{session_id}/messages",
+            {"request_id": "restored_old_reply", "content": "从旧回复继续。"}, **scope)
+        self.assertEqual(status, 400, rejected)
+        self.assertIn("仅供回看", rejected["error"])
+        self.assertEqual(self.snapshot(), before)
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_changed_materials_do_not_turn_canceled_or_incomplete_replies_into_success(self):
+        for case in ("held-actions", "held-eof", "held-length"):
+            with self.subTest(case=case):
+                def change(queued):
+                    with closing(server.connect()) as conn, conn:
+                        server.update_chapter(
+                            conn, self.chapter, {"body": MANUSCRIPT + "\n新稿：" + case})
+                    if case == "held-actions":
+                        status, canceled = self.request(
+                            "POST", f"/api/agent-chat/runs/{queued['active_run']['id']}/cancel", {})
+                        self.assertEqual(status, 200, canceled)
+
+                job, historical = self.complete_with_change(change, case=case)
+                self.assertEqual(job["status"], "canceled" if case == "held-actions" else "failed", job)
+                self.assertFalse(job["result"]["safe_to_apply"])
+                self.assertFalse(job["result"].get("chat_source_stale", False))
+                self.assertEqual(historical["messages"][-1]["content"], "")
+                self.assertEqual(historical["messages"][-1]["actions"], [])
+                self.assertNotIn("context_stale", historical["messages"][-1])
+                self.assertEqual(self.counts()[2:4], (0, 0))
+        self.assertEqual(len(Provider.calls), 3)
 
     def test_other_projects_and_branches_cannot_read_or_submit_chat_artifacts(self):
         result = self.complete("actions")
@@ -970,8 +1497,8 @@ class ChatTests(unittest.TestCase):
                 self.assertEqual(server.process_ai_job(job_id)["status"], "failed")
         self.assertEqual(Provider.calls, [])
 
-    def test_interrupted_or_invalid_model_reply_cannot_create_actions(self):
-        for case in ("eof", "bad-action"):
+    def test_interrupted_model_reply_cannot_create_actions(self):
+        for case in ("eof",):
             with self.subTest(case=case):
                 self.configure(case)
                 session = self.create(request_id="session_" + case)["session"]
@@ -988,6 +1515,79 @@ class ChatTests(unittest.TestCase):
                 before = len(Provider.calls)
                 server.process_ai_job(queued["active_run"]["id"])
                 self.assertEqual(len(Provider.calls), before)
+
+    def test_invalid_action_does_not_discard_a_complete_useful_reply(self):
+        result = self.complete("bad-action")
+        self.assertEqual(result["active_run"]["status"], "success")
+        self.assertIn("两下轻响", result["messages"][-1]["content"])
+        self.assertEqual(result["messages"][-1]["actions"], [])
+        with closing(server.connect()) as conn:
+            self.assertEqual(conn.execute("SELECT COUNT(*) FROM app_agent_chat_action").fetchone()[0], 0)
+        self.assertEqual(len(Provider.calls), 1)
+        server.process_ai_job(result["active_run"]["id"])
+        self.assertEqual(len(Provider.calls), 1)
+
+    def test_complete_legacy_format_failure_recovers_read_only_reply_without_actions_or_writes(self):
+        result = self.complete()
+        job_id = result["active_run"]["id"]
+        raw = "```json\n" + json.dumps({
+            "reply": "可以让铜盒与主角的旧账产生关联，再比较两种代价。",
+            "actions": [{"kind": "save_inspiration", "label": "保存", "instruction": "",
+                         "title": "旧账", "content": "一个尚未发生的设想。"}],
+        }, ensure_ascii=False) + "\n```"
+        for transport, metadata in (
+            ("provider_native_sse", {"provider_sse_complete": True}),
+            ("provider_json", {}),
+        ):
+            with self.subTest(transport=transport):
+                with closing(server.connect()) as conn, conn:
+                    conn.execute(
+                        "UPDATE app_ai_job SET status='failed',error=?,result_json=? WHERE id=?",
+                        ("旧版本的结构化回复校验失败", server.json_text({
+                            "text": raw, "error_code": "invalid_structured_output",
+                            "finish_reason": "stop", "completion_state": "unknown",
+                            "stream_transport": transport, "safe_to_apply": False,
+                            "truncated": True, **metadata,
+                        }), job_id))
+                    conn.execute(
+                        "UPDATE app_agent_chat_turn SET reply='',status='failed' WHERE job_id=?",
+                        (job_id,))
+                before = self.snapshot()
+                historical = self.read(result["session"])
+                message = historical["messages"][-1]
+                self.assertIn("旧账", message["content"])
+                self.assertTrue(message["response_recovered"])
+                self.assertEqual(message["status"], "failed")
+                self.assertEqual(message["actions"], [])
+                self.assertEqual(historical["active_run"]["status"], "failed")
+                self.assertEqual(self.snapshot(), before)
+        self.assertEqual(len(Provider.calls), 1)
+        self.assertEqual(self.counts()[2:4], (0, 0))
+
+    def test_legacy_incomplete_or_unrelated_failure_is_not_recovered(self):
+        result = self.complete()
+        job_id = result["active_run"]["id"]
+        base = {"text": "一条完整可读的建议。", "error_code": "invalid_structured_output",
+                "finish_reason": "stop", "provider_sse_complete": True,
+                "stream_transport": "provider_native_sse", "safe_to_apply": False}
+        for change in (
+            {"provider_sse_complete": False}, {"finish_reason": "length"},
+            {"error_code": "invalid_response"}, {"text": '{"reply":"未完成'},
+            {"text": "<think>只有内部思考</think>"},
+        ):
+            with self.subTest(change=change):
+                with closing(server.connect()) as conn, conn:
+                    conn.execute("UPDATE app_ai_job SET status='failed',result_json=? WHERE id=?",
+                                 (server.json_text({**base, **change}), job_id))
+                    conn.execute("UPDATE app_agent_chat_turn SET reply='',status='failed' WHERE job_id=?",
+                                 (job_id,))
+                before = self.snapshot()
+                historical = self.read(result["session"])
+                self.assertEqual(historical["messages"][-1]["content"], "")
+                self.assertFalse(historical["messages"][-1].get("response_recovered", False))
+                self.assertEqual(historical["messages"][-1]["actions"], [])
+                self.assertEqual(self.snapshot(), before)
+        self.assertEqual(len(Provider.calls), 1)
 
     def test_dismissed_actions_require_no_calls_and_cannot_be_confirmed(self):
         result = self.complete("actions")
