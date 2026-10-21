@@ -22,6 +22,8 @@ Windows 另通过默认卸载后保留应用数据的检查，卸载前后样本
 
 ## 本机验收与历史问题
 
+2026-10-21 的 0.1.3 本机 Mac Apple 芯片版本已通过包内后台19项、真实窗口10项和DMG安装后10项，见[本轮本机记录](audits/desktop-v013-local-20261021.md)。本轮使用隔离临时作品和本机模拟模型，没有调用真实远程模型；Intel Mac、Windows 安装包与正式发布仍未验证。
+
 2026-10-18 的 0.1.2 本机 Mac Apple 芯片版本已通过包内后台19项、真实窗口10项和DMG安装后10项，58份构建输入与110份验证输入在打包验收前后保持一致，见[模型配置与本机安装包核验记录](audits/model-configuration-redesign-20261018.md)。自动获取模型、Chat / Responses 接入、编辑保存、聊天草稿和导出均在真实打包窗口验证；使用隔离临时作品和本机模拟模型服务，没有调用真实远程模型或进行文学效果评测。
 
 2026-10-18 的 0.1.1 本机 Mac Apple 芯片版本已通过包内后台19项、真实窗口10项、DMG安装后10项、运行边界5项及自动模型获取浏览器专项19项，见[本轮本机记录](audits/2026-10-14/comprehensive/desktop-v011-local-20261018.md)。主模型与写作总管的两种接入方式均在真实打包窗口验证了自动获取、搜索和选择；所有模型服务均为本机合成服务。
@@ -82,6 +84,8 @@ npm ci
 .venv\Scripts\python.exe scripts/build_desktop.py
 ```
 
+构建前确认 `node` 与 `npm` 都在 PATH。只装 Node 运行时而没有 npm 时，electron-builder 收集依赖会以 `spawn npm ENOENT` 失败；此时把 npm 装到项目外的隔离目录并把其 `bin` 加入 PATH 即可，不必改动系统 Node 版本或全局配置。
+
 脚本用当前解释器执行：
 
 ```text
@@ -101,7 +105,10 @@ python -m PyInstaller --noconfirm --clean --distpath build/backend --workpath bu
 ```sh
 .venv/bin/python tests/desktop_backend_fixtures.py --backend build/backend/moyu-service/moyu-service
 node tests/desktop_smoke.cjs --executable "dist/mac-arm64/墨屿.app/Contents/MacOS/墨屿"
+.venv/bin/python tests/macos_installer_smoke.py --dmg "dist/Moyu-<版本>-mac-arm64.dmg" --node <node>
 ```
+
+Mac 还应执行 `macos_installer_smoke.py`：只读挂载 DMG、复制安装到独立路径，再核对签名完整性和安装后的真实窗口；Windows 对应脚本为 `tests/windows_installer_smoke.ps1`。
 
 Mac Intel 的应用路径是 `dist/mac/墨屿.app/Contents/MacOS/墨屿`；Windows 的后台路径是 `build/backend/moyu-service/moyu-service.exe`，应用路径是 `dist/win-unpacked/墨屿.exe`。后台测试检查受保护的健康入口、页面资源、隔离数据保存与重启；桌面测试检查真实窗口和内置服务协作。具体覆盖与失败信息以测试实际结果为准。
 
