@@ -253,6 +253,17 @@
   return taskWritable(entry,action)&&row.mode==='plan'&&row.status===
    (kind==='confirm'?'awaiting_plan_confirmation':'awaiting_plan_application');
  }
+ function taskOperationIdentity(row){
+  return JSON.stringify([row.id,row.chapter_id,row.mode,row.query,row.status,row.checkpoint_id,
+   row.mode==='plan'?planningIdentity(row):null]);
+ }
+ function taskCanRetry(entry,action){
+  const uncertain=entry?.uncertain,row=entry?.row;
+  if(!row||typeof uncertain?.identity!=='string'||uncertain.identity!==taskOperationIdentity(row))return false;
+  const ready={...entry,uncertain:null};
+  return uncertain.action==='authorize'?taskCanStart(ready,action):
+   ['confirm','apply'].includes(uncertain.action)&&taskCanPlan(ready,action,uncertain.action);
+ }
  function taskSteps(row){
   const steps=Array.isArray(row.steps)?row.steps:[];
   const adopted=['awaiting_memory','review_ready'].includes(row.status)||
@@ -305,7 +316,11 @@
    ${Number.isInteger(row?.calls_used)&&Number.isInteger(row?.max_calls)?`<p class="agent-chat-task-budget">模型调用 ${row.calls_used} / 上限 ${row.max_calls} 次</p>`:''}
    ${verified&&row.mode==='plan'&&!row.planning_workflow?.id?(row.restored_read_only?'<small>历史任务没有保留对应的创作规划，原规划无法打开。</small>':'<small>本次任务的规划记录缺失，原规划无法打开。</small>'):readOnly?'<small>历史只读，保留本次任务记录。</small>':!source&&action.kind!=='plan'?'<small>请在当前作品重新选择章节并讨论。</small>':
     row?.source_stale?`<small>${row.mode==='plan'&&row.planning_workflow?.applied?'创作规划已有更新，本次成果保留供对照。':'任务依据已变化，请按当前内容重新讨论。'}</small>`:
-    entry.uncertain?'<small>请先核对原任务，结果明确后再继续。</small>':
+    entry.uncertain?`<small>${!entry.uncertain.identity?'旧版记录缺少原候选校验，只能核对和回看；不会重发请求。':taskCanRetry(entry,action)?
+     entry.uncertain.action==='apply'||entry.uncertain.action==='confirm'&&row.stage==='scenes'?
+      '本机仍是原步骤。可手动核对并重试，不新增模型调用。':
+      '本机仍是原步骤。可手动核对并重试；若此前未启动，将按当前模型额度计费。':
+     '请先核对原任务，结果明确后再继续。'}</small>`:
     taskCanStart(entry,action)?'<small>启动后按当前模型额度计费。</small>':
     taskCanPlan(entry,action,'confirm')?`<small>${row.stage==='scenes'?'确认场景后即可采用完整规划。':'确认后会调用模型生成下一阶段，按当前模型额度计费。'}</small>`:
     row?.status==='awaiting_plan_application'?'<small>采用后保存到创作规划，正文保持当前内容。</small>':
@@ -332,6 +347,7 @@
    ${done&&taskCanStart(entry,action)?`<button type="button" class="primary-btn" data-chat-start ${disabled?'disabled':''}>启动本次任务</button>`:''}
    ${done&&taskCanPlan(entry,action,'confirm')?`<button type="button" class="primary-btn" data-chat-plan-confirm ${disabled?'disabled':''}>${row.stage==='scenes'?'确认场景规划':'确认本阶段并生成下一阶段'}</button>`:''}
    ${done&&taskCanPlan(entry,action,'apply')?`<button type="button" class="primary-btn" data-chat-plan-apply ${disabled?'disabled':''}>采用完整规划</button>`:''}
+   ${done&&taskCanRetry(entry,action)?`<button type="button" class="primary-btn" data-chat-task-retry ${disabled||entry.pending?'disabled':''}>核对并重试原步骤</button>`:''}
    ${done?`<button type="button" class="${resultPrimary?'primary-btn':'ghost-btn'}" data-chat-open-result ${disabled?'disabled':''}>${resultLabel}</button>`:''}
    ${entry?`<button type="button" class="ghost-btn" data-chat-task-refresh ${disabled||entry.pending?'disabled':''}>核对进度</button>`:''}</div><p class="form-error" data-chat-action-error role="alert">${esc(actionErrors.get(action.id)?.message||'')}</p></section>`;
  }
@@ -374,6 +390,7 @@
    element.querySelector('[data-chat-start]')?.addEventListener('click',()=>performAction(action,'start'));
    element.querySelector('[data-chat-plan-confirm]')?.addEventListener('click',()=>performAction(action,'plan-confirm'));
    element.querySelector('[data-chat-plan-apply]')?.addEventListener('click',()=>performAction(action,'plan-apply'));
+   element.querySelector('[data-chat-task-retry]')?.addEventListener('click',()=>performAction(action,'retry'));
    element.querySelector('[data-chat-task-refresh]')?.addEventListener('click',()=>readWritingTask(action,{force:true}));
   });
   feed.querySelectorAll('[data-chat-disclosure]').forEach(node=>{
@@ -571,16 +588,19 @@
   messages=messages.map(message=>({...message,actions:message.actions?.map(item=>item.id===action.id?updated:item)}));
   return updated;
  }
- async function startWritingTask(action,captured){
-  const entry=taskEntry(action);if(!taskCurrent(action,captured,entry)||!taskCanStart(entry,action))return;
+ async function startWritingTask(action,captured,retry=null){
+  const entry=taskEntry(action),canStart=()=>retry?
+   entry.uncertain===retry&&retry.action==='authorize'&&taskCanRetry(entry,action):taskCanStart(entry,action);
+  if(!taskCurrent(action,captured,entry)||!canStart())return;
   if((authorBlueprintDirty||authorBlueprintPromise||authorBlueprintConflict)&&!await authorSaveBlueprint())throw new Error('当前规划需要先保存或合并。');
   if(!taskCurrent(action,captured,entry)||session?.restored_read_only)return;
   const row=await readWritingTask(action,{force:true,captured});
   if(!taskCurrent(action,captured,entry)||!row)return;
-  if(!taskCanStart(entry,action))throw new Error('任务进度已变化，请按卡片中的当前状态继续。');
+  if(!canStart())throw new Error('任务进度已变化，请按卡片中的当前状态继续。');
   // A fresh read invalidates older progress requests before an authorized write.
   ++entry.sequence;entry.pending=null;entry.verified=false;entry.error='';entry.nextRead=Infinity;
-  markTaskUncertain(action,entry,{action:'authorize',checkpoint:row.checkpoint_id,status:row.status});renderMessages();
+  markTaskUncertain(action,entry,{action:'authorize',checkpoint:row.checkpoint_id,status:row.status,
+   identity:taskOperationIdentity(row)});renderMessages();
   try{
    const data=await writingRequest('/'+encodeURIComponent(row.id)+'/resume',{method:'POST',
     body:JSON.stringify({action:'authorize',checkpoint_id:row.checkpoint_id})},captured);
@@ -595,8 +615,11 @@
    entry.verified=false;renderMessages();
    const problem=entry.error;
    const latest=await readWritingTask(action,{force:true,captured});
-   if(taskCurrent(action,captured,entry)&&(!latest||latest.status==='awaiting_authorization'||entry.uncertain))
-    entry.error=problem+(entry.error?' '+entry.error:'');
+   if(taskCurrent(action,captured,entry)){
+    if(taskCanRetry(entry,action))entry.error='未自动重发。请核对后手动恢复原步骤。';
+    else if(!latest||latest.status==='awaiting_authorization'||entry.uncertain)
+     entry.error=problem+(entry.error?' '+entry.error:'');
+   }
   }
  }
  function planningIdentity(row){
@@ -616,9 +639,11 @@
   if(version!=null&&data.version!==version)throw new Error('规划已采用，现有规划又有更新，请在创作规划中核对。');
   authorReceiveBlueprint(data);
  }
- async function resumePlanningTask(action,kind,captured){
+ async function resumePlanningTask(action,kind,captured,retry=null){
   const entry=taskEntry(action);
-  if(!taskCurrent(action,captured,entry)||!taskCanPlan(entry,action,kind))return;
+  const canResume=()=>retry?entry.uncertain===retry&&retry.action===kind&&taskCanRetry(entry,action):
+   taskCanPlan(entry,action,kind);
+  if(!taskCurrent(action,captured,entry)||!canResume())return;
   const expected=planningIdentity(entry.row),identity={owner:captured.project,branch:captured.branch};
   const valid=()=>taskCurrent(action,captured,entry);
   if(authorBlueprintLocked())throw new Error('正在保存另一份规划，请稍候再继续。');
@@ -627,7 +652,7 @@
   if(!valid())return;
   const row=await readWritingTask(action,{force:true,captured});
   if(!valid()||!row)return;
-  if(!taskCanPlan(entry,action,kind)||planningIdentity(row)!==expected)
+  if(!canResume()||planningIdentity(row)!==expected)
    throw new Error('规划阶段或候选已变化，请阅读卡片中的最新成果后再继续。');
   if(authorBlueprintLocked()||authorBlueprintDirty||authorBlueprintPromise||authorBlueprintConflict)
    throw new Error('当前规划正在变化，请先保存或合并。');
@@ -635,7 +660,8 @@
    authorBlueprintApply=identity;clearTimeout(authorBlueprintTimer);authorRenderBlueprint();
   }
   ++entry.sequence;entry.pending=null;entry.verified=false;entry.error='';entry.nextRead=Infinity;
-  markTaskUncertain(action,entry,{action:kind,checkpoint:row.checkpoint_id,status:row.status});renderMessages();
+  markTaskUncertain(action,entry,{action:kind,checkpoint:row.checkpoint_id,status:row.status,
+   identity:taskOperationIdentity(row)});renderMessages();
   try{
    const data=await writingRequest('/'+encodeURIComponent(row.id)+'/resume',{method:'POST',
     body:JSON.stringify({action:kind,checkpoint_id:row.checkpoint_id})},captured);
@@ -656,7 +682,8 @@
    if(kind==='apply'&&latest?.status==='review_ready'&&latest.planning_workflow?.applied===true){
     try{await receiveAppliedPlan(latest,captured,valid)}
     catch(refreshError){if(valid())entry.error=publicError(refreshError)}
-   }else if(!latest||entry.uncertain)entry.error=problem+(entry.error?' '+entry.error:'');
+   }else if(taskCanRetry(entry,action))entry.error='未自动重发。请核对后手动恢复原步骤。';
+   else if(!latest||entry.uncertain)entry.error=problem+(entry.error?' '+entry.error:'');
    else if(latest.status==='requires_action'||latest.checkpoint_id===row.checkpoint_id)entry.error=publicError(error);
   }finally{
    if(authorBlueprintApply===identity){authorBlueprintApply=null;authorRenderBlueprint()}
@@ -675,6 +702,13 @@
    }
    if(kind==='start'){await startWritingTask(action,captured);return}
    if(kind==='plan-confirm'||kind==='plan-apply'){await resumePlanningTask(action,kind==='plan-confirm'?'confirm':'apply',captured);return}
+   if(kind==='retry'){
+    const entry=taskEntry(action),retry=entry?.uncertain;
+    if(!taskCanRetry(entry,action))return;
+    if(retry.action==='authorize')await startWritingTask(action,captured,retry);
+    else await resumePlanningTask(action,retry.action,captured,retry);
+    return;
+   }
    const path='/actions/'+encodeURIComponent(action.id)+'/'+kind;
    const result=action.kind==='next_chapter'&&kind==='confirm'?
     await durableOperation('/api/agent-chat'+path,'POST',{confirm:true},()=>current(captured)):

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import sys
 import tempfile
+import threading
 import unittest
 from unittest.mock import patch
 
@@ -553,6 +554,67 @@ class AgentPlanningTests(unittest.TestCase):
             self.assertEqual(self.counts(), (1, 4, 4, 4, 4, 1))
             self.assertTrue(self.service_resume(stale, "apply")["idempotent"])
             self.assertEqual(worker.call_count, 4)
+        self.assertEqual(self.manuscript(), self.revisions)
+        self.provider_mock.assert_not_called()
+
+    def test_service_concurrent_recovery_uses_each_checkpoint_once(self):
+        originals = []
+
+        def recover_twice(session, action, expected_status, expected_counts, worker_calls):
+            originals.append((session, action))
+            barrier = threading.Barrier(3)
+            results, errors = [], []
+
+            def recover():
+                try:
+                    barrier.wait(timeout=5)
+                    results.append(self.service_resume(session, action))
+                except Exception as exc:
+                    errors.append(exc)
+
+            threads = [threading.Thread(target=recover) for _ in range(2)]
+            for thread in threads:
+                thread.start()
+            barrier.wait(timeout=5)
+            for thread in threads:
+                thread.join(timeout=10)
+                self.assertFalse(thread.is_alive())
+            self.assertEqual(errors, [])
+            self.assertEqual(len(results), 2)
+            self.assertEqual(sorted(item["idempotent"] for item in results), [False, True])
+            current = self.service_read(session)
+            self.assertEqual(current["id"], session["id"])
+            self.assertEqual(current["status"], expected_status)
+            self.assertNotEqual(current["checkpoint_id"], session["checkpoint_id"])
+            self.assertTrue(all(item["session"] == current for item in results))
+            self.assertEqual(self.counts(), expected_counts)
+            self.assertEqual(worker.call_count, worker_calls)
+            snapshot = self.database_snapshot()
+            self.assertEqual(self.service_resume(session, action),
+                             {"session": current, "idempotent": True})
+            self.assertEqual(self.database_snapshot(), snapshot)
+            self.assertEqual(worker.call_count, worker_calls)
+            return current
+
+        with patch.object(server, "start_ai_worker", return_value=False) as worker:
+            session = recover_twice(self.service_create()["session"], "authorize",
+                                    "awaiting_job", (1, 1, 1, 1, 1, 0), 1)
+            session = self.service_finish(session)
+            self.assertEqual(session["status"], "awaiting_plan_confirmation")
+            session = recover_twice(session, "confirm", "awaiting_job", (1, 2, 2, 2, 2, 0), 2)
+            for stage in server.planning.STAGES[1:]:
+                self.assertEqual(session["stage"], stage)
+                session = self.service_finish(session)
+                session = self.service_resume(session, "confirm")["session"]
+            session = recover_twice(session, "apply", "review_ready", (1, 4, 4, 4, 4, 1), 4)
+            self.assertTrue(session["planning_workflow"]["applied"])
+            snapshot = self.database_snapshot()
+            for original, action in originals:
+                with self.subTest(action=action, original_checkpoint=original["checkpoint_id"]):
+                    recovered = self.service_resume(original, action)
+                    self.assertEqual(recovered, {"session": session, "idempotent": True})
+                    self.assertEqual(self.database_snapshot(), snapshot)
+                    self.assertEqual(worker.call_count, 4)
         self.assertEqual(self.manuscript(), self.revisions)
         self.provider_mock.assert_not_called()
 

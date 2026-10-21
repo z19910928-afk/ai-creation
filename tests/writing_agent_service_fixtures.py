@@ -423,14 +423,27 @@ class WritingAgentServiceTests(unittest.TestCase):
         self.assertEqual(started["status"], "awaiting_job")
         self.assertEqual(started["calls_used"], 1)
         counts = self.counts()
+        snapshot = self.database_snapshot()
         repeat = self.resume(planned, "authorize")
         self.assertTrue(repeat["idempotent"])
+        self.assertEqual(repeat["session"], started)
         self.assertEqual(self.counts(), counts)
+        self.assertEqual(self.database_snapshot(), snapshot)
         advanced = self.resume(started, "advance")["session"]
         self.assertEqual(advanced["status"], "awaiting_job")
         self.assertEqual(advanced["current_job"]["id"], started["current_job"]["id"])
         self.assertEqual(self.counts()[3:], counts[3:])
         self.assertEqual(self.worker.call_count, 1)
+
+        candidate = self.offline_continue(advanced)
+        self.assertEqual(candidate["status"], "awaiting_adoption")
+        snapshot = self.database_snapshot()
+        recovered = self.resume(planned, "authorize")
+        self.assertTrue(recovered["idempotent"])
+        self.assertEqual(recovered["session"], candidate)
+        self.assertEqual(self.database_snapshot(), snapshot)
+        self.assertEqual(self.worker.call_count, 1)
+        self.provider.assert_not_called()
 
     def test_model_worker_advance_completes_inspect_with_two_calls_only(self):
         before = self.manuscript()

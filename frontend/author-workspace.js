@@ -822,7 +822,7 @@ async function authorPerformProjectSwitch(id){
  state=load();state.branch_id=authorProjects.find(p=>p.id===id)?.branch_id||state.branch_id;
  confirmedState=loadConfirmed();candidateStore=loadCandidates();activeChapter=storage.get(cacheKey(':active'))||state.chapters[0]?.id;
  authorBlueprint=null;authorBlueprintVersion=null;authorBlueprintDirty=false;authorBlueprintBase=null;authorBlueprintConflict=null;authorSettings=null;++authorSettingsSeq;queueJobs=[];
- clearTimeout(authorPlanningTimer);authorPlanning=null;authorPlanningRows=[];authorPlanningSelected=null;authorPlanningBusy=false;
+ clearTimeout(authorPlanningTimer);authorPlanning=null;authorPlanningRows=[];authorPlanningSelected=null;authorPlanningMissing=false;authorPlanningBusy=false;
  aiDraft=null;aiRunId=null;mergePending=null;saveError='';savedSelection=null;storyLoaded=false;storyLoadedChapter=null;
  storyMap={relationships:[],timeline:[],foreshadowing:[],conflicts:[],character_states:[],knowledge_scope:{}};
  view='dashboard';render();const loaded=await hydrate();if(loaded)await loadAIStatus();scheduleQueue(0);
@@ -914,13 +914,13 @@ function authorPlanningPreview(stage,candidate,blueprint=authorPlanning?.bluepri
 
 async function authorLoadPlanning(owner=requestedProject){
  clearTimeout(authorPlanningTimer);
- const branch=state.branch_id||'main';const data=await authorJSON('/api/planning-workflows');
- if(owner!==requestedProject||branch!==(state.branch_id||'main')||view!=='blueprint')return;
+ const branch=state.branch_id||'main',wanted=authorPlanningSelected;
+ const data=await authorJSON('/api/planning-workflows');
+ if(owner!==requestedProject||branch!==(state.branch_id||'main')||view!=='blueprint'||wanted!==authorPlanningSelected)return;
  authorPlanningRows=data.workflows||[];
- const wanted=authorPlanningSelected;
  authorPlanning=authorPlanningRows.find(row=>row.id===wanted)||(wanted?null:authorPlanningRows[0]||null);
  authorPlanningMissing=!!wanted&&!authorPlanning;
- authorPlanningSelected=authorPlanning?.id||null;authorRenderPlanning();
+ authorPlanningSelected=authorPlanning?.id||wanted||null;authorRenderPlanning();
  const attempt=authorPlanning?.attempt;
  if(authorPlanning?.status==='active'&&['queued','running'].includes(attempt?.status)){
   authorPlanningTimer=setTimeout(()=>authorLoadPlanning(owner).catch(error=>{

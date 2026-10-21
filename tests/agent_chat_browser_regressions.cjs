@@ -17,7 +17,7 @@ const report = {passed: false, cases: [], screenshots: [], page_errors: [], paid
   branch_identity_test: 'Synthetic frontend branch identity; no branch-management UI claim.'};
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const timestamp = () => new Date().toISOString();
-const store = new Map(), requests = [], writingRequests = [], routeGates = [];
+const store = new Map(), requests = [], writingRequests = [], routeGates = [], rejectedWrites = new Set();
 let app, browser, base, log = '', interruptCreation = false, interruptMessage = false;
 let holdMessage = null, delayedReply = false, failAction = false;
 let interruptAction = '', interruptStart = '';
@@ -233,6 +233,10 @@ async function writingRoute(route) {
     return respond(route, observation, {sessions: [{...row, ...fault?.patch}]});
   }
   if (method === 'POST' && url.pathname === '/api/writing-agent/' + id + '/resume') {
+    if (rejectedWrites.delete(id)) {
+      observation.not_delivered = true;
+      return route.abort('failed');
+    }
     const row = data.writing.get(id);
     assert.ok(row, '操作必须命中当前作品及分支中的原任务');
     assert.ok(['authorize', 'confirm', 'apply'].includes(body.action), '读取与核对不得自动推进任务');
@@ -1150,6 +1154,22 @@ async function main() {
     assert.equal(await page.evaluate(() => authorPlanningSelected), null, '缺失规划记录时不选中其他规划');
     assert.equal(taskPosts(brokenId, 'confirm').length, 0);
     assert.equal(taskPosts(brokenId, 'apply').length, 0);
+    await page.evaluate(() => {
+      authorPlanningSelected='ui_missing_planning_history';view='blueprint';render();
+    });
+    await page.locator('[data-planning-latest]').waitFor();
+    assert.equal(await page.evaluate(() => authorPlanningSelected), 'ui_missing_planning_history');
+    await page.evaluate(() => authorLoadPlanning());
+    assert.equal(await page.evaluate(() => authorPlanning), null, '再次读取也不回退到另一份规划');
+    assert.equal(await page.evaluate(() => authorPlanningSelected), 'ui_missing_planning_history');
+    await page.locator('[data-view="memory"]').click();
+    await page.locator('[data-view="blueprint"]').click();
+    await page.locator('[data-planning-latest]').waitFor();
+    assert.equal(await page.evaluate(() => authorPlanning), null, '切页返回仍保留显式缺失记录');
+    await page.locator('[data-planning-latest]').click();
+    await page.waitForFunction(id => authorPlanning?.id === id, other.id);
+    assert.equal(await page.locator('[data-planning-latest]').count(), 0, '作者明确选择才打开当前规划');
+    await page.locator('[data-view="memory"]').click();
     report.inline_historical_plan_guard = {historical: id, missing: brokenId, other_planning: other.id,
       reads: exactReads(id).length + exactReads(brokenId).length};
   });
@@ -1219,6 +1239,121 @@ async function main() {
     await card.locator('[data-chat-task-status="awaiting_job"]').waitFor();
     assert.equal(taskPosts(id, 'confirm').length, 1, '恢复后只确认一次');
     report.inline_plan_stale_candidate = {task_id: id, posts: taskPosts(id, 'confirm').length};
+  });
+
+  await test('原步骤未收到请求时可手动恢复，刷新切会话不自动重试或丢失原检查点', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main'), observations = [];
+    for (const action of ['authorize', 'confirm', 'apply']) {
+      const fixture = fixtureSession(data, firstId, '请求未送达的步骤 ' + action,
+        action === 'authorize' ? {} : {mode: 'plan', task: {
+          status: action === 'confirm' ? 'awaiting_plan_confirmation' : 'awaiting_plan_application',
+          stage: action === 'confirm' ? 'overview' : 'scenes', calls_used: action === 'confirm' ? 1 : 4,
+          steps: taskSteps('plan', action === 'confirm' ? {overview: 'success'} :
+            {overview: 'confirmed', volumes: 'confirmed', chapters: 'confirmed', scenes: 'confirmed'}),
+          planning_workflow: {id: 'ui_not_delivered_' + action, version: 2, source_version: 1,
+            attempt: action === 'confirm' ? {id: 'ui_not_delivered_attempt', candidate_hash: 'ui_not_delivered_hash',
+              candidate: {premise: '断网前已读的同一份候选。'}} : null,
+            blueprint: {premise: '断网前已读的同一份规划。', volumes: []}, applied: false}}});
+      const card = await selectChat(page, fixture), id = fixture.row.id;
+      const checkpoint = fixture.row.checkpoint_id, status = fixture.row.status;
+      const selector = action === 'authorize' ? '[data-chat-start]' : '[data-chat-plan-' + action + ']';
+      await card.locator(selector + ':not([disabled])').waitFor();
+      rejectedWrites.add(id);
+      await card.locator(selector).click();
+      const retry = card.locator('[data-chat-task-retry]:not([disabled])');
+      await retry.waitFor();
+      assert.equal(fixture.row.status, status, '请求未到达，服务端原任务保持原状');
+      assert.equal(fixture.row.checkpoint_id, checkpoint);
+      assert.equal(taskPosts(id, action).length, 1);
+      assert.equal(taskPosts(id, action)[0].not_delivered, true);
+      assert.equal(await card.locator(selector).count(), 0, '未知结果期间只提供明确的恢复入口');
+      assert.match(await card.textContent(), action === 'apply' ? /不新增模型调用/ : /按当前模型额度计费/);
+      await until(() => card.locator('[data-chat-task-error]').textContent().then(text =>
+        text.includes('未自动重发')), 'manual recovery message');
+      assert.ok(!(await card.textContent()).includes('请勿重复'), '恢复提示与手动恢复按钮不能互相矛盾');
+      if(action==='confirm'){
+        const screenshot = path.join(temporary, 'agent-chat-manual-recovery-1440x1000.png');
+        await card.scrollIntoViewIfNeeded();await page.screenshot({path:screenshot});report.screenshots.push(screenshot);
+      }
+      await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+      await retry.waitFor();
+      const other = fixtureSession(data, secondId, '断网后继续保留的讨论 ' + action);
+      await selectChat(page, other); await selectChat(page, fixture);
+      await retry.waitFor();
+      assert.equal(taskPosts(id, action).length, 1, '刷新和切会话只读取，不自动重发');
+      const beforeReads = exactReads(id).length;
+      await retry.evaluate(button => {button.click(); button.click();});
+      await card.locator('[data-chat-task-status="' +
+        (action === 'apply' ? 'review_ready' : 'awaiting_job') + '"]').waitFor();
+      assert.ok(exactReads(id).length > beforeReads, '手动重试前再精确读取原任务');
+      assert.equal(taskPosts(id, action).length, 2, '双击只新增一次手动重试');
+      assert.deepEqual(taskPosts(id, action).map(row => row.body), [
+        {action, checkpoint_id: checkpoint}, {action, checkpoint_id: checkpoint}]);
+      assert.equal(taskPosts(id, action).filter(row => !row.not_delivered).length, 1,
+        '只有一次请求交付给模拟服务处理');
+      assert.equal(await card.locator('[data-chat-task-retry]').count(), 0);
+      observations.push({action, attempts: 2, delivered: 1});
+    }
+    report.inline_not_delivered_recovery = observations;
+    assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
+  });
+
+  await test('手动恢复前发现原候选或任务身份变化时不重发请求', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const fixture = fixtureSession(data, firstId, '恢复前必须再核对候选', {mode: 'plan', task: {
+      status: 'awaiting_plan_confirmation', stage: 'overview', calls_used: 1,
+      steps: taskSteps('plan', {overview: 'success'}),
+      planning_workflow: {id: 'ui_retry_identity', version: 1, source_version: 1,
+        attempt: {id: 'ui_retry_attempt', candidate_hash: 'ui_retry_hash', candidate: {premise: '原候选。'}},
+        blueprint: {premise: '', volumes: []}}}});
+    const card = await selectChat(page, fixture), id = fixture.row.id;
+    await card.locator('[data-chat-plan-confirm]:not([disabled])').waitFor();
+    rejectedWrites.add(id); await card.locator('[data-chat-plan-confirm]').click();
+    const retry = card.locator('[data-chat-task-retry]:not([disabled])');
+    await retry.waitFor();
+    const original = copy(fixture.row.planning_workflow);
+    fixture.row.planning_workflow.attempt.candidate_hash = 'changed_after_original_send';
+    await retry.click();
+    await until(() => card.locator('[data-chat-action-error]').textContent().then(text =>
+      text.includes('规划阶段或候选已变化')), 'manual retry rejects replaced candidate');
+    assert.equal(taskPosts(id, 'confirm').length, 1, '候选不一致时不得重发');
+    assert.equal(await card.locator('[data-chat-task-retry]').count(), 0);
+    fixture.row.planning_workflow = original;
+    await card.locator('[data-chat-task-refresh]:not([disabled])').click(); await retry.waitFor();
+    for (const patch of [{source_stale: true}, {restored_read_only: true}, {chapter_id: secondId}]) {
+      data.writingFaults.set(id, {patch});
+      await retry.click();
+      await card.locator('[data-chat-task-refresh]:not([disabled])').waitFor();
+      assert.equal(taskPosts(id, 'confirm').length, 1, '来源变化、只读或章节不符不能恢复');
+      assert.equal(await card.locator('[data-chat-task-retry]').count(), 0);
+      data.writingFaults.delete(id);
+      await card.locator('[data-chat-task-refresh]:not([disabled])').click(); await retry.waitFor();
+    }
+    const gate = gateOnce(row => row.exact && row.id === id);
+    try {
+      await retry.click(); await bounded(gate.entered, 'manual retry preflight held');
+      const other = fixtureSession(data, secondId, '恢复期间切换的讨论');
+      await selectChat(page, other);
+      await releaseGate(page, gate);
+      assert.equal(taskPosts(id, 'confirm').length, 1, '切换会话后旧恢复操作不得继续');
+      assert.equal(taskPosts(other.row.id).length, 0);
+    } finally {gate.release();}
+    await selectChat(page, fixture);await retry.waitFor();
+    await page.evaluate(taskId => {
+      const key=Object.keys(localStorage).find(key=>key.endsWith(':'+taskId)&&key.includes(':agent-chat-task-uncertain:'));
+      if(!key)throw new Error('Synthetic uncertain record missing');
+      const value=JSON.parse(localStorage.getItem(key));delete value.identity;
+      localStorage.setItem(key,JSON.stringify(value));
+    },id);
+    await page.reload();await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+    await until(() => card.textContent().then(text=>text.includes('旧版记录缺少原候选校验')),
+      'legacy uncertain identity warning');
+    assert.equal(await card.locator('[data-chat-task-retry],[data-chat-plan-confirm]').count(),0,
+      '没有原候选校验的旧记录不能猜造身份重试');
+    assert.equal(taskPosts(id,'confirm').length,1);
+    report.inline_retry_identity_guard = {task_id: id, attempts: taskPosts(id, 'confirm').length, delivered: 0};
   });
 
   await test('场景候选显示所属分卷和章节标题', async () => {
