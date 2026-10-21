@@ -38,9 +38,9 @@ Windows 另通过默认卸载后保留应用数据的检查，卸载前后样本
 
 | 电脑 | 安装文件 | 备用压缩包 |
 | --- | --- | --- |
-| Mac，Apple 芯片 | `Moyu-0.1.2-mac-arm64.dmg` | `Moyu-0.1.2-mac-arm64.zip` |
-| Mac，Intel 芯片 | `Moyu-0.1.2-mac-x64.dmg` | `Moyu-0.1.2-mac-x64.zip` |
-| Windows，64 位 Intel 或 AMD | `Moyu-0.1.2-win-x64.exe` | `Moyu-0.1.2-win-x64.zip` |
+| Mac，Apple 芯片 | `Moyu-0.1.3-mac-arm64.dmg` | `Moyu-0.1.3-mac-arm64.zip` |
+| Mac，Intel 芯片 | `Moyu-0.1.3-mac-x64.dmg` | `Moyu-0.1.3-mac-x64.zip` |
+| Windows，64 位 Intel 或 AMD | `Moyu-0.1.3-win-x64.exe` | `Moyu-0.1.3-win-x64.zip` |
 
 Mac 需要 macOS 15 或更新版本，可在左上角苹果菜单的“关于本机”查看系统版本和芯片名称。打开 DMG 后将“墨屿”拖入“应用程序”；Windows 打开 EXE，按安装窗口完成安装。Windows 安装包可选择安装目录，默认只为当前用户安装。
 
