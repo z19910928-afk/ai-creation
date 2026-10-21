@@ -1141,6 +1141,101 @@ async function main() {
       reads: exactReads(id).length + exactReads(brokenId).length};
   });
 
+  await test('规划确认与采用回应丢失后不重复写入，刷新和切会话仍保持', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main'), observations = [];
+    for (const action of ['confirm', 'apply']) {
+      const status = action === 'confirm' ? 'awaiting_plan_confirmation' : 'awaiting_plan_application';
+      const fixture = fixtureSession(data, firstId, '回应丢失的规划 ' + action, {mode: 'plan',
+        task: {status, stage: action === 'confirm' ? 'overview' : 'scenes', calls_used: action === 'confirm' ? 1 : 4,
+          steps: taskSteps('plan', action === 'confirm' ? {overview: 'success'} :
+            {overview: 'confirmed', volumes: 'confirmed', chapters: 'confirmed', scenes: 'confirmed'}),
+          planning_workflow: {attempt: action === 'confirm' ? {id: 'ui_lost_attempt',
+            candidate_hash: 'ui_lost_hash', candidate: {premise: '回应丢失时的规划候选。'}} : null,
+            blueprint: {premise: '回应丢失时的完整规划。', volumes: []},
+            final_blueprint: action === 'apply' ? {premise: '回应丢失时的完整规划。', volumes: []} : null}}});
+      const card = await selectChat(page, fixture), id = fixture.row.id;
+      const selector = '[data-chat-plan-' + action + ']:not([disabled])';
+      await card.locator(selector).waitFor();
+      const gate = gateOnce(row => row.method === 'POST' && row.id === id &&
+        row.body?.action === action, 'abort');
+      await card.locator(selector).click();
+      await bounded(gate.entered, 'plan response loss POST: ' + action);
+      gate.release(); await bounded(gate.finished, 'plan response loss abort: ' + action);
+      const expected = action === 'confirm' ? 'awaiting_job' : 'review_ready';
+      await card.locator('[data-chat-task-status="' + expected + '"]').waitFor();
+      assert.equal(taskPosts(id, action).length, 1, action + ' 只写入一次');
+      await pause(600);
+      assert.equal(taskPosts(id, action).length, 1, action + ' 轮询不重复写入');
+      await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+      await page.locator('[data-view="memory"]').click();
+      await card.locator('[data-chat-task-status="' + expected + '"]').waitFor();
+      assert.equal(taskPosts(id, action).length, 1, action + ' 刷新后不重复写入');
+      const other = fixtureSession(data, secondId, '回应丢失后的另一段讨论');
+      await selectChat(page, other);
+      await selectChat(page, fixture);
+      assert.equal(taskPosts(id, action).length, 1, action + ' 切会话后不重复写入');
+      observations.push({action, task_id: id, posts: taskPosts(id, action).length,
+        checkpoint: fixture.row.checkpoint_id});
+    }
+    report.inline_plan_response_loss = observations;
+    assert.deepEqual(report.page_errors, []);
+  });
+
+  await test('操作前重新读取发现候选变化时放弃确认，恢复后可正常继续', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const fixture = fixtureSession(data, firstId, '候选变化的规划', {mode: 'plan',
+      task: {status: 'awaiting_plan_confirmation', stage: 'overview', calls_used: 1,
+        steps: taskSteps('plan', {overview: 'success'}),
+        planning_workflow: {attempt: {id: 'ui_stale_attempt', candidate_hash: 'ui_stale_hash',
+          candidate: {premise: '尚未读取的新候选。'}}, blueprint: {premise: '', volumes: []},
+          final_blueprint: null}}});
+    const card = await selectChat(page, fixture), id = fixture.row.id;
+    await card.locator('[data-chat-plan-confirm]:not([disabled])').waitFor();
+    data.writingFaults.set(id, {patch: {planning_workflow: {...fixture.row.planning_workflow,
+      attempt: {...fixture.row.planning_workflow.attempt, candidate_hash: 'ui_fresh_hash'}}}});
+    await card.locator('[data-chat-plan-confirm]').click();
+    await until(() => card.locator('[data-chat-action-error]').textContent().then(text =>
+      text.includes('规划阶段或候选已变化')), 'stale candidate refusal');
+    assert.equal(taskPosts(id, 'confirm').length, 0, '候选变化时不能写入确认');
+    data.writingFaults.delete(id);
+    await card.locator('[data-chat-task-refresh]:not([disabled])').click();
+    await card.locator('[data-chat-plan-confirm]:not([disabled])').waitFor();
+    await card.locator('[data-chat-plan-confirm]').click();
+    await card.locator('[data-chat-task-status="awaiting_job"]').waitFor();
+    assert.equal(taskPosts(id, 'confirm').length, 1, '恢复后只确认一次');
+    report.inline_plan_stale_candidate = {task_id: id, posts: taskPosts(id, 'confirm').length};
+  });
+
+  await test('场景候选显示所属分卷和章节标题', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const blueprint = {premise: '铜钥匙指向遗忘之城。', volumes: [
+      {id: 'ui_title_volume', title: '第一卷 遗忘之城',
+        chapters: [{id: 'ui_title_chapter', title: '第一章 铜钥匙',
+          scenes: [{id: 'ui_title_scene', title: '门外'}]}]}]};
+    const fixture = fixtureSession(data, firstId, '场景候选标题', {mode: 'plan',
+      task: {status: 'awaiting_plan_confirmation', stage: 'scenes', calls_used: 3,
+        steps: taskSteps('plan', {overview: 'confirmed', volumes: 'confirmed',
+          chapters: 'confirmed', scenes: 'success'}),
+        planning_workflow: {stage: 'scenes', applied: false,
+          attempt: {id: 'ui_title_attempt', candidate_hash: 'ui_title_hash', candidate: {
+            volumes: [{id: 'ui_title_volume', chapters: [{id: 'ui_title_chapter', scenes: [
+              {id: 'ui_title_scene', title: '门外', goal: '听见城池的回声',
+                location: '渡口', pov: '林岚'}]}]}]}},
+          blueprint, final_blueprint: null}}});
+    const card = await selectChat(page, fixture);
+    const preview = card.locator('details[data-chat-task-preview]');
+    await preview.waitFor();
+    await preview.locator('summary').click();
+    const text = await preview.textContent();
+    assert.ok(text.includes('第一卷 遗忘之城'), '场景候选显示所属分卷标题');
+    assert.ok(text.includes('第一章 铜钥匙'), '场景候选显示所属章节标题');
+    assert.ok(text.includes('门外') && text.includes('听见城池的回声'));
+    report.inline_plan_scene_titles = {excerpt: text.slice(0, 160)};
+  });
+
   await test('任务与查看结果的迟到读取跨聊天作品分支均不串线或导航', async () => {
     const observations = [];
     report.inline_task_scope_races = observations;
