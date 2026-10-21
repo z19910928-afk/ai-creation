@@ -1095,6 +1095,33 @@ async function main() {
     report.inline_task_terminal_reads = ids.map((id, index) => ({id, reads_before: counts[index], reads_after: exactReads(id).length}));
   });
 
+  await test('历史规划任务没有保留规划记录时不跳转，也不会打开其他规划', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const other = await api('/api/planning-workflows', 'POST',
+      {initial: {premise: '另一份绝不能被历史任务打开的规划'}});
+    assert.ok(other.id, '先建立另一份真实规划，确认误回退会被发现');
+    const fixture = fixtureSession(data, firstId, '备份中的规划任务', {mode: 'plan', task: {
+      status: 'review_ready', restored_read_only: true, planning_workflow: null, checkpoint_id: '',
+      source_stale: true, calls_used: 4,
+      steps: taskSteps('plan', {overview: 'confirmed', volumes: 'confirmed', chapters: 'confirmed', scenes: 'confirmed'})}});
+    const card = await selectChat(page, fixture), id = fixture.row.id;
+    await card.locator('[data-chat-task-status="review_ready"]').waitFor();
+    assert.equal(await card.locator('[data-chat-task-preview]').count(), 0, '历史任务没有可打开的规划内容');
+    assert.ok((await card.textContent()).includes('历史任务没有保留对应的创作规划'), '卡片明确说明历史任务未保留规划');
+    assert.equal(await card.locator('[data-chat-start]').count(), 0);
+    const button = card.locator('[data-chat-open-result]');
+    assert.equal(await button.textContent(), '查看任务记录');
+    await button.click();
+    await until(() => card.locator('[data-chat-action-error]').textContent().then(text =>
+      text.includes('没有保留对应的创作规划')), 'historical plan guard');
+    assert.equal(await page.evaluate(() => view), 'memory', '不跳转到创作规划页面');
+    assert.equal(await page.evaluate(() => authorPlanningSelected), null, '不选中其他规划');
+    assert.equal(taskPosts(id, 'confirm').length, 0, '只读核对不会推进任务');
+    assert.equal(taskPosts(id, 'apply').length, 0, '只读核对不会采用规划');
+    report.inline_historical_plan_guard = {id, other_planning: other.id, reads: exactReads(id).length};
+  });
+
   await test('任务与查看结果的迟到读取跨聊天作品分支均不串线或导航', async () => {
     const observations = [];
     report.inline_task_scope_races = observations;

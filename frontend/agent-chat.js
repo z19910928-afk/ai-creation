@@ -303,7 +303,7 @@
    <p class="agent-chat-task-source" data-chat-task-source>${source?'来源章 · '+esc(source.title):action.kind==='plan'?'范围 · 全书创作规划':'来源章节已不存在'}</p>
    ${verified?taskSteps(row)+taskPreview(row):''}
    ${Number.isInteger(row?.calls_used)&&Number.isInteger(row?.max_calls)?`<p class="agent-chat-task-budget">模型调用 ${row.calls_used} / 上限 ${row.max_calls} 次</p>`:''}
-   ${readOnly?'<small>历史只读，保留本次任务记录。</small>':!source&&action.kind!=='plan'?'<small>请在当前作品重新选择章节并讨论。</small>':
+   ${verified&&row.mode==='plan'&&!row.planning_workflow?.id?'<small>历史任务没有保留对应的创作规划，原规划无法打开。</small>':readOnly?'<small>历史只读，保留本次任务记录。</small>':!source&&action.kind!=='plan'?'<small>请在当前作品重新选择章节并讨论。</small>':
     row?.source_stale?`<small>${row.mode==='plan'&&row.planning_workflow?.applied?'创作规划已有更新，本次成果保留供对照。':'任务依据已变化，请按当前内容重新讨论。'}</small>`:
     entry.uncertain?'<small>请先核对原任务，结果明确后再继续。</small>':
     taskCanStart(entry,action)?'<small>启动后按当前模型额度计费。</small>':
@@ -321,7 +321,9 @@
   const inspiration=action.kind==='save_inspiration',row=entry?.row,verified=entry?.verified&&taskMatches(action,row);
   const resultPrimary=verified&&!entry.uncertain&&!row.source_stale&&!row.restored_read_only&&
    (['awaiting_adoption','awaiting_memory'].includes(row.status)||row.status==='review_ready');
-  const resultLabel=inspiration?'查看灵感':action.kind==='open'?'再次打开':verified?({
+  const planMissing=verified&&row.mode==='plan'&&!row.planning_workflow?.id;
+  const resultLabel=inspiration?'查看灵感':action.kind==='open'?'再次打开':
+   planMissing?'查看任务记录':verified?({
    awaiting_adoption:'查看并采纳正文',awaiting_memory:'确认章后资料',review_ready:row.mode==='plan'?'打开创作规划':'查看本次审稿'
   })[row.status]||'查看任务记录':entry?'查看任务记录':'查看结果';
   return `<section class="agent-chat-action" data-chat-action="${esc(action.id)}"><h4>${esc(action.label||'创作建议')}</h4>
@@ -701,7 +703,10 @@
    if(!resultCurrent())return;
    if(!row)throw new Error(taskEntry(action)?.error||'任务状态尚未核实，请先核对进度。');
    if(row.mode==='plan'){
-    authorPlanningSelected=row.planning_workflow?.id||null;view='blueprint';render();return;
+    const workflowId=row.planning_workflow?.id;
+    if(!workflowId||row.restored_read_only)
+     throw new Error('这条历史任务没有保留对应的创作规划，无法打开原规划；为避免误开其他规划，本次不跳转。');
+    authorPlanningSelected=workflowId;view='blueprint';render();return;
    }
    if(['awaiting_memory','review_ready'].includes(row.status)){
     const analysis=row.status==='awaiting_memory',id=row.result_refs?.[analysis?'chapter_analysis':'semantic_review']?.id;
