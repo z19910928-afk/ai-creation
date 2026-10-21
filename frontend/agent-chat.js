@@ -303,7 +303,7 @@
    <p class="agent-chat-task-source" data-chat-task-source>${source?'来源章 · '+esc(source.title):action.kind==='plan'?'范围 · 全书创作规划':'来源章节已不存在'}</p>
    ${verified?taskSteps(row)+taskPreview(row):''}
    ${Number.isInteger(row?.calls_used)&&Number.isInteger(row?.max_calls)?`<p class="agent-chat-task-budget">模型调用 ${row.calls_used} / 上限 ${row.max_calls} 次</p>`:''}
-   ${verified&&row.mode==='plan'&&!row.planning_workflow?.id?'<small>历史任务没有保留对应的创作规划，原规划无法打开。</small>':readOnly?'<small>历史只读，保留本次任务记录。</small>':!source&&action.kind!=='plan'?'<small>请在当前作品重新选择章节并讨论。</small>':
+   ${verified&&row.mode==='plan'&&!row.planning_workflow?.id?(row.restored_read_only?'<small>历史任务没有保留对应的创作规划，原规划无法打开。</small>':'<small>本次任务的规划记录缺失，原规划无法打开。</small>'):readOnly?'<small>历史只读，保留本次任务记录。</small>':!source&&action.kind!=='plan'?'<small>请在当前作品重新选择章节并讨论。</small>':
     row?.source_stale?`<small>${row.mode==='plan'&&row.planning_workflow?.applied?'创作规划已有更新，本次成果保留供对照。':'任务依据已变化，请按当前内容重新讨论。'}</small>`:
     entry.uncertain?'<small>请先核对原任务，结果明确后再继续。</small>':
     taskCanStart(entry,action)?'<small>启动后按当前模型额度计费。</small>':
@@ -705,7 +705,9 @@
    if(row.mode==='plan'){
     const workflowId=row.planning_workflow?.id;
     if(!workflowId||row.restored_read_only)
-     throw new Error('这条历史任务没有保留对应的创作规划，无法打开原规划；为避免误开其他规划，本次不跳转。');
+     throw new Error(row.restored_read_only?
+      '这条历史任务没有保留对应的创作规划，无法打开原规划；为避免误开其他规划，本次不跳转。':
+      '本次任务缺少规划记录，无法打开原规划；为避免误开其他规划，本次不跳转。');
     authorPlanningSelected=workflowId;view='blueprint';render();return;
    }
    if(['awaiting_memory','review_ready'].includes(row.status)){

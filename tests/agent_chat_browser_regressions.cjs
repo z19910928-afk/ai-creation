@@ -1095,7 +1095,7 @@ async function main() {
     report.inline_task_terminal_reads = ids.map((id, index) => ({id, reads_before: counts[index], reads_after: exactReads(id).length}));
   });
 
-  await test('历史规划任务没有保留规划记录时不跳转，也不会打开其他规划', async () => {
+  await test('历史规划或缺失规划记录的任务不跳转，也不会打开其他规划', async () => {
     await page.locator('[data-view="memory"]').click();
     const data = workspace('default-project', 'main');
     const other = await api('/api/planning-workflows', 'POST',
@@ -1119,7 +1119,26 @@ async function main() {
     assert.equal(await page.evaluate(() => authorPlanningSelected), null, '不选中其他规划');
     assert.equal(taskPosts(id, 'confirm').length, 0, '只读核对不会推进任务');
     assert.equal(taskPosts(id, 'apply').length, 0, '只读核对不会采用规划');
-    report.inline_historical_plan_guard = {id, other_planning: other.id, reads: exactReads(id).length};
+
+    const broken = fixtureSession(data, firstId, '规划记录缺失的任务', {mode: 'plan', task: {
+      status: 'review_ready', restored_read_only: false, planning_workflow: null, checkpoint_id: 'chk_missing_plan',
+      source_stale: false, calls_used: 4,
+      steps: taskSteps('plan', {overview: 'confirmed', volumes: 'confirmed', chapters: 'confirmed', scenes: 'confirmed'})}});
+    const brokenCard = await selectChat(page, broken), brokenId = broken.row.id;
+    await brokenCard.locator('[data-chat-task-status="review_ready"]').waitFor();
+    assert.equal(await brokenCard.locator('[data-chat-task-preview]').count(), 0);
+    assert.ok((await brokenCard.textContent()).includes('本次任务的规划记录缺失'), '缺失规划记录的任务不冒充历史任务');
+    const brokenButton = brokenCard.locator('[data-chat-open-result]');
+    assert.equal(await brokenButton.textContent(), '查看任务记录');
+    await brokenButton.click();
+    await until(() => brokenCard.locator('[data-chat-action-error]').textContent().then(text =>
+      text.includes('本次任务缺少规划记录')), 'missing plan record guard');
+    assert.equal(await page.evaluate(() => view), 'memory', '缺失规划记录时也不跳转');
+    assert.equal(await page.evaluate(() => authorPlanningSelected), null, '缺失规划记录时不选中其他规划');
+    assert.equal(taskPosts(brokenId, 'confirm').length, 0);
+    assert.equal(taskPosts(brokenId, 'apply').length, 0);
+    report.inline_historical_plan_guard = {historical: id, missing: brokenId, other_planning: other.id,
+      reads: exactReads(id).length + exactReads(brokenId).length};
   });
 
   await test('任务与查看结果的迟到读取跨聊天作品分支均不串线或导航', async () => {

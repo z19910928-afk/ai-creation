@@ -13,6 +13,7 @@ let authorBlueprintPromise=null;
 let authorPlanning=null;
 let authorPlanningRows=[];
 let authorPlanningSelected=null;
+let authorPlanningMissing=false;
 let authorPlanningTimer=null;
 let authorPlanningBusy=false;
 const authorPlanningStages=[['overview','总纲'],['volumes','卷'],['chapters','章'],['scenes','场景']];
@@ -641,7 +642,7 @@ function authorRenderAgent(scope,host){
  ${!row.restored_read_only&&row.mode!=='plan'&&row.current_job&&row.status!=='awaiting_memory'?'<button class="primary-btn" data-agent-open>查看当前结果</button>':''}
  ${!row.restored_read_only&&row.status==='awaiting_adoption'?'<button class="ghost-btn" data-agent-action="applied">核对采纳结果</button>':''}
  ${!row.restored_read_only&&row.status==='awaiting_memory'?'<button class="primary-btn" data-agent-analysis>确认章后资料</button><button class="ghost-btn" data-agent-action="advance">核对确认结果</button>':''}
- ${!row.restored_read_only&&row.status==='review_ready'?(row.mode==='plan'?'<button class="ghost-btn" data-agent-planning>打开规划建立章节</button>':'<button class="ghost-btn" data-agent-analysis>章后记忆</button><button class="ghost-btn" data-agent-review>故事审稿</button>'):''}
+ ${!row.restored_read_only&&row.status==='review_ready'?(row.mode==='plan'?(row.planning_workflow?.id?'<button class="ghost-btn" data-agent-planning>打开规划建立章节</button>':'<small>本次任务的规划记录缺失，原规划无法打开。</small>'):'<button class="ghost-btn" data-agent-analysis>章后记忆</button><button class="ghost-btn" data-agent-review>故事审稿</button>'):''}
  ${!row.restored_read_only&&['awaiting_authorization','awaiting_job','awaiting_adoption','awaiting_memory','awaiting_plan_confirmation','awaiting_plan_application'].includes(row.status)?'<button class="ghost-btn" data-agent-action="cancel">停止任务</button>':''}
  </div><p class="form-error" data-agent-action-error role="alert"></p></article>`).join('')||'<div class="empty">还没有写作任务。</div>');
  host.querySelector('[data-agent-return-all]')?.addEventListener('click',()=>{
@@ -696,7 +697,9 @@ function authorRenderAgent(scope,host){
   section.querySelector('[data-agent-review]')?.addEventListener('click',()=>{if(openChapter())actions.reviewChapter()});
   section.querySelector('[data-agent-planning]')?.addEventListener('click',()=>{
    if(!authorAgentCurrent(scope,host))return;
-   authorPlanningSelected=row.planning_workflow?.id||null;view='blueprint';render();
+   const workflowId=row.planning_workflow?.id;
+   if(!workflowId){toast('本次任务的规划记录缺失，无法打开原规划；为避免误开其他规划，本次不跳转。');return}
+   authorPlanningSelected=workflowId;view='blueprint';render();
   });
  });
 }
@@ -914,7 +917,9 @@ async function authorLoadPlanning(owner=requestedProject){
  const branch=state.branch_id||'main';const data=await authorJSON('/api/planning-workflows');
  if(owner!==requestedProject||branch!==(state.branch_id||'main')||view!=='blueprint')return;
  authorPlanningRows=data.workflows||[];
- authorPlanning=authorPlanningRows.find(row=>row.id===authorPlanningSelected)||authorPlanningRows[0]||null;
+ const wanted=authorPlanningSelected;
+ authorPlanning=authorPlanningRows.find(row=>row.id===wanted)||(wanted?null:authorPlanningRows[0]||null);
+ authorPlanningMissing=!!wanted&&!authorPlanning;
  authorPlanningSelected=authorPlanning?.id||null;authorRenderPlanning();
  const attempt=authorPlanning?.attempt;
  if(authorPlanning?.status==='active'&&['queued','running'].includes(attempt?.status)){
@@ -929,7 +934,16 @@ async function authorLoadPlanning(owner=requestedProject){
 function authorRenderPlanning(){
  const host=document.querySelector('#planningWorkflowHost');if(!host)return;
  const workflow=authorPlanning;
- if(!workflow){host.innerHTML='<div class="empty">暂无分阶段规划。</div>';return}
+ if(!workflow){
+  host.innerHTML=authorPlanningMissing?
+   '<div class="empty">这条任务对应的创作规划记录不在当前规划历史中，未自动打开其他规划。<button class="ghost-btn" data-planning-latest>查看当前最新规划</button></div>':
+   '<div class="empty">暂无分阶段规划。</div>';
+  host.querySelector('[data-planning-latest]')?.addEventListener('click',()=>{
+   authorPlanningMissing=false;authorPlanningSelected=null;
+   authorLoadPlanning().catch(error=>toast(error.message));
+  });
+  return;
+ }
  const attempt=workflow.attempt;const completed=workflow.status==='completed';const canceled=workflow.status==='canceled';
  const running=['queued','running'].includes(attempt?.status);const unknown=attempt?.status==='unknown';
  const candidateReady=attempt?.status==='complete'&&!completed&&!canceled;
