@@ -4,9 +4,9 @@
 
 ## 当前发布
 
-[v0.1.2 已发布](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.2)，发布时间为北京时间 2026-10-18 20:06:40（UTC 12:06:40），安装包源码为 `85ef5f83e66c520cda538f5b07a9c30ffcbc1d00`。本版更新模型配置列表、服务商预设、自定义请求路径、测试保存与默认模型启用流程，并修复写作总管的协议参数兼容问题，详见[更新说明](releases/v0.1.2.md)。
+[v0.1.3 已发布](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.3)，发布时间为北京时间 2026-10-21 21:20:16（UTC 13:20:16），安装包源码为 `2ccec26c22ca68dc182533ddb0fa4c79f8d4d965`。本版更新写作总管常驻对话、任务卡步骤与成果预览、灵感确认保存、回复未送达时的手动重试，以及历史规划保护，详见[更新说明](releases/v0.1.3.md)。
 
-同一源码的[完整产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39123882973)共 36 个步骤全部成功。[正式标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39125325662)已在三个原生环境完成构建和验收，发布页共提供 9 个资产：3 个安装程序、3 个备用 ZIP 和 3 份 SHA256 校验文件。
+同一源码的[完整产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39600478273)共 36 个步骤全部成功。[正式标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39600478386)已在三个原生环境完成构建和验收，发布页共提供 9 个资产：3 个安装程序、3 个备用 ZIP 和 3 份 SHA256 校验文件。
 
 | 正式构建平台 | 包内后台 | 真实窗口 | 安装后运行 |
 | --- | --- | --- | --- |
@@ -15,6 +15,8 @@
 | Windows 64 位 | 18 通过，1 项 POSIX 专属检查跳过 | 10/10 | 10/10 |
 
 Windows 另通过默认卸载后保留应用数据的检查，卸载前后样本文件的摘要保持一致。三个平台的窗口检查均无远程模型生成、意外外部请求或页面错误。发布后已独立下载三份校验文件，六个安装程序和 ZIP 的摘要与 GitHub 资产记录逐一相同；下载时可用发布页中的 `SHA256SUMS-*.txt` 核对文件。工程验收未调用真实远程模型，也未进行文学质量评测。后续文档更新不改变该版本的软件源码或安装包。
+
+历史版本 [v0.1.2](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.2) 保留下载，发布时间为北京时间 2026-10-18 20:06:40，源码为 `85ef5f83e66c520cda538f5b07a9c30ffcbc1d00`，包含模型配置列表、服务商预设、自定义请求路径以及先测后存的更新，见[该版更新说明](releases/v0.1.2.md)。该版[完整产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39123882973)的 36 个步骤及[正式标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39125325662)均已成功。
 
 历史版本 [v0.1.1](https://github.com/z19910928-afk/neural-network-ai-creation/releases/tag/v0.1.1) 保留下载，发布时间为北京时间 2026-10-18 18:19:24，源码为 `34df7b4f521aba3b9d666f1e940cd7b52a15984c`，包含自动获取模型清单、搜索选择以及主写作和总管的 Chat / Responses 接入更新，见[该版更新说明](releases/v0.1.1.md)。该版[完整产品检查](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39116841021)的 36 个步骤、[三平台预验收](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39117407735)及[正式标签发布运行](https://github.com/z19910928-afk/neural-network-ai-creation/actions/runs/39118302197)均已成功。
 
