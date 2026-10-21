@@ -71,6 +71,10 @@
  const writingLabels={awaiting_authorization:'等待启动',awaiting_job:'正在执行',awaiting_adoption:'正文候选待采纳',
   awaiting_memory:'等待章后确认',awaiting_plan_confirmation:'本阶段候选待确认',awaiting_plan_application:'完整规划待采用',
   requires_action:'需要处理',review_ready:'记忆与审稿已就绪',canceled:'已停止',restored:'历史记录',unknown:'任务结果尚未确认'};
+ const taskTypes={plan:'全书规划',continue:'续写正文',polish:'整章修订',inspect:'章后检查'};
+ const planStages={overview:'故事总纲',volumes:'分卷规划',chapters:'章节规划',scenes:'场景规划'};
+ const stepLabels={pending:'尚未开始',queued:'排队中',running:'正在生成',success:'生成完成',complete:'候选待确认',
+  confirmed:'作者已确认',failed:'执行未完成',canceled:'已停止',cancelled:'已停止',interrupted:'执行中断',unknown:'结果待核对'};
  const terminal=new Set(['success','failed','canceled','cancelled','interrupted','unknown','complete','completed']);
  const running=()=>activeRun&&!terminal.has(activeRun.status);
  const scope=()=>({project:requestedProject||state.project?.id||'',branch:state.branch_id||state.project?.branch_id||'main'});
@@ -211,8 +215,18 @@
  }
  function taskEntry(action){
   const id=action.result?.writing_session_id;if(!id)return null;
-  if(!writingTasks.has(id))writingTasks.set(id,{row:null,verified:false,error:'',sequence:0,nextRead:0,pending:null,uncertain:false});
+  if(!writingTasks.has(id)){
+   let uncertain;try{uncertain=JSON.parse(storage.get(taskUncertainKey(id))||'null')}catch{}
+   writingTasks.set(id,{row:null,verified:false,error:'',sequence:0,nextRead:0,pending:null,
+    uncertain:['authorize','confirm','apply'].includes(uncertain?.action)?uncertain:null});
+  }
   return writingTasks.get(id);
+ }
+ function taskUncertainKey(id){return localKey(`:agent-chat-task-uncertain:${(observedScope||scope()).branch}:${id}`)}
+ function markTaskUncertain(action,entry,value){
+  entry.uncertain=value;
+  if(value)storage.set(taskUncertainKey(action.result.writing_session_id),JSON.stringify(value));
+  else storage.remove(taskUncertainKey(action.result.writing_session_id));
  }
  function taskMatches(action,row){
   return row?.id===action.result?.writing_session_id&&row.chapter_id===action.chapter_id&&row.mode===action.kind&&
@@ -224,24 +238,79 @@
   return ['awaiting_authorization','awaiting_adoption','awaiting_memory','awaiting_plan_confirmation','awaiting_plan_application']
    .includes(row?.status)?15000:Infinity;
  }
+ function taskWritable(entry,action){
+  const row=entry?.row;
+  return entry?.verified&&taskMatches(action,row)&&(row.mode==='plan'||!!chapter(action.chapter_id))&&!entry.uncertain&&
+   !session?.restored_read_only&&!row?.restored_read_only&&!row?.source_stale&&typeof row.checkpoint_id==='string'&&!!row.checkpoint_id;
+ }
  function taskCanStart(entry,action){
   const row=entry?.row;
-  return entry?.verified&&taskMatches(action,row)&&!!chapter(action.chapter_id)&&!entry.uncertain&&!session?.restored_read_only&&!row?.restored_read_only&&!row?.source_stale&&
-   row?.status==='awaiting_authorization'&&typeof row.checkpoint_id==='string'&&!!row.checkpoint_id&&
+  return taskWritable(entry,action)&&row.status==='awaiting_authorization'&&
    Number.isInteger(row.calls_used)&&Number.isInteger(row.max_calls)&&row.calls_used>=0&&row.max_calls>row.calls_used;
+ }
+ function taskCanPlan(entry,action,kind){
+  const row=entry?.row;
+  return taskWritable(entry,action)&&row.mode==='plan'&&row.status===
+   (kind==='confirm'?'awaiting_plan_confirmation':'awaiting_plan_application');
+ }
+ function taskSteps(row){
+  const steps=Array.isArray(row.steps)?row.steps:[];
+  const adopted=['awaiting_memory','review_ready'].includes(row.status)||
+   steps.some(step=>['chapter_analysis','semantic_review'].includes(step.task)&&step.job_id);
+  const items=steps.flatMap(step=>{
+   const node=`<li data-chat-task-step="${esc(step.task)}" data-chat-step-status="${esc(step.status)}"><span class="agent-chat-step-dot" aria-hidden="true"></span><span>${esc(step.label||planStages[step.task]||step.task)}</span><small>${esc(stepLabels[step.status]||'等待核对')}</small></li>`;
+   return ['continue','polish'].includes(row.mode)&&step.task===row.mode?[node,
+    `<li data-chat-task-step="adoption" data-chat-step-status="${adopted?'accepted':row.status==='awaiting_adoption'?'awaiting_adoption':'pending'}"><span class="agent-chat-step-dot" aria-hidden="true"></span><span>作者采纳正文</span><small>${adopted?'已采纳':row.status==='awaiting_adoption'?'等待你决定':'等待正文候选'}</small></li>`]:[node];
+  });
+  return items.length?`<ol class="agent-chat-task-steps" aria-label="本次任务步骤">${items.join('')}</ol>`:'';
+ }
+ function planningResult(value,blueprint,depth=0){
+  if(value==null||depth>8)return '';
+  if(typeof value!=='object')return `<p>${esc(String(value))}</p>`;
+  if(Array.isArray(value))return value.map(item=>`<div class="agent-chat-plan-item">${planningResult(item,blueprint,depth+1)}</div>`).join('');
+  const labels={premise:'故事核心',genre:'题材',audience:'读者',tone:'基调',contract:'创作约定',core_conflict:'核心冲突',
+   protagonist:'主角',title:'标题',summary:'梗概',volumes:'分卷',chapters:'章节',scenes:'场景',goal:'目标',
+   pov:'视角',hook:'章节出口',location:'地点',characters:'人物',conflict:'冲突',outcome:'结果',description:'内容',
+   counts:'规划规模',chapters_per_volume:'每卷章数',scenes_per_chapter:'每章场景数',target_words:'目标字数'};
+  const parent=value.id&&!value.title?[...(blueprint?.volumes||[]),
+   ...(blueprint?.volumes||[]).flatMap(volume=>volume.chapters||[])].find(item=>item.id===value.id):null;
+  return (parent?.title?`<p class="agent-chat-plan-parent">${esc(parent.title)}</p>`:'')+
+   Object.entries(value).filter(([key,item])=>item!=null&&!/(^id$|_id$|_hash$|^_)/.test(key)).map(([key,item])=>
+   `<div class="agent-chat-plan-field"><strong>${esc(labels[key]||key)}</strong>${planningResult(item,blueprint,depth+1)}</div>`).join('');
+ }
+ function taskPreview(row){
+  if(row.mode==='plan'){
+   const workflow=row.planning_workflow,complete=['awaiting_plan_application','review_ready'].includes(row.status);
+   const value=complete?workflow?.blueprint||workflow?.final_blueprint:workflow?.attempt?.candidate;
+   if(!value)return '';
+   return `<details class="agent-chat-task-preview" data-chat-task-preview data-chat-disclosure="plan:${complete?'complete':row.stage}"><summary>${esc(complete?workflow.applied?'查看已采用规划':'预览完整规划':`预览${planStages[row.stage]||'本阶段'}候选`)}</summary><div class="agent-chat-task-preview-body">${planningResult(value,workflow.blueprint)}</div></details>`;
+  }
+  const job=row.current_job;
+  if(!['continue','polish'].includes(row.mode)||job?.task!==row.mode||job.status!=='success'||
+   ['unknown','interrupted','failed'].includes(job.execution_status)||job.result?.complete===false||
+   job.result?.completion_state&&!['complete','offline_complete'].includes(job.result.completion_state))return '';
+  const text=job.result?.structured?.content||job.result?.text;
+  return typeof text==='string'&&text.trim()?`<details class="agent-chat-task-preview" data-chat-task-preview data-chat-disclosure="prose"><summary>预览正文候选</summary><div class="agent-chat-task-preview-body agent-chat-markdown">${markdown(text)}</div></details>`:'';
  }
  function taskMarkup(action){
   const entry=taskEntry(action);if(!entry)return '';
   const row=entry.row,readOnly=session?.restored_read_only||row?.restored_read_only,source=chapter(action.chapter_id);
   const verified=entry.verified&&taskMatches(action,row);
-  const label=row?.mode==='plan'&&row.status==='review_ready'?'完整规划已采用':writingLabels[row?.status]||'任务状态尚未核实';
+  const label=row?.mode==='plan'&&row.status==='review_ready'?
+   row.planning_workflow?.applied===true?'完整规划已采用':'采用结果待核对':writingLabels[row?.status]||'任务状态尚未核实';
   return `<div class="agent-chat-task" data-chat-writing-session="${esc(action.result.writing_session_id)}" data-chat-task-status="${esc(verified?row.status:'unverified')}">
-   <p class="agent-chat-task-source" data-chat-task-source>${source?'来源章 · '+esc(source.title):'来源章节已不存在'}</p>
-   <p class="agent-chat-task-state">${esc(entry.uncertain?'启动结果待核对':verified?label:row?label+' · 状态尚未核实':'正在核对任务状态…')}</p>
+   <div class="agent-chat-task-heading"><strong>${esc(taskTypes[action.kind]||'写作任务')}</strong><span class="agent-chat-task-state">${esc(entry.uncertain?'操作结果待核对':verified?label:row?label+' · 状态尚未核实':'正在核对任务状态…')}</span></div>
+   <p class="agent-chat-task-source" data-chat-task-source>${source?'来源章 · '+esc(source.title):action.kind==='plan'?'范围 · 全书创作规划':'来源章节已不存在'}</p>
+   ${verified?taskSteps(row)+taskPreview(row):''}
    ${Number.isInteger(row?.calls_used)&&Number.isInteger(row?.max_calls)?`<p class="agent-chat-task-budget">模型调用 ${row.calls_used} / 上限 ${row.max_calls} 次</p>`:''}
-   ${readOnly?'<small>历史只读，保留本次任务记录。</small>':!source?'<small>请在当前作品重新选择章节并讨论。</small>':
-    row?.source_stale?'<small>任务依据已变化，请按当前内容重新讨论。</small>':
-    taskCanStart(entry,action)?'<small>启动后按当前模型额度计费。</small>':''}
+   ${readOnly?'<small>历史只读，保留本次任务记录。</small>':!source&&action.kind!=='plan'?'<small>请在当前作品重新选择章节并讨论。</small>':
+    row?.source_stale?`<small>${row.mode==='plan'&&row.planning_workflow?.applied?'创作规划已有更新，本次成果保留供对照。':'任务依据已变化，请按当前内容重新讨论。'}</small>`:
+    entry.uncertain?'<small>请先核对原任务，结果明确后再继续。</small>':
+    taskCanStart(entry,action)?'<small>启动后按当前模型额度计费。</small>':
+    taskCanPlan(entry,action,'confirm')?`<small>${row.stage==='scenes'?'确认场景后即可采用完整规划。':'确认后会调用模型生成下一阶段，按当前模型额度计费。'}</small>`:
+    row?.status==='awaiting_plan_application'?'<small>采用后保存到创作规划，正文保持当前内容。</small>':
+    row?.status==='awaiting_adoption'?'<small>候选已生成，等你阅读后决定是否采纳。</small>':
+    row?.status==='awaiting_memory'?'<small>逐项决定章后资料，再继续故事审稿。</small>':''}
    ${row?.error?`<p class="form-error">${esc(row.error)}</p>`:''}
    ${entry.error?`<p class="form-error" data-chat-task-error>${esc(entry.error)}</p>`:''}</div>`;
  }
@@ -249,13 +318,19 @@
   const done=['confirmed','executed','completed','applied'].includes(action.status),dismissed=['dismissed','rejected','canceled'].includes(action.status);
   const confirming=action.status==='confirming',canConfirm=!done&&!dismissed&&!session?.restored_read_only;
   const entry=taskEntry(action),disabled=!!actionOperation||!!sendOperation||creating||!backendOnline;
-  const inspiration=action.kind==='save_inspiration',candidateReady=entry?.verified&&entry.row?.status==='awaiting_adoption';
-  const resultLabel=inspiration?'查看灵感':action.kind==='open'?'再次打开':candidateReady?'查看正文候选':entry?'查看本次结果':'查看结果';
+  const inspiration=action.kind==='save_inspiration',row=entry?.row,verified=entry?.verified&&taskMatches(action,row);
+  const resultPrimary=verified&&!entry.uncertain&&!row.source_stale&&!row.restored_read_only&&
+   (['awaiting_adoption','awaiting_memory'].includes(row.status)||row.status==='review_ready');
+  const resultLabel=inspiration?'查看灵感':action.kind==='open'?'再次打开':verified?({
+   awaiting_adoption:'查看并采纳正文',awaiting_memory:'确认章后资料',review_ready:row.mode==='plan'?'打开创作规划':'查看本次审稿'
+  })[row.status]||'查看任务记录':entry?'查看任务记录':'查看结果';
   return `<section class="agent-chat-action" data-chat-action="${esc(action.id)}"><h4>${esc(action.label||'创作建议')}</h4>
-   ${inspiration?`<p class="agent-chat-inspiration-title">${esc(action.title||'故事灵感')}</p>${action.content?`<details class="agent-chat-inspiration"><summary>查看灵感草稿</summary><div class="agent-chat-markdown">${markdown(action.content)}</div></details>`:''}`:action.instruction?`<p>${esc(action.instruction)}</p>`:''}<small>${dismissed?'已放弃':done?inspiration?'已保存为灵感草稿':'已确认，处理结果已保存':confirming?'确认结果待恢复，请恢复此步骤后查看进度':inspiration?'保存到设定库，供后续创作参考':action.kind==='open'?'查看当前作品内容':action.kind==='next_chapter'?'检查通过后归档本章，打开下一章；本步骤不生成正文':'确认后进入相应创作流程'}</small>
-   ${taskMarkup(action)}<div class="agent-chat-action-buttons">${canConfirm?`<button type="button" class="primary-btn" data-chat-confirm ${disabled?'disabled':''}>${confirming?'恢复此步骤':inspiration?'保存为灵感':action.kind==='open'?'打开':'确认此步骤'}</button>${action.kind!=='open'&&!confirming?`<button type="button" class="ghost-btn" data-chat-dismiss ${disabled?'disabled':''}>放弃</button>`:''}`:''}
+   ${inspiration?`<p class="agent-chat-inspiration-title">${esc(action.title||'故事灵感')}</p>${action.content?`<details class="agent-chat-inspiration" data-chat-disclosure="inspiration"><summary>查看灵感草稿</summary><div class="agent-chat-markdown">${markdown(action.content)}</div></details>`:''}`:action.instruction?`<p>${esc(action.instruction)}</p>`:''}<small>${dismissed?'已放弃':done?inspiration?'已保存为灵感草稿':entry?'任务已建立':'操作已保存':confirming?'确认结果待恢复，请恢复此步骤后查看进度':inspiration?'保存到设定库，供后续创作参考':action.kind==='open'?'查看当前作品内容':action.kind==='next_chapter'?'检查通过后归档本章，打开下一章；本步骤不生成正文':'建立任务后，按步骤生成并确认成果'}</small>
+   ${taskMarkup(action)}<div class="agent-chat-action-buttons">${canConfirm?`<button type="button" class="primary-btn" data-chat-confirm ${disabled?'disabled':''}>${confirming?'恢复此步骤':inspiration?'保存为灵感':action.kind==='open'?'打开':Object.hasOwn(taskTypes,action.kind)?'建立任务':'确认此步骤'}</button>${action.kind!=='open'&&!confirming?`<button type="button" class="ghost-btn" data-chat-dismiss ${disabled?'disabled':''}>放弃</button>`:''}`:''}
    ${done&&taskCanStart(entry,action)?`<button type="button" class="primary-btn" data-chat-start ${disabled?'disabled':''}>启动本次任务</button>`:''}
-   ${done?`<button type="button" class="ghost-btn" data-chat-open-result ${disabled?'disabled':''}>${resultLabel}</button>`:''}
+   ${done&&taskCanPlan(entry,action,'confirm')?`<button type="button" class="primary-btn" data-chat-plan-confirm ${disabled?'disabled':''}>${row.stage==='scenes'?'确认场景规划':'确认本阶段并生成下一阶段'}</button>`:''}
+   ${done&&taskCanPlan(entry,action,'apply')?`<button type="button" class="primary-btn" data-chat-plan-apply ${disabled?'disabled':''}>采用完整规划</button>`:''}
+   ${done?`<button type="button" class="${resultPrimary?'primary-btn':'ghost-btn'}" data-chat-open-result ${disabled?'disabled':''}>${resultLabel}</button>`:''}
    ${entry?`<button type="button" class="ghost-btn" data-chat-task-refresh ${disabled||entry.pending?'disabled':''}>核对进度</button>`:''}</div><p class="form-error" data-chat-action-error role="alert">${esc(actionErrors.get(action.id)?.message||'')}</p></section>`;
  }
  function renderMessages(force=false){
@@ -266,6 +341,9 @@
   if(!force&&signature===messageSignature){updateControls();return}
   messageSignature=signature;
   const nearBottom=feed.scrollHeight-feed.scrollTop-feed.clientHeight<70,scroll=feed.scrollTop;
+  const disclosureKey=node=>JSON.stringify([node.closest('[data-chat-action]')?.dataset.chatAction,node.dataset.chatDisclosure]);
+  const disclosures=new Map([...feed.querySelectorAll('[data-chat-disclosure]')].map(node=>[disclosureKey(node),
+   {open:node.open,scroll:node.querySelector('.agent-chat-task-preview-body,.agent-chat-markdown')?.scrollTop||0}]));
   feed.innerHTML=messages.length?messages.map(message=>{
    const role=message.role==='user'?'user':message.role==='tool'?'tool':'assistant';
    const label={user:'你',assistant:'写作总管',tool:'执行记录'}[role];
@@ -291,7 +369,13 @@
    element.querySelector('[data-chat-dismiss]')?.addEventListener('click',()=>performAction(action,'dismiss'));
    element.querySelector('[data-chat-open-result]')?.addEventListener('click',()=>performAction(action,'result'));
    element.querySelector('[data-chat-start]')?.addEventListener('click',()=>performAction(action,'start'));
+   element.querySelector('[data-chat-plan-confirm]')?.addEventListener('click',()=>performAction(action,'plan-confirm'));
+   element.querySelector('[data-chat-plan-apply]')?.addEventListener('click',()=>performAction(action,'plan-apply'));
    element.querySelector('[data-chat-task-refresh]')?.addEventListener('click',()=>readWritingTask(action,{force:true}));
+  });
+  feed.querySelectorAll('[data-chat-disclosure]').forEach(node=>{
+   const saved=disclosures.get(disclosureKey(node));if(!saved)return;
+   node.open=saved.open;const body=node.querySelector('.agent-chat-task-preview-body,.agent-chat-markdown');if(body)body.scrollTop=saved.scroll;
   });
   if(nearBottom||force)feed.scrollTop=feed.scrollHeight;else feed.scrollTop=scroll;
   updateControls();
@@ -465,7 +549,8 @@
     const row=data.sessions?.find(item=>item.id===action.result.writing_session_id);
     if(!taskMatches(action,row))throw new Error('写作任务与这条建议不一致，请重新核对。');
     entry.row=row;entry.verified=true;entry.error='';entry.nextRead=Date.now()+taskDelay(row);
-    if(row.status!=='awaiting_authorization')entry.uncertain=false;
+    if(entry.uncertain&&(row.checkpoint_id!==entry.uncertain.checkpoint||row.status!==entry.uncertain.status))
+     markTaskUncertain(action,entry,null);
     return row;
    }catch(error){
     if(valid()){entry.verified=false;entry.error='任务状态尚未核实：'+publicError(error);entry.nextRead=Date.now()+15000}
@@ -485,29 +570,93 @@
  }
  async function startWritingTask(action,captured){
   const entry=taskEntry(action);if(!taskCurrent(action,captured,entry)||!taskCanStart(entry,action))return;
-  if(authorBlueprintDirty&&!await authorSaveBlueprint())throw new Error('当前规划需要先保存。');
+  if((authorBlueprintDirty||authorBlueprintPromise||authorBlueprintConflict)&&!await authorSaveBlueprint())throw new Error('当前规划需要先保存或合并。');
   if(!taskCurrent(action,captured,entry)||session?.restored_read_only)return;
   const row=await readWritingTask(action,{force:true,captured});
   if(!taskCurrent(action,captured,entry)||!row)return;
   if(!taskCanStart(entry,action))throw new Error('任务进度已变化，请按卡片中的当前状态继续。');
   // A fresh read invalidates older progress requests before an authorized write.
-  ++entry.sequence;entry.pending=null;entry.verified=false;entry.error='';entry.nextRead=Infinity;renderMessages();
+  ++entry.sequence;entry.pending=null;entry.verified=false;entry.error='';entry.nextRead=Infinity;
+  markTaskUncertain(action,entry,{action:'authorize',checkpoint:row.checkpoint_id,status:row.status});renderMessages();
   try{
    const data=await writingRequest('/'+encodeURIComponent(row.id)+'/resume',{method:'POST',
     body:JSON.stringify({action:'authorize',checkpoint_id:row.checkpoint_id})},captured);
    if(!taskCurrent(action,captured,entry))return;
    if(!taskMatches(action,data.session))throw new Error('启动回应与这条建议不一致，请核对本次任务。');
-   entry.row=data.session;entry.verified=true;entry.uncertain=false;entry.nextRead=Date.now()+taskDelay(data.session);
+   entry.row=data.session;entry.verified=true;markTaskUncertain(action,entry,null);entry.nextRead=Date.now()+taskDelay(data.session);
    scheduleQueue(0);
   }catch(error){
    if(!taskCurrent(action,captured,entry))return;
-   entry.uncertain=!error.status||error.status>=500;
+   if(error.status&&error.status<500)markTaskUncertain(action,entry,null);
    entry.error=entry.uncertain?'启动结果待核对，正在读取原任务；请勿重复启动。':publicError(error);
    entry.verified=false;renderMessages();
    const problem=entry.error;
    const latest=await readWritingTask(action,{force:true,captured});
    if(taskCurrent(action,captured,entry)&&(!latest||latest.status==='awaiting_authorization'||entry.uncertain))
     entry.error=problem+(entry.error?' '+entry.error:'');
+  }
+ }
+ function planningIdentity(row){
+  const workflow=row.planning_workflow;
+  return JSON.stringify([row.stage,workflow?.id,workflow?.version,workflow?.source_version,
+   workflow?.attempt?.id,workflow?.attempt?.candidate_hash]);
+ }
+ async function receiveAppliedPlan(row,captured,valid){
+  const workflow=row.planning_workflow;
+  if(row.mode!=='plan'||row.status!=='review_ready'||workflow?.applied!==true)
+   throw new Error(row.error||'完整规划尚未确认采用，请核对本次任务。');
+  const data=await authorJSON('/api/blueprint',{headers:{'X-Moyu-Project':captured.project,'X-Moyu-Branch':captured.branch}});
+  if(!valid())return;
+  if(authorBlueprintDirty||authorBlueprintConflict||authorBlueprintPromise)
+   throw new Error('规划已采用，本机还有规划草稿，请先保存或合并再查看。');
+  const version=workflow.application?.result_version;
+  if(version!=null&&data.version!==version)throw new Error('规划已采用，现有规划又有更新，请在创作规划中核对。');
+  authorReceiveBlueprint(data);
+ }
+ async function resumePlanningTask(action,kind,captured){
+  const entry=taskEntry(action);
+  if(!taskCurrent(action,captured,entry)||!taskCanPlan(entry,action,kind))return;
+  const expected=planningIdentity(entry.row),identity={owner:captured.project,branch:captured.branch};
+  const valid=()=>taskCurrent(action,captured,entry);
+  if(authorBlueprintLocked())throw new Error('正在保存另一份规划，请稍候再继续。');
+  if((authorBlueprintDirty||authorBlueprintPromise||authorBlueprintConflict)&&!await authorSaveBlueprint())
+   throw new Error('当前规划需要先保存或合并。');
+  if(!valid())return;
+  const row=await readWritingTask(action,{force:true,captured});
+  if(!valid()||!row)return;
+  if(!taskCanPlan(entry,action,kind)||planningIdentity(row)!==expected)
+   throw new Error('规划阶段或候选已变化，请阅读卡片中的最新成果后再继续。');
+  if(authorBlueprintLocked()||authorBlueprintDirty||authorBlueprintPromise||authorBlueprintConflict)
+   throw new Error('当前规划正在变化，请先保存或合并。');
+  if(kind==='apply'){
+   authorBlueprintApply=identity;clearTimeout(authorBlueprintTimer);authorRenderBlueprint();
+  }
+  ++entry.sequence;entry.pending=null;entry.verified=false;entry.error='';entry.nextRead=Infinity;
+  markTaskUncertain(action,entry,{action:kind,checkpoint:row.checkpoint_id,status:row.status});renderMessages();
+  try{
+   const data=await writingRequest('/'+encodeURIComponent(row.id)+'/resume',{method:'POST',
+    body:JSON.stringify({action:kind,checkpoint_id:row.checkpoint_id})},captured);
+   if(!valid())return;
+   if(!taskMatches(action,data.session))throw new Error('操作回应与这条规划不一致，请核对原任务。');
+   entry.row=data.session;entry.verified=true;markTaskUncertain(action,entry,null);entry.nextRead=Date.now()+taskDelay(data.session);
+   if(data.session.status==='requires_action')throw new Error(data.session.error||'规划未能继续，请查看任务记录。');
+   if(data.session.checkpoint_id===row.checkpoint_id)throw new Error('任务进度已经变化，本次未重复执行，请核对卡片。');
+   if(kind==='apply')await receiveAppliedPlan(data.session,captured,valid);
+   else scheduleQueue(0);
+  }catch(error){
+   if(!valid())return;
+   if(error.status&&error.status<500)markTaskUncertain(action,entry,null);
+   const problem=entry.uncertain?'操作结果待核对，正在读取原任务；请勿重复确认。':publicError(error);
+   entry.error=problem;entry.verified=false;renderMessages();
+   const latest=await readWritingTask(action,{force:true,captured});
+   if(!valid())return;
+   if(kind==='apply'&&latest?.status==='review_ready'&&latest.planning_workflow?.applied===true){
+    try{await receiveAppliedPlan(latest,captured,valid)}
+    catch(refreshError){if(valid())entry.error=publicError(refreshError)}
+   }else if(!latest||entry.uncertain)entry.error=problem+(entry.error?' '+entry.error:'');
+   else if(latest.status==='requires_action'||latest.checkpoint_id===row.checkpoint_id)entry.error=publicError(error);
+  }finally{
+   if(authorBlueprintApply===identity){authorBlueprintApply=null;authorRenderBlueprint()}
   }
  }
  async function performAction(action,kind){
@@ -522,6 +671,7 @@
     await openActionResult(action,captured,startingChapter);return;
    }
    if(kind==='start'){await startWritingTask(action,captured);return}
+   if(kind==='plan-confirm'||kind==='plan-apply'){await resumePlanningTask(action,kind==='plan-confirm'?'confirm':'apply',captured);return}
    const path='/actions/'+encodeURIComponent(action.id)+'/'+kind;
    const result=action.kind==='next_chapter'&&kind==='confirm'?
     await durableOperation('/api/agent-chat'+path,'POST',{confirm:true},()=>current(captured)):
@@ -550,6 +700,23 @@
    const row=await readWritingTask(action,{force:true,captured});
    if(!resultCurrent())return;
    if(!row)throw new Error(taskEntry(action)?.error||'任务状态尚未核实，请先核对进度。');
+   if(row.mode==='plan'){
+    authorPlanningSelected=row.planning_workflow?.id||null;view='blueprint';render();return;
+   }
+   if(['awaiting_memory','review_ready'].includes(row.status)){
+    const analysis=row.status==='awaiting_memory',id=row.result_refs?.[analysis?'chapter_analysis':'semantic_review']?.id;
+    if(!id)throw new Error('本次成果编号缺失，请核对原任务。');
+    if(!chapter(cid))throw new Error('来源章节已不存在，请查看原任务记录。');
+    const data=await authorJSON((analysis?'/api/chapter-analysis':'/api/story-reviews')+'?chapter_id='+encodeURIComponent(cid),
+     {headers:{'X-Moyu-Project':captured.project,'X-Moyu-Branch':captured.branch}});
+    if(!resultCurrent())return;
+    const reports=analysis?data.analyses:authorReviewRows(data),report=reports?.find(item=>item.id===id);
+    if(!report)throw new Error('本次成果已不存在，请核对原任务。');
+    activeChapter=cid;storage.set(cacheKey(':active'),cid);view='editor';render();
+    const reportScope=authorChapterReportScope(cid);
+    if(analysis)authorShowAnalysis(report,cid,reportScope);else authorShowStoryReview(report,cid,reportScope);
+    return;
+   }
    await authorOpenAgentSession(result.writing_session_id,cid,resultCurrent,row.status==='awaiting_adoption'?'workbenchCandidateSection':undefined);return;
   }
   if(action.kind==='save_inspiration'&&result.record_id){

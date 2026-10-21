@@ -198,10 +198,21 @@ function writingTask(data, action, patch = {}) {
     id, chapter_id: action.chapter_id, mode: action.kind, query: action.instruction.trim(),
     status: 'awaiting_authorization', calls_used: 0, max_calls: action.kind === 'plan' ? 4 :
       action.kind === 'inspect' ? 2 : 3, checkpoint_id: 'checkpoint_' + crypto.randomUUID(),
-    stage: 'preflight', steps: [], current_job: null, result_refs: {}, context_evidence: {},
+    stage: 'preflight', steps: taskSteps(action.kind), current_job: null, result_refs: {}, context_evidence: {},
     source_stale: false, restored_read_only: false, error: '', created_at: timestamp(), updated_at: timestamp(),
   });
   const row = data.writing.get(id); Object.assign(row, patch); return row;
+}
+function taskSteps(mode, states = {}) {
+  const labels = mode === 'plan' ?
+    {overview: '故事总纲', volumes: '分卷规划', chapters: '章节规划', scenes: '场景规划'} :
+    {...(mode === 'continue' ? {continue: '生成正文候选'} : mode === 'polish' ? {polish: '整章修订候选'} : {}),
+      chapter_analysis: '整理章后记忆', semantic_review: '故事审稿'};
+  return Object.entries(labels).map(([task, label]) => {
+    const value = states[task] || 'pending';
+    return {task, label, status: typeof value === 'string' ? value : value.status,
+      ...(typeof value === 'object' ? value : {})};
+  });
 }
 async function writingRoute(route) {
   const request = route.request(), headers = request.headers(), url = new URL(request.url());
@@ -223,13 +234,32 @@ async function writingRoute(route) {
   }
   if (method === 'POST' && url.pathname === '/api/writing-agent/' + id + '/resume') {
     const row = data.writing.get(id);
-    assert.ok(row, '启动必须命中当前作品及分支中的原任务');
-    assert.equal(body.action, 'authorize');
-    assert.equal(body.checkpoint_id, row.checkpoint_id, '启动必须使用最近一次精确读取的检查点');
-    if (row.status === 'awaiting_authorization') Object.assign(row, {
-      status: 'awaiting_job', calls_used: 1, checkpoint_id: 'started_' + crypto.randomUUID(), updated_at: timestamp(),
-    });
-    if (interruptStart === id) {interruptStart = ''; return route.abort('failed');}
+    assert.ok(row, '操作必须命中当前作品及分支中的原任务');
+    assert.ok(['authorize', 'confirm', 'apply'].includes(body.action), '读取与核对不得自动推进任务');
+    assert.equal(body.checkpoint_id, row.checkpoint_id, '操作必须使用最近一次精确读取的检查点');
+    if (body.action === 'authorize') {
+      assert.equal(row.status, 'awaiting_authorization');
+      Object.assign(row, {status: 'awaiting_job', calls_used: 1,
+        checkpoint_id: 'started_' + crypto.randomUUID(), updated_at: timestamp()});
+      row.steps[0] = {...row.steps[0], status: 'running',
+        job_id: 'job_' + id, ai_run_id: 'run_' + id};
+      if (interruptStart === id) {interruptStart = ''; return route.abort('failed');}
+    } else if (body.action === 'confirm') {
+      assert.equal(row.mode, 'plan'); assert.equal(row.status, 'awaiting_plan_confirmation');
+      const step = row.steps.find(item => item.task === row.stage);
+      assert.ok(step); step.status = 'confirmed';
+      const next = row.steps[row.steps.indexOf(step) + 1];
+      if (next) {
+        next.status = 'running';
+        Object.assign(row, {stage: next.task, status: 'awaiting_job', calls_used: row.calls_used + 1});
+      } else row.status = 'awaiting_plan_application';
+      row.planning_workflow.attempt = null;
+      row.checkpoint_id = 'confirmed_' + crypto.randomUUID(); row.updated_at = timestamp();
+    } else {
+      assert.equal(row.mode, 'plan'); assert.equal(row.status, 'awaiting_plan_application');
+      Object.assign(row, {status: 'review_ready', checkpoint_id: 'applied_' + crypto.randomUUID(), updated_at: timestamp()});
+      row.planning_workflow.applied = true;
+    }
     return respond(route, observation, {session: row});
   }
   throw new Error('Unexpected simulated writing route: ' + method + ' ' + url.pathname);
@@ -255,7 +285,9 @@ async function selectChat(page, fixture) {
   return page.locator('[data-chat-action="' + fixture.action.id + '"]');
 }
 const exactReads = id => writingRequests.filter(row => row.exact && row.id === id);
-const starts = id => writingRequests.filter(row => row.method === 'POST' && row.id === id);
+const taskPosts = (id, action) => writingRequests.filter(row => row.method === 'POST' && row.id === id &&
+  (!action || row.body.action === action));
+const starts = id => taskPosts(id, 'authorize');
 async function test(name, fn) {
   console.log(JSON.stringify({test: name, state: 'running'}));
   await fn(); report.cases.push({name, passed: true});
@@ -570,7 +602,7 @@ async function main() {
     assert.match(await page.locator('#agentChatSaveState').textContent(), /尚未确认/);
     assert.equal(requests.filter(item => item.suffix.endsWith('/confirm')).length, before);
     await row.locator('[data-chat-confirm]').click();
-    await row.getByText('已确认，处理结果已保存', {exact: true}).waitFor();
+    await row.getByText(/任务已建立|任务进度与成果保存在本机/).first().waitFor();
     assert.equal(requests.filter(item => item.suffix === '/actions/ui-recover-confirmation/confirm').length, 1);
     assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
     assert.deepEqual(report.page_errors, []);
@@ -674,6 +706,238 @@ async function main() {
     assert.ok(exactReads(id).length > recoveredReads);
     assert.equal(starts(id).length, 1);
     assert.equal(await page.locator('#agentChatInput').inputValue(), draft);
+  });
+
+  await test('原聊天任务卡区分任务类型与真实节点，候选完成不冒充作者采纳', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const fixtures = [
+      {mode: 'continue', label: '续写正文', status: 'awaiting_adoption', calls: 1,
+        states: {continue: {status: 'success', job_id: 'ui_generated_prose', ai_run_id: 'ui_generated_run'}},
+        task: {current_job: {id: 'ui_generated_prose', task: 'continue', status: 'success',
+          result: {text: '她没有推门，只把铜钥匙轻轻转了半圈。'}}}},
+      {mode: 'polish', label: '整章修订', status: 'awaiting_memory', calls: 2,
+        states: {polish: {status: 'success', job_id: 'ui_polished_prose', ai_run_id: 'ui_polished_run'},
+          chapter_analysis: {status: 'success', job_id: 'ui_chapter_memory', ai_run_id: 'ui_memory_run'}},
+        task: {current_job: {id: 'ui_chapter_memory', task: 'chapter_analysis', status: 'success',
+          result: {text: '章后记忆的内部文字不能作为正文候选预览。'}},
+          result_refs: {chapter_analysis: {id: 'ui_memory_record'}}}},
+      {mode: 'inspect', label: '章后检查', status: 'awaiting_job', calls: 1,
+        states: {chapter_analysis: {status: 'running', job_id: 'ui_inspection', ai_run_id: 'ui_inspection_run'}}},
+      {mode: 'plan', label: '全书规划', status: 'awaiting_plan_confirmation', calls: 1,
+        states: {overview: {status: 'success', job_id: 'ui_overview', ai_run_id: 'ui_overview_run'}},
+        task: {stage: 'overview', planning_workflow: {stage: 'overview',
+          attempt: {id: 'ui_overview_attempt', candidate_hash: 'ui_overview_hash',
+            candidate: {premise: '女主从铜钥匙里听见一座失踪城池的回声。'}},
+          blueprint: {premise: '', volumes: []}, final_blueprint: null}}},
+    ];
+    const observations = [];
+    for (const [index, item] of fixtures.entries()) {
+      const fixture = fixtureSession(data, firstId, '核对任务卡 ' + index, {mode: item.mode,
+        task: {status: item.status, calls_used: item.calls, steps: taskSteps(item.mode, item.states), ...item.task}});
+      const card = await selectChat(page, fixture), id = fixture.row.id;
+      await card.locator('[data-chat-task-status="' + item.status + '"]').waitFor();
+      assert.ok((await card.textContent()).includes(item.label), '任务卡应明确显示类型：' + item.label);
+      assert.equal(await card.locator('[data-chat-task-source]').textContent(), '来源章 · ' + firstTitle);
+      assert.equal(await card.locator('.agent-chat-task-budget').textContent(),
+        `模型调用 ${item.calls} / 上限 ${item.mode === 'plan' ? 4 : item.mode === 'inspect' ? 2 : 3} 次`);
+      for (const step of fixture.row.steps) {
+        const node = card.locator('[data-chat-task-step="' + step.task + '"]');
+        assert.equal(await node.count(), 1, '应展示本次服务返回的真实步骤：' + step.task);
+        assert.equal(await node.getAttribute('data-chat-step-status'), step.status);
+        assert.ok((await node.textContent()).includes(step.label));
+      }
+      assert.ok(!await card.getByText('已确认，处理结果已保存', {exact: true}).count());
+      const primaryCount = await card.locator('.agent-chat-action-buttons .primary-btn').count();
+      assert.ok(primaryCount <= 1, '同一卡片至多提供一个主要操作');
+      if (item.status !== 'awaiting_job') assert.equal(primaryCount, 1, '等待作者决定时应提供明确的主要操作');
+      const adoption = card.locator('[data-chat-task-step="adoption"]');
+      if (['continue', 'polish'].includes(item.mode)) {
+        assert.equal(await adoption.count(), 1, '正文流程单独显示作者采纳节点');
+        const state = await adoption.getAttribute('data-chat-step-status');
+        if (item.status === 'awaiting_adoption') {
+          assert.ok(!['success', 'complete', 'completed', 'accepted', 'confirmed', 'applied'].includes(state),
+            '正文生成成功不能显示为已采纳');
+          assert.equal(await card.locator('[data-chat-start]').count(), 0);
+          assert.equal(await card.locator('[data-chat-open-result].primary-btn').count(), 1);
+        } else {
+          assert.ok(['success', 'complete', 'completed', 'accepted', 'confirmed', 'applied'].includes(state),
+            '仅流程进入章后资料阶段后才能显示已采纳');
+          const preview = card.locator('[data-chat-task-preview]');
+          assert.ok(!(await preview.count() ? await preview.textContent() : '').includes(
+            '章后记忆的内部文字不能作为正文候选预览'));
+        }
+      } else assert.equal(await adoption.count(), 0);
+      assert.equal(taskPosts(id).length, 0, '阅读任务卡和候选不能启动任何模型操作');
+      observations.push({mode: item.mode, status: item.status,
+        steps: await card.locator('[data-chat-task-step]').evaluateAll(nodes =>
+          nodes.map(node => ({task: node.dataset.chatTaskStep, status: node.dataset.chatStepStatus})))});
+    }
+    report.inline_task_steps = observations;
+  });
+
+  await test('正文成果安全折叠，在手动核对和轮询重绘后保持展开且不会多启动', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const malicious = '门外的雨停了。\n\n<img src=x onerror="globalThis.__moyuTaskXss=1">' +
+      '\n<script>globalThis.__moyuTaskXss=2</script>\n[点击](javascript:globalThis.__moyuTaskXss=3)';
+    const fixture = fixtureSession(data, firstId, '可核对的正文成果', {mode: 'continue',
+      task: {status: 'awaiting_adoption', calls_used: 1,
+        steps: taskSteps('continue', {continue: {status: 'success', job_id: 'ui_preview_prose', ai_run_id: 'ui_preview_run'}}),
+        current_job: {id: 'ui_preview_prose', task: 'continue', status: 'success', result: {text: malicious}}}});
+    const card = await selectChat(page, fixture), id = fixture.row.id;
+    const preview = card.locator('details[data-chat-task-preview]');
+    await preview.waitFor();
+    assert.equal(await preview.evaluate(node => node.open), false, '正文成果默认折叠');
+    assert.ok((await preview.textContent()).includes('<img src=x onerror="globalThis.__moyuTaskXss=1">'));
+    assert.equal(await preview.locator('img,script,iframe,a').count(), 0, '模型成果不产生可执行HTML或链接');
+    assert.equal(await page.evaluate(() => globalThis.__moyuTaskXss || 0), 0);
+    await preview.locator('summary').click();
+    assert.equal(await preview.evaluate(node => node.open), true);
+    fixture.row.updated_at = timestamp(); fixture.row.context_evidence = {ui_revision: 1};
+    const before = exactReads(id).length;
+    await card.locator('[data-chat-task-refresh]').click();
+    await until(() => exactReads(id).length > before, 'manual task preview refresh');
+    await card.locator('[data-chat-task-refresh]:not([disabled])').waitFor();
+    assert.equal(await preview.evaluate(node => node.open), true, '核对进度重绘保留作者的展开状态');
+
+    const message = data.messages.get(fixture.session.id)[0];
+    message.content = '候选已生成，等待作者阅读后决定是否采纳。';
+    await until(() => page.locator('[data-chat-message="' + message.id + '"] .agent-chat-message-body')
+      .textContent().then(text => text === message.content), 'chat polling redraw with original task preview');
+    assert.equal(await preview.evaluate(node => node.open), true, '轮询重绘仍保留展开状态');
+    assert.equal(taskPosts(id).length, 0, '预览、核对和轮询只能读取原任务');
+    assert.equal(await page.evaluate(() => globalThis.__moyuTaskXss || 0), 0);
+    assert.equal(await page.evaluate(() => view), 'memory');
+    const screenshot = path.join(temporary, 'agent-chat-inline-prose-preview-1440x1000.png');
+    await card.scrollIntoViewIfNeeded(); await page.screenshot({path: screenshot}); report.screenshots.push(screenshot);
+
+    fixture.row.current_job = {id: 'ui_preview_prose', task: 'continue', status: 'success',
+      result: {structured: {content: '结构化正文结果仍可在原聊天阅读。'}}};
+    await card.locator('[data-chat-task-refresh]').click();
+    await until(() => preview.textContent().then(text => text.includes('结构化正文结果仍可在原聊天阅读。')),
+      'structured prose content preview');
+    assert.equal(await preview.evaluate(node => node.open), true);
+    assert.equal(taskPosts(id).length, 0);
+  });
+
+  await test('规划卡内确认与完整采用先核对最新检查点，轮询和双击不会重复执行', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main');
+    const candidate = {premise: '铜钥匙指向一座被所有人遗忘的城。', genre: '悬疑奇幻',
+      core_conflict: '<img src=x onerror="globalThis.__moyuPlanXss=1">', protagonist: '林岚'};
+    const fixture = fixtureSession(data, firstId, '在原聊天确认规划', {mode: 'plan',
+      task: {status: 'awaiting_plan_confirmation', stage: 'overview', calls_used: 1,
+        steps: taskSteps('plan', {overview: 'success'}),
+        planning_workflow: {id: 'ui_planning_workflow', stage: 'overview',
+          attempt: {id: 'ui_plan_attempt', candidate_hash: 'ui_plan_hash', candidate},
+          blueprint: {premise: '', volumes: []}, final_blueprint: null, applied: false}}});
+    const card = await selectChat(page, fixture), id = fixture.row.id;
+    const preview = card.locator('details[data-chat-task-preview]');
+    await preview.waitFor();
+    assert.equal(await preview.evaluate(node => node.open), false);
+    assert.ok((await preview.textContent()).includes(candidate.premise));
+    assert.ok((await preview.textContent()).includes(candidate.core_conflict));
+    assert.equal(await preview.locator('img,script,iframe').count(), 0);
+    assert.equal(await page.evaluate(() => globalThis.__moyuPlanXss || 0), 0);
+    assert.equal(await card.locator('[data-chat-plan-confirm].primary-btn').count(), 1);
+    assert.match(await card.locator('[data-chat-plan-confirm]').textContent(), /确认.*生成.*下一阶段/);
+    assert.equal(await card.locator('[data-chat-start]').count(), 0);
+    const confirmCheckpoint = fixture.row.checkpoint_id = 'confirm_fresh_' + crypto.randomUUID();
+    const before = exactReads(id).length;
+    await card.locator('[data-chat-plan-confirm]').evaluate(button => {button.click(); button.click();});
+    await card.locator('[data-chat-task-status="awaiting_job"]').waitFor();
+    assert.ok(exactReads(id).length > before, '确认前重新读取精确任务');
+    assert.equal(taskPosts(id, 'confirm').length, 1, '双击只确认并生成一次下一阶段');
+    assert.equal(taskPosts(id, 'confirm')[0].body.checkpoint_id, confirmCheckpoint);
+    assert.equal(starts(id).length, 0, '后续规划确认不重新authorize');
+    assert.equal(fixture.row.calls_used, 2);
+    const polls = exactReads(id).length;
+    await until(() => exactReads(id).length > polls, 'planning poll after confirmation');
+    assert.equal(taskPosts(id).length, 1, '后续轮询不会继续生成或重复确认');
+
+    const finalBlueprint = {premise: candidate.premise, volumes: [{id: 'ui_volume_1', title: '第一卷 遗忘之城',
+      chapters: [{id: 'ui_plan_chapter_1', title: '第一章 铜钥匙',
+        scenes: [{id: 'ui_scene_1', title: '门外', summary: '林岚第一次听见城池的回声。'}]}]}]};
+    Object.assign(fixture.row, {status: 'awaiting_plan_application', stage: 'scenes', calls_used: 4,
+      checkpoint_id: 'application_visible_' + crypto.randomUUID(),
+      steps: taskSteps('plan', {overview: 'confirmed', volumes: 'confirmed', chapters: 'confirmed', scenes: 'confirmed'}),
+      planning_workflow: {...fixture.row.planning_workflow, stage: 'scenes', attempt: null,
+        blueprint: finalBlueprint, final_blueprint: finalBlueprint}});
+    await card.locator('[data-chat-task-refresh]:not([disabled])').click();
+    await card.locator('[data-chat-task-status="awaiting_plan_application"]').waitFor();
+    assert.equal(await card.locator('[data-chat-plan-confirm]').count(), 0);
+    assert.equal(await card.locator('[data-chat-plan-apply].primary-btn').count(), 1);
+    assert.match(await card.locator('[data-chat-plan-apply]').textContent(), /采用.*完整规划|采用.*规划/);
+    assert.ok((await preview.textContent()).includes('第一卷 遗忘之城'));
+    assert.ok((await preview.textContent()).includes('林岚第一次听见城池的回声。'));
+    const applyCheckpoint = fixture.row.checkpoint_id = 'apply_fresh_' + crypto.randomUUID();
+    const applicationReads = exactReads(id).length;
+    await card.locator('[data-chat-plan-apply]').evaluate(button => {button.click(); button.click();});
+    await card.locator('[data-chat-task-status="review_ready"]').waitFor();
+    assert.ok(exactReads(id).length > applicationReads, '采用完整规划前重新核对任务');
+    assert.equal(taskPosts(id, 'apply').length, 1, '完整规划只采用一次');
+    assert.equal(taskPosts(id, 'apply')[0].body.checkpoint_id, applyCheckpoint);
+    assert.equal(fixture.row.calls_used, 4, '采用完整规划不增加模型调用');
+    assert.equal(await card.locator('[data-chat-plan-apply],[data-chat-plan-confirm],[data-chat-start]').count(), 0);
+    assert.equal(await page.evaluate(() => view), 'memory');
+    await page.reload(); await page.waitForFunction(() => backendOnline && globalThis.MoyuAgentChat);
+    await card.locator('[data-chat-task-status="review_ready"]').waitFor();
+    assert.equal(taskPosts(id).length, 2, '重新打开不会再次确认、采用或启动');
+    assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
+    assert.deepEqual(report.page_errors, []);
+    report.inline_plan_operations = taskPosts(id).map(row => ({action: row.body.action, checkpoint_id: row.body.checkpoint_id}));
+  });
+
+  await test('规划确认与采用保留来源保护，迟到核对不能操作其他聊天', async () => {
+    await page.locator('[data-view="memory"]').click();
+    const data = workspace('default-project', 'main'), observations = [];
+    for (const action of ['confirm', 'apply']) {
+      const status = action === 'confirm' ? 'awaiting_plan_confirmation' : 'awaiting_plan_application';
+      const fixture = fixtureSession(data, firstId, '规划身份保护 ' + action, {mode: 'plan',
+        task: {status, stage: action === 'confirm' ? 'overview' : 'scenes', calls_used: action === 'confirm' ? 1 : 4,
+          steps: taskSteps('plan', action === 'confirm' ? {overview: 'success'} :
+            {overview: 'confirmed', volumes: 'confirmed', chapters: 'confirmed', scenes: 'confirmed'}),
+          planning_workflow: {attempt: action === 'confirm' ? {id: 'ui_identity_attempt',
+            candidate_hash: 'ui_identity_hash', candidate: {premise: '本任务的规划候选。'}} : null,
+            blueprint: {premise: '本任务的完整规划。', volumes: []},
+            final_blueprint: action === 'apply' ? {premise: '本任务的完整规划。', volumes: []} : null}}});
+      const card = await selectChat(page, fixture), id = fixture.row.id, selector = '[data-chat-plan-' + action + ']';
+      await card.locator(selector + ':not([disabled])').waitFor();
+      for (const patch of [{source_stale: true}, {restored_read_only: true}, {chapter_id: secondId}]) {
+        data.writingFaults.set(id, {patch});
+        await card.locator('[data-chat-task-refresh]:not([disabled])').click();
+        await card.locator('[data-chat-task-refresh]:not([disabled])').waitFor();
+        assert.equal(await card.locator(selector + ':not([disabled])').count(), 0,
+          '来源已变、历史只读或章节不符均不能确认/采用规划');
+        assert.equal(taskPosts(id).length, 0);
+        data.writingFaults.delete(id);
+        await card.locator('[data-chat-task-refresh]:not([disabled])').click();
+        await card.locator(selector + ':not([disabled])').waitFor();
+      }
+      const gate = gateOnce(row => row.exact && row.id === id);
+      try {
+        await card.locator(selector).click();
+        await bounded(gate.entered, 'plan action fresh read held: ' + action);
+        const target = fixtureSession(data, secondId, '保留新的创作讨论 ' + action,
+          {task: {status: 'requires_action'}});
+        const targetCard = await selectChat(page, target);
+        await targetCard.locator('[data-chat-task-status="requires_action"]').waitFor();
+        const draft = '切换聊天后仍保留的提问 ' + action;
+        await page.locator('#agentChatInput').fill(draft);
+        await releaseGate(page, gate);
+        assert.equal(await page.locator('[data-chat-action="' + fixture.action.id + '"]').count(), 0);
+        assert.equal(await page.locator('#agentChatInput').inputValue(), draft);
+        assert.equal(taskPosts(id).length, 0, '旧聊天核对返回后不得执行确认或采用');
+        assert.equal(taskPosts(target.row.id).length, 0);
+        assert.equal(await page.evaluate(() => view), 'memory');
+        observations.push({action, task_id: id, target_task: target.row.id, posts_after_switch: taskPosts(id).length});
+      } finally {
+        gate.release(); data.writingFaults.delete(id);
+      }
+    }
+    report.inline_plan_identity = observations;
+    assert.deepEqual((await api('/api/state')).chapters, baseline.chapters);
   });
 
   await test('任务读取失败或编号章节方式指令不符时撤销启动资格，恢复后重新核实', async () => {
