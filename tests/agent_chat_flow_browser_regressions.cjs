@@ -621,7 +621,9 @@ async function main() {
         assert.equal(await card.locator('[data-chat-task-step="' + stage + '"]')
           .getAttribute('data-chat-step-status'), 'complete');
         const preview = card.locator('[data-chat-task-preview]');
-        await preview.locator('summary').click();
+        const previewOpen = await preview.evaluate(node => node.open);
+        if (index > 0) assert.equal(previewOpen, true, '下一阶段候选沿用作者的展开状态');
+        if (!previewOpen) await preview.locator('summary').click();
         await preview.locator('.agent-chat-task-preview-body').waitFor();
         assert.match(await preview.textContent(), {
           overview: /林岚必须在救人与保住开门机会之间作出选择/,

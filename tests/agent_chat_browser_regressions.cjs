@@ -779,7 +779,9 @@ async function main() {
   await test('正文成果安全折叠，在手动核对和轮询重绘后保持展开且不会多启动', async () => {
     await page.locator('[data-view="memory"]').click();
     const data = workspace('default-project', 'main');
-    const malicious = '门外的雨停了。\n\n<img src=x onerror="globalThis.__moyuTaskXss=1">' +
+    const longParagraphs = Array.from({length: 30}, (_, index) =>
+      `第${index + 1}段候选正文：雨停在门外，渡口的灯亮着，林岚要把这封来信读完再决定下一步。`).join('\n\n');
+    const malicious = longParagraphs + '\n\n<img src=x onerror="globalThis.__moyuTaskXss=1">' +
       '\n<script>globalThis.__moyuTaskXss=2</script>\n[点击](javascript:globalThis.__moyuTaskXss=3)';
     const fixture = fixtureSession(data, firstId, '可核对的正文成果', {mode: 'continue',
       task: {status: 'awaiting_adoption', calls_used: 1,
@@ -794,12 +796,18 @@ async function main() {
     assert.equal(await page.evaluate(() => globalThis.__moyuTaskXss || 0), 0);
     await preview.locator('summary').click();
     assert.equal(await preview.evaluate(node => node.open), true);
+    const previewBody = preview.locator('.agent-chat-task-preview-body');
+    await previewBody.evaluate(node => {node.scrollTop = 96;});
+    const previewScroll = await previewBody.evaluate(node => node.scrollTop);
+    assert.ok(previewScroll > 0, '正文预览内容超出可见高度时应可滚动');
     fixture.row.updated_at = timestamp(); fixture.row.context_evidence = {ui_revision: 1};
     const before = exactReads(id).length;
     await card.locator('[data-chat-task-refresh]').click();
     await until(() => exactReads(id).length > before, 'manual task preview refresh');
     await card.locator('[data-chat-task-refresh]:not([disabled])').waitFor();
     assert.equal(await preview.evaluate(node => node.open), true, '核对进度重绘保留作者的展开状态');
+    assert.equal(await previewBody.evaluate(node => node.scrollTop), previewScroll,
+      '核对进度重绘保留正文预览的内部滚动位置');
 
     const message = data.messages.get(fixture.session.id)[0];
     message.content = '候选已生成，等待作者阅读后决定是否采纳。';
@@ -843,6 +851,8 @@ async function main() {
     assert.equal(await card.locator('[data-chat-plan-confirm].primary-btn').count(), 1);
     assert.match(await card.locator('[data-chat-plan-confirm]').textContent(), /确认.*生成.*下一阶段/);
     assert.equal(await card.locator('[data-chat-start]').count(), 0);
+    await preview.locator('summary').click();
+    assert.equal(await preview.evaluate(node => node.open), true, '展开规划候选预览');
     const confirmCheckpoint = fixture.row.checkpoint_id = 'confirm_fresh_' + crypto.randomUUID();
     const before = exactReads(id).length;
     await card.locator('[data-chat-plan-confirm]').evaluate(button => {button.click(); button.click();});
@@ -855,6 +865,8 @@ async function main() {
     const polls = exactReads(id).length;
     await until(() => exactReads(id).length > polls, 'planning poll after confirmation');
     assert.equal(taskPosts(id).length, 1, '后续轮询不会继续生成或重复确认');
+    assert.equal(await card.locator('[data-chat-task-preview]').count(), 0,
+      '生成下一阶段期间暂不显示候选预览，展开状态留给完整规划');
 
     const finalBlueprint = {premise: candidate.premise, volumes: [{id: 'ui_volume_1', title: '第一卷 遗忘之城',
       chapters: [{id: 'ui_plan_chapter_1', title: '第一章 铜钥匙',
@@ -866,6 +878,7 @@ async function main() {
         blueprint: finalBlueprint, final_blueprint: finalBlueprint}});
     await card.locator('[data-chat-task-refresh]:not([disabled])').click();
     await card.locator('[data-chat-task-status="awaiting_plan_application"]').waitFor();
+    assert.equal(await preview.evaluate(node => node.open), true, '阶段候选切换到完整规划后仍保留展开状态');
     assert.equal(await card.locator('[data-chat-plan-confirm]').count(), 0);
     assert.equal(await card.locator('[data-chat-plan-apply].primary-btn').count(), 1);
     assert.match(await card.locator('[data-chat-plan-apply]').textContent(), /采用.*完整规划|采用.*规划/);
@@ -1455,6 +1468,7 @@ async function main() {
     assert.deepEqual(report.page_errors, []);
   });
 
+  assert.deepEqual(report.page_errors, [], '全部用例的页面异常都必须为空');
   report.passed = true;
   await context.close();
 }

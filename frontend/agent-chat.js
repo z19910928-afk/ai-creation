@@ -61,7 +61,7 @@
  const $=selector=>host.querySelector(selector),feed=$('#agentChatFeed'),input=$('#agentChatInput');
  let observed='',observedScope=null,epoch=0,sessionEpoch=0,session=null,sessions=[],messages=[],activeRun=null,settings=null,contextSummary=null;
  let timer=null,loading=false,sendOperation=null,actionOperation=null,creating=false,polling=false,bundleRevision=0;
- let references=[],draftRevision=0,pendingSend=null,pendingCreation=null,historyOpen=false,messageSignature='',notice='',loadError='';
+ let references=[],draftRevision=0,pendingSend=null,pendingCreation=null,historyOpen=false,messageSignature='',notice='',loadError='',disclosureState=new Map();
  const writingTasks=new Map(),actionErrors=new Map();
  const starters=[
   {id:'idea',label:'构思灵感',prompt:'我想构思一个故事。请结合已有作品资料，先给我三个有区别的故事方向，分别说清主角、核心冲突和独特看点，再和我一起打磨。'},
@@ -283,7 +283,7 @@
    const workflow=row.planning_workflow,complete=['awaiting_plan_application','review_ready'].includes(row.status);
    const value=complete?workflow?.blueprint||workflow?.final_blueprint:workflow?.attempt?.candidate;
    if(!value)return '';
-   return `<details class="agent-chat-task-preview" data-chat-task-preview data-chat-disclosure="plan:${complete?'complete':row.stage}"><summary>${esc(complete?workflow.applied?'查看已采用规划':'预览完整规划':`预览${planStages[row.stage]||'本阶段'}候选`)}</summary><div class="agent-chat-task-preview-body">${planningResult(value,workflow.blueprint)}</div></details>`;
+   return `<details class="agent-chat-task-preview" data-chat-task-preview data-chat-disclosure="plan"><summary>${esc(complete?workflow.applied?'查看已采用规划':'预览完整规划':`预览${planStages[row.stage]||'本阶段'}候选`)}</summary><div class="agent-chat-task-preview-body">${planningResult(value,workflow.blueprint)}</div></details>`;
   }
   const job=row.current_job;
   if(!['continue','polish'].includes(row.mode)||job?.task!==row.mode||job.status!=='success'||
@@ -344,8 +344,9 @@
   messageSignature=signature;
   const nearBottom=feed.scrollHeight-feed.scrollTop-feed.clientHeight<70,scroll=feed.scrollTop;
   const disclosureKey=node=>JSON.stringify([node.closest('[data-chat-action]')?.dataset.chatAction,node.dataset.chatDisclosure]);
-  const disclosures=new Map([...feed.querySelectorAll('[data-chat-disclosure]')].map(node=>[disclosureKey(node),
-   {open:node.open,scroll:node.querySelector('.agent-chat-task-preview-body,.agent-chat-markdown')?.scrollTop||0}]));
+  feed.querySelectorAll('[data-chat-disclosure]').forEach(node=>disclosureState.set(disclosureKey(node),
+   {open:node.open,scroll:node.querySelector('.agent-chat-task-preview-body,.agent-chat-markdown')?.scrollTop||0}));
+  const disclosures=disclosureState;
   feed.innerHTML=messages.length?messages.map(message=>{
    const role=message.role==='user'?'user':message.role==='tool'?'tool':'assistant';
    const label={user:'你',assistant:'写作总管',tool:'执行记录'}[role];
