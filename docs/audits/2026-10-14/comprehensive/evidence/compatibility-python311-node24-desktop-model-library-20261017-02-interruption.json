@@ -1,0 +1,22 @@
+{
+  "passed": false,
+  "interrupted": true,
+  "report": "compatibility-python311-node24-desktop-model-library-20261017-02.json",
+  "reason": "Stopped at the coordinating agent's request before a desktop smoke-test process-handle fix. This incomplete run is not release acceptance evidence.",
+  "completed_checks": 40,
+  "completed_checks_passed": 40,
+  "completed_checks_failed": 0,
+  "last_completed_check": "Python fixtures: tests/agent_settings_fixtures.py",
+  "next_check_started_without_result": "Python fixtures: tests/ai_contract_fixtures.py",
+  "structured_artifacts": 3,
+  "source_files_before_count": 163,
+  "source_files_before_aggregate_sha256": "ca8dc0aa42f2489fc28f205526e394a3ddde5b9c65658e1ed812f6ada0ea61b4",
+  "source_files_after": null,
+  "runner_exit_code": 143,
+  "owned_process_cleanup": "The runner was stopped, terminated, continued for signal delivery, and observed exited. No release verifier or Python fixture process remained.",
+  "browser_phase_started": false,
+  "native_application_started_by_this_run": false,
+  "paid_provider_calls": 0,
+  "author_services_accessed": false,
+  "replacement_run_tag": "desktop-model-library-20261017-03"
+}

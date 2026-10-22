@@ -1,0 +1,27 @@
+{
+  "passed": false,
+  "intentionally_interrupted": true,
+  "recorded_at": "2026-10-17T12:11:35Z",
+  "reason": "Real macOS Electron acceptance found an unsupported native window.prompt flow. The product must be fixed and the full verifier rerun with a fresh tag.",
+  "partial_report": "compatibility-python311-node24-desktop-model-library-20261017-01.json",
+  "completed_checks": 75,
+  "passed_completed_checks": 75,
+  "failed_completed_checks": [],
+  "last_completed_check": "Python fixtures: tests/material_evidence_compat_http_fixtures.py",
+  "interrupted_next_check": "Python fixtures: tests/material_legacy_http_fixtures.py",
+  "browser_scenarios_completed": 0,
+  "preserved_local_log_files": 75,
+  "preserved_structured_artifacts": 5,
+  "source_files_before": 163,
+  "source_before_aggregate_sha256": "a0997c4b7aea61c3d8e4cedfe139a5f686031bc625f6368e6e840b9f9cf0b430",
+  "source_after_fingerprint_available": false,
+  "runner_exit_code": 143,
+  "scoped_cleanup": {
+    "runner_pid": 35047,
+    "owned_child_pids": [35687],
+    "runner_exited": true,
+    "owned_descendants_remaining": 0,
+    "unrelated_services_signaled": false
+  },
+  "claim_limit": "This retained partial run is not a completed release verification and cannot authorize publishing."
+}

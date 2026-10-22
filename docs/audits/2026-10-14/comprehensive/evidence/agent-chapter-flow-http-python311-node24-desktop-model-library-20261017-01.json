@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "tests": 13,
+  "failures": 0,
+  "errors": 0,
+  "local_provider_calls": 13,
+  "paid_provider_calls": 0,
+  "real_database_access": false,
+  "scope": "real application HTTP, isolated temporary SQLite and local HTTP provider; no production data, real credentials or paid provider calls",
+  "started_at": "2026-10-17T12:05:46.454569+00:00",
+  "finished_at": "2026-10-17T12:05:54.870808+00:00",
+  "runtime": "3.11.17",
+  "source_sha256_before": {
+    "server.py": "81871fabc0e0f6adbba17d17c50aea221fd7058b81d91bfff58e324088724722",
+    "moyu_agent_chat.py": "7391a31eef05d09b694fd57407a66e25a3de638e6e34da2901880049fa86081a",
+    "moyu_agent_service.py": "befa422315d239cdb33499f5ce2f06907c2834d32228cee1df349074bc31a6de",
+    "moyu_chapter_transition.py": "969a86b8b13dead99358606a1ae0198301487182f4394eeb6dec15a319c54260",
+    "moyu_chapter_handoff.py": "588234bb20624905f4e02f40269ca7eaa886bd7641b4584e3dae06a7683d9cfd",
+    "moyu_backups.py": "9294c795954c344d3023ccf2091b7bcd5e962843152f5e2e3e11d5553c4567f9",
+    "tests/agent_chat_fixtures.py": "e5b6895501781c72902481b66c313bbf603d54a5b6c1a3148fa8e44f8e2dcd56",
+    "tests/agent_chapter_flow_fixtures.py": "4d016b650c8119a1caa004d09f885b0d97669db23e88721623b3b763dc921e26"
+  },
+  "source_sha256_after": {
+    "server.py": "81871fabc0e0f6adbba17d17c50aea221fd7058b81d91bfff58e324088724722",
+    "moyu_agent_chat.py": "7391a31eef05d09b694fd57407a66e25a3de638e6e34da2901880049fa86081a",
+    "moyu_agent_service.py": "befa422315d239cdb33499f5ce2f06907c2834d32228cee1df349074bc31a6de",
+    "moyu_chapter_transition.py": "969a86b8b13dead99358606a1ae0198301487182f4394eeb6dec15a319c54260",
+    "moyu_chapter_handoff.py": "588234bb20624905f4e02f40269ca7eaa886bd7641b4584e3dae06a7683d9cfd",
+    "moyu_backups.py": "9294c795954c344d3023ccf2091b7bcd5e962843152f5e2e3e11d5553c4567f9",
+    "tests/agent_chat_fixtures.py": "e5b6895501781c72902481b66c313bbf603d54a5b6c1a3148fa8e44f8e2dcd56",
+    "tests/agent_chapter_flow_fixtures.py": "4d016b650c8119a1caa004d09f885b0d97669db23e88721623b3b763dc921e26"
+  },
+  "source_unchanged": true
+}
