@@ -96,6 +96,11 @@ button:disabled{cursor:not-allowed;opacity:.5}
 .ai-controls{grid-template-columns:minmax(140px,.7fr) minmax(200px,1.4fr) auto;align-items:stretch;padding-bottom:6px;scroll-margin-block:16px}
 .ai-controls select,.ai-controls input{width:100%;min-width:0;border-color:var(--line);background:#fff;min-height:40px}
 .ai-controls .ghost-btn{min-height:36px}
+.ai-budget-toggle{display:flex;align-items:center;gap:7px;margin:8px 0 0;font-size:12px;color:var(--muted);cursor:pointer;user-select:none}
+.ai-budget-toggle[hidden]{display:none}
+.ai-budget-toggle input{width:15px;height:15px;min-height:0;margin:0;accent-color:var(--accent);cursor:pointer}
+.ai-budget-toggle:hover{color:var(--ink)}
+.task-progress{color:var(--accent);font-size:11px;margin:4px 0 0}
 .ai-reference-row{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:7px 0 2px;padding:9px 0;border-top:1px solid var(--line);font-size:12px;min-width:0}
 .reference-current{flex:1 1 220px;min-width:0;overflow-wrap:anywhere;color:var(--muted);line-height:1.6}
 .reference-current strong{color:var(--ink);font-weight:600}

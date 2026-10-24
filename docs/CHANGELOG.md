@@ -1,5 +1,43 @@
 # 更新记录
 
+## 2026-10-23 · Q1 阶段交付（含未达成项）
+
+Q1 阶段交付记录；每条的细节见对应专项文档。
+
+**状态**：五项交付已落库，但有两项未达成，别把本节读成「Q1 全做完了」——①预算续写的 3000 字章一次通过率 77.8%（7/9），未达 ≥80%（差距原因见本节第 5 条与[预算续写引擎 v1.2 复测](consistency-budget-v1.2-2026-10-23.md) §6）；②一致性引擎的「30 万字 × 3 部真实作品」验收尚未执行，现有数字来自单部合成库自测（局限见[一致性引擎 v1 · LongFormBench 基线](consistency-baseline-2026-10-23.md)）。
+
+- **一致性引擎 v1**：新增只读检测模块 `backend/moyu_consistency.py`（七类检测器，0–100 分与 A/B/C/D 等级），入口是 `GET /api/consistency`、`python -m backend.moyu_consistency` CLI 与工作台「一致性检查」面板。
+- **LongFormBench**：新增 `benchmarks/longform/run.py` 合成基准与基线报告，40 章、105,182 汉字、35 条注入矛盾，召回 100.0%（35/35），干净库 0 条 finding、脏库 0 分 D（来源：`docs/consistency-baseline-2026-10-23.md` 的「汉字数」「注入矛盾数」「召回率」「干净基线」「脏库」字段）。
+- **提示词工坊**：`backend/moyu_prompt_templates.py` 随库种入 22 个内置模板，覆盖 `server.AI_TASK_IDS` 的 10 个 AI 任务；内置本体只读（`update_template()` / `delete_template()` 对 `is_builtin` 抛 `PromptTemplateConflict`），作者克隆成自定义模板后可改正文、版本号自增，也可用 `reset_template()` 恢复出厂正文。
+- **生成门禁**：`export_finalization_issues()` 末尾追加一致性门禁，`fact` / `knowledge` / `evidence` 三类的 `blocker` 与 `high` 阻断 EPUB / Markdown 导出，作者以不少于 8 个字符的 `X-Moyu-Export-Override` 理由放行。
+- **预算续写引擎 v1.2 + 生产接线**：`backend/moyu_continuation.py` 升到 v1.2，新增两项默认开启的生成前干预——`overshoot_guard` 把「本轮最多还能写多少」(`max_characters`) 与超额提示注入下一轮上下文，`stall_strategy` 让每次停滞重试换一种展开方式并给出「本次至少写 N 字」；两项只影响提示，不裁剪正文，超冲仍如实记 `within_tolerance=false`。基准复测：全部 20 场景一次通过率 70.0% → 80.0%（14/20 → 16/20），**3000 字子集 66.7% → 77.8%（6/9 → 7/9），Q1 的 ≥80% 尚未达成**；平均轮数 3.20 → 3.85，`body_invariance` 20/20、`candidate_only` 20/20，引擎 digest `sha256:9a6a72f079fe2b9c49a7619dd09cbec6bd77863c6773b94b6827dfc84e6b98ac`（来源：`benchmarks/budgeted/results/budgeted-v1.2-baseline.json` 的 `summary` 与 `engine` 字段，该文件同时记 `q1_target_met: false`）。`POST /api/ai/queue` 接受可选对象 `budgeted_continuation`（`target_characters` / `max_rounds` / `min_round_gain` / `max_stall_retries` / `hard_max_rounds`，默认值与取值范围以 `moyu_continuation.DEFAULT_*` 与 `*_LIMITS` 为准），仅 `continue` 任务可用；第 1 轮沿用冻结请求，第 2 轮起清 `_frozen_request` 并注入已写与还差的进度键，合并正文只在 `finish_ai_job()` 落一次 chunk，逐轮进度记 `ai_run.round` 事件。额度按 run 预留 1 次而真实调用 N 次，轮数与派发次数写进 `consent_json.budgeted_continuation_report` 供核对；复测报告见[预算续写引擎 v1.2 复测](consistency-budget-v1.2-2026-10-23.md)，其中 §6 说明「≥80%」这个指标缺少模型服从度假设、属口径缺陷；接线说明见[多轮字数预算续写的生产链路](continuation-production.md)。
+
+## 2026-10-24 · 一致性引擎 F1 修复（无槽位 `has_attribute` 假阳，双侧）
+
+- **写入端**：`assertion_predicate()` 新增前置判断——模型显式请求 `has_attribute` 但 `assertion_attribute()` 为空时，不再按白名单空放行，回落成 `has_story_fact` 并把原值作为被拒谓词回传；`ensure_memory_assertion()` 据此记 `memory.assertion_predicate_fallback` 事件，`reason` 写作「谓词缺少 attribute 槽位，已回落到结构化默认值」，与「谓词不在白名单内」分开，避免审计把缺槽位误读成模型乱写。
+- **引擎端**：`_classify_object_conflict()` 在「两侧都没有 `attribute` 槽位」时按谓词是否带槽位语义分流——`_has_slot_semantics()` 依据 `_SLOT_SEMANTIC_PREDICATES`（目前只有 `has_attribute` 与 `has_story_fact`）判定，命中则跳过配对（只保留名字漂移判断），兜住库里已有的历史行；`located_in` / `age` / `owns_item` 这类不带槽位语义的单值谓词仍按「两个取值即冲突」判 high，未被这次放宽误伤。
+- **判据**：事实冲突的判定依据是「数据形状 + 谓词是否带槽位语义」，不是「谓词名 → 严重度」的硬编码表；新增带槽位谓词必须同时同步 `ASSERTION_PREDICATES` 与 `_SLOT_SEMANTIC_PREDICATES`。
+- **量化**：同一角色两条互不矛盾的无槽位事实（`{"name":"林昭","note":"左臂有疤"}` 与 `…"note":"惯用右手"`，均 `predicate=has_attribute`）——修复前 1 条 high（score = 100 − 8 = 92.0，等级被 high 封顶为 B）；修复后 0 条 / 100.0 分 / A 级（来源：`SEVERITY_WEIGHTS` 的 `high: 8.0`、`_GRADE_THRESHOLDS`（90/75/60）与 `analyze()` 的等级封顶规则；修复后数值为本机实测，修复前数值为旧逻辑下的算式值 + `tests/consistency_fixtures.py` 的 t42 回归断言 `score == 92.0` / `grade == "B"`）。
+- **回归**：`tests/consistency_fixtures.py` 的 t42 用例同时覆盖两件相反的事——三条无槽位 `has_attribute` 事实不产生 finding，而同一项目里一对 `located_in` 冲突仍恰好 1 条 high。
+
+## 2026-10-24 · 一致性引擎 fact 判定改为按属性槽位比较
+
+本轮只改 `fact` 一类的判定口径：从「同一实体、同一谓词就两两比较」改成「同一实体、同一谓词、同一属性槽位才比较」。写入端与引擎端各改一半，缺一半都不成立。
+
+- **写入端：谓词不再一律压成 `has_story_fact`。** `ensure_memory_assertion()` 现在按 `assertion_predicate()` 取谓词，白名单是 `ASSERTION_PREDICATES = {"has_story_fact", "has_attribute"}`：记忆带属性槽位时写 `has_attribute`，否则写 `has_story_fact`。`assertion_object()` 保留原有的 `name` / `type` / `note` 三个键（读取端按旧形状取字段），只在有属性时追加 `attribute` 与 `value`；`value` 原样保留结构，不字符串化。白名单外的谓词不会落库为原值，而是回落到上面两种之一，并在 `ensure_memory_assertion()` 里记一条 `memory.assertion_predicate_fallback` 事件（`ASSERTION_PREDICATE_FALLBACK_EVENT`，带 `requested` / `used` / `reason`）。
+- **引擎端：分组键加槽位，删除 `note` 比较。** `_detect_fact()` 的分组键是 `(subject_entity_id, predicate, attribute)`；`attribute` 由 `_attribute_slot()` 从 `object.attribute` 取出去空白后的字符串，非字符串或缺失记为 `""`（「未分类」是真实槽位，坏 JSON 也落这里）。`_classify_object_conflict()` 按固定顺序判定：①两侧 `_same_value` 相同 → 跳过（在 `_detect_fact()` 里）；②任一侧不是 JSON 对象 → high `<predicate> 存在两个不同取值`；③`if left_attribute or right_attribute:` 但槽位不同（含「有槽位 vs 未分类」）→ 跳过；④同槽位任一侧有 `value` 且两侧取值不同 → high `属性「<attribute>」存在两个不同取值`；⑤同槽位取值相同或双方都未记录 `value` → 继续；⑥无槽位且谓词不是 `has_story_fact` → high `<predicate> 存在冲突取值`；⑦两侧 `name` 都非空且不同 → high `同一实体被记成两个名字`。判定依据是**数据形状**（`object` 里有没有 `attribute`）而不是谓词名，所以 `has_attribute`、`has_story_fact` 与将来新增的带槽位谓词走同一套；`note` 不再参与任何 fact 判定。
+- **量化：N² 假阳被拆掉。** 同一角色的 10 条互不矛盾事实（无槽位）旧行为是组内两两配对 45 条 low、扣 45 分、score 55.0 → D（历史实测；`tests/consistency_fixtures.py` 的 t24 回归注释同样记录 45 条 low / 扣 45 分；扣分与等级按 `SEVERITY_WEIGHTS` 的 `low=1.0` 与 `_GRADE_THRESHOLDS` 的 90/75/60 可对账——**旧判定代码已删除，今天无法用命令复跑**）；新行为是 0 条 finding、score 100.0 → A（`tests/consistency_fixtures.py` 的 t24 回归直接断言 `analyze()`）。同一实体 5 个不同属性槽位：0 条 / 100.0 / A（同文件 t25 回归断言）。同槽位不同取值：恰好 1 条 high / 92.0 / B（同文件断言；92.0 本应 A，B 来自 `analyze()` 末尾的严重度封顶 `elif counts["high"]: grade = "B" if grade == "A" else grade`）。这条假阳不拆，Q1 的「30 万字 × 3 部真实作品」验收会被自己人堵死：真实稿件里同一角色挂十几条互不相干事实是常态，两两配对会把干净稿打成 D 级。
+- **边界：这是「一条误报路径」的修复，不是误报清零。** ①白名单只有 2 个谓词，**任何**白名单外谓词（模型自起的关系/位置类谓词也一样）都会回落，并在 `event_log` 里堆 `memory.assertion_predicate_fallback`，真实稿件跑批要盯这张表的增速；②`attribute` 缺失记为 `""`，未分类断言与任何带槽位断言都不比较——这是设计上的漏报面；③任一侧不是 JSON 对象时槽位判定不参与，直接按 `<predicate> 存在两个不同取值` 报 high；④**只修了 `fact` 类的一条误报路径**，`timeline` / `knowledge` / `attribute` / `relation` / `foreshadow` / `evidence` 六类检测器的误报源都还没处理，不能把本节读成「一致性问题已经解决」。
+
+## 2026-10-23 · 一致性引擎 v1
+
+- 新增只读一致性引擎 `backend/moyu_consistency.py`：七类检测覆盖事实矛盾、时间线矛盾、知识越界、属性漂移、关系/称谓矛盾、伏笔断线与来源失效，输出 0–100 分与 A/B/C/D 等级，等级受最严重问题封顶。
+- 新增只读接口 `GET /api/consistency`（支持 `?min_severity=`）与命令行 `python -m backend.moyu_consistency`；工作台左侧新增「一致性检查」面板，展示分数、等级、分类统计与可定位的问题清单。
+- 导出 EPUB / Markdown 时，事实、知识、来源三类中的阻断与高危问题进入发表门禁；作者可用不少于 8 个字符的覆盖理由放行。
+- 新增 LongFormBench 合成基准：`.venv/bin/python benchmarks/longform/run.py --chapters 40 --seed 20261023` 生成 40 章、105,182 汉字、35 条注入矛盾、七类全覆盖的数据集；召回 100%（35/35），干净基线 0 误报，单次全量分析中位 6.72 ms（5 次重复的中位数，见[一致性引擎 v1 · LongFormBench 基线](consistency-baseline-2026-10-23.md)的「分析耗时（中位数 / 5 次）」字段）。
+- 许可证统一为 MIT：修正 `package.json` 中与 `LICENSE` 冲突的 `UNLICENSED` / `private: true`，README 增加许可证说明；新增 `CONTRIBUTING.md` 与[一致性引擎说明](consistency-engine.md)。
+- **局限**：上述基准使用合成数据，生成器与引擎同源，注入是规则级矛盾、不测正文抽取器；v1 只把事实、知识、来源三类中的阻断与高危纳入发表门禁，其余类别因误报率未达标不进门禁。本记录不代表文学质量达标，也不代表一致性问题已经解决。
+
 ## 2026-10-22 · 维护
 
 - GitHub Actions 产品检查作业超时从 35 分钟调整为 45 分钟：此前一次运行在 35 分钟上限被取消（第 18 步在 31 分钟才开始，重跑 32 分钟通过），属于执行环境变慢，不是测试失败。

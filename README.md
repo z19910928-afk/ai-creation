@@ -12,9 +12,10 @@
   <img alt="本地优先" src="https://img.shields.io/badge/数据-本地优先-176b65?style=flat-square">
   <img alt="写作总管" src="https://img.shields.io/badge/创作-写作总管-253337?style=flat-square">
   <img alt="关联知识库" src="https://img.shields.io/badge/记忆-关联知识库-476b91?style=flat-square">
+  <img alt="许可证 MIT" src="https://img.shields.io/badge/许可证-MIT-2ea44f?style=flat-square">
 </p>
 
-[界面预览](#界面预览) · [创作流程](#创作流程) · [开始使用](#开始使用) · [文档导航](#文档导航)
+[界面预览](#界面预览) · [创作流程](#创作流程) · [一致性检查](#一致性检查) · [开始使用](#开始使用) · [文档导航](#文档导航)
 
 </div>
 
@@ -64,9 +65,25 @@
 | 管好一部长篇 | 多作品书架，卷、章、场景规划，章节任务卡与写作进度 |
 | 随时讨论与安排任务 | 灵感讨论与确认保存、常驻总管对话、当前章与选区引用、任务进度与结果直达 |
 | 保持人物与情节连贯 | 关联知识卡、章后记忆、原句证据、人物关系、时间线与伏笔 |
+| 保持全书前后一致 | 七类一致性检查、证据定位、分数与等级、发表门禁 |
 | 放心尝试不同写法 | 选区润色、候选比较、明确采纳、正文历史与版本恢复 |
 | 为不同工作选择模型 | 自动获取模型清单，支持 Chat / Responses；先测试保存，再为创作各用途分配模型 |
 | 留住并带走作品 | 本机保存、完整作品 ZIP 备份与独立恢复、Markdown 文稿和 EPUB 电子书导出 |
+
+## 一致性检查
+
+墨屿的一致性引擎对当前作品的故事状态做一次只读、确定性的体检，覆盖七类检查：事实矛盾、时间线矛盾、知识越界、属性漂移、关系/称谓矛盾、伏笔断线，以及来源失效。每条问题都带严重度、证据定位（实体、断言、原句片段、章节等）和修改建议；分析不会改写任何稿件或数据库。
+
+工作台左侧导航打开「一致性检查」即可查看：0–100 分与 A/B/C/D 等级、七类统计和问题清单；可按严重度累计筛选（选「高危」会同时显示阻断与高危），筛选只裁剪清单，分数与统计始终来自全量检查。点击问题里的章节引用可以直接回到对应章节。
+
+同一份报告也能通过只读接口或命令行获取：
+
+```bash
+curl 'http://127.0.0.1:4173/api/consistency?min_severity=high'
+.venv/bin/python -m backend.moyu_consistency --db moyu.sqlite3 --json
+```
+
+导出 EPUB / Markdown 时，事实、知识、来源三类中的阻断与高危问题会进入发表门禁；作者可以用不少于 8 个字符的覆盖理由放行。完整规则、评分公式、接口字段与已知局限见[一致性引擎](docs/consistency-engine.md)。
 
 ## 开始使用
 
@@ -148,6 +165,9 @@ py -3.11 -m venv .venv
 | 安装、打包和各平台进度 | [桌面安装说明](docs/desktop-packaging.md) |
 | 版本更新与问题反馈 | [更新记录](docs/CHANGELOG.md) · [安全问题](.github/SECURITY.md) |
 | 聊天、写作、记忆、备份和详细操作 | [使用与开发参考](docs/reference-guide.md) |
+| 一致性检查的规则、评分与接口 | [一致性引擎](docs/consistency-engine.md) |
+| 多轮字数预算续写怎么接进生产 | [续写生产链路](docs/continuation-production.md) |
+| 本地开发、测试与提交规范 | [贡献指南](CONTRIBUTING.md) |
 | 接口、运行配置和开发检查 | [本机接口](docs/reference-guide.md#本地-api) · [开发验证](docs/reference-guide.md#验证) |
 | 产品方向和下一步能力 | [产品蓝图](docs/master-product-blueprint-v2.md) · [能力对照](docs/audits/2026-10-14/comprehensive/capability-matrix.md) |
 | 已做过哪些检查 | [写作总管与灵感验收](docs/audits/agent-chat-inspiration-repair-20261019.md) · [产品验收记录](docs/audits/2026-10-14/comprehensive/README.md) · [文学评测说明](docs/evaluations/README.md) |
@@ -180,6 +200,10 @@ Obsidian 的完整双向同步、定时自动备份、DOCX / PDF 导出和多人
 具体版本、已知问题与验证边界保留在对应文档中。
 
 </details>
+
+## 许可证
+
+墨屿以 [MIT 许可证](LICENSE) 发布，Copyright (c) 2026 Moyu contributors。你可以自由使用、修改、分发和再许可，保留版权与许可声明即可。
 
 ---
 

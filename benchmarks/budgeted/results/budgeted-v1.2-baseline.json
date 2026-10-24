@@ -1,0 +1,1668 @@
+{
+  "benchmark": "budgeted-continuation-first-pass",
+  "version": "1.0",
+  "baseline_date": "2026-10-23",
+  "environment": {
+    "python": "3.11.17",
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "engine_module": "backend/moyu_continuation.py",
+    "engine_sha256": "583059fe2fe989a9c3f3113fe064f3f1aef4d3bf876fc1412e3de3021b1a87a9"
+  },
+  "config": {
+    "seed": 20261023,
+    "repeat": 2,
+    "scenarios": 20,
+    "targets": [
+      2500,
+      3000,
+      4000
+    ],
+    "max_rounds": 6,
+    "min_round_gain": 50,
+    "tolerance": 0.1,
+    "counting_rule": "non_whitespace_characters_including_punctuation",
+    "q1_target_characters": 3000,
+    "q1_target_rate": 0.8,
+    "engine_variant": "v1.2",
+    "max_stall_retries": 1,
+    "hard_max_rounds": 12,
+    "closing_hint": true,
+    "overshoot_guard": true,
+    "stall_strategy": true
+  },
+  "engine": {
+    "variant": "v1.2",
+    "label": "v1.2（引擎默认）",
+    "engine_version": "1.2",
+    "max_stall_retries": 1,
+    "hard_max_rounds": 12,
+    "closing_hint": true,
+    "overshoot_guard": true,
+    "stall_strategy": true,
+    "hard_max_rounds_note": "固定硬上限"
+  },
+  "assumptions": {
+    "mix_is_assumption": true,
+    "mix_note": "20 个场景的档位配比是假设，不是从真实模型测得的分布；总体一次通过率随配比变化，分层包络更可信。",
+    "qualified_tiers": [
+      "calibrated",
+      "steady",
+      "cautious"
+    ],
+    "deficient_tiers": [
+      "volatile",
+      "underpowered",
+      "stalling"
+    ],
+    "interrupted_tiers": [
+      "budget_limited",
+      "canceled"
+    ],
+    "tiers": {
+      "calibrated": {
+        "label": "一次到位",
+        "yield_note": "单轮产出 ≈ 剩余额度的 100%±5%",
+        "behaviour": "首轮即达标",
+        "ratio": [
+          1.0,
+          0.05
+        ],
+        "fixed_yield": null
+      },
+      "steady": {
+        "label": "渐进收敛",
+        "yield_note": "单轮产出 ≈ 剩余额度的 50%±8%",
+        "behaviour": "3–5 轮收敛",
+        "ratio": [
+          0.5,
+          0.08
+        ],
+        "fixed_yield": null
+      },
+      "cautious": {
+        "label": "保守欠量",
+        "yield_note": "单轮产出 ≈ 剩余额度的 38%±4%",
+        "behaviour": "5–6 轮勉强收敛，贴近 max_rounds 上限",
+        "ratio": [
+          0.38,
+          0.04
+        ],
+        "fixed_yield": null
+      },
+      "volatile": {
+        "label": "无视预算",
+        "yield_note": "单轮产出 ≈ 剩余额度的 75%±50%（可超过 100%）",
+        "behaviour": "常首轮超冲，越过 +10% 上限",
+        "ratio": [
+          0.75,
+          0.5
+        ],
+        "fixed_yield": null
+      },
+      "underpowered": {
+        "label": "产出不足",
+        "yield_note": "单轮产出 ≈ 剩余额度的 18%±3%",
+        "behaviour": "6 轮仍达不到下限",
+        "ratio": [
+          0.18,
+          0.03
+        ],
+        "fixed_yield": null
+      },
+      "stalling": {
+        "label": "停滞",
+        "yield_note": "单轮固定 12–30 字，低于 min_round_gain=50",
+        "behaviour": "首轮即判 NO_PROGRESS",
+        "ratio": null,
+        "fixed_yield": [
+          12,
+          30
+        ]
+      },
+      "budget_limited": {
+        "label": "预算受限",
+        "yield_note": "产出同 steady，但预算在第 3 轮开始前耗尽",
+        "behaviour": "BUDGET_EXHAUSTED",
+        "ratio": [
+          0.5,
+          0.08
+        ],
+        "fixed_yield": null
+      },
+      "canceled": {
+        "label": "作者取消",
+        "yield_note": "产出同 steady，但第 2 轮开始前作者取消",
+        "behaviour": "CANCELED",
+        "ratio": [
+          0.5,
+          0.08
+        ],
+        "fixed_yield": null
+      }
+    }
+  },
+  "scenarios": [
+    {
+      "id": "sc-01",
+      "target_characters": 2500,
+      "tier": "calibrated",
+      "tier_label": "一次到位",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 1,
+      "characters": 2387,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "5341d29781c1817abec412750a3d359352b748cc078bd9847506658062378182",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-02",
+      "target_characters": 3000,
+      "tier": "calibrated",
+      "tier_label": "一次到位",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 1,
+      "characters": 2982,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "4a28b0b75124b15bf1b3ce60fbe3d6aab37b692c13ac5861483cadc8441cc936",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-03",
+      "target_characters": 3000,
+      "tier": "calibrated",
+      "tier_label": "一次到位",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 1,
+      "characters": 2884,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "b6fed86d1bff0d32eedaa94a4ca851420417605926d16626c699074964cef083",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-04",
+      "target_characters": 4000,
+      "tier": "calibrated",
+      "tier_label": "一次到位",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 1,
+      "characters": 4048,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "6ca4c6649c8a2586da3bc4f74a30a6458c3b78ed45ead4a3d1b1ac1b76687a6c",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-05",
+      "target_characters": 2500,
+      "tier": "steady",
+      "tier_label": "渐进收敛",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 4,
+      "characters": 2316,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          4
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 3,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "06717eed5f3265f887731004a5e03f6a7cb43dcb1e845863f885ef103bac378d",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-06",
+      "target_characters": 2500,
+      "tier": "steady",
+      "tier_label": "渐进收敛",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 4,
+      "characters": 2364,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          4
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 3,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "379988487d916db812352711f74dc759545d3f0cb7177eacb01070acf1c90fdc",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-07",
+      "target_characters": 3000,
+      "tier": "steady",
+      "tier_label": "渐进收敛",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 4,
+      "characters": 2788,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          4
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 3,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "9957c1f509c2443b4e08aeaa10c4e10adb991547bdfbcbc748a11bb4dcced369",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-08",
+      "target_characters": 3000,
+      "tier": "steady",
+      "tier_label": "渐进收敛",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 4,
+      "characters": 2788,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          4
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 3,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "0047887022727f3e2f59fbce56e07e9720b3517070ac20a45bb16a6c8a361a69",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-09",
+      "target_characters": 4000,
+      "tier": "steady",
+      "tier_label": "渐进收敛",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 4,
+      "characters": 3794,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          4
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 3,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "b88d184a0b028367fbe5a09bbee1ae08cd3464d870e8ae22b5f5f6db23f5daf8",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-10",
+      "target_characters": 4000,
+      "tier": "steady",
+      "tier_label": "渐进收敛",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 4,
+      "characters": 3798,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          4
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 3,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "2156da8fcb2867905734b8b3bb51c94dede5e5a9f7ac14a29ab07ebcf2192d96",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-11",
+      "target_characters": 2500,
+      "tier": "cautious",
+      "tier_label": "保守欠量",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 5,
+      "characters": 2272,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 2,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          4,
+          5
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 4,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "583e2ad2aaaae2230494bccb2daa61d06a8a24b62957dce993915b521bac1041",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-12",
+      "target_characters": 3000,
+      "tier": "cautious",
+      "tier_label": "保守欠量",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 5,
+      "characters": 2753,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          5
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 4,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "93f56e817c599a761cbe2d2e823ab1846979846d09b30ef50b5b90cdae79d29b",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-13",
+      "target_characters": 4000,
+      "tier": "cautious",
+      "tier_label": "保守欠量",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 6,
+      "characters": 3753,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          6
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 5,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4,
+        5,
+        6
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "a32fd8e6e2a6ad3df61b8f089adf53f93912292c0be80a99de209f38af4cab75",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-14",
+      "target_characters": 3000,
+      "tier": "volatile",
+      "tier_label": "无视预算",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 3,
+      "characters": 2890,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 1,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          3
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 2,
+      "overshoot_hint_round_indexes": [
+        2,
+        3
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "237ac607bbc14ccdccbdf9d203eb0b81475630bd7e6c4d72d9686b3c8ea94cde",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-15",
+      "target_characters": 4000,
+      "tier": "volatile",
+      "tier_label": "无视预算",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 1,
+      "characters": 4661,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "target_reached": true,
+      "within_tolerance": false,
+      "first_pass": false,
+      "overshoot": 261,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 261,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "64c4cf20add78eb5345a63767e48e0511f4f23b2b33cc7cb4d136c0d71e8d56a",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true,
+      "failure_class": "overshoot",
+      "failure_label": "超冲（越过 +10% 上限）"
+    },
+    {
+      "id": "sc-16",
+      "target_characters": 2500,
+      "tier": "underpowered",
+      "tier_label": "产出不足",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 12,
+      "characters": 2279,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 6,
+      "retried_rounds": [],
+      "closing_hint_rounds": 4,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 11,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "f7e4596336ef3d9d22d697c546a86308f3f752660759a74656d597a193592da3",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-17",
+      "target_characters": 3000,
+      "tier": "underpowered",
+      "tier_label": "产出不足",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "target_reached",
+      "stop_reason_label": "达标停止",
+      "rounds": 12,
+      "characters": 2741,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "overshoot": 0,
+      "shortfall": 0,
+      "retries": 0,
+      "extended_rounds": 6,
+      "retried_rounds": [],
+      "closing_hint_rounds": 3,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [
+          10,
+          11,
+          12
+        ],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 11,
+      "overshoot_hint_round_indexes": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "f287cb714ccb58f6f9cfc55e36405c166bb5358c59c31421c0acff4916ad7297",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true
+    },
+    {
+      "id": "sc-18",
+      "target_characters": 3000,
+      "tier": "stalling",
+      "tier_label": "停滞",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "no_progress",
+      "stop_reason_label": "产出停滞",
+      "rounds": 2,
+      "characters": 46,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": false,
+      "within_tolerance": false,
+      "first_pass": false,
+      "overshoot": 0,
+      "shortfall": 2654,
+      "retries": 1,
+      "extended_rounds": 0,
+      "retried_rounds": [
+        2
+      ],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 1,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": [
+          2
+        ]
+      },
+      "overshoot_hint_rounds": 1,
+      "overshoot_hint_round_indexes": [
+        2
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [
+        243
+      ],
+      "stall_strategies": [
+        "新增一个具体动作、一段对话或一个场景细节"
+      ],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "eba023a1f8705c1b096da899df99fbdae8ec3d171f1a02741ae468406dbb0f14",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true,
+      "failure_class": "no_progress",
+      "failure_label": "产出停滞（单轮增量 < min_round_gain）"
+    },
+    {
+      "id": "sc-19",
+      "target_characters": 3000,
+      "tier": "budget_limited",
+      "tier_label": "预算受限",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "budget_exhausted",
+      "stop_reason_label": "预算耗尽",
+      "rounds": 2,
+      "characters": 2318,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "target_reached": false,
+      "within_tolerance": false,
+      "first_pass": false,
+      "overshoot": 0,
+      "shortfall": 382,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 1,
+      "overshoot_hint_round_indexes": [
+        2
+      ],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "7844b443c25b09a3447ebc11bb4a68683fffe3ecb31ce4e40f9a0dd6547ae6c8",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true,
+      "failure_class": "budget_exhausted",
+      "failure_label": "预算中断（外部原因）"
+    },
+    {
+      "id": "sc-20",
+      "target_characters": 4000,
+      "tier": "canceled",
+      "tier_label": "作者取消",
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12,
+      "stop_reason": "canceled",
+      "stop_reason_label": "作者取消",
+      "rounds": 1,
+      "characters": 2157,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "target_reached": false,
+      "within_tolerance": false,
+      "first_pass": false,
+      "overshoot": 0,
+      "shortfall": 1443,
+      "retries": 0,
+      "extended_rounds": 0,
+      "retried_rounds": [],
+      "closing_hint_rounds": 0,
+      "stall_hint_rounds": 0,
+      "hint_rounds": {
+        "closing_hint": [],
+        "stall_retry_hint": []
+      },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": true,
+        "overshoot_guard": true,
+        "stall_strategy": true
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
+      "body_sha256": "7dcf17d434c816bb04d74a6e5fadf0b22d1d15b2f622031605ce9dda79cbc9f0",
+      "body_unchanged": true,
+      "candidate_only": true,
+      "accounting_ok": true,
+      "failure_class": "canceled",
+      "failure_label": "作者取消（外部原因）"
+    }
+  ],
+  "summary": {
+    "total": 20,
+    "first_pass": 16,
+    "failed": 4,
+    "rate": 0.8,
+    "by_target": {
+      "2500": {
+        "total": 5,
+        "first_pass": 5,
+        "failed": 0,
+        "rate": 1.0
+      },
+      "3000": {
+        "total": 9,
+        "first_pass": 7,
+        "failed": 2,
+        "rate": 0.7778
+      },
+      "4000": {
+        "total": 6,
+        "first_pass": 4,
+        "failed": 2,
+        "rate": 0.6667
+      }
+    },
+    "by_tier": {
+      "calibrated": {
+        "total": 4,
+        "first_pass": 4,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 1.0,
+        "stop_reasons": {
+          "target_reached": 4,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0
+        }
+      },
+      "steady": {
+        "total": 6,
+        "first_pass": 6,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 4.0,
+        "stop_reasons": {
+          "target_reached": 6,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0
+        }
+      },
+      "cautious": {
+        "total": 3,
+        "first_pass": 3,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 5.3333,
+        "stop_reasons": {
+          "target_reached": 3,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0
+        }
+      },
+      "volatile": {
+        "total": 2,
+        "first_pass": 1,
+        "failed": 1,
+        "rate": 0.5,
+        "mean_rounds": 2.0,
+        "stop_reasons": {
+          "target_reached": 2,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0
+        }
+      },
+      "underpowered": {
+        "total": 2,
+        "first_pass": 2,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 12.0,
+        "stop_reasons": {
+          "target_reached": 2,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0
+        }
+      },
+      "stalling": {
+        "total": 1,
+        "first_pass": 0,
+        "failed": 1,
+        "rate": 0.0,
+        "mean_rounds": 2.0,
+        "stop_reasons": {
+          "target_reached": 0,
+          "no_progress": 1,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0
+        }
+      },
+      "budget_limited": {
+        "total": 1,
+        "first_pass": 0,
+        "failed": 1,
+        "rate": 0.0,
+        "mean_rounds": 2.0,
+        "stop_reasons": {
+          "target_reached": 0,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 1,
+          "canceled": 0
+        }
+      },
+      "canceled": {
+        "total": 1,
+        "first_pass": 0,
+        "failed": 1,
+        "rate": 0.0,
+        "mean_rounds": 1.0,
+        "stop_reasons": {
+          "target_reached": 0,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 1
+        }
+      }
+    },
+    "qualified": {
+      "total": 13,
+      "first_pass": 13,
+      "failed": 0,
+      "rate": 1.0
+    },
+    "deficient": {
+      "total": 5,
+      "first_pass": 3,
+      "failed": 2,
+      "rate": 0.6
+    },
+    "interrupted": {
+      "total": 2,
+      "first_pass": 0,
+      "failed": 2,
+      "rate": 0.0
+    },
+    "stop_reasons": {
+      "target_reached": 17,
+      "no_progress": 1,
+      "max_rounds": 0,
+      "budget_exhausted": 1,
+      "canceled": 1
+    },
+    "rounds": {
+      "mean": 3.85,
+      "median": 4.0,
+      "minimum": 1,
+      "maximum": 12,
+      "total": 77
+    },
+    "characters": {
+      "mean": 2800.95,
+      "minimum": 46,
+      "maximum": 4661,
+      "total": 56019
+    },
+    "overshoot": {
+      "count": 1,
+      "maximum": 261
+    },
+    "shortfall": {
+      "count": 3,
+      "maximum": 2654
+    },
+    "failures": [
+      {
+        "id": "sc-15",
+        "target_characters": 4000,
+        "tier": "volatile",
+        "tier_label": "无视预算",
+        "stop_reason": "target_reached",
+        "failure_class": "overshoot",
+        "failure_label": "超冲（越过 +10% 上限）",
+        "rounds": 1,
+        "characters": 4661,
+        "shortfall": 0,
+        "overshoot": 261
+      },
+      {
+        "id": "sc-18",
+        "target_characters": 3000,
+        "tier": "stalling",
+        "tier_label": "停滞",
+        "stop_reason": "no_progress",
+        "failure_class": "no_progress",
+        "failure_label": "产出停滞（单轮增量 < min_round_gain）",
+        "rounds": 2,
+        "characters": 46,
+        "shortfall": 2654,
+        "overshoot": 0
+      },
+      {
+        "id": "sc-19",
+        "target_characters": 3000,
+        "tier": "budget_limited",
+        "tier_label": "预算受限",
+        "stop_reason": "budget_exhausted",
+        "failure_class": "budget_exhausted",
+        "failure_label": "预算中断（外部原因）",
+        "rounds": 2,
+        "characters": 2318,
+        "shortfall": 382,
+        "overshoot": 0
+      },
+      {
+        "id": "sc-20",
+        "target_characters": 4000,
+        "tier": "canceled",
+        "tier_label": "作者取消",
+        "stop_reason": "canceled",
+        "failure_class": "canceled",
+        "failure_label": "作者取消（外部原因）",
+        "rounds": 1,
+        "characters": 2157,
+        "shortfall": 1443,
+        "overshoot": 0
+      }
+    ],
+    "body_invariance": {
+      "checked": 20,
+      "unchanged": 20,
+      "all_unchanged": true
+    },
+    "candidate_only": {
+      "checked": 20,
+      "all_candidate_only": true
+    },
+    "accounting": {
+      "checked": 20,
+      "all_consistent": true
+    },
+    "engine_features": {
+      "retries": 1,
+      "retried_scenarios": [
+        "sc-18"
+      ],
+      "extended_rounds": 12,
+      "extended_scenarios": [
+        "sc-16",
+        "sc-17"
+      ],
+      "closing_hint_rounds": 18,
+      "closing_hint_scenarios": [
+        "sc-05",
+        "sc-06",
+        "sc-07",
+        "sc-08",
+        "sc-09",
+        "sc-10",
+        "sc-11",
+        "sc-12",
+        "sc-13",
+        "sc-14",
+        "sc-16",
+        "sc-17"
+      ],
+      "stall_hint_rounds": 1,
+      "stall_hint_scenarios": [
+        "sc-18"
+      ],
+      "overshoot_hint_rounds": 57,
+      "overshoot_hint_scenarios": [
+        "sc-05",
+        "sc-06",
+        "sc-07",
+        "sc-08",
+        "sc-09",
+        "sc-10",
+        "sc-11",
+        "sc-12",
+        "sc-13",
+        "sc-14",
+        "sc-16",
+        "sc-17",
+        "sc-18",
+        "sc-19"
+      ],
+      "stall_min_characters": [
+        243
+      ],
+      "stall_strategies": [
+        "新增一个具体动作、一段对话或一个场景细节"
+      ]
+    },
+    "engine_control": {
+      "controlled": {
+        "rounds_total": 77,
+        "stop_reason_decided": 20,
+        "lower_bound_hits": 17,
+        "envelope_rounds": 57,
+        "stall_retry_rounds": 1
+      },
+      "observed_only": {
+        "overshoot_characters": 261,
+        "overshoot_scenarios": [
+          "sc-15"
+        ],
+        "stall_scenarios": [
+          "sc-18"
+        ],
+        "strategy_switches": 1,
+        "obedience": "对抗式 provider 不读任何提示；模型服从度只能由附录估计"
+      }
+    },
+    "break_even": {
+      "qualified_rate": 1.0,
+      "nonqualified_rate": 0.4286,
+      "max_nonqualified_fraction": 0.35,
+      "observed_nonqualified_fraction": 0.35
+    }
+  },
+  "q1_target_met": false,
+  "determinism": {
+    "repeat": 2,
+    "identical": true,
+    "digest": "sha256:9a6a72f079fe2b9c49a7619dd09cbec6bd77863c6773b94b6827dfc84e6b98ac"
+  },
+  "acceptance": [
+    {
+      "id": "scenarios",
+      "label": "20 个场景全部执行",
+      "passed": true,
+      "detail": "20/20"
+    },
+    {
+      "id": "determinism",
+      "label": "同 seed 重复运行结果一致",
+      "passed": true,
+      "detail": "repeat=2，digest=sha256:9a6a72f079fe2b9c49a7619dd09cbec6bd77863c6773b94b6827dfc84e6b98ac"
+    },
+    {
+      "id": "body",
+      "label": "引擎未改写任何正文",
+      "passed": true,
+      "detail": "20/20 哈希一致"
+    },
+    {
+      "id": "candidate",
+      "label": "所有结果均为 candidate_only",
+      "passed": true,
+      "detail": "20 个场景"
+    },
+    {
+      "id": "accounting",
+      "label": "字数记账自洽",
+      "passed": true,
+      "detail": "20 个场景引擎计数与产出长度一致"
+    },
+    {
+      "id": "doc_numbers",
+      "label": "文档与 JSON 数字一致",
+      "passed": true,
+      "detail": "全部命中"
+    },
+    {
+      "id": "timing_artifact",
+      "label": "耗时观测单独落盘且结构完整",
+      "passed": true,
+      "detail": "20 个场景，键齐全（不参与确定性比对）"
+    },
+    {
+      "id": "stop_reasons",
+      "label": "5 类停止原因在 v1.0 对照侧全部出现（基准覆盖面）",
+      "passed": true,
+      "detail": "5/5：target_reached、no_progress、max_rounds、budget_exhausted、canceled"
+    },
+    {
+      "id": "v12_improves_without_regression",
+      "label": "v1.2 相对 v1.0 不倒退且无 pass→fail 回归",
+      "passed": true,
+      "detail": "提升 +10.0pt，回归 0 个"
+    },
+    {
+      "id": "v12_flags_pinned",
+      "label": "三臂开关按预期钉死（v1 全关 / v1.1 只开收束 / v1.2 全开）",
+      "passed": true,
+      "detail": "60 个场景开关全对，v1 臂提示注入为 0"
+    },
+    {
+      "id": "v12_envelope_hint_delivered",
+      "label": "超冲保护把额度提示逐轮送达（非首轮）",
+      "passed": true,
+      "detail": "57 轮 / 14 个场景：sc-05、sc-06、sc-07、sc-08、sc-09、sc-10、sc-11、sc-12、sc-13、sc-14、sc-16、sc-17、sc-18、sc-19"
+    },
+    {
+      "id": "v12_stall_strategy_switched",
+      "label": "停滞重试换策略且给出最少字数",
+      "passed": true,
+      "detail": "1 个场景换过策略：sc-18"
+    },
+    {
+      "id": "v12_appendix_non_counting",
+      "label": "敏感性附录不计入 headline（下界数字与正式运行一致）",
+      "passed": true,
+      "detail": "下界 16/20 与正式一致；上界 18/20 标注为非计入"
+    },
+    {
+      "id": "v12_retry_default_justified",
+      "label": "max_stall_retries 默认值有数据依据（多一次重试无收益即不默认）",
+      "passed": true,
+      "detail": "1→2 次重试：通过数 +0、轮数 +1、翻转 0 个，默认保持 1"
+    },
+    {
+      "id": "comparison_doc_numbers",
+      "label": "v1.2 对照文档与前后两份 JSON 数字一致",
+      "passed": true,
+      "detail": "全部命中"
+    },
+    {
+      "id": "summary_md_numbers",
+      "label": "v1.2 摘要 MD 与 JSON 数字一致",
+      "passed": true,
+      "detail": "全部命中"
+    },
+    {
+      "id": "baseline_untouched",
+      "label": "v1.0 基线产物未被覆盖",
+      "passed": true,
+      "detail": "四个产物指纹未变"
+    }
+  ],
+  "timing_source": "budgeted-v1.2-timing.json",
+  "comparison_source": "budgeted-comparison.json",
+  "non_counting_appendix": "budgeted-comparison.json#sensitivity"
+}

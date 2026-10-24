@@ -418,8 +418,7 @@ def probe(conn: sqlite3.Connection, project: str, *, cancel_event=None,
     signature = _signature(config)
     if not config["base_url"] or not config["model"]:
         raise ValueError("请先保存写作总管的模型地址和名称。")
-    messages = [{"role": "system", "content": "连接测试。只回复：连接正常"},
-                {"role": "user", "content": "请回复连接正常。"}]
+    messages = moyu_settings.probe_messages()
     run_id = "agent_probe_" + uuid.uuid4().hex
     prepared = prepare_chat_request(config, messages, task="probe", max_tokens=moyu_settings.PROBE_MAX_TOKENS,
                                    parameters={"temperature": 0}, request_id=run_id)

@@ -1,0 +1,106 @@
+/* 墨屿一致性检查面板 —— 原生 CSS，无构建。
+   与 styles.css 的最终主题变量（--card/--line/--ink/--muted/--accent）保持一致。 */
+
+.consistency-panel{display:grid;gap:16px;min-width:0}
+.consistency-panel code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;background:#f2f5f6;border-radius:3px;padding:1px 4px;overflow-wrap:anywhere}
+
+/* 分数与等级 */
+.consistency-score-card{display:grid;gap:13px;padding:20px 22px;background:var(--card);border:1px solid var(--line);border-radius:10px;min-width:0}
+.consistency-score-card--loading{color:var(--muted)}
+.consistency-score-main{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.consistency-score-number{display:flex;align-items:baseline;gap:6px}
+.consistency-score-value{font-size:58px;line-height:.95;font-weight:600;color:var(--ink);font-variant-numeric:tabular-nums}
+.consistency-score-number small{font-size:13px;color:var(--muted)}
+.consistency-grade{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.consistency-grade span{font-size:11px;font-weight:400;letter-spacing:.08em}
+.consistency-grade strong{font-size:26px;line-height:1}
+.consistency-grade--A{background:#e6f2e9;color:#2c6b45}
+.consistency-grade--B{background:#e7f2ef;color:#176b65}
+.consistency-grade--C{background:#fdf0d8;color:#8a6420}
+.consistency-grade--D{background:#f8dfd8;color:#a43640}
+.consistency-grade--pending{background:#f2f5f6;color:var(--muted)}
+.consistency-summary{margin:0;font-size:14px;line-height:1.75;color:var(--ink);overflow-wrap:anywhere}
+.consistency-counts{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.consistency-counts li{display:inline-flex;align-items:center;gap:7px;padding:4px 10px 4px 6px;border:1px solid var(--line);border-radius:999px;background:#fff;font-size:12px;color:var(--muted)}
+.consistency-counts strong{color:var(--ink);font-variant-numeric:tabular-nums}
+.consistency-meta{margin:0;font-size:11px;line-height:1.7;color:var(--muted)}
+
+/* 七类分类统计 */
+.consistency-categories{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.consistency-category{display:grid;gap:3px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:9px;min-width:0}
+.consistency-category.has-issues{border-color:#e2c9bd;background:#fffaf7}
+.consistency-category-label{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.consistency-category strong{font-size:23px;line-height:1.15;color:var(--ink);font-variant-numeric:tabular-nums}
+.consistency-category small{font-size:10px;line-height:1.5;color:var(--muted);overflow-wrap:anywhere}
+
+/* 问题清单 */
+.consistency-findings{display:grid;gap:13px;padding:18px 20px;background:var(--card);border:1px solid var(--line);border-radius:10px;min-width:0}
+.consistency-findings-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.consistency-findings-head h3{margin:0;font-size:16px;font-weight:600}
+.consistency-filter-hint{margin:5px 0 0;font-size:11px;line-height:1.7;color:var(--muted);max-width:760px}
+.consistency-result-count{font-size:12px;color:var(--muted);white-space:nowrap;padding-top:2px}
+.consistency-filters{display:flex;flex-wrap:wrap;gap:6px}
+.consistency-filter{min-height:32px;height:auto;padding:5px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--muted);font-size:12px;line-height:1.4}
+.consistency-filter:hover{border-color:var(--accent);color:var(--accent)}
+.consistency-filter[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.consistency-filter[aria-pressed="true"]:hover{background:#2d3d43;border-color:#2d3d43;color:#fff}
+.consistency-findings-list{display:grid;gap:10px;min-width:0}
+.consistency-finding{display:grid;gap:8px;padding:13px 15px;border:1px solid var(--line);border-left:3px solid var(--line);border-radius:8px;background:#fff;min-width:0}
+.consistency-finding[data-severity="blocker"]{border-left-color:#8f2f22}
+.consistency-finding[data-severity="high"]{border-left-color:#c0604a}
+.consistency-finding[data-severity="medium"]{border-left-color:#c2933f}
+.consistency-finding[data-severity="low"]{border-left-color:#8e9ba1}
+.consistency-finding-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+.consistency-finding-head h4{margin:0;font-size:14px;font-weight:600;line-height:1.5;overflow-wrap:anywhere;min-width:0}
+.consistency-finding-category{padding:2px 7px;border-radius:4px;background:#f2f5f6;color:var(--muted);font-size:11px;white-space:nowrap}
+.consistency-finding-detail{margin:0;font-size:13px;line-height:1.75;color:#39474d;overflow-wrap:anywhere}
+.consistency-finding-suggestion{margin:0;padding:8px 10px;border-radius:6px;background:#f7f9f9;font-size:12px;line-height:1.7;color:var(--muted);overflow-wrap:anywhere}
+.consistency-finding-suggestion span{display:inline-block;margin-right:6px;color:var(--accent);font-weight:600}
+.consistency-finding-id{margin:0;font-size:10px;color:#9aa6ab}
+.consistency-evidence{display:flex;flex-wrap:wrap;gap:6px;min-width:0}
+.consistency-evidence-item{display:inline-flex;align-items:center;gap:6px;max-width:100%;padding:3px 7px;border:1px solid var(--line);border-radius:5px;background:#fbfcfc;font-size:11px;color:var(--muted)}
+.consistency-evidence-key{color:#87949a;white-space:nowrap}
+.consistency-evidence-value{min-width:0;color:#39474d;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;overflow-wrap:anywhere}
+.consistency-evidence-value code{font-size:10px}
+
+/* 严重度徽章 */
+.consistency-badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;line-height:1.6;white-space:nowrap}
+.consistency-badge--blocker{background:#f6dcd6;color:#8f2f22}
+.consistency-badge--high{background:#fbe6df;color:#a84432}
+.consistency-badge--medium{background:#fdf0d8;color:#8a6420}
+.consistency-badge--low{background:#eceff1;color:#5d6b72}
+.consistency-badge--unknown{background:#eceff1;color:#5d6b72}
+
+/* 章节引用：保持正文行内样式，覆盖全局 button 的最小高度 */
+.consistency-chapter-link{display:inline;min-height:0;height:auto;padding:0 2px;border:0;border-radius:3px;background:none;color:var(--accent);font:inherit;line-height:inherit;text-decoration:underline;text-underline-offset:2px}
+.consistency-chapter-link:hover{background:var(--accent-soft);color:var(--accent)}
+.consistency-chapter-link:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* 加载 / 错误 / 空态 */
+.consistency-loading{display:flex;align-items:center;justify-content:center;gap:9px;padding:22px 16px;font-size:12px;color:var(--muted);text-align:center}
+.consistency-spinner{width:14px;height:14px;flex:0 0 auto;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:consistency-spin .8s linear infinite}
+.consistency-state{display:grid;justify-items:center;gap:8px;padding:24px 20px;border:1px dashed var(--line);border-radius:9px;background:#fff;text-align:center}
+.consistency-state strong{font-size:14px;color:var(--ink)}
+.consistency-state p{margin:0;max-width:620px;font-size:12px;line-height:1.75;color:var(--muted);overflow-wrap:anywhere}
+.consistency-state--error{border-color:#e4b6aa;background:#fff8f5}
+.consistency-state--error strong{color:#a43640}
+.consistency-empty{display:grid;justify-items:center;gap:7px;padding:26px 20px;border:1px dashed var(--line);border-radius:9px;background:#fff;text-align:center}
+.consistency-empty strong{font-size:14px;color:var(--ink)}
+.consistency-empty p{margin:0;max-width:620px;font-size:12px;line-height:1.75;color:var(--muted)}
+
+@keyframes consistency-spin{to{transform:rotate(360deg)}}
+
+@media(max-width:900px){
+ .consistency-score-value{font-size:48px}
+ .consistency-categories{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:620px){
+ .consistency-score-card{padding:16px}
+ .consistency-score-value{font-size:44px}
+ .consistency-findings{padding:14px}
+ .consistency-categories{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .consistency-finding{padding:11px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+ .consistency-spinner{animation:none}
+}

@@ -375,6 +375,132 @@ async function main(){
    results.unknown_fragment={run_id:runId,job_id:jobId,text};
   }finally{providerOmitDone=false}
  });
+ await test('预算续写开关默认不勾选且只在续写任务下出现',async()=>{
+  await desktop.page.locator('#aiTask').selectOption('polish');
+  assert.equal(await desktop.page.locator('#aiBudgetRow').isVisible(),false);
+  await desktop.page.locator('#aiTask').selectOption('continue');
+  assert.equal(await desktop.page.locator('#aiBudgetRow').isVisible(),true);
+  assert.equal(await desktop.page.locator('#aiBudgetContinuation').isChecked(),false);
+  assert.match(await desktop.page.locator('#aiBudgetRow').innerText(),/^按字数预算多轮续写（约 3,000 字）$/);
+ });
+ await test('勾选预算后续写先报目标与计划轮数，再报逐轮字数且不虚构轮数上限',async()=>{
+  providerText='多轮预算续写的一小段候选。';providerDelay=1600;
+  await desktop.page.locator('#aiTask').selectOption('continue');
+  await desktop.page.locator('#aiBudgetContinuation').check();
+  await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>/^目标 3,000 字 · 计划 6 轮$/.test(
+   document.querySelector('#aiStatus')?.getAttribute('data-ai-progress')||''),null,{timeout:15000});
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/(排队中|正在生成) · 目标 3,000 字 · 计划 6 轮$/);
+  await desktop.page.waitForFunction(()=>/^第 \d+ 轮 · 已写 [\d,]+ \/ 3,000 字 · 还差约 [\d,]+ 字$/.test(
+   document.querySelector('#aiStatus')?.getAttribute('data-ai-progress')||''),null,{timeout:20000});
+  const progress=await desktop.page.locator('#aiStatus').getAttribute('data-ai-progress');
+  assert.match(progress,/^第 \d+ 轮 · 已写 [\d,]+ \/ 3,000 字 · 还差约 [\d,]+ 字$/);
+  assert.ok(!/\/6 轮/.test(progress),`不应虚构轮数上限：${progress}`);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/(排队中|正在生成) · 第 \d+ 轮 · 已写/);
+ });
+ await test('运行中任务中心同步显示续写轮次与字数',async()=>{
+  await desktop.page.locator('[data-view="tasks"]').click();
+  await desktop.page.waitForFunction(()=>/^续写 · 生成中 · 第 \d+ 轮 [\d,]+\/3,000 字$/.test(
+   document.querySelector('#taskList [data-task-progress]')?.textContent||''),null,{timeout:15000});
+  const text=await desktop.page.locator('#taskList [data-task-progress]').innerText();
+  assert.match(text,/^续写 · 生成中 · 第 \d+ 轮 [\d,]+\/3,000 字$/);
+  await desktop.page.locator('[data-view="editor"]').click();
+  await desktop.page.locator(`[data-chapter="${firstId}"]`).click();
+ });
+ await test('预算续写完成后显示轮数、字数与目标判定',async()=>{
+  await desktop.page.waitForFunction(()=>aiDraft?.complete===true&&Number.isInteger(aiDraft?.budgeted_continuation?.rounds),null,{timeout:40000});
+  await desktop.page.waitForFunction(()=>/^共 \d+ 轮 · [\d,]+ 字 · 目标 3,000（[^）]+）$/.test(
+   document.querySelector('#aiStatus')?.getAttribute('data-ai-progress')||''),null,{timeout:15000});
+  const summary=await desktop.page.locator('#aiStatus').getAttribute('data-ai-progress');
+  assert.match(summary,/^共 \d+ 轮 · [\d,]+ 字 · 目标 3,000（未达目标|达标|容差内|超出容差）$/);
+  assert.match(await desktop.page.locator('#aiStatus').innerText(),/共 \d+ 轮 · [\d,]+ 字 · 目标 3,000/);
+  await rejectCandidate(desktop.page);
+ });
+ await test('未勾选预算时回退旧文案且不带进度标记',async()=>{
+  providerText='普通单次续写候选。';providerDelay=80;
+  await desktop.page.locator('#aiTask').selectOption('continue');
+  if(await desktop.page.locator('#aiBudgetContinuation').isChecked())await desktop.page.locator('#aiBudgetContinuation').uncheck();
+  await desktop.page.locator('#aiGenerate').click();
+  await desktop.page.waitForFunction(()=>aiDraft?.complete===true&&aiDraft?.job_status==='success'&&!aiDraft?.budgeted_continuation,null,{timeout:20000});
+  assert.equal(await desktop.page.locator('#aiStatus').getAttribute('data-ai-progress'),null);
+  const status=await desktop.page.locator('#aiStatus').innerText();
+  assert.match(status,/候选已准备好/);
+  assert.ok(!status.includes('目标 3,000'),`不应出现预算文案：${status}`);
+  await rejectCandidate(desktop.page);
+  providerDelay=600;
+ });
+ await test('续写判定按真实 target_range 字典与容差事实给结论，不把超冲说成达标',async()=>{
+  const verdicts=await desktop.page.evaluate(()=>[
+   continuationVerdict({characters:1414,target_characters:1200,target_range:{minimum:1080,maximum:1320},within_tolerance:false,target_reached:true}),
+   continuationSummary({complete:true,budgeted_continuation:{characters:1414,target_characters:1200,target_range:{minimum:1080,maximum:1320},within_tolerance:false,target_reached:true,rounds:1}}),
+   continuationVerdict({characters:756,target_characters:800,target_range:{minimum:720,maximum:880},within_tolerance:true,target_reached:true}),
+   continuationVerdict({characters:1457,target_characters:1200,target_range:{minimum:1080,maximum:1320},within_tolerance:false,target_reached:true}),
+   continuationVerdict({characters:1457,target_characters:1200,target_range:[1080,1320],within_tolerance:false,target_reached:true}),
+   continuationVerdict({characters:1200,target_characters:1200,target_range:{minimum:1080,maximum:1320},within_tolerance:true,target_reached:true})
+  ]);
+  assert.equal(verdicts[0],'超出容差');
+  assert.match(verdicts[1],/^共 1 轮 · 1,414 字 · 目标 1,200（超出容差）$/);
+  assert.notEqual(verdicts[2],'超出容差');
+  assert.equal(verdicts[2],'容差内');
+  assert.equal(verdicts[3],'超出容差');
+  assert.equal(verdicts[4],'超出容差');
+  assert.equal(verdicts[5],'容差内');
+  await desktop.page.evaluate(()=>displayCandidate({task:'continue',complete:true,decision:'pending',text:'超冲用例的候选正文。',model:'browser-mock',ai_run_id:'t12-overrun-sentinel',budgeted_continuation:{characters:1414,target_characters:1200,target_range:{minimum:1080,maximum:1320},within_tolerance:false,target_reached:true,rounds:1}}));
+  const status=await desktop.page.locator('#aiStatus').innerText();
+  assert.ok(status.includes('目标 1,200（超出容差）'),`超冲必须显示超出容差：${status}`);
+  assert.ok(!status.includes('（达标）'),`不得把超冲说成达标：${status}`);
+  assert.ok(status.includes('字数按非空白字符计'),`缺少字数口径说明：${status}`);
+  assert.equal(await desktop.page.locator('#aiStatus').getAttribute('data-ai-progress'),'共 1 轮 · 1,414 字 · 目标 1,200（超出容差）');
+  await desktop.page.evaluate(()=>displayCandidate(null));
+ });
+ let authorBudgetPage=null;
+ await test('作者工作台的预算复选框只在续写任务下出现且默认不勾选',async()=>{
+  authorBudgetPage=await open({width:1440,height:1000});
+  const page=authorBudgetPage.page;
+  assert.equal(await page.locator('#aiBudgetRow').count(),1);
+  await page.locator('#aiTask').selectOption('polish');
+  assert.equal(await page.locator('#aiBudgetRow').isVisible(),false);
+  await page.locator('#aiTask').selectOption('continue');
+  assert.equal(await page.locator('#aiBudgetRow').isVisible(),true);
+  assert.equal(await page.locator('#aiBudgetContinuation').isChecked(),false);
+  assert.match(await page.locator('#aiBudgetRow').innerText(),/按字数预算多轮续写（约 3,000 字）/);
+ });
+ await test('作者工作台不勾选预算时入队请求体没有 budgeted_continuation 键',async()=>{
+  const page=authorBudgetPage.page,posts=[];
+  page.on('request',request=>{if(request.method()==='POST'&&request.url().includes('/api/ai/queue')&&request.postData())posts.push(JSON.parse(request.postData()))});
+  providerText='作者工作台不勾预算的候选。';providerDelay=80;
+  await page.locator('#aiTask').selectOption('continue');
+  if(await page.locator('#aiBudgetContinuation').isChecked())await page.locator('#aiBudgetContinuation').uncheck();
+  await page.locator('#aiGenerate').click();
+  await page.waitForFunction(()=>aiDraft?.complete===true&&aiDraft?.text==='作者工作台不勾预算的候选。',null,{timeout:25000});
+  assert.equal(posts.length,1,`应只入队一次，实际 ${posts.length} 次`);
+  assert.equal(Object.hasOwn(posts[0],'budgeted_continuation'),false,`不勾选不得携带预算字段：${JSON.stringify(posts[0])}`);
+  assert.equal(await page.locator('#aiStatus').getAttribute('data-ai-progress'),null);
+  await rejectCandidate(page);
+ });
+ await test('作者工作台勾选预算后入队带三字段并显示轮次字数与字数口径',async()=>{
+  const page=authorBudgetPage.page,posts=[];
+  page.on('request',request=>{if(request.method()==='POST'&&request.url().includes('/api/ai/queue')&&request.postData())posts.push(JSON.parse(request.postData()))});
+  providerText='作者工作台勾选预算的候选。';providerDelay=80;
+  await page.locator('#aiTask').selectOption('continue');
+  await page.locator('#aiBudgetContinuation').check();
+  await page.locator('#aiGenerate').click();
+  await page.waitForFunction(()=>document.querySelector('#aiStatus')?.getAttribute('data-ai-progress'),null,{timeout:20000});
+  assert.equal(posts.length,1,`应只入队一次，实际 ${posts.length} 次`);
+  assert.deepEqual(posts[0].budgeted_continuation,{target_characters:3000,max_rounds:6,min_round_gain:50});
+  const progress=await page.locator('#aiStatus').getAttribute('data-ai-progress');
+  assert.match(progress,/^(目标 3,000 字 · 计划 6 轮|第 \d+ 轮 · 已写 [\d,]+ \/ 3,000 字 · 还差约 [\d,]+ 字)$/);
+  assert.ok(!/\/6 轮/.test(progress),`不应虚构轮数上限：${progress}`);
+  await page.waitForFunction(()=>/^共 \d+ 轮 · [\d,]+ 字 · 目标 3,000（未达目标|达标|容差内|超出容差）$/.test(
+   document.querySelector('#aiStatus')?.getAttribute('data-ai-progress')||''),null,{timeout:40000});
+  const status=await page.locator('#aiStatus').innerText();
+  assert.match(status,/共 \d+ 轮 · [\d,]+ 字 · 目标 3,000/);
+  assert.ok(status.includes('字数按非空白字符计'),`缺少字数口径说明：${status}`);
+  await rejectCandidate(page);
+  assert.deepEqual(authorBudgetPage.errors,[]);
+  await authorBudgetPage.context.close();authorBudgetPage=null;
+  providerText='来源甲章的候选。';providerDelay=600;
+ });
  await test('只有本机分片账本时只读恢复未知结果，读取中断可续读且不会再次调用模型',async()=>{
   const {run_id:runId,job_id:jobId,text}=results.unknown_fragment;
   const before=await currentBody(firstId),calls=providerRequests.length,context=await browser.newContext({viewport:{width:1440,height:1000}});

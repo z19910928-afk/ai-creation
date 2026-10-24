@@ -14,6 +14,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from . import moyu_prompt_templates
 from .moyu_provider import (
     ProviderError, call_chat_completion, prepare_chat_request, reasoning_field_counts, usage_accounting,
     transport_options,
@@ -409,6 +410,12 @@ def _save_legacy_settings(conn: sqlite3.Connection, project: str, data: dict[str
     return public_settings(conn, project) if return_public else next_payload
 
 
+def probe_messages() -> list[dict[str, str]]:
+    """连接测试使用的固定消息；正文由提示词工坊的内置模板提供。"""
+    return [{"role": "system", "content": moyu_prompt_templates.render("probe.system")},
+            {"role": "user", "content": moyu_prompt_templates.render("probe.user")}]
+
+
 def probe_settings(conn: sqlite3.Connection, project: str,
                    *, cancel_event=None, configuration_override=None, persist: bool = True,
                    configuration_guard=None) -> dict[str, Any]:
@@ -417,8 +424,7 @@ def probe_settings(conn: sqlite3.Connection, project: str,
               else provider_settings(conn, project))
     if not config["base_url"] or not config["model"]:
         raise ValueError("请先保存模型地址和名称。")
-    messages = [{"role": "system", "content": "连接测试。只回复：连接正常"},
-                {"role": "user", "content": "请回复连接正常。"}]
+    messages = probe_messages()
     run_id = "probe_" + uuid.uuid4().hex
     prepared = prepare_chat_request(config, messages, task="probe", max_tokens=PROBE_MAX_TOKENS,
                                     parameters={"temperature": 0}, request_id=run_id)

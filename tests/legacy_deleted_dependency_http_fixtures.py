@@ -41,6 +41,8 @@ EXPECTED_TABLES = {
     "app_entity_scope", "app_foreshadow_link", "app_manuscript_import",
     "app_model_settings", "app_planning_application", "app_planning_attempt",
     "app_planning_event", "app_planning_workflow", "app_plot_item",
+    # 提示词工坊（2026-10-23）新增的内置/自定义模板表，属于当前 schema。
+    "app_prompt_template",
     "app_project_meta", "app_quota_reservation", "app_reference_document",
     "app_reference_section", "app_search_document", "app_search_fts",
     "app_search_fts_config", "app_search_fts_content", "app_search_fts_data",

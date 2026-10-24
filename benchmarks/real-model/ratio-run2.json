@@ -1,0 +1,166 @@
+{
+  "script": "benchmarks/real-model/compare_round_target.py",
+  "generated_at": "2026-10-24T01:17:01+00:00",
+  "server_url": "http://127.0.0.1:4233",
+  "project_id": "book_1af737eebf4f460291286b02e04cd2d8",
+  "server_mode": "provider",
+  "server_model": "deepseek-v4.1-flash-1017",
+  "provider_environment": {
+    "base_url": "https://api.x5m5x.com/v1",
+    "model": "deepseek-v4.1-flash-1017",
+    "api_key_present": true
+  },
+  "config": {
+    "targets": [
+      1200,
+      2500
+    ],
+    "runs": 1,
+    "ratio": 1.35,
+    "baseline": true,
+    "budget_defaults": {
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12
+    }
+  },
+  "accounting": {
+    "counted": true,
+    "first_pass_rule": "stop_reason == target_reached and within_tolerance",
+    "note": "真实模型数据，全部计入；不做 non-counting 标注。"
+  },
+  "rows": [
+    {
+      "arm": "baseline",
+      "ratio": null,
+      "target_characters": 1200,
+      "job_status": "success",
+      "characters": 1143,
+      "target_range": {
+        "minimum": 1080,
+        "maximum": 1320
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "rounds": 1,
+      "dispatched_calls": 1,
+      "retries": 0,
+      "extended_rounds": 0,
+      "stop_reason": "target_reached",
+      "round_characters": [
+        1143
+      ],
+      "round_metrics": [
+        {
+          "round_index": 1,
+          "characters": 1143,
+          "cumulative_characters": 1143,
+          "retried": false,
+          "finish_reason": "stop"
+        }
+      ],
+      "model": "deepseek-v4-1-flash",
+      "elapsed_s": 16.1,
+      "dup12": 0.0,
+      "text_characters": 1143,
+      "run": 1
+    },
+    {
+      "arm": "ratio",
+      "ratio": 1.35,
+      "target_characters": 1200,
+      "status": "failed",
+      "error": "模型连接中断；不会自动重复可能已计费的请求。",
+      "note": "job 没有 budgeted_continuation 报告：该配置没有走到多轮引擎",
+      "elapsed_s": 12.08,
+      "run": 1
+    },
+    {
+      "arm": "baseline",
+      "ratio": null,
+      "target_characters": 2500,
+      "status": "failed",
+      "error": "模型连接中断；不会自动重复可能已计费的请求。",
+      "note": "job 没有 budgeted_continuation 报告：该配置没有走到多轮引擎",
+      "elapsed_s": 12.08,
+      "run": 1
+    },
+    {
+      "arm": "ratio",
+      "ratio": 1.35,
+      "target_characters": 2500,
+      "job_status": "success",
+      "characters": 2600,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "rounds": 2,
+      "dispatched_calls": 2,
+      "retries": 0,
+      "extended_rounds": 0,
+      "stop_reason": "target_reached",
+      "round_characters": [
+        1704,
+        896
+      ],
+      "round_metrics": [
+        {
+          "round_index": 1,
+          "characters": 1704,
+          "cumulative_characters": 1704,
+          "retried": false,
+          "finish_reason": "length"
+        },
+        {
+          "round_index": 2,
+          "characters": 896,
+          "cumulative_characters": 2600,
+          "retried": false,
+          "finish_reason": "stop"
+        }
+      ],
+      "model": "deepseek-v4.1-flash-1017",
+      "elapsed_s": 38.25,
+      "dup12": 0.000386,
+      "text_characters": 2600,
+      "run": 1
+    }
+  ],
+  "summary": {
+    "baseline": {
+      "runs": 1,
+      "first_pass": 1,
+      "rounds_mean": 1.0,
+      "overshoot": [],
+      "rows": [
+        {
+          "target_characters": 1200,
+          "characters": 1143,
+          "within_tolerance": true,
+          "rounds": 1
+        }
+      ]
+    },
+    "ratio": {
+      "runs": 1,
+      "first_pass": 1,
+      "rounds_mean": 2.0,
+      "overshoot": [],
+      "rows": [
+        {
+          "target_characters": 2500,
+          "characters": 2600,
+          "within_tolerance": true,
+          "rounds": 2
+        }
+      ]
+    }
+  },
+  "blocked": []
+}

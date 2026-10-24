@@ -1,0 +1,220 @@
+{
+  "script": "benchmarks/real-model/compare_round_target.py",
+  "generated_at": "2026-10-24T01:15:43+00:00",
+  "server_url": "http://127.0.0.1:4233",
+  "project_id": "book_309afea7da4042f6a929882dfc9b4e72",
+  "server_mode": "provider",
+  "server_model": "deepseek-v4.1-flash-1017",
+  "provider_environment": {
+    "base_url": "https://api.x5m5x.com/v1",
+    "model": "deepseek-v4.1-flash-1017",
+    "api_key_present": true
+  },
+  "config": {
+    "targets": [
+      1200,
+      2500
+    ],
+    "runs": 1,
+    "ratio": 1.35,
+    "baseline": true,
+    "budget_defaults": {
+      "max_rounds": 6,
+      "min_round_gain": 50,
+      "max_stall_retries": 1,
+      "hard_max_rounds": 12
+    }
+  },
+  "accounting": {
+    "counted": true,
+    "first_pass_rule": "stop_reason == target_reached and within_tolerance",
+    "note": "真实模型数据，全部计入；不做 non-counting 标注。"
+  },
+  "rows": [
+    {
+      "arm": "baseline",
+      "ratio": null,
+      "target_characters": 1200,
+      "job_status": "success",
+      "characters": 1274,
+      "target_range": {
+        "minimum": 1080,
+        "maximum": 1320
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "rounds": 2,
+      "dispatched_calls": 2,
+      "retries": 0,
+      "extended_rounds": 0,
+      "stop_reason": "target_reached",
+      "round_characters": [
+        920,
+        354
+      ],
+      "round_metrics": [
+        {
+          "round_index": 1,
+          "characters": 920,
+          "cumulative_characters": 920,
+          "retried": false,
+          "finish_reason": "stop"
+        },
+        {
+          "round_index": 2,
+          "characters": 354,
+          "cumulative_characters": 1274,
+          "retried": false,
+          "finish_reason": "stop"
+        }
+      ],
+      "model": "deepseek-v4.1-flash-1017",
+      "elapsed_s": 48.24,
+      "dup12": 0.000792,
+      "text_characters": 1274,
+      "run": 1
+    },
+    {
+      "arm": "ratio",
+      "ratio": 1.35,
+      "target_characters": 1200,
+      "job_status": "success",
+      "characters": 1133,
+      "target_range": {
+        "minimum": 1080,
+        "maximum": 1320
+      },
+      "target_reached": true,
+      "within_tolerance": true,
+      "first_pass": true,
+      "rounds": 3,
+      "dispatched_calls": 3,
+      "retries": 1,
+      "extended_rounds": 0,
+      "stop_reason": "target_reached",
+      "round_characters": [
+        0,
+        554,
+        579
+      ],
+      "round_metrics": [
+        {
+          "round_index": 1,
+          "characters": 0,
+          "cumulative_characters": 0,
+          "retried": false,
+          "finish_reason": "length"
+        },
+        {
+          "round_index": 2,
+          "characters": 554,
+          "cumulative_characters": 554,
+          "retried": true,
+          "finish_reason": "stop"
+        },
+        {
+          "round_index": 3,
+          "characters": 579,
+          "cumulative_characters": 1133,
+          "retried": false,
+          "finish_reason": "stop"
+        }
+      ],
+      "model": "deepseek-v4-1-flash",
+      "elapsed_s": 98.51,
+      "dup12": 0.000891,
+      "text_characters": 1133,
+      "run": 1
+    },
+    {
+      "arm": "baseline",
+      "ratio": null,
+      "target_characters": 2500,
+      "job_status": "failed",
+      "characters": 1043,
+      "target_range": null,
+      "target_reached": null,
+      "within_tolerance": null,
+      "first_pass": false,
+      "rounds": 1,
+      "dispatched_calls": 1,
+      "retries": null,
+      "extended_rounds": null,
+      "stop_reason": "failed",
+      "round_characters": [],
+      "round_metrics": [],
+      "model": null,
+      "elapsed_s": 34.18,
+      "dup12": 0.0,
+      "text_characters": 1043,
+      "run": 1
+    },
+    {
+      "arm": "ratio",
+      "ratio": 1.35,
+      "target_characters": 2500,
+      "job_status": "failed",
+      "characters": 80,
+      "target_range": null,
+      "target_reached": null,
+      "within_tolerance": null,
+      "first_pass": false,
+      "rounds": 0,
+      "dispatched_calls": 0,
+      "retries": null,
+      "extended_rounds": null,
+      "stop_reason": "failed",
+      "round_characters": [],
+      "round_metrics": [],
+      "model": "deepseek-v4-1-flash",
+      "elapsed_s": 170.84,
+      "dup12": 0.0,
+      "text_characters": 80,
+      "run": 1
+    }
+  ],
+  "summary": {
+    "baseline": {
+      "runs": 2,
+      "first_pass": 1,
+      "rounds_mean": 1.5,
+      "overshoot": [],
+      "rows": [
+        {
+          "target_characters": 1200,
+          "characters": 1274,
+          "within_tolerance": true,
+          "rounds": 2
+        },
+        {
+          "target_characters": 2500,
+          "characters": 1043,
+          "within_tolerance": null,
+          "rounds": 1
+        }
+      ]
+    },
+    "ratio": {
+      "runs": 2,
+      "first_pass": 1,
+      "rounds_mean": 1.5,
+      "overshoot": [],
+      "rows": [
+        {
+          "target_characters": 1200,
+          "characters": 1133,
+          "within_tolerance": true,
+          "rounds": 3
+        },
+        {
+          "target_characters": 2500,
+          "characters": 80,
+          "within_tolerance": null,
+          "rounds": 0
+        }
+      ]
+    }
+  },
+  "blocked": []
+}

@@ -344,6 +344,53 @@ function candidateOutputIssues(candidate){
 }
 const AI_TASK_NAMES={continue:'续写',polish:'润色',outline:'故事总纲',scene:'场景计划',summary:'回顾与交接',
  check:'连续性检查',brainstorm:'创意方向',chapter_analysis:'章后记忆',semantic_review:'故事审稿'};
+// 多轮续写的授权完全由作者勾选决定：这里只是请求默认值，服务端不默认开启。
+const BUDGETED_CONTINUATION_DEFAULTS=Object.freeze({target_characters:3000,max_rounds:6,min_round_gain:50});
+function formatBudgetCount(value){const number=Number(value);return Number.isFinite(number)?Math.trunc(number).toLocaleString('en-US'):'0'}
+function continuationPlan(candidate){const plan=candidate?.budgeted_continuation;return plan&&typeof plan==='object'&&!Array.isArray(plan)?plan:null}
+// 后端 target_range 发的是 {minimum,maximum} 字典；历史导出里也可能是 [lower,upper] 数组，两种都要能读。
+function continuationRange(plan){
+ const range=plan?.target_range;
+ const lower=Number(Array.isArray(range)?range[0]:range?.minimum);
+ const upper=Number(Array.isArray(range)?range[1]:range?.maximum);
+ return {lower:Number.isFinite(lower)?lower:null,upper:Number.isFinite(upper)?upper:null};
+}
+function continuationVerdict(plan){
+ const characters=Number(plan?.characters),{lower,upper}=continuationRange(plan);
+ if(plan?.within_tolerance===false){
+  if(upper!==null&&Number.isFinite(characters)&&characters>upper)return '超出容差';
+  if(lower!==null&&Number.isFinite(characters)&&characters<lower)return '未达目标';
+  return '未达目标';
+ }
+ if(plan?.within_tolerance===true)return '容差内';
+ // 数据不全（旧报告没有 within_tolerance）：先用区间事实，再退回 target_reached，不把超冲说成达标。
+ if(upper!==null&&Number.isFinite(characters)&&characters>upper)return '超出容差';
+ if(lower!==null&&Number.isFinite(characters)&&characters<lower)return '未达目标';
+ if(plan?.target_reached===true)return '达标';
+ return '未达目标';
+}
+function continuationSummary(candidate){
+ const plan=continuationPlan(candidate);
+ if(!candidate?.complete||!plan||!Number.isInteger(plan.rounds))return '';
+ return `共 ${plan.rounds} 轮 · ${formatBudgetCount(plan.characters)} 字 · 目标 ${formatBudgetCount(plan.target_characters)}（${continuationVerdict(plan)}）`;
+}
+function continuationProgress(candidate){
+ if(!candidate||candidate.complete||terminalCandidateFailure(candidate))return '';
+ const plan=continuationPlan(candidate),progress=candidate.progress&&typeof candidate.progress==='object'?candidate.progress:null;
+ const characters=Number(progress?.characters),target=Number(progress?.target_characters??plan?.target_characters);
+ if(progress&&Number.isFinite(characters)&&characters>0){
+  const round=Number.isInteger(progress.round_index)?progress.round_index:1;
+  const remaining=Number.isFinite(Number(progress.remaining_characters))?Number(progress.remaining_characters):
+   Math.max(0,(Number.isFinite(target)?target:0)-characters);
+  return `第 ${round} 轮 · 已写 ${formatBudgetCount(characters)} / ${formatBudgetCount(target)} 字 · 还差约 ${formatBudgetCount(remaining)} 字`;
+ }
+ if(Number.isFinite(target))return `目标 ${formatBudgetCount(target)} 字 · 计划 ${Number(progress?.max_rounds??plan?.max_rounds)||6} 轮`;
+ return '';
+}
+function syncBudgetContinuationRow(){
+ const row=document.querySelector('#aiBudgetRow');if(!row)return;
+ row.hidden=(document.querySelector('#aiTask')?.value||'continue')!=='continue';
+}
 function isAnalysisCandidate(candidate){return ['chapter_analysis','semantic_review'].includes(candidate?.task)}
 function terminalCandidateFailure(candidate){return ['failed','canceled','unknown','interrupted'].includes(candidate?.job_status)}
 function candidateReadOnly(candidate){
@@ -394,11 +441,14 @@ function displayCandidate(candidate){
  }
  const status=document.querySelector('#aiStatus');
  const outputIssues=analysis?[]:candidateOutputIssues(candidate);
+ // 多轮续写运行中不逐轮落 chunk：只在这里如实报「第几轮 / 已写多少字」，不画进度条。
+ const continuation=candidate?.complete?continuationSummary(candidate):continuationProgress(candidate);
  if(status)status.textContent=candidate?.restored_read_only?'恢复的候选仅供阅读，请按当前稿件生成新候选':decided?`${taskName} · ${candidate.decision==='accepted'?'已采纳':'已拒绝'} · 历史记录`:candidate?.materials_read_only?candidate.material_issue||'使用的资料已变化，候选仅供阅读，请生成新候选':candidate?(candidate.complete?
-  outputIssues.length?`候选需要整理：${outputIssues.join('；')}`:
-   `${analysis?`${taskName}已生成`:'候选已准备好'} · ${candidate.model||'创作助手'}${candidate.truncated?' · 输出不完整，仅可阅读':''}`:
+  outputIssues.length?`候选需要整理：${outputIssues.join('；')}${continuation?` · ${continuation} · 字数按非空白字符计`:''}`:
+   `${analysis?`${taskName}已生成`:'候选已准备好'} · ${candidate.model||'创作助手'}${candidate.truncated?' · 输出不完整，仅可阅读':''}${continuation?` · ${continuation} · 字数按非空白字符计`:''}`:
   incomplete?`${taskName}${taskStatus(candidate.completion_state==='unknown'?'unknown':candidate.job_status)} · ${candidate.error||'任务未完整结束'} · ${candidate.text?'已保留片段，仅供阅读和复制':'没有已保存的片段'}`:
-   candidate.error?`${taskName}未完成：${candidate.error}`:`${analysis?`${taskName}正在生成`:'正在生成'} · 已收到 ${Array.from(candidate.text||'').length} 字`):'';
+   candidate.error?`${taskName}未完成：${candidate.error}`:continuation?`${candidate.job_status==='queued'?'排队中':'正在生成'} · ${continuation}`:`${analysis?`${taskName}正在生成`:'正在生成'} · 已收到 ${Array.from(candidate.text||'').length} 字`):'';
+ if(status){if(continuation)status.setAttribute('data-ai-progress',continuation);else status.removeAttribute('data-ai-progress')}
  const adopt=document.querySelector('#aiAdopt');if(adopt){
   adopt.textContent=analysis?`查看${taskName}`:'比较并采纳';
   adopt.disabled=!candidate?.complete||incomplete||candidate.truncated||outputIssues.length>0||decided||adopting||!!candidate.restored_read_only||!!candidate.materials_read_only&&!analysis;
@@ -497,7 +547,10 @@ function receiveCandidateJob(job){
  const metadata={candidate_revision:job.candidate_revision||result.candidate_revision||draft?.candidate_revision,
   restored_read_only:!!(job.restored_read_only||result.restored_read_only),
   materials_read_only:!!(job.materials_read_only||result.materials_read_only),
-  material_issue:job.material_issue||result.material_issue||'',job_status:job.status,created_at:job.created_at||draft?.created_at};
+  material_issue:job.material_issue||result.material_issue||'',job_status:job.status,created_at:job.created_at||draft?.created_at,
+  // 运行中只有 jobs/queue 投影带 progress；完成后由 result.budgeted_continuation 接管总结行。
+  progress:job.progress&&typeof job.progress==='object'?job.progress:null,
+  budgeted_continuation:job.result?.budgeted_continuation||job.budgeted_continuation||draft?.budgeted_continuation||null};
  if(!draft)draft={task:job.task,text:'',originalText:'',ai_run_id:job.ai_run_id,job_id:job.id,source,complete:false,last_seq:0};
  const incomplete=['canceled','failed','unknown','interrupted'].includes(job.status);
  if(job.result&&!draft.complete&&(job.status==='success'||incomplete)){
@@ -1066,6 +1119,9 @@ async function generateAI(options={}){
   }
   const responseFormat=['outline','scene','summary','check','brainstorm','semantic_review'].includes(task)?'json':'text';
   const request={...snapshot.payload,source,stream:true,response_format:responseFormat};
+  // 只有作者显式勾选、且任务确实是「续写」时才发送预算；其它任务带该字段会被服务端判 400。
+  const budgetToggle=document.querySelector('#aiBudgetContinuation');
+  if(task==='continue'&&budgetToggle?.checked)request.budgeted_continuation={...BUDGETED_CONTINUATION_DEFAULTS};
   if(reviewSource)request.review_source=reviewSource;
   let committedJob=null;
   const data=await durableOperation(`${API_BASE}/ai/queue`,'POST',request,
@@ -1082,7 +1138,8 @@ async function generateAI(options={}){
   if(owner!==requestedProject||!referenceScopeCurrent(snapshot.references))return;
   jobSources.set(job.id,source);
   const draft={task,text:'',originalText:'',model:aiStatus.model,ai_run_id:runId,job_id:job.id,source:job.source||source,
-   complete:false,decision:'pending',last_seq:0};
+   complete:false,decision:'pending',last_seq:0,
+   budgeted_continuation:job.budgeted_continuation||request.budgeted_continuation||null,progress:null};
   candidateStore.set(runId,draft);persistCandidates();
   if(owner===requestedProject&&activeChapter===source.chapter_id){rememberCandidateView(draft);displayCandidate(draft)}
   scheduleQueue(0);
@@ -1246,6 +1303,15 @@ async function retryJob(id){
  try{await durableOperation(`${API_BASE}/ai/jobs/${encodeURIComponent(id)}/retry`,'POST',{mode:'original'});scheduleQueue(0);toast('重试已进入任务列表')}
  catch(error){toast(`重试未开始：${error.message}`)}
 }
+function taskProgressLine(job){
+ if(!['queued','running'].includes(job?.status))return '';
+ const progress=job.progress&&typeof job.progress==='object'?job.progress:null;
+ const target=Number(progress?.target_characters),name=({continue:'续写',polish:'润色',outline:'规划',scene:'场景计划',
+  summary:'章节回顾',check:'连续性检查',chapter_analysis:'章后记忆',semantic_review:'故事审稿'})[job.task]||job.task;
+ if(progress&&Number(progress.characters)>0)return `${name} · ${taskStatus(job.status)} · 第 ${Number.isInteger(progress.round_index)?progress.round_index:1} 轮 ${formatBudgetCount(progress.characters)}/${formatBudgetCount(target)} 字`;
+ if(Number.isFinite(target))return `${name} · ${taskStatus(job.status)} · 目标 ${formatBudgetCount(target)} 字 · 计划 ${Number(progress?.max_rounds)||6} 轮`;
+ return '';
+}
 function renderTaskList(){
  const host=document.querySelector('#taskList');if(!host)return;
  host.innerHTML=queueJobs.filter(isWritingCandidate).map(job=>{
@@ -1255,11 +1321,13 @@ function renderTaskList(){
   const running=['queued','running'].includes(job.status);const error=job.error||draft?.error||'';
   const incomplete=['failed','canceled','unknown','interrupted'].includes(job.status);
   const billing=job.result?.billing_state||draft?.billing_state;
+  const progressLine=taskProgressLine(job);
   const retryable=!planning&&!job.restored_read_only&&!job.materials_read_only&&['failed','canceled'].includes(job.status)&&
    ['usage_reported','not_dispatched'].includes(billing)&&job.result?.completion_state!=='unknown'&&
    draft?.completion_state!=='unknown';
   return `<article class="task-row"><div><strong>${esc(revision?'整理候选':({continue:'续写',polish:'润色',outline:'规划',scene:'场景计划',summary:'章节回顾',check:'连续性检查',chapter_analysis:'章后记忆',semantic_review:'故事审稿'})[job.task]||job.task)}</strong>
   <span class="record-tag">${esc(taskStatus(draft?.completion_state==='unknown'?'unknown':job.status))}</span><p>${esc(planning?'创作规划':c?.title||'来源章节')} · ${esc(job.created_at||'')}</p>
+  ${progressLine?`<p class="task-progress" data-task-progress>${esc(progressLine)}</p>`:''}
   ${revision?`<p>整理原候选 ${revision.parent_characters??'未知'} 字 · ${esc(AI_TASK_NAMES[job.task]||job.task)}</p>`:''}
   ${error?`<p class="check-bad">${esc(error)}</p>`:''}${draft?.text?`<p class="task-preview">${esc(draft.text.slice(0,160))}</p>`:''}</div>
   <div class="task-actions">${running?`<button class="ghost-btn" data-task-cancel="${safeId(job.id)}">停止</button>`:''}
@@ -1573,7 +1641,7 @@ async function deleteStoryItem(kind,id){
 }
 const views={
 dashboard:()=>`<div class="view-head"><div><h2>早上好，继续写下去</h2><p>把脑海里的世界，变成可以回看的故事。</p></div>${state.project.book_status==='complete'?'': '<button class="primary-btn" data-action="newChapter">＋ 新建章节</button>'}</div>${workflowCard()}<div class="stats"><div class="stat-card"><div class="stat-label">当前字数</div><div class="stat-value">${words().toLocaleString()}</div><div class="stat-note">目标 ${Number(state.project.goal||0).toLocaleString()} 字</div></div><div class="stat-card"><div class="stat-label">章节</div><div class="stat-value">${state.chapters.length}</div><div class="stat-note">${state.chapters.filter(c=>c.status==='完成').length} 章已完成</div></div><div class="stat-card"><div class="stat-label">设定卡片</div><div class="stat-value">${state.records.length}</div><div class="stat-note">人物、地点与其他设定</div></div><div class="stat-card"><div class="stat-label">写作进度</div><div class="stat-value">${state.project.goal?Math.min(100,Math.round(words()/state.project.goal*100)):0}%</div><div class="stat-note">按作品目标计算</div></div></div><div class="dashboard-grid"><section class="panel"><div class="panel-title"><h3>最近章节</h3><span>${state.chapters.length} 个章节</span></div><div class="chapter-list">${state.chapters.slice().reverse().slice(0,5).map((c,i)=>`<div class="chapter-row" data-chapter="${safeId(c.id)}"><div class="chapter-number">${state.chapters.indexOf(c)+1}</div><div><strong>${esc(c.title)}</strong><small>${new Date(c.updated).toLocaleDateString('zh-CN')} · ${c.body.replace(/\s/g,'').length} 字</small></div><div class="chapter-status">${esc(c.status)}</div></div>`).join('')}</div></section><section class="panel"><div class="panel-title"><h3>写作提示</h3><span>今天</span></div><div class="record-card" style="box-shadow:none"><span class="record-tag">场景练习</span><h4>让角色做一个无法撤回的选择</h4><p>选择前，写出他最害怕失去什么；选择后，让环境立刻产生一个具体变化。</p></div><div class="record-card" style="box-shadow:none;margin-top:10px"><span class="record-tag">小目标</span><h4>今天写 500 字</h4><p>不修改、不查资料，只把一个场景写完。完成比完美更重要。</p></div></section></div>`,
-editor:()=>{let c=chapter();return `<div class="view-head"><div><h2>章节 + AI 写作</h2><p>先完成，再让助手给候选。所有 AI 内容都先预览，只有你点击采纳才会进入正文。</p></div>${state.project.book_status==='complete'?'':isFreshProject()?'<button class="primary-btn" data-action="startWriting">从故事设定开始</button>':'<button class="primary-btn" data-action="newChapter">＋ 新建章节</button>'}</div><div class="editor-layout"><aside class="chapter-sidebar"><h3>章节目录</h3>${state.chapters.map((x,i)=>`<button class="chapter-select ${x.id===c?.id?'active':''}" data-chapter="${safeId(x.id)}">第 ${i+1} 章 · ${esc(x.title)}<small>${x.body.replace(/\s/g,'').length} 字 · ${esc(x.status)}</small></button>`).join('')}</aside><section class="editor-card">${c?`<div class="editor-toolbar"><button data-format="bold"><b>粗体</b></button><button data-format="quote">引用</button><button data-format="scene">场景分隔</button><button class="ghost-btn" data-action="reviewChapter">审查本章</button><button class="ghost-btn" data-action="revisionHistory">历史版本</button><span class="editor-meta">Markdown · 本地自动保存</span></div><input class="title-input" id="chapterTitle" value="${esc(c.title)}" aria-label="章节标题"><textarea class="chapter-editor" id="chapterBody" aria-label="章节正文">${esc(c.body)}</textarea><div class="chapter-plan"><div class="panel-title"><h3>本章任务卡</h3><span>写前目标 · 写后回顾</span></div><div class="plan-grid"><label>本章目标<input id="chapterGoal" value="${esc(c.chapter_goal)}" placeholder="角色要得到什么，必须付出什么代价？"></label><label>视角<input id="chapterPov" value="${esc(c.pov)}" placeholder="例如：林岚 / 第一人称"></label><label>场景计划<textarea id="chapterScenePlan" placeholder="入口、阻力、转折、出口">${esc(c.scene_plan)}</textarea></label><label>伏笔动作<textarea id="chapterForeshadowing" placeholder="埋下、推进或回收哪些线索？">${esc(c.foreshadowing_op)}</textarea></label><label>章节回顾<textarea id="chapterRecap" placeholder="发生了什么，谁的状态改变？">${esc(c.recap)}</textarea></label><label>下一章任务<textarea id="chapterNextBrief" placeholder="下一章从哪个未解决的问题开始？">${esc(c.next_brief)}</textarea></label><label>章节出口 / 钩子<textarea id="chapterHook" placeholder="读者必须继续读下去的具体问题或变化">${esc(c.hook)}</textarea></label></div></div><div class="editor-footer"><span>⌘ S 保存</span><span id="liveCount">${c.body.replace(/\s/g,'').length} 字</span><select id="chapterStatus"><option ${c.status==='草稿'?'selected':''}>草稿</option><option ${c.status==='进行中'?'selected':''}>进行中</option><option ${c.status==='完成'?'selected':''}>完成</option></select><span class="review-pill">审查：${esc(c.review_status==='passed'?'通过':c.review_status==='needs_revision'?'需修改':'未审查')}</span></div><div class="ai-copilot"><div class="ai-copilot-head"><div><h3>AI 创作助手</h3><p>召回当前章节、任务卡、相邻章节、设定卡和已确认记忆，生成可审阅候选。</p></div><span class="ai-badge" id="aiBadge">${aiStatus.mode==='provider'?'模型已连接':'离线模式'}</span></div><div class="ai-controls"><select id="aiTask" aria-label="AI 任务"><option value="continue">续写当前场景</option><option value="scene">生成场景卡</option><option value="outline">规划故事走向</option><option value="brainstorm">发散三个走向</option><option value="polish">润色当前章节</option><option value="summary">总结当前章节</option><option value="check">连续性检查</option></select><input id="aiInstruction" maxlength="2000" placeholder="补充要求，例如：保持克制、增加动作细节…"><button class="primary-btn" id="aiGenerate">生成候选</button></div><p class="ai-status" id="aiStatus">${aiDraft?'已保留上次候选。':'候选只会在你点击采纳后进入正文。'}</p><textarea class="ai-output" id="aiOutput" aria-label="AI 候选结果" placeholder="生成结果会显示在这里，你可以先编辑再采纳。">${aiDraft?esc(aiDraft.text):''}</textarea><div class="ai-result-meta"><span>当前助手：${esc(aiStatus.model||'离线创作助手')} · 记忆优先人工确认</span><div class="ai-actions"><button class="ghost-btn" id="aiCopy" ${aiDraft?'':'disabled'}>复制候选</button><button class="ghost-btn" id="aiClear">清空</button><button class="primary-btn" id="aiAdopt" ${aiDraft?'':'disabled'}>采纳</button></div></div></div>`:'<div class="empty">还没有章节，点击右上角开始。</div>'}</section></div>`},
+editor:()=>{let c=chapter();return `<div class="view-head"><div><h2>章节 + AI 写作</h2><p>先完成，再让助手给候选。所有 AI 内容都先预览，只有你点击采纳才会进入正文。</p></div>${state.project.book_status==='complete'?'':isFreshProject()?'<button class="primary-btn" data-action="startWriting">从故事设定开始</button>':'<button class="primary-btn" data-action="newChapter">＋ 新建章节</button>'}</div><div class="editor-layout"><aside class="chapter-sidebar"><h3>章节目录</h3>${state.chapters.map((x,i)=>`<button class="chapter-select ${x.id===c?.id?'active':''}" data-chapter="${safeId(x.id)}">第 ${i+1} 章 · ${esc(x.title)}<small>${x.body.replace(/\s/g,'').length} 字 · ${esc(x.status)}</small></button>`).join('')}</aside><section class="editor-card">${c?`<div class="editor-toolbar"><button data-format="bold"><b>粗体</b></button><button data-format="quote">引用</button><button data-format="scene">场景分隔</button><button class="ghost-btn" data-action="reviewChapter">审查本章</button><button class="ghost-btn" data-action="revisionHistory">历史版本</button><span class="editor-meta">Markdown · 本地自动保存</span></div><input class="title-input" id="chapterTitle" value="${esc(c.title)}" aria-label="章节标题"><textarea class="chapter-editor" id="chapterBody" aria-label="章节正文">${esc(c.body)}</textarea><div class="chapter-plan"><div class="panel-title"><h3>本章任务卡</h3><span>写前目标 · 写后回顾</span></div><div class="plan-grid"><label>本章目标<input id="chapterGoal" value="${esc(c.chapter_goal)}" placeholder="角色要得到什么，必须付出什么代价？"></label><label>视角<input id="chapterPov" value="${esc(c.pov)}" placeholder="例如：林岚 / 第一人称"></label><label>场景计划<textarea id="chapterScenePlan" placeholder="入口、阻力、转折、出口">${esc(c.scene_plan)}</textarea></label><label>伏笔动作<textarea id="chapterForeshadowing" placeholder="埋下、推进或回收哪些线索？">${esc(c.foreshadowing_op)}</textarea></label><label>章节回顾<textarea id="chapterRecap" placeholder="发生了什么，谁的状态改变？">${esc(c.recap)}</textarea></label><label>下一章任务<textarea id="chapterNextBrief" placeholder="下一章从哪个未解决的问题开始？">${esc(c.next_brief)}</textarea></label><label>章节出口 / 钩子<textarea id="chapterHook" placeholder="读者必须继续读下去的具体问题或变化">${esc(c.hook)}</textarea></label></div></div><div class="editor-footer"><span>⌘ S 保存</span><span id="liveCount">${c.body.replace(/\s/g,'').length} 字</span><select id="chapterStatus"><option ${c.status==='草稿'?'selected':''}>草稿</option><option ${c.status==='进行中'?'selected':''}>进行中</option><option ${c.status==='完成'?'selected':''}>完成</option></select><span class="review-pill">审查：${esc(c.review_status==='passed'?'通过':c.review_status==='needs_revision'?'需修改':'未审查')}</span></div><div class="ai-copilot"><div class="ai-copilot-head"><div><h3>AI 创作助手</h3><p>召回当前章节、任务卡、相邻章节、设定卡和已确认记忆，生成可审阅候选。</p></div><span class="ai-badge" id="aiBadge">${aiStatus.mode==='provider'?'模型已连接':'离线模式'}</span></div><div class="ai-controls"><select id="aiTask" aria-label="AI 任务"><option value="continue">续写当前场景</option><option value="scene">生成场景卡</option><option value="outline">规划故事走向</option><option value="brainstorm">发散三个走向</option><option value="polish">润色当前章节</option><option value="summary">总结当前章节</option><option value="check">连续性检查</option></select><input id="aiInstruction" maxlength="2000" placeholder="补充要求，例如：保持克制、增加动作细节…"><button class="primary-btn" id="aiGenerate">生成候选</button></div><label class="ai-budget-toggle" id="aiBudgetRow" hidden><input type="checkbox" id="aiBudgetContinuation"> 按字数预算多轮续写（约 3,000 字）</label><p class="ai-status" id="aiStatus">${aiDraft?'已保留上次候选。':'候选只会在你点击采纳后进入正文。'}</p><textarea class="ai-output" id="aiOutput" aria-label="AI 候选结果" placeholder="生成结果会显示在这里，你可以先编辑再采纳。">${aiDraft?esc(aiDraft.text):''}</textarea><div class="ai-result-meta"><span>当前助手：${esc(aiStatus.model||'离线创作助手')} · 记忆优先人工确认</span><div class="ai-actions"><button class="ghost-btn" id="aiCopy" ${aiDraft?'':'disabled'}>复制候选</button><button class="ghost-btn" id="aiClear">清空</button><button class="primary-btn" id="aiAdopt" ${aiDraft?'':'disabled'}>采纳</button></div></div></div>`:'<div class="empty">还没有章节，点击右上角开始。</div>'}</section></div>`},
 memory:()=>`<div class="view-head"><div><h2>记忆中枢</h2><p>把长篇里的关键事实变成可追溯、可确认的记忆，避免写长后遗忘。</p></div><button class="primary-btn" data-action="refreshMemory">↻ 刷新记忆</button></div><div class="panel"><div class="panel-title"><h3>记忆工作流</h3><span>候选 → 确认 → 回忆</span></div><p style="color:var(--muted);font-size:13px;line-height:1.8">在章节中使用标记：<b>【人物】沈砚</b>、<b>【物品】旧钥匙</b>、<b>【伏笔】门后的脚步</b>。系统会把它们捕获为候选记忆；你确认后，未来的连续性检查才会把它当成事实。每条候选都保留原文摘录、章节和字符范围，来源缺失或版本变化时会标记为证据失效。</p></div><div class="record-grid memory-grid" style="margin-top:17px">${state.memory.map(m=>`<article class="record-card memory-card"><span class="record-tag memory-status">${esc(m.type)} · ${esc(memoryStatusLabel(m.status,m.stale))}</span><h4>${esc(m.name)}</h4><p class="memory-evidence"><strong>来源章节：</strong><span class="memory-source-chapter">${esc(memorySourceText(m))}</span><br><strong>来源范围：</strong><span class="memory-source-span">${esc(memorySpanText(m))}</span><br><strong>原文摘录：</strong><span class="memory-source-quote">${esc(memoryQuoteText(m))}</span><br><strong>证据状态：</strong><span class="memory-source-status">${esc(m.source_span_status||'未验证')}</span>${m.stale?'<br><strong class="check-bad">需要重新定位</strong>':''}${m.assertion_id?'<br><strong>正典 assertion：</strong><span class="memory-source-status">'+esc(m.assertion_id)+'</span>':''}<br>${esc(m.note)}</p><div class="memory-actions"><button class="ghost-btn" data-memory-evidence="${safeId(m.id)}">查看证据</button><button class="ghost-btn" data-memory-reanchor="${safeId(m.id)}">重新定位</button><button class="ghost-btn" data-memory="${safeId(m.id)}" ${m.status==='已确认'&&!m.stale?'disabled':''}>${m.status==='已确认'&&!m.stale?'已确认':'确认记忆'}</button><button class="ghost-btn danger-btn" data-memory-reject="${safeId(m.id)}">拒绝</button><button class="ghost-btn" data-memory-review="${safeId(m.id)}">重新审查</button></div></article>`).join('')||'<div class="empty">还没有捕获到候选记忆。去章节里用【人物】、【物品】或【伏笔】标记关键内容。</div>'}</div>`,
 world:()=>`<div class="view-head"><div><h2>设定库</h2><p>把需要连续记住的东西，放在故事外面。</p></div><button class="primary-btn" data-action="newRecord">＋ 新建设定</button></div><div class="record-grid">${state.records.map(r=>`<article class="record-card"><span class="record-tag">${esc(r.type)}</span><h4>${esc(r.name)}</h4>${Array.isArray(r.aliases)&&r.aliases.length?`<small class="record-aliases">别名：${esc(r.aliases.join('、'))}</small>`:''}<p>${esc(r.description)}</p><small class="record-scope">${esc(recordScopeLabel(r))}</small><div class="knowledge-card-actions"><button class="ghost-btn" data-record="${safeId(r.id)}">编辑</button><button class="ghost-btn" data-record-knowledge="${safeId(r.id)}">关联与原文</button></div></article>`).join('')||'<div class="empty">还没有设定卡片。</div>'}</div>`,
 plot:()=>`<div class="view-head"><div><h2>情节与伏笔</h2><p>让每一条线索都有去处，让每一次回收都更有力量。</p></div><button class="primary-btn" data-action="newPlot">＋ 新增伏笔</button></div><div class="plot-board">${[['setup','埋下线索'],['develop','推进中'],['payoff','已回收']].map(([k,t])=>`<section class="plot-col"><h4>${t} <span style="color:var(--muted);font-weight:400">${state.plot[k].length}</span></h4>${state.plot[k].map((x,i)=>`<div class="plot-item">${esc(typeof x==='string'?x:x.text)}<small>点击卡片后可在下一版移动状态</small></div>`).join('')||'<div class="empty" style="padding:18px">暂无记录</div>'}</section>`).join('')}</div>`,
@@ -1635,8 +1703,8 @@ function bind(){
  }
  if(status)status.onchange=()=>{const c=chapter();if(!c)return;c.status=status.value;c.review_status='unreviewed';c.updated=Date.now();save();toast(`章节状态已更新为“${c.status}”`)};
  document.querySelector('#searchInput')?.addEventListener('keydown',e=>e.key==='Enter'&&actions.search());document.querySelectorAll('[data-record]').forEach(b=>b.onclick=()=>editRecord(b.dataset.record));document.querySelectorAll('[data-memory]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memory,'accepted').catch(error=>toast(`记忆确认失败：${error.message}`)));document.querySelectorAll('[data-memory-evidence]').forEach(b=>b.onclick=()=>showMemoryEvidence(b.dataset.memoryEvidence));document.querySelectorAll('[data-memory-reanchor]').forEach(b=>b.onclick=()=>reanchorMemory(b.dataset.memoryReanchor));document.querySelectorAll('[data-memory-reject]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReject,'rejected').catch(error=>toast(`记忆拒绝失败：${error.message}`)));document.querySelectorAll('[data-memory-review]').forEach(b=>b.onclick=()=>decideMemory(b.dataset.memoryReview,'candidate').catch(error=>toast(`记忆更新失败：${error.message}`)));document.querySelector('#aiGenerate')?.addEventListener('click',generateAI);document.querySelector('#aiAdopt')?.addEventListener('click',adoptAI);document.querySelector('#aiCopy')?.addEventListener('click',async()=>{if(!aiDraft)return;try{await navigator.clipboard.writeText(document.querySelector('#aiOutput').value);toast('候选已复制')}catch{document.querySelector('#aiOutput').select()}});document.querySelector('#aiClear')?.addEventListener('click',clearAI);document.querySelector('#aiOutput')?.addEventListener('input',editCandidateText);const generateButton=document.querySelector('#aiGenerate');if(generateButton&&!generateButton.parentElement.querySelector('[data-context-preview]')){const preview=document.createElement('button');preview.className='ghost-btn';preview.dataset.contextPreview='1';preview.textContent='上下文预览';preview.onclick=()=>actions.contextPreview();generateButton.after(preview);const contract=document.createElement('button');contract.className='ghost-btn';contract.textContent='任务契约';contract.onclick=aiPromptContract;preview.after(contract)}
- bindInstructionDraft();
- renderReferenceTools();document.querySelector('#aiTask')?.addEventListener('change',renderReferenceTools);
+ bindInstructionDraft();syncBudgetContinuationRow();
+ renderReferenceTools();document.querySelector('#aiTask')?.addEventListener('change',()=>{renderReferenceTools();syncBudgetContinuationRow()});
 }
 window.addEventListener('beforeunload',()=>cacheInstructionDraft());
 document.addEventListener('click',e=>{const button=e.target.closest?.('[data-chapter]');if(button?.dataset.chapter)storage.set(ACTIVE_KEY,button.dataset.chapter)});

@@ -1,10 +1,10 @@
 {
   "name": "moyu",
   "version": "0.1.3",
-  "private": true,
+  "private": false,
   "description": "墨屿桌面小说创作软件",
   "author": "Moyu",
-  "license": "UNLICENSED",
+  "license": "MIT",
   "main": "desktop/main.cjs",
   "engines": {
     "node": ">=24"

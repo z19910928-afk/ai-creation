@@ -1,0 +1,1164 @@
+{
+  "benchmark": "LongFormBench",
+  "benchmark_version": "1.0",
+  "generated_at": "2026-10-23T08:54:00+00:00",
+  "verdict": "pass",
+  "environment": {
+    "python": "3.11.17",
+    "python_implementation": "CPython",
+    "sqlite": "3.53.1",
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "processor": "arm",
+    "cpu_count": 14,
+    "engine_path": "backend/moyu_consistency.py",
+    "engine_sha256": "7aa174f2e0df7402cd40290a4d7df0603d651ca1a97e9631583f51b7471cf93c"
+  },
+  "config": {
+    "chapters": 40,
+    "seed": 20261023,
+    "repeat": 5,
+    "min_recall": 0.95,
+    "max_analysis_seconds": 5.0,
+    "project_id": "lf_project",
+    "branch_id": "lf_branch",
+    "generation_seconds": 0.1036
+  },
+  "dataset": {
+    "project": "雾隐山河录",
+    "word_counts": {
+      "han_chars": 105182,
+      "total_chars": 122773,
+      "non_whitespace_chars": 119533,
+      "min_han_per_chapter": 2471,
+      "max_han_per_chapter": 2902,
+      "avg_han_per_chapter": 2629.6
+    },
+    "counts": {
+      "entities": 36,
+      "assertions": 292,
+      "character_states": 40,
+      "timeline_events": 50,
+      "relations": 38,
+      "plot_items": 42,
+      "foreshadow_links": 82,
+      "source_spans": 80,
+      "document_revisions": 40
+    },
+    "hard_negatives": [
+      {
+        "id": "hn-fact-01",
+        "description": "同一谓词两个取值但有效期不重叠"
+      },
+      {
+        "id": "hn-fact-02",
+        "description": "重叠有效期但 supersedes 链明确取代"
+      },
+      {
+        "id": "hn-fact-03",
+        "description": "author_plan 与 world_truth 并存"
+      },
+      {
+        "id": "hn-attr-01",
+        "description": "角色状态变化但有效期不重叠"
+      },
+      {
+        "id": "hn-attr-02",
+        "description": "同一属性同一取值重叠记录"
+      },
+      {
+        "id": "hn-relation-01",
+        "description": "重复关系但一条已 inactive"
+      },
+      {
+        "id": "hn-foreshadow-01",
+        "description": "归档伏笔只有回收记录"
+      },
+      {
+        "id": "hn-foreshadow-02",
+        "description": "develop 伏笔未回收但未超过 15 章"
+      },
+      {
+        "id": "hn-evidence-01",
+        "description": "非 source_span 的证据条目"
+      },
+      {
+        "id": "hn-timeline-01",
+        "description": "同一章节两个事件但故事时间相同"
+      }
+    ]
+  },
+  "injection": {
+    "total": 35,
+    "by_category": {
+      "attribute": 4,
+      "evidence": 6,
+      "fact": 6,
+      "foreshadow": 5,
+      "knowledge": 4,
+      "relation": 5,
+      "timeline": 5
+    },
+    "specs": [
+      {
+        "id": "inj-fact-01",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "沈砚舟的身份同时被记为「天枢阁少主」与「玄衣卫密探」"
+      },
+      {
+        "id": "inj-fact-02",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "苏晚棠的所属同时被记为「药王谷」与「听雪楼」"
+      },
+      {
+        "id": "inj-fact-03",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "青霜剑的持有者同时被记为「沈砚舟」与「陆青崖」"
+      },
+      {
+        "id": "inj-fact-04",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "天枢阁的首领同时被记为「韩九霄」与「沈砚舟」"
+      },
+      {
+        "id": "inj-fact-05",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "雾隐山的地域同时被记为「北境」与「南境」"
+      },
+      {
+        "id": "inj-fact-06",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "雪隼的 has_story_fact 被记成另一个名字「白隼」"
+      },
+      {
+        "id": "inj-timeline-01",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "high",
+        "description": "时间线事件挂在已被删除的章节 ch099 上"
+      },
+      {
+        "id": "inj-timeline-02",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "high",
+        "description": "断言 valid_start 晚于 valid_end，事实永远不会生效"
+      },
+      {
+        "id": "inj-timeline-03",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "medium",
+        "description": "同一章节 ch010 出现两个不同故事时间"
+      },
+      {
+        "id": "inj-timeline-04",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "medium",
+        "description": "同一序位 901 挂着两个不同章节的事件"
+      },
+      {
+        "id": "inj-timeline-05",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "high",
+        "description": "第二个时间线事件挂在已删除章节 ch098 上"
+      },
+      {
+        "id": "inj-knowledge-01",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "high",
+        "description": "陆青崖相信自己不知道的事（known_by 只有沈砚舟）"
+      },
+      {
+        "id": "inj-knowledge-02",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "medium",
+        "description": "只对苏晚棠可见的私密记忆被提升为 world_truth"
+      },
+      {
+        "id": "inj-knowledge-03",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "low",
+        "description": "非人物实体「青霜剑」被标记为持有信念"
+      },
+      {
+        "id": "inj-knowledge-04",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "high",
+        "description": "温如玉相信自己不知道的事（known_by 只有韩九霄）"
+      },
+      {
+        "id": "inj-attribute-01",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "沈砚舟的武力在重叠时间内同时为「二流」与「绝顶」"
+      },
+      {
+        "id": "inj-attribute-02",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "苏晚棠的年龄在重叠时间内同时为 22 与 25"
+      },
+      {
+        "id": "inj-attribute-03",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "陆青崖的伤势在重叠时间内同时为「右臂刀伤未愈」与「无」"
+      },
+      {
+        "id": "inj-attribute-04",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "阿箬的伤势在重叠时间内同时为「无」与「重伤」"
+      },
+      {
+        "id": "inj-relation-01",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "high",
+        "description": "关系终点指向不存在的实体 ent_missing"
+      },
+      {
+        "id": "inj-relation-02",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "high",
+        "description": "关系终点指向已归档实体「断刃」"
+      },
+      {
+        "id": "inj-relation-03",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "medium",
+        "description": "裴照雪与自己建立 active 关系「心魔」"
+      },
+      {
+        "id": "inj-relation-04",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "low",
+        "description": "陆青崖→裴照雪的「同门」存在两条 active 记录"
+      },
+      {
+        "id": "inj-relation-05",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "high",
+        "description": "关系起点指向已归档实体「断刃」"
+      },
+      {
+        "id": "inj-foreshadow-01",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "high",
+        "description": "伏笔只有 payoff、没有 plant"
+      },
+      {
+        "id": "inj-foreshadow-02",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "medium",
+        "description": "伏笔 stage=payoff 但没有任何 payoff 链接"
+      },
+      {
+        "id": "inj-foreshadow-03",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "medium",
+        "description": "伏笔在第 5 章埋下，写到第 40 章仍未回收"
+      },
+      {
+        "id": "inj-foreshadow-04",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "low",
+        "description": "setup 伏笔没有任何章节链接"
+      },
+      {
+        "id": "inj-foreshadow-05",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "high",
+        "description": "第二条只有 payoff、没有 plant 的伏笔"
+      },
+      {
+        "id": "inj-evidence-01",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "blocker",
+        "description": "canon 断言 evidence 为空"
+      },
+      {
+        "id": "inj-evidence-02",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "blocker",
+        "description": "第二条 canon 断言 evidence 为空"
+      },
+      {
+        "id": "inj-evidence-03",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "blocker",
+        "description": "canon 断言缺少 reviewed_by / reviewed_at"
+      },
+      {
+        "id": "inj-evidence-04",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "high",
+        "description": "断言引用的 source_span 不存在"
+      },
+      {
+        "id": "inj-evidence-05",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "high",
+        "description": "断言引用的 source_span 状态为 stale"
+      },
+      {
+        "id": "inj-evidence-06",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "medium",
+        "description": "断言引用的 source_span 属于旧 revision"
+      }
+    ]
+  },
+  "clean_baseline": {
+    "score": 100.0,
+    "grade": "A",
+    "findings": 0,
+    "total_examined": 1047,
+    "hard_negatives_total": 10,
+    "hard_negatives_triggered": 0,
+    "hard_negatives": [
+      {
+        "id": "hn-fact-01",
+        "description": "同一谓词两个取值但有效期不重叠",
+        "triggered": false
+      },
+      {
+        "id": "hn-fact-02",
+        "description": "重叠有效期但 supersedes 链明确取代",
+        "triggered": false
+      },
+      {
+        "id": "hn-fact-03",
+        "description": "author_plan 与 world_truth 并存",
+        "triggered": false
+      },
+      {
+        "id": "hn-attr-01",
+        "description": "角色状态变化但有效期不重叠",
+        "triggered": false
+      },
+      {
+        "id": "hn-attr-02",
+        "description": "同一属性同一取值重叠记录",
+        "triggered": false
+      },
+      {
+        "id": "hn-relation-01",
+        "description": "重复关系但一条已 inactive",
+        "triggered": false
+      },
+      {
+        "id": "hn-foreshadow-01",
+        "description": "归档伏笔只有回收记录",
+        "triggered": false
+      },
+      {
+        "id": "hn-foreshadow-02",
+        "description": "develop 伏笔未回收但未超过 15 章",
+        "triggered": false
+      },
+      {
+        "id": "hn-evidence-01",
+        "description": "非 source_span 的证据条目",
+        "triggered": false
+      },
+      {
+        "id": "hn-timeline-01",
+        "description": "同一章节两个事件但故事时间相同",
+        "triggered": false
+      }
+    ],
+    "timing": {
+      "runs_s": [
+        0.009389,
+        0.005878,
+        0.005807,
+        0.005366,
+        0.006177
+      ],
+      "repeat": 5,
+      "first_run_s": 0.009389,
+      "median_s": 0.005878,
+      "min_s": 0.005366,
+      "max_s": 0.009389,
+      "mean_s": 0.006523
+    }
+  },
+  "analysis": {
+    "score": 0.0,
+    "grade": "D",
+    "findings": 35,
+    "counts_by_severity": {
+      "blocker": 3,
+      "high": 22,
+      "medium": 7,
+      "low": 3
+    },
+    "categories": {
+      "fact": {
+        "label": "事实矛盾",
+        "count": 6,
+        "blocker": 0,
+        "high": 6,
+        "medium": 0,
+        "low": 0
+      },
+      "timeline": {
+        "label": "时间线矛盾",
+        "count": 5,
+        "blocker": 0,
+        "high": 3,
+        "medium": 2,
+        "low": 0
+      },
+      "knowledge": {
+        "label": "知识越界",
+        "count": 4,
+        "blocker": 0,
+        "high": 2,
+        "medium": 1,
+        "low": 1
+      },
+      "attribute": {
+        "label": "属性漂移",
+        "count": 4,
+        "blocker": 0,
+        "high": 4,
+        "medium": 0,
+        "low": 0
+      },
+      "relation": {
+        "label": "关系/称谓矛盾",
+        "count": 5,
+        "blocker": 0,
+        "high": 3,
+        "medium": 1,
+        "low": 1
+      },
+      "foreshadow": {
+        "label": "伏笔断线",
+        "count": 5,
+        "blocker": 0,
+        "high": 2,
+        "medium": 2,
+        "low": 1
+      },
+      "evidence": {
+        "label": "来源失效",
+        "count": 6,
+        "blocker": 3,
+        "high": 2,
+        "medium": 1,
+        "low": 0
+      }
+    },
+    "examined": {
+      "fact": 309,
+      "timeline": 57,
+      "knowledge": 309,
+      "attribute": 44,
+      "relation": 43,
+      "foreshadow": 47,
+      "evidence": 309
+    },
+    "total_examined": 1118,
+    "engine": "moyu-consistency",
+    "engine_version": 1,
+    "timing": {
+      "runs_s": [
+        0.007377,
+        0.00666,
+        0.006196,
+        0.007131,
+        0.006717
+      ],
+      "repeat": 5,
+      "first_run_s": 0.007377,
+      "median_s": 0.006717,
+      "min_s": 0.006196,
+      "max_s": 0.007377,
+      "mean_s": 0.006816
+    }
+  },
+  "detection": {
+    "total_injected": 35,
+    "total_detected": 35,
+    "recall": 1.0,
+    "precision": 1.0,
+    "f1": 1.0,
+    "matched_findings": 35,
+    "false_positives": 0,
+    "per_category": {
+      "attribute": {
+        "label": "属性漂移",
+        "injected": 4,
+        "detected": 4,
+        "missed": 0,
+        "false_positives": 0,
+        "recall": 1.0,
+        "injected_ids": [
+          "inj-attribute-01",
+          "inj-attribute-02",
+          "inj-attribute-03",
+          "inj-attribute-04"
+        ],
+        "detected_ids": [
+          "inj-attribute-01",
+          "inj-attribute-02",
+          "inj-attribute-03",
+          "inj-attribute-04"
+        ],
+        "missed_ids": [],
+        "false_positive_finding_ids": []
+      },
+      "evidence": {
+        "label": "来源失效",
+        "injected": 6,
+        "detected": 6,
+        "missed": 0,
+        "false_positives": 0,
+        "recall": 1.0,
+        "injected_ids": [
+          "inj-evidence-01",
+          "inj-evidence-02",
+          "inj-evidence-03",
+          "inj-evidence-04",
+          "inj-evidence-05",
+          "inj-evidence-06"
+        ],
+        "detected_ids": [
+          "inj-evidence-01",
+          "inj-evidence-02",
+          "inj-evidence-03",
+          "inj-evidence-04",
+          "inj-evidence-05",
+          "inj-evidence-06"
+        ],
+        "missed_ids": [],
+        "false_positive_finding_ids": []
+      },
+      "fact": {
+        "label": "事实矛盾",
+        "injected": 6,
+        "detected": 6,
+        "missed": 0,
+        "false_positives": 0,
+        "recall": 1.0,
+        "injected_ids": [
+          "inj-fact-01",
+          "inj-fact-02",
+          "inj-fact-03",
+          "inj-fact-04",
+          "inj-fact-05",
+          "inj-fact-06"
+        ],
+        "detected_ids": [
+          "inj-fact-01",
+          "inj-fact-02",
+          "inj-fact-03",
+          "inj-fact-04",
+          "inj-fact-05",
+          "inj-fact-06"
+        ],
+        "missed_ids": [],
+        "false_positive_finding_ids": []
+      },
+      "foreshadow": {
+        "label": "伏笔断线",
+        "injected": 5,
+        "detected": 5,
+        "missed": 0,
+        "false_positives": 0,
+        "recall": 1.0,
+        "injected_ids": [
+          "inj-foreshadow-01",
+          "inj-foreshadow-02",
+          "inj-foreshadow-03",
+          "inj-foreshadow-04",
+          "inj-foreshadow-05"
+        ],
+        "detected_ids": [
+          "inj-foreshadow-01",
+          "inj-foreshadow-02",
+          "inj-foreshadow-03",
+          "inj-foreshadow-04",
+          "inj-foreshadow-05"
+        ],
+        "missed_ids": [],
+        "false_positive_finding_ids": []
+      },
+      "knowledge": {
+        "label": "知识越界",
+        "injected": 4,
+        "detected": 4,
+        "missed": 0,
+        "false_positives": 0,
+        "recall": 1.0,
+        "injected_ids": [
+          "inj-knowledge-01",
+          "inj-knowledge-02",
+          "inj-knowledge-03",
+          "inj-knowledge-04"
+        ],
+        "detected_ids": [
+          "inj-knowledge-01",
+          "inj-knowledge-02",
+          "inj-knowledge-03",
+          "inj-knowledge-04"
+        ],
+        "missed_ids": [],
+        "false_positive_finding_ids": []
+      },
+      "relation": {
+        "label": "关系/称谓矛盾",
+        "injected": 5,
+        "detected": 5,
+        "missed": 0,
+        "false_positives": 0,
+        "recall": 1.0,
+        "injected_ids": [
+          "inj-relation-01",
+          "inj-relation-02",
+          "inj-relation-03",
+          "inj-relation-04",
+          "inj-relation-05"
+        ],
+        "detected_ids": [
+          "inj-relation-01",
+          "inj-relation-02",
+          "inj-relation-03",
+          "inj-relation-04",
+          "inj-relation-05"
+        ],
+        "missed_ids": [],
+        "false_positive_finding_ids": []
+      },
+      "timeline": {
+        "label": "时间线矛盾",
+        "injected": 5,
+        "detected": 5,
+        "missed": 0,
+        "false_positives": 0,
+        "recall": 1.0,
+        "injected_ids": [
+          "inj-timeline-01",
+          "inj-timeline-02",
+          "inj-timeline-03",
+          "inj-timeline-04",
+          "inj-timeline-05"
+        ],
+        "detected_ids": [
+          "inj-timeline-01",
+          "inj-timeline-02",
+          "inj-timeline-03",
+          "inj-timeline-04",
+          "inj-timeline-05"
+        ],
+        "missed_ids": [],
+        "false_positive_finding_ids": []
+      }
+    },
+    "missed": [],
+    "false_positive_findings": [],
+    "ground_truth": [
+      {
+        "id": "inj-fact-01",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "沈砚舟的身份同时被记为「天枢阁少主」与「玄衣卫密探」",
+        "matched_findings": [
+          "cx_2b354e05f344e75e"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-fact-02",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "苏晚棠的所属同时被记为「药王谷」与「听雪楼」",
+        "matched_findings": [
+          "cx_452a33fde47fb4f9"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-fact-03",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "青霜剑的持有者同时被记为「沈砚舟」与「陆青崖」",
+        "matched_findings": [
+          "cx_dd6494447903e5a4"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-fact-04",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "天枢阁的首领同时被记为「韩九霄」与「沈砚舟」",
+        "matched_findings": [
+          "cx_3e3096f1f145fb3c"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-fact-05",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "雾隐山的地域同时被记为「北境」与「南境」",
+        "matched_findings": [
+          "cx_b91721c8514509e2"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-fact-06",
+        "category": "fact",
+        "category_label": "事实矛盾",
+        "severity": "high",
+        "description": "雪隼的 has_story_fact 被记成另一个名字「白隼」",
+        "matched_findings": [
+          "cx_59cc957c4ccf8bd9"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-timeline-01",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "high",
+        "description": "时间线事件挂在已被删除的章节 ch099 上",
+        "matched_findings": [
+          "cx_eddc97feafb96842"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-timeline-02",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "high",
+        "description": "断言 valid_start 晚于 valid_end，事实永远不会生效",
+        "matched_findings": [
+          "cx_e3eb14902c12a973"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-timeline-03",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "medium",
+        "description": "同一章节 ch010 出现两个不同故事时间",
+        "matched_findings": [
+          "cx_4008692c2edf9767"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-timeline-04",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "medium",
+        "description": "同一序位 901 挂着两个不同章节的事件",
+        "matched_findings": [
+          "cx_f488204993f91dbc"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-timeline-05",
+        "category": "timeline",
+        "category_label": "时间线矛盾",
+        "severity": "high",
+        "description": "第二个时间线事件挂在已删除章节 ch098 上",
+        "matched_findings": [
+          "cx_db640fd6223d1471"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-knowledge-01",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "high",
+        "description": "陆青崖相信自己不知道的事（known_by 只有沈砚舟）",
+        "matched_findings": [
+          "cx_6844fd25bdd2d2ea"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-knowledge-02",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "medium",
+        "description": "只对苏晚棠可见的私密记忆被提升为 world_truth",
+        "matched_findings": [
+          "cx_6d2475302ddb4144"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-knowledge-03",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "low",
+        "description": "非人物实体「青霜剑」被标记为持有信念",
+        "matched_findings": [
+          "cx_dae3f57ec1efadb8"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-knowledge-04",
+        "category": "knowledge",
+        "category_label": "知识越界",
+        "severity": "high",
+        "description": "温如玉相信自己不知道的事（known_by 只有韩九霄）",
+        "matched_findings": [
+          "cx_4a17523de5214f6a"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-attribute-01",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "沈砚舟的武力在重叠时间内同时为「二流」与「绝顶」",
+        "matched_findings": [
+          "cx_30d5d6f01200752b"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-attribute-02",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "苏晚棠的年龄在重叠时间内同时为 22 与 25",
+        "matched_findings": [
+          "cx_0d28dade3a4ab9fa"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-attribute-03",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "陆青崖的伤势在重叠时间内同时为「右臂刀伤未愈」与「无」",
+        "matched_findings": [
+          "cx_e6ce7dd1a91aaf7f"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-attribute-04",
+        "category": "attribute",
+        "category_label": "属性漂移",
+        "severity": "high",
+        "description": "阿箬的伤势在重叠时间内同时为「无」与「重伤」",
+        "matched_findings": [
+          "cx_f357e1f2dc45b721"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-relation-01",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "high",
+        "description": "关系终点指向不存在的实体 ent_missing",
+        "matched_findings": [
+          "cx_92fee19ed7f51416"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-relation-02",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "high",
+        "description": "关系终点指向已归档实体「断刃」",
+        "matched_findings": [
+          "cx_6874ab736a929a8e"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-relation-03",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "medium",
+        "description": "裴照雪与自己建立 active 关系「心魔」",
+        "matched_findings": [
+          "cx_7b352e5be10159b3"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-relation-04",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "low",
+        "description": "陆青崖→裴照雪的「同门」存在两条 active 记录",
+        "matched_findings": [
+          "cx_6ffb8f395dcc0f62"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-relation-05",
+        "category": "relation",
+        "category_label": "关系/称谓矛盾",
+        "severity": "high",
+        "description": "关系起点指向已归档实体「断刃」",
+        "matched_findings": [
+          "cx_88f470e0c91e7949"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-foreshadow-01",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "high",
+        "description": "伏笔只有 payoff、没有 plant",
+        "matched_findings": [
+          "cx_2d7141347a538f8e"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-foreshadow-02",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "medium",
+        "description": "伏笔 stage=payoff 但没有任何 payoff 链接",
+        "matched_findings": [
+          "cx_51958a58a0b1e4c6"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-foreshadow-03",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "medium",
+        "description": "伏笔在第 5 章埋下，写到第 40 章仍未回收",
+        "matched_findings": [
+          "cx_1272f23d82334918"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-foreshadow-04",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "low",
+        "description": "setup 伏笔没有任何章节链接",
+        "matched_findings": [
+          "cx_3f578ad8ddecf78e"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-foreshadow-05",
+        "category": "foreshadow",
+        "category_label": "伏笔断线",
+        "severity": "high",
+        "description": "第二条只有 payoff、没有 plant 的伏笔",
+        "matched_findings": [
+          "cx_c8b62b566170954f"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-evidence-01",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "blocker",
+        "description": "canon 断言 evidence 为空",
+        "matched_findings": [
+          "cx_3620431d9f53c416"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-evidence-02",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "blocker",
+        "description": "第二条 canon 断言 evidence 为空",
+        "matched_findings": [
+          "cx_f65ebbc8fb85956a"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-evidence-03",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "blocker",
+        "description": "canon 断言缺少 reviewed_by / reviewed_at",
+        "matched_findings": [
+          "cx_261f75dc53bc32ec"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-evidence-04",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "high",
+        "description": "断言引用的 source_span 不存在",
+        "matched_findings": [
+          "cx_a04352c15e51cecf"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-evidence-05",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "high",
+        "description": "断言引用的 source_span 状态为 stale",
+        "matched_findings": [
+          "cx_85cd3c93c4fab867"
+        ],
+        "detected": true
+      },
+      {
+        "id": "inj-evidence-06",
+        "category": "evidence",
+        "category_label": "来源失效",
+        "severity": "medium",
+        "description": "断言引用的 source_span 属于旧 revision",
+        "matched_findings": [
+          "cx_eab802c6506de013"
+        ],
+        "detected": true
+      }
+    ]
+  },
+  "scale_metrics": {
+    "han_chars": 105182,
+    "total_chars": 122773,
+    "non_whitespace_chars": 119533,
+    "chapters": 40,
+    "entities": 36,
+    "assertions": 292,
+    "character_states": 40,
+    "timeline_events": 50,
+    "relations": 38,
+    "plot_items": 42,
+    "foreshadow_links": 82,
+    "source_spans": 80,
+    "document_revisions": 40,
+    "injected_contradictions": 35,
+    "examined_items": 1118,
+    "seconds_per_100k_han_chars": 0.006386,
+    "examined_items_per_second": 166443.4,
+    "findings_per_10k_han_chars": 3.328,
+    "han_chars_per_entity": 2921.7,
+    "assertions_per_entity": 8.11,
+    "db_size_bytes": 876544,
+    "db_size_mb": 0.836
+  },
+  "memory": {
+    "peak_rss_mb": 29.84,
+    "note": "单进程峰值常驻内存，含生成阶段；分析阶段本身不额外分配大结构。"
+  },
+  "acceptance": [
+    {
+      "criterion": "合成项目正文 ≥ 100,000 汉字（实测 105,182）",
+      "target": ">= 100000",
+      "actual": 105182,
+      "passed": true
+    },
+    {
+      "criterion": "注入已知矛盾 ≥ 30 条（实测 35）",
+      "target": ">= 30",
+      "actual": 35,
+      "passed": true
+    },
+    {
+      "criterion": "七类矛盾全部覆盖",
+      "target": "7 categories",
+      "actual": [
+        "attribute",
+        "evidence",
+        "fact",
+        "foreshadow",
+        "knowledge",
+        "relation",
+        "timeline"
+      ],
+      "passed": true
+    },
+    {
+      "criterion": "检出率 ≥ 95%（实测 100.0%）",
+      "target": ">= 0.95",
+      "actual": 1.0,
+      "passed": true
+    },
+    {
+      "criterion": "干净项目零误报",
+      "target": "0 findings",
+      "actual": 0,
+      "passed": true
+    },
+    {
+      "criterion": "10 万字规模单次分析 < 5s（实测 0.007s 中位数）",
+      "target": "< 5.0",
+      "actual": 0.006717,
+      "passed": true
+    }
+  ],
+  "warnings": []
+}

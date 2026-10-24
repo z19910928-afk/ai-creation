@@ -1,0 +1,79 @@
+[
+  {
+    "target": 800,
+    "range": {
+      "minimum": 720,
+      "maximum": 880
+    },
+    "stop_reason": "target_reached",
+    "rounds": 1,
+    "characters": 756,
+    "within_tolerance": true,
+    "elapsed_s": 20.1,
+    "dup12": 0,
+    "round_metrics": [
+      {
+        "round_index": 1,
+        "characters": 756,
+        "cumulative_characters": 756,
+        "retried": false,
+        "completion_state": "complete",
+        "finish_reason": "stop"
+      }
+    ]
+  },
+  {
+    "target": 1200,
+    "range": {
+      "minimum": 1080,
+      "maximum": 1320
+    },
+    "stop_reason": "target_reached",
+    "rounds": 1,
+    "characters": 1414,
+    "within_tolerance": false,
+    "elapsed_s": 20.1,
+    "dup12": 0,
+    "round_metrics": [
+      {
+        "round_index": 1,
+        "characters": 1414,
+        "cumulative_characters": 1414,
+        "retried": false,
+        "completion_state": "complete",
+        "finish_reason": "stop"
+      }
+    ]
+  },
+  {
+    "target": 2000,
+    "range": {
+      "minimum": 1800,
+      "maximum": 2200
+    },
+    "stop_reason": "target_reached",
+    "rounds": 2,
+    "characters": 2170,
+    "within_tolerance": true,
+    "elapsed_s": 32.1,
+    "dup12": 0,
+    "round_metrics": [
+      {
+        "round_index": 1,
+        "characters": 1691,
+        "cumulative_characters": 1691,
+        "retried": false,
+        "completion_state": "complete",
+        "finish_reason": "stop"
+      },
+      {
+        "round_index": 2,
+        "characters": 479,
+        "cumulative_characters": 2170,
+        "retried": false,
+        "completion_state": "complete",
+        "finish_reason": "stop"
+      }
+    ]
+  }
+]

@@ -18,6 +18,7 @@ from datetime import datetime, timezone
 from functools import wraps
 from typing import Any, Callable
 
+from . import moyu_prompt_templates
 from .moyu_provider import validate_json
 from .moyu_workspace import current_scope, validate_blueprint, validate_id
 
@@ -592,11 +593,8 @@ def _source_payload(row: Mapping[str, Any], stage: str, blueprint: Mapping[str, 
         "schema": task_schema, "input": _stage_input(blueprint, stage),
         "blueprint": copy.deepcopy(dict(blueprint)), "max_tokens": max_tokens,
         "context": context, "response_format": "json",
-        "instruction": (
-            f"只规划本阶段：{stage_labels[stage]}。沿用作者题材、文风和读者承诺；"
-            "保持所有卷、章、场景ID和数量，禁止改写先前已确认的阶段，禁止写正文。"
-            "只返回符合本阶段结构的JSON对象。"
-        ),
+        "instruction": moyu_prompt_templates.render(
+            "planning.stage", stage_label=stage_labels[stage]),
     }
 
 

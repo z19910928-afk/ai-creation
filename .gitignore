@@ -19,3 +19,9 @@ blind-key-private.json
 .audit-cache/
 build/
 dist/
+
+# Agent team coordination state (local only)
+.agent-teams/
+
+# LongFormBench scratch databases
+benchmarks/longform/.work/

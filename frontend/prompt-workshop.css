@@ -1,0 +1,85 @@
+/* 墨屿提示词工坊面板 —— 原生 CSS，无构建。
+   与 styles.css 的最终主题变量（--card/--line/--ink/--muted/--accent）保持一致。 */
+
+.prompt-workshop{display:grid;gap:14px;min-width:0}
+.prompt-workshop code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10px;background:#f2f5f6;border-radius:3px;padding:1px 4px;overflow-wrap:anywhere}
+
+/* 顶部工具条 */
+.prompt-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:9px;min-width:0}
+.prompt-search{flex:1 1 220px;min-width:0;height:36px;padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font:inherit;font-size:13px}
+.prompt-search:focus{outline:2px solid var(--accent);outline-offset:1px}
+.prompt-count{font-size:11px;line-height:1.6;color:var(--muted);white-space:nowrap}
+.prompt-toolbar-actions{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+
+/* 左右两栏：列表 + 编辑 */
+.prompt-layout{display:grid;grid-template-columns:minmax(220px,300px) minmax(0,1fr);gap:14px;align-items:start;min-width:0}
+.prompt-list{display:grid;gap:10px;padding:10px;background:var(--card);border:1px solid var(--line);border-radius:9px;max-height:min(72vh,720px);overflow:auto;min-width:0}
+.prompt-group{display:grid;gap:3px;min-width:0}
+.prompt-group-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 6px 3px;color:var(--muted);font-size:10px;letter-spacing:.06em}
+.prompt-group-head small{font-size:10px;font-variant-numeric:tabular-nums}
+.prompt-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;width:100%;min-height:0;height:auto;padding:8px 9px;border:1px solid transparent;border-radius:6px;background:none;color:var(--ink);text-align:left;font:inherit;cursor:pointer}
+.prompt-row:hover{background:#f7f9f9;border-color:var(--line)}
+.prompt-row.is-active{background:var(--accent-soft);border-color:var(--accent)}
+.prompt-row:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.prompt-row-main{display:grid;gap:3px;min-width:0;flex:1 1 auto}
+.prompt-row-name{font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.prompt-row-action{justify-self:start;font-size:10px;color:var(--muted);background:none;padding:0}
+.prompt-row-side{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;flex:0 0 auto;padding-top:1px}
+.prompt-row-note{font-size:10px;line-height:1.6;color:#8a6420;overflow-wrap:anywhere}
+
+/* 徽章 */
+.prompt-badge{display:inline-flex;align-items:center;padding:2px 7px;border-radius:999px;font-size:10px;font-weight:600;line-height:1.6;white-space:nowrap}
+.prompt-badge--builtin{background:#eceff1;color:#5d6b72}
+.prompt-badge--custom{background:var(--accent-soft);color:var(--accent)}
+.prompt-badge--override{background:#fdf0d8;color:#8a6420}
+.prompt-badge--effective{background:#dcefe2;color:#1c6b3d;border:1px solid #b9dcc5}
+.prompt-badge--effective::before{content:"";width:6px;height:6px;flex:0 0 auto;margin-right:4px;border-radius:50%;background:#2f8f57}
+
+/* 编辑区 */
+.prompt-editor{display:grid;gap:0;min-width:0;background:var(--card);border:1px solid var(--line);border-radius:9px}
+.prompt-editor-inner{display:grid;gap:14px;padding:18px 20px;min-width:0}
+.prompt-editor-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.prompt-editor-head h3{margin:0;font-size:16px;font-weight:600;line-height:1.5;overflow-wrap:anywhere}
+.prompt-subtitle{margin:4px 0 0;font-size:11px;line-height:1.7;color:var(--muted);overflow-wrap:anywhere}
+.prompt-effective{margin:6px 0 0;font-size:11px;line-height:1.7;color:#8a6420;overflow-wrap:anywhere}
+.prompt-effective--active{color:#1c6b3d}
+.prompt-field{display:grid;gap:6px;min-width:0}
+.prompt-field>label{color:var(--muted);font-size:12px}
+.prompt-field input,.prompt-field textarea{width:100%;min-width:0;padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font:inherit;font-size:13px;line-height:1.7}
+.prompt-field input{height:40px}
+.prompt-field textarea{resize:vertical;min-height:220px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.75;white-space:pre-wrap;overflow-wrap:anywhere}
+.prompt-field input:focus,.prompt-field textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
+.prompt-field input[readonly],.prompt-field textarea[readonly]{background:#f7f9f9;color:#39474d;cursor:default}
+.prompt-hint{margin:0;font-size:11px;line-height:1.7;color:var(--muted);overflow-wrap:anywhere}
+.prompt-protect{margin:0;padding:9px 11px;border:1px solid #e4d3b3;border-radius:6px;background:#fffaf0;font-size:12px;line-height:1.75;color:#7a6224;overflow-wrap:anywhere}
+
+/* 底部操作 */
+.prompt-editor-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--line)}
+.prompt-dirty{font-size:11px;line-height:1.7;color:#8a6420;min-height:1em}
+.prompt-actions{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+
+/* 加载 / 错误 / 空态 */
+.prompt-loading{display:flex;align-items:center;justify-content:center;gap:9px;padding:22px 16px;font-size:12px;color:var(--muted);text-align:center}
+.prompt-spinner{width:14px;height:14px;flex:0 0 auto;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:prompt-spin .8s linear infinite}
+.prompt-state{display:grid;justify-items:center;gap:8px;padding:24px 20px;border:1px dashed var(--line);border-radius:8px;background:#fff;text-align:center}
+.prompt-state strong{font-size:14px;color:var(--ink)}
+.prompt-state p{margin:0;max-width:620px;font-size:12px;line-height:1.75;color:var(--muted);overflow-wrap:anywhere}
+.prompt-state--error{border-color:#e4b6aa;background:#fff8f5}
+.prompt-state--error strong{color:#a43640}
+.prompt-meta{margin:0;font-size:11px;line-height:1.7;color:var(--muted)}
+
+@keyframes prompt-spin{to{transform:rotate(360deg)}}
+
+@media(max-width:900px){
+ .prompt-layout{grid-template-columns:minmax(0,1fr)}
+ .prompt-list{max-height:340px}
+}
+@media(max-width:620px){
+ .prompt-editor-inner{padding:14px}
+ .prompt-toolbar{padding:10px}
+ .prompt-toolbar-actions{margin-left:0;width:100%}
+ .prompt-actions{margin-left:0;width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+ .prompt-spinner{animation:none}
+}

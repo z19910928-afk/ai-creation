@@ -299,7 +299,7 @@ function authorWorkbenchRail(){
  <option value="continue">续写</option><option value="polish">润色所选文字</option><option value="scene">本章场景计划</option>
  <option value="outline">故事总纲</option><option value="brainstorm">创意方向</option><option value="summary">回顾与交接</option>
  <option value="check">连续性检查</option></select><input id="aiInstruction" maxlength="2000" aria-label="补充要求" placeholder="补充要求">
- <button class="primary-btn" id="aiGenerate">生成候选</button></div><div class="ai-reference-row" id="aiReferenceTools" aria-live="polite"></div><p class="ai-status" id="aiStatus"></p>
+ <button class="primary-btn" id="aiGenerate">生成候选</button></div><label class="ai-budget-toggle" id="aiBudgetRow" hidden><input type="checkbox" id="aiBudgetContinuation"> 按字数预算多轮续写（约 3,000 字）</label><div class="ai-reference-row" id="aiReferenceTools" aria-live="polite"></div><p class="ai-status" id="aiStatus"></p>
  <textarea class="ai-output" id="aiOutput" aria-label="AI 候选结果">${esc(aiDraft?.text||'')}</textarea>
  <div class="ai-result-meta"><span>${esc(aiStatus.model||'未配置模型')}</span><div class="ai-actions">
  <button class="ghost-btn" id="aiCopy" ${aiDraft?'':'disabled'}>复制</button><button class="ghost-btn" id="aiClear">拒绝 / 停止</button>
@@ -317,6 +317,14 @@ function authorWorkbenchContextStale(){
  let note=host.querySelector('[data-context-state]');
  if(!note){note=document.createElement('p');note.dataset.contextState='';host.prepend(note)}
  note.className='workbench-context-state context-stale';note.textContent='稿件或要求已变化，请保存并刷新依据';
+}
+
+// 兜底：app.js 的 bind() 每次 render 后也会调 syncBudgetContinuationRow()。
+// 这里让 rail 在 app.js 未加载或被改动时也能自行显隐；改默认值/显隐条件时两处必须同步。
+function authorSyncBudgetContinuationRow(){
+ const row=document.querySelector('#aiBudgetRow');if(!row)return false;
+ row.hidden=(document.querySelector('#aiTask')?.value||'continue')!=='continue';
+ return !row.hidden;
 }
 
 function authorRefreshWorkbenchKnowledge(){
@@ -406,6 +414,8 @@ function authorBindWorkbench(){
  document.querySelector('[data-workbench-context-refresh]')?.addEventListener('click',()=>authorLoadWorkbenchContext(true));
  document.querySelector('#aiInstruction')?.addEventListener('input',authorWorkbenchContextStale);
  document.querySelector('#aiTask')?.addEventListener('change',authorWorkbenchContextStale);
+ document.querySelector('#aiTask')?.addEventListener('change',authorSyncBudgetContinuationRow);
+ authorSyncBudgetContinuationRow();
  Object.keys(CHAPTER_PLAN_FIELDS).forEach(id=>document.getElementById(id)?.addEventListener('input',authorWorkbenchContextStale));
  authorBindWritingAgent();authorLoadWorkbenchContext();
  if(aiDraft)authorRevealWorkbenchSection('workbenchCandidateSection');
