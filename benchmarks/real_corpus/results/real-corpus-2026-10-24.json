@@ -1,0 +1,109 @@
+{
+  "benchmark": "real_corpus",
+  "version": 1,
+  "generated_at_note": "墙钟时间不进确定性摘要",
+  "corpus": {
+    "books": [
+      "红楼梦",
+      "三国演义",
+      "水浒传"
+    ],
+    "total_chars": 2343664,
+    "chapter_count": 360
+  },
+  "db_bytes": 15814656,
+  "books": [
+    {
+      "book": "红楼梦",
+      "project": "default-project",
+      "branch": "main",
+      "chapter_count": 120,
+      "total_chars": 842560,
+      "import_seconds": 0.043,
+      "fidelity_mismatches": [],
+      "retrieval": {
+        "material_count": 2780,
+        "warmup_seconds": 0.297,
+        "needles": 5,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "recall_at_20": 1.0,
+        "latency_ms_p50": 84.59,
+        "latency_ms_p95": 85.58,
+        "absent_phrase_result_count": 20,
+        "absent_phrase_ms": 83.26,
+        "misses": []
+      },
+      "engine": {
+        "seconds": 0.003,
+        "score": 100.0,
+        "grade": "A",
+        "findings": 0,
+        "note": "库内无断言，分数是空库基线，不代表真实稿件的一致性水平"
+      }
+    },
+    {
+      "book": "三国演义",
+      "project": "default-project",
+      "branch": "book2",
+      "chapter_count": 120,
+      "total_chars": 595062,
+      "import_seconds": 0.039,
+      "fidelity_mismatches": [],
+      "retrieval": {
+        "material_count": 3549,
+        "warmup_seconds": 0.222,
+        "needles": 6,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "recall_at_20": 1.0,
+        "latency_ms_p50": 68.68,
+        "latency_ms_p95": 76.27,
+        "absent_phrase_result_count": 20,
+        "absent_phrase_ms": 69.14,
+        "misses": []
+      },
+      "engine": {
+        "seconds": 0.002,
+        "score": 100.0,
+        "grade": "A",
+        "findings": 0,
+        "note": "库内无断言，分数是空库基线，不代表真实稿件的一致性水平"
+      }
+    },
+    {
+      "book": "水浒传",
+      "project": "default-project",
+      "branch": "book3",
+      "chapter_count": 120,
+      "total_chars": 906042,
+      "import_seconds": 0.046,
+      "fidelity_mismatches": [],
+      "retrieval": {
+        "material_count": 4552,
+        "warmup_seconds": 0.35,
+        "needles": 7,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "recall_at_20": 1.0,
+        "latency_ms_p50": 353.35,
+        "latency_ms_p95": 369.58,
+        "absent_phrase_result_count": 20,
+        "absent_phrase_ms": 361.32,
+        "misses": []
+      },
+      "engine": {
+        "seconds": 0.003,
+        "score": 100.0,
+        "grade": "A",
+        "findings": 0,
+        "note": "库内无断言，分数是空库基线，不代表真实稿件的一致性水平"
+      }
+    }
+  ],
+  "not_measured": [
+    "一致性引擎召回率/误报率：需要 AI 抽取真实稿件生成 assertion，本机无模型凭据，未执行",
+    "语义召回（同义改写、指代消解）：BM25 只做词面匹配，不在覆盖范围",
+    "真实模型生成质量与成本：未调用任何模型"
+  ]
+}

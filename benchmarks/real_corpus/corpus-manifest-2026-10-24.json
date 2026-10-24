@@ -1,0 +1,2551 @@
+{
+  "corpus_version": 1,
+  "license": "public-domain（作者逝世逾百年，正文无版权）",
+  "books": [
+    {
+      "book": "红楼梦",
+      "chapters": [
+        {
+          "ordinal": 1,
+          "file": "红楼梦/001.md",
+          "title": "第一回 甄士隐梦幻识通灵 贾雨村风尘怀闺秀",
+          "chars": 6748,
+          "sha256": "287abfec9a6866f9e5d3fdd3ac3a76db4d4b7b095f3ecc4673a329d3a32f6ea2"
+        },
+        {
+          "ordinal": 2,
+          "file": "红楼梦/002.md",
+          "title": "第二回 贾夫人仙逝扬州城 冷子兴演说荣国府",
+          "chars": 5663,
+          "sha256": "416b677f38fee827794a3100cc307a3ffea55bd81df7a543a946841def4370bc"
+        },
+        {
+          "ordinal": 3,
+          "file": "红楼梦/003.md",
+          "title": "第三回 托内兄如海荐西宾 接外孙贾母惜孤女",
+          "chars": 7896,
+          "sha256": "22f1d6b3e89a42699784503f34a6f10e98e40325d82b1901286655ae9f618fba"
+        },
+        {
+          "ordinal": 4,
+          "file": "红楼梦/004.md",
+          "title": "第四回 薄命女偏逢薄命郎 葫芦僧判断葫芦案",
+          "chars": 5354,
+          "sha256": "b9e2bcb76f261bbaf44d33da19eecf7b43fc49e071b51e41cf52151c6ea55cf0"
+        },
+        {
+          "ordinal": 5,
+          "file": "红楼梦/005.md",
+          "title": "第五回 游幻境指迷十二钗 饮仙醪曲演红楼梦",
+          "chars": 7329,
+          "sha256": "12acf647a5ad7f93852d8d16380ae46b38f4a14700088aa68d4ca5d898d694b6"
+        },
+        {
+          "ordinal": 6,
+          "file": "红楼梦/006.md",
+          "title": "第六回 贾宝玉初试云雨情 刘姥姥一进荣国府",
+          "chars": 6999,
+          "sha256": "d467947991f3f9a8e89f6b5a02b00a586812816b84737094963979680f1693ed"
+        },
+        {
+          "ordinal": 7,
+          "file": "红楼梦/007.md",
+          "title": "第七回 送宫花贾琏戏熙凤 宴宁府宝玉会秦钟",
+          "chars": 6999,
+          "sha256": "fdf257c8c3d1a7c69f82b7747a6a6b6909d427cf7acb8da35cbf2f1c872acf40"
+        },
+        {
+          "ordinal": 8,
+          "file": "红楼梦/008.md",
+          "title": "第八回 比通灵金莺微露意 探宝钗黛玉半含酸",
+          "chars": 6253,
+          "sha256": "bfce57ad24c9e49a49cd17ee256dd8ba885ea62d129496c627e61af301467f2c"
+        },
+        {
+          "ordinal": 9,
+          "file": "红楼梦/009.md",
+          "title": "第九回 恋风流情友入家塾 起嫌疑顽童闹学堂",
+          "chars": 5393,
+          "sha256": "9b81d0f04fecb39edc0e14f4ef88941f5ff1e0eefa0fc16d01c74af6a7260cc4"
+        },
+        {
+          "ordinal": 10,
+          "file": "红楼梦/010.md",
+          "title": "第十回 金寡妇贪利权受辱 张太医论病细穷源",
+          "chars": 4799,
+          "sha256": "ba507c7ae7ea557b7a4b5ec972caaba6002e575e57f2676c7e8ccec87948badb"
+        },
+        {
+          "ordinal": 11,
+          "file": "红楼梦/011.md",
+          "title": "第十一回 庆寿辰宁府排家宴 见熙凤贾瑞起淫心",
+          "chars": 5542,
+          "sha256": "471e5b90c0c7e0263a9f2d3aac5537d76788ae86f284171ace733251ea14734e"
+        },
+        {
+          "ordinal": 12,
+          "file": "红楼梦/012.md",
+          "title": "第十二回 王熙凤毒设相思局 贾天祥正照风月鉴",
+          "chars": 4140,
+          "sha256": "7a14d4daeaeed3ac777d84ff3a87e673d28231234c9d099f873e3b28e7b69826"
+        },
+        {
+          "ordinal": 13,
+          "file": "红楼梦/013.md",
+          "title": "第十三回 秦可卿死封龙禁尉 王熙凤协理宁国府",
+          "chars": 4858,
+          "sha256": "d2d91f68686d18465ba8495b63f87784d2a08491c9e46054d0044944b76220ed"
+        },
+        {
+          "ordinal": 14,
+          "file": "红楼梦/014.md",
+          "title": "第十四回 林如海灵返苏州郡 贾宝玉路谒北静王",
+          "chars": 5073,
+          "sha256": "b3e556dd853c4dc22d82eaf2c88a4b2f9a61839fa68a63885946acf1604d4f2c"
+        },
+        {
+          "ordinal": 15,
+          "file": "红楼梦/015.md",
+          "title": "第十五回 王凤姐弄权铁槛寺 秦鲸卿得趣馒头庵",
+          "chars": 4726,
+          "sha256": "d11030680126ab4150866dd2756ce2186845a76b54a584da9a700137aaa5cb2f"
+        },
+        {
+          "ordinal": 16,
+          "file": "红楼梦/016.md",
+          "title": "第十六回 贾元春才选凤藻宫 秦鲸卿夭逝黄泉路",
+          "chars": 7128,
+          "sha256": "37ea2e64a72e37228d3c547274c77d34e290405b9cb041f2ddbd6874b2ebf03e"
+        },
+        {
+          "ordinal": 17,
+          "file": "红楼梦/017.md",
+          "title": "第十七回 大观园试才题对额 荣国府归省庆元宵",
+          "chars": 8930,
+          "sha256": "2f9288d088909efcfe3c309f9841f18b71479d24abf9eaecc53a1e7f01a786c0"
+        },
+        {
+          "ordinal": 18,
+          "file": "红楼梦/018.md",
+          "title": "第十八回 皇恩重元妃省父母 天伦乐宝玉呈才藻",
+          "chars": 5983,
+          "sha256": "af5c3176b33c5963f3b890592bc7aaaeb06c177c81e9c1b344442ac5a7019ed8"
+        },
+        {
+          "ordinal": 19,
+          "file": "红楼梦/019.md",
+          "title": "第十九回 情切切良宵花解语 意绵绵静日玉生香",
+          "chars": 9054,
+          "sha256": "7471979dd62e1ed9bc887a3fb1f044987e89727d64e89638e9d424f91a89b2ad"
+        },
+        {
+          "ordinal": 20,
+          "file": "红楼梦/020.md",
+          "title": "第二十回 王熙凤正言弹妒意 林黛玉俏语谑娇音",
+          "chars": 5137,
+          "sha256": "e7848a5c892a5e9d930112677c7bb4ab05c6b0e605b57efe41ffc373ae829feb"
+        },
+        {
+          "ordinal": 21,
+          "file": "红楼梦/021.md",
+          "title": "第二十一回 贤袭人娇嗔箴宝玉 俏平儿软语救贾琏",
+          "chars": 5895,
+          "sha256": "926062df7bfa5f7f11d28af9d55c7682c319da4511b8b67b27217381cc88222a"
+        },
+        {
+          "ordinal": 22,
+          "file": "红楼梦/022.md",
+          "title": "第二十二回 听曲文宝玉悟禅机 制灯谜贾政悲谶语",
+          "chars": 6782,
+          "sha256": "97fd6b8450742b5e2f352bdb84157d9e72b7206886d7eb124bef25325cb27685"
+        },
+        {
+          "ordinal": 23,
+          "file": "红楼梦/023.md",
+          "title": "第二十三回 西厢记妙词通戏语 牡丹亭艳曲警芳心",
+          "chars": 5252,
+          "sha256": "ec482bf2eb30c337256af417640570d16b2c92af6092a614fae5bd376a386308"
+        },
+        {
+          "ordinal": 24,
+          "file": "红楼梦/024.md",
+          "title": "第二十四回 醉金刚轻财尚义侠 痴女儿遗帕惹相思",
+          "chars": 7696,
+          "sha256": "a30a446aa6a4e01d9fb4bc883a31ffaf2da598704991c0807d1a9f3c75784732"
+        },
+        {
+          "ordinal": 25,
+          "file": "红楼梦/025.md",
+          "title": "第二十五回 魇魔法叔嫂逢五鬼 通灵玉蒙蔽遇双真",
+          "chars": 6606,
+          "sha256": "fd2b86dd5b7505713138ba7df2741560c92a8d4a6e7d65b1e47b6a61b08aec4c"
+        },
+        {
+          "ordinal": 26,
+          "file": "红楼梦/026.md",
+          "title": "第二十六回 蜂腰桥设言传心事 潇湘馆春困发幽情",
+          "chars": 7226,
+          "sha256": "40f30dc761ce198964fa5281498caec106ed53bdc1ad23e67bfbd097ee57c4bf"
+        },
+        {
+          "ordinal": 27,
+          "file": "红楼梦/027.md",
+          "title": "第二十七回 滴翠亭杨妃戏彩蝶 埋香冢飞燕泣残红",
+          "chars": 6370,
+          "sha256": "445e388b0d3d066489c24470b7481d3a2048419c41e75c7c7cd852683cd38b4b"
+        },
+        {
+          "ordinal": 28,
+          "file": "红楼梦/028.md",
+          "title": "第二十八回 蒋玉函情赠茜香罗 薛宝钗羞笼红麝串",
+          "chars": 9427,
+          "sha256": "9439f301d6480ec9e6d03ac6260b7e0e88d1575a60b4a39ee0091730c2dcf4b8"
+        },
+        {
+          "ordinal": 29,
+          "file": "红楼梦/029.md",
+          "title": "第二十九回 享福人福深还祷福 多情女情重愈斟情",
+          "chars": 8511,
+          "sha256": "ecdbf2da5fea9181b681a63ff7c3d49b3ee2fe1c9634d64a8ec6196b49ce52ec"
+        },
+        {
+          "ordinal": 30,
+          "file": "红楼梦/030.md",
+          "title": "第三十回 宝钗借扇机带双敲 椿龄画蔷痴及局外",
+          "chars": 5727,
+          "sha256": "f1ad8d19c784ea31a485b4010edfbb49aca1179dcfd9c096f40e79f32aa794b4"
+        },
+        {
+          "ordinal": 31,
+          "file": "红楼梦/031.md",
+          "title": "第三十一回 撕扇子作千金一笑 因麒麟伏白首双星",
+          "chars": 7191,
+          "sha256": "ce44dd1d8f6320be664077461882679126494ddd1f640015ea9f4b0f0e600bd4"
+        },
+        {
+          "ordinal": 32,
+          "file": "红楼梦/032.md",
+          "title": "第三十二回 诉肺腑心迷活宝玉 含耻辱情烈死金钏",
+          "chars": 5800,
+          "sha256": "9ee3e84f967e602b04574a0dbcac3b680a4aea45182dd9bf73bd40a62114c03b"
+        },
+        {
+          "ordinal": 33,
+          "file": "红楼梦/033.md",
+          "title": "第三十三回 手足眈眈小动唇舌 不肖种种大承笞挞",
+          "chars": 4877,
+          "sha256": "8c9469ce8edcd90f77a5ab6a7dd6f41c3da2a98b9000db6da1b98135a1254a20"
+        },
+        {
+          "ordinal": 34,
+          "file": "红楼梦/034.md",
+          "title": "第三十四回 情中情因情感妹妹 错里错以错劝哥哥",
+          "chars": 7111,
+          "sha256": "95fabde242cbeda9cf41dd09b7a769a264c0dcdb6f28b717fe1f2ae566da8c20"
+        },
+        {
+          "ordinal": 35,
+          "file": "红楼梦/035.md",
+          "title": "第三十五回 白玉钏亲尝莲叶羹 黄金莺巧结梅花络",
+          "chars": 7828,
+          "sha256": "1528d3666383d1a582585f55a95e22c24a8d1101010478ee6b030aeb292e8455"
+        },
+        {
+          "ordinal": 36,
+          "file": "红楼梦/036.md",
+          "title": "第三十六回 绣鸳鸯梦兆绦芸轩 识分定情悟梨香院",
+          "chars": 6692,
+          "sha256": "7ab07df5bd7d79ff5d566314011a21dac7a518dd35160c4611e9750f48998355"
+        },
+        {
+          "ordinal": 37,
+          "file": "红楼梦/037.md",
+          "title": "第三十七回 秋爽斋偶结海棠社 蘅芜院夜拟菊花题",
+          "chars": 9197,
+          "sha256": "6ed0a410d37cbe5a10da1fbf261fa7b33fe7c8d6c0c8a55971b605038f05aec0"
+        },
+        {
+          "ordinal": 38,
+          "file": "红楼梦/038.md",
+          "title": "第三十八回 林潇湘魁夺菊花诗 薛蘅芜讽和螃蟹咏",
+          "chars": 5566,
+          "sha256": "88f72bc4d3b53ac0cf31e7941546ba0146f234011b6d2ef49aaf3ea0fdcf19f1"
+        },
+        {
+          "ordinal": 39,
+          "file": "红楼梦/039.md",
+          "title": "第三十九回 村姥姥是信口开河 情哥哥偏寻根究底",
+          "chars": 6430,
+          "sha256": "cf975dc1ab023341a6180cb9648130227c6ceb4f4e1543620e9712620a721041"
+        },
+        {
+          "ordinal": 40,
+          "file": "红楼梦/040.md",
+          "title": "第四十回 史太君两宴大观园 金鸳鸯三宣牙牌令",
+          "chars": 9350,
+          "sha256": "5ea0497f73d0b61f31f46f35a150bcccd5ef1d2dfb07dcc6605194fccba16c4c"
+        },
+        {
+          "ordinal": 41,
+          "file": "红楼梦/041.md",
+          "title": "第四十一回 拢翠庵茶品梅花雪 怡红院劫遇母蝗虫",
+          "chars": 6562,
+          "sha256": "bee562ff5a2adade276ab9b26625db7d64ddd5ada4d5bb32df6e9bda67cc5d6a"
+        },
+        {
+          "ordinal": 42,
+          "file": "红楼梦/042.md",
+          "title": "第四十二回 蘅芜君兰言解疑癖 潇湘子雅谑补馀音",
+          "chars": 7530,
+          "sha256": "c880866365f0ed4df0add4197faacb6dac27b307482390ca51fd02247b338f34"
+        },
+        {
+          "ordinal": 43,
+          "file": "红楼梦/043.md",
+          "title": "第四十三回 闲取乐偶攒金庆寿 不了情暂撮土为香",
+          "chars": 6807,
+          "sha256": "d4b736afd0c5c1ec737b83d166c33675649ff21d31f3008867ff7d5dbef5ac96"
+        },
+        {
+          "ordinal": 44,
+          "file": "红楼梦/044.md",
+          "title": "第四十四回 变生不测凤姐泼醋 喜出望外平儿理妆",
+          "chars": 6565,
+          "sha256": "e144ee2deb9dd916f2c08bc64e9a5d5d5366149d3eae792dba1efd44fbb5b2bc"
+        },
+        {
+          "ordinal": 45,
+          "file": "红楼梦/045.md",
+          "title": "第四十五回 金兰契互剖金兰语 风雨夕闷制风雨词",
+          "chars": 7672,
+          "sha256": "b9f33589fec5ef9dfa60ffa24e995cd0016a25df2dc2ac61a5fc5c8cebcbee83"
+        },
+        {
+          "ordinal": 46,
+          "file": "红楼梦/046.md",
+          "title": "第四十六回 尴尬人难免尴尬事 鸳鸯女誓绝鸳鸯偶",
+          "chars": 8158,
+          "sha256": "a3c244032b3dc7bf2275771ea130ba777e0ce8874bc6d9ce0a560d8b71e5d911"
+        },
+        {
+          "ordinal": 47,
+          "file": "红楼梦/047.md",
+          "title": "第四十七回 呆霸王调情遭苦打 冷郎君惧祸走他乡",
+          "chars": 7261,
+          "sha256": "cfd8566436dffeeac4886c15e3b058738080398654ccb30c53271dcd51737985"
+        },
+        {
+          "ordinal": 48,
+          "file": "红楼梦/048.md",
+          "title": "第四十八回 滥情人情误思游艺 慕雅女雅集苦吟诗",
+          "chars": 6558,
+          "sha256": "99900d6c86b72cb13554477252c3b371df434aedbc3ece8cda2d8912b2438eeb"
+        },
+        {
+          "ordinal": 49,
+          "file": "红楼梦/049.md",
+          "title": "第四十九回 琉璃世界白雪红梅 脂粉香娃割腥啖膻",
+          "chars": 7220,
+          "sha256": "bdfe0653a6576b85c05b45cc8eb70bfbf5d588d2d57aa828f3c79190a5f7ce6e"
+        },
+        {
+          "ordinal": 50,
+          "file": "红楼梦/050.md",
+          "title": "第五十回 芦雪庭争联即景诗 暖香坞雅制春灯谜",
+          "chars": 6982,
+          "sha256": "e519461ccf156954fbf0b0cb79d7ab92af87c938195b37170917da363a5a75d5"
+        },
+        {
+          "ordinal": 51,
+          "file": "红楼梦/051.md",
+          "title": "第五十一回 薛小妹新编怀古诗 胡庸医乱用虎狼药",
+          "chars": 6805,
+          "sha256": "6efda12657557410b5e35f2e05fe69949752c44280bcabd052b4148fdd9351ac"
+        },
+        {
+          "ordinal": 52,
+          "file": "红楼梦/052.md",
+          "title": "第五十二回 俏平儿情掩虾须镯 勇晴雯病补孔雀裘",
+          "chars": 8213,
+          "sha256": "fb996d9c40529e8e3d4f415d3cadf9c134862a70d11b6d6d7603ff204debce6f"
+        },
+        {
+          "ordinal": 53,
+          "file": "红楼梦/053.md",
+          "title": "第五十三回 宁国府除夕祭宗祠 荣国府元宵开夜宴",
+          "chars": 7490,
+          "sha256": "de49008d9ad466318c6e9d03280d6ad401f829b51588727a1c667c32bdd79752"
+        },
+        {
+          "ordinal": 54,
+          "file": "红楼梦/054.md",
+          "title": "第五十四回 史太君破陈腐旧套 王熙凤效戏彩斑衣",
+          "chars": 8551,
+          "sha256": "29ef764f11a6720067c75cca7acf390d3a6211cb64bab65fffd31c24d277c6ae"
+        },
+        {
+          "ordinal": 55,
+          "file": "红楼梦/055.md",
+          "title": "第五十五回 辱亲女愚妾争闲气 欺幼主刁奴蓄险心",
+          "chars": 8055,
+          "sha256": "46c03acfc252293525dec88024e122149e0d8f63a0d2cea917c3c84a4b7aebdd"
+        },
+        {
+          "ordinal": 56,
+          "file": "红楼梦/056.md",
+          "title": "第五十六回 敏探春兴利除宿弊 贤宝钗小惠全大体",
+          "chars": 8539,
+          "sha256": "690bc6a6a42bfde2278d1193d76ce8d81b443fcd37a544004965a5c21b834ef5"
+        },
+        {
+          "ordinal": 57,
+          "file": "红楼梦/057.md",
+          "title": "第五十七回 慧紫鹃情辞试莽玉 慈姨妈爱语慰痴颦",
+          "chars": 10657,
+          "sha256": "aeb4ae520cbdc1b48a36de53633edb400e02fde81d863fcb40b9b2cffa5317c5"
+        },
+        {
+          "ordinal": 58,
+          "file": "红楼梦/058.md",
+          "title": "第五十八回 杏子阴假凤泣虚凰 茜纱窗真情揆痴理",
+          "chars": 6361,
+          "sha256": "24b18899445d2004f30e20f3fb3fc5ff90b3338810b7d98c47cfa22ef26d2fb7"
+        },
+        {
+          "ordinal": 59,
+          "file": "红楼梦/059.md",
+          "title": "第五十九回 柳叶渚边嗔莺叱燕 绦芸轩里召将飞符",
+          "chars": 4643,
+          "sha256": "55ac9efff0a03d7fd72d00c6f382d026f5d15a7eded294f660e028eeba63576e"
+        },
+        {
+          "ordinal": 60,
+          "file": "红楼梦/060.md",
+          "title": "第六十回 茉莉粉替去蔷薇硝 玫瑰露引出茯苓霜",
+          "chars": 7451,
+          "sha256": "af7f39c91d4190c618e76268820c3f8dbf7c52461886a1a13fab46356b3e0a2f"
+        },
+        {
+          "ordinal": 61,
+          "file": "红楼梦/061.md",
+          "title": "第六十一回 投鼠忌器宝玉瞒赃 判冤决平儿行权",
+          "chars": 6247,
+          "sha256": "9d2c126dad6e2c2a6c14e2157ef935f400194e44f23d790efa2948e230f5b0ca"
+        },
+        {
+          "ordinal": 62,
+          "file": "红楼梦/062.md",
+          "title": "第六十二回 憨湘云醉眠芍药裵 呆香菱情解石榴裙",
+          "chars": 11680,
+          "sha256": "5f1db57f4aff1e7d115b30176b6c737de7dc672e0c5a33fbd07561bc5590386c"
+        },
+        {
+          "ordinal": 63,
+          "file": "红楼梦/063.md",
+          "title": "第六十三回 寿怡红群芳开夜宴 死金丹独艳理亲丧",
+          "chars": 9917,
+          "sha256": "1f9374092ec6720b6a4d0b440238870db82f182ac589c809e93e3dec2a3c9a9b"
+        },
+        {
+          "ordinal": 64,
+          "file": "红楼梦/064.md",
+          "title": "第六十四回 幽淑女悲题五美吟 浪荡子情遗九龙佩",
+          "chars": 9700,
+          "sha256": "4af084f33d47b69f15e9b5fe81e94e15af4c28acfb75b548ef40c8981cc57fbd"
+        },
+        {
+          "ordinal": 65,
+          "file": "红楼梦/065.md",
+          "title": "第六十五回 贾二舍偷娶尤二姨 尤三姐思嫁柳二郎",
+          "chars": 6993,
+          "sha256": "e5acef18f09c381f484b0a2ab25922a9fb4987dd8409beba01f3f9769e2ddc68"
+        },
+        {
+          "ordinal": 66,
+          "file": "红楼梦/066.md",
+          "title": "第六十六回 情小妹耻情归地府 冷二郎一冷入空门",
+          "chars": 5171,
+          "sha256": "77e00485a8a3cefc217a61cdeb87b6d8078c0e19ed11e67e2b98642812ca8382"
+        },
+        {
+          "ordinal": 67,
+          "file": "红楼梦/067.md",
+          "title": "第六十七回 见土仪颦卿思故里 闻秘事凤姐讯家童",
+          "chars": 9322,
+          "sha256": "e8041791f891668f74003898e3677df34c3c8167bdd69a18033d8f548816d651"
+        },
+        {
+          "ordinal": 68,
+          "file": "红楼梦/068.md",
+          "title": "第六十八回 苦尤娘赚入大观园 酸凤姐大闹宁国府",
+          "chars": 8035,
+          "sha256": "633c92e8e4cc76b6aab7d4b742f00bda799eac6e705bca67018f710138e64bc3"
+        },
+        {
+          "ordinal": 69,
+          "file": "红楼梦/069.md",
+          "title": "第六十九回 弄小巧用借剑杀人 觉大限吞生金自逝",
+          "chars": 6249,
+          "sha256": "63ec4da30e0940360a30a5ce4ada0885122b2861ae20a57e9808482845902628"
+        },
+        {
+          "ordinal": 70,
+          "file": "红楼梦/070.md",
+          "title": "第七十回 林黛玉重建桃花社 史湘云偶填柳絮词",
+          "chars": 5704,
+          "sha256": "dfa15e8a03e81f90340eb20db3f30d1ec8d0d5aa2b889cd0d1c118636f623a64"
+        },
+        {
+          "ordinal": 71,
+          "file": "红楼梦/071.md",
+          "title": "第七十一回 嫌隙人有心生嫌隙 鸳鸯女无意遇鸳鸯",
+          "chars": 8404,
+          "sha256": "d24d6d469a1f4a88f08e05dbe67e2f55f1a7977fd2735f16ad7c8ea0d16fec78"
+        },
+        {
+          "ordinal": 72,
+          "file": "红楼梦/072.md",
+          "title": "第七十二回 王熙凤恃强羞说病 来旺妇倚势霸成亲",
+          "chars": 7102,
+          "sha256": "9e5558fe700b6d16d18a3533496f3ba2ee00b28ddbc722f49fce67c154e4fa0b"
+        },
+        {
+          "ordinal": 73,
+          "file": "红楼梦/073.md",
+          "title": "第七十三回 痴丫头误拾绣春囊 懦小姐不问累金凤",
+          "chars": 6821,
+          "sha256": "266e88f602a41e36c9bed8bc748a2e018d2d0a3d5a7625fab22cab74e10bad2c"
+        },
+        {
+          "ordinal": 74,
+          "file": "红楼梦/074.md",
+          "title": "第七十四回 惑奸谗抄检大观园 避嫌隙杜绝宁国府",
+          "chars": 10756,
+          "sha256": "f86e15158c6b39a2545b09c9943783666a108aeced20de3c14380bfa6aedd882"
+        },
+        {
+          "ordinal": 75,
+          "file": "红楼梦/075.md",
+          "title": "第七十五回 开夜宴异兆发悲音 赏中秋新词得佳谶",
+          "chars": 8504,
+          "sha256": "231893774a126bc422dc8cffa9056896294e9d91396b9594ad97e88f7f4f5d86"
+        },
+        {
+          "ordinal": 76,
+          "file": "红楼梦/076.md",
+          "title": "第七十六回 凸碧堂品笛感凄清 凹晶馆联诗悲寂寞",
+          "chars": 6785,
+          "sha256": "318c64801e48dbe40b3f8c7a461275c63658eec1aea1305af269acdaf9f6440d"
+        },
+        {
+          "ordinal": 77,
+          "file": "红楼梦/077.md",
+          "title": "第七十七回 俏丫鬟抱屈夭风流 美优伶斩情归水月",
+          "chars": 10199,
+          "sha256": "6658bb70b5599fce98d5d15fa8a52c2afc23882c79a523230f8853ce541c3de6"
+        },
+        {
+          "ordinal": 78,
+          "file": "红楼梦/078.md",
+          "title": "第七十八回 老学士闲征姽媜词 痴公子杜撰芙蓉诔",
+          "chars": 9070,
+          "sha256": "59781a0e083b85800f2cc14c27ed709d6c257390ff058f76140c68d2341dd512"
+        },
+        {
+          "ordinal": 79,
+          "file": "红楼梦/079.md",
+          "title": "第七十九回 薛文起悔娶河东吼 贾迎春误嫁中山狼",
+          "chars": 4640,
+          "sha256": "b33dbd14b60809bdddbcb6258f0005023ee2f6af8a335a587ece20c2cdb9cac4"
+        },
+        {
+          "ordinal": 80,
+          "file": "红楼梦/080.md",
+          "title": "第八十回 美香菱屈受贪夫棒 王道士胡诌妒妇方",
+          "chars": 6396,
+          "sha256": "000a600e5d6fe1600ade2c9b597d3c7c2240e70a7d4eca3e24fcbfd85b501610"
+        },
+        {
+          "ordinal": 81,
+          "file": "红楼梦/081.md",
+          "title": "第八十一回 占旺相四美钓游鱼 奉严词两番入家塾",
+          "chars": 6861,
+          "sha256": "2d64208928926a46ed52954489a8b5fd03326d4db60d9a7ae0da1976f6c4a849"
+        },
+        {
+          "ordinal": 82,
+          "file": "红楼梦/082.md",
+          "title": "第八十二回 老学究讲义警顽心 病潇湘痴魂惊恶梦",
+          "chars": 8455,
+          "sha256": "cbad7734c3708faaa31b899d0c76635e1f7327f2aac278b4689c029f038e3c2e"
+        },
+        {
+          "ordinal": 83,
+          "file": "红楼梦/083.md",
+          "title": "第八十三回 省宫闱贾元妃染恙 闹闱阃薛宝钗吞声",
+          "chars": 8098,
+          "sha256": "abb340428261f613f9abc659abf720455f3f173bea3cf5793a2b6180b9464c5a"
+        },
+        {
+          "ordinal": 84,
+          "file": "红楼梦/084.md",
+          "title": "第八十四回 试文字宝玉始提亲 探惊风贾环重结怨",
+          "chars": 7717,
+          "sha256": "2ce5460e7b3b055bf05a4bbfe80a65f4a4c164e66a1893197372310c1b9f500b"
+        },
+        {
+          "ordinal": 85,
+          "file": "红楼梦/085.md",
+          "title": "第八十五回 贾存周报升郎中任 薛文起复惹放流刑",
+          "chars": 8024,
+          "sha256": "a5c12a5e441aec6583ca5388d498f6ad33b1a205d09c793d85d6e04079f42a82"
+        },
+        {
+          "ordinal": 86,
+          "file": "红楼梦/086.md",
+          "title": "第八十六回 受私贿老官翻案牍 寄闲情淑女解琴书",
+          "chars": 6783,
+          "sha256": "2a12032d537b431030d23a8a2f6a0b2c1a13782d1de711ec6f6a2ce4c0984130"
+        },
+        {
+          "ordinal": 87,
+          "file": "红楼梦/087.md",
+          "title": "第八十七回 感秋声抚琴悲往事 坐禅寂走入火邪魔",
+          "chars": 6631,
+          "sha256": "5c55a6898cdfc0ad2633da13898d1e5f68fa995545aaa63d483c0682dee90d22"
+        },
+        {
+          "ordinal": 88,
+          "file": "红楼梦/088.md",
+          "title": "第八十八回 博庭欢宝玉赞孤儿 正家法贾珍鞭悍仆",
+          "chars": 6716,
+          "sha256": "9a6733170a3d05b1457aa43549e0d8fded590eeeadb29345801f29d06a68bf5d"
+        },
+        {
+          "ordinal": 89,
+          "file": "红楼梦/089.md",
+          "title": "第八十九回 人亡物在公子填词 蛇影杯弓颦卿绝粒",
+          "chars": 6053,
+          "sha256": "936ee4331e85530c896251cf8128b8637f9946b8c6a214c0391b1be958c84e77"
+        },
+        {
+          "ordinal": 90,
+          "file": "红楼梦/090.md",
+          "title": "第九十回 失绵衣贫女耐嗷嘈 送果品小郎惊叵测",
+          "chars": 6187,
+          "sha256": "dbb56479c163c3d45397ab0364b3cbb78e1f0e1f957253c5511fb19719d1c707"
+        },
+        {
+          "ordinal": 91,
+          "file": "红楼梦/091.md",
+          "title": "第九十一回 纵淫心宝蟾工设计 布疑阵宝玉妄谈禅",
+          "chars": 5410,
+          "sha256": "2653c9fa62172bcf61e5f2081158722b85c4fb8faa462576fe465175fbcedce8"
+        },
+        {
+          "ordinal": 92,
+          "file": "红楼梦/092.md",
+          "title": "第九十二回 评女传巧姐慕贤良 玩母珠贾政参聚散",
+          "chars": 7220,
+          "sha256": "4353c5d902300a7152ceda568f05c833daaf3205270ed5fb8a81da27a22bdd32"
+        },
+        {
+          "ordinal": 93,
+          "file": "红楼梦/093.md",
+          "title": "第九十三回 甄家仆投靠贾家门 水月庵掀翻风月案",
+          "chars": 6526,
+          "sha256": "edc51c0a6ec3cc2a4072330c00ee0349b32041733ca044766c94739659af0f5d"
+        },
+        {
+          "ordinal": 94,
+          "file": "红楼梦/094.md",
+          "title": "第九十四回 宴海棠贾母赏花妖 失宝玉通灵知奇祸",
+          "chars": 8266,
+          "sha256": "45b6f4e49d3eaa383911d42b38244bcdf7ec4385e9ee15eafda8c8ef10e39ee1"
+        },
+        {
+          "ordinal": 95,
+          "file": "红楼梦/095.md",
+          "title": "第九十五回 因讹成实元妃薨逝 以假混真宝玉疯癫",
+          "chars": 6617,
+          "sha256": "7cdf10d58a8472bca6ff58817db05f6eba1622ea9d2e1d15530fa4c5d43af50b"
+        },
+        {
+          "ordinal": 96,
+          "file": "红楼梦/096.md",
+          "title": "第九十六回 瞒消息凤姐设奇谋 泄机关颦儿迷本性",
+          "chars": 6765,
+          "sha256": "720beb032a5b07d43deadefa4c9af4557ee09004a7c53d62247450fd8a867def"
+        },
+        {
+          "ordinal": 97,
+          "file": "红楼梦/097.md",
+          "title": "第九十七回 林黛玉焚稿断痴情 薛宝钗出闺成大礼",
+          "chars": 9903,
+          "sha256": "08fac8722e35868fcf0058a3c49d5ac3531bf01db26eec6948d20a55d68c4eb2"
+        },
+        {
+          "ordinal": 98,
+          "file": "红楼梦/098.md",
+          "title": "第九十八回 苦绦珠魂归离恨天 病神瑛泪洒相思地",
+          "chars": 5874,
+          "sha256": "18704db4236105cef2febd59b7db0adea3b43e3383c685f8bd226d180868154b"
+        },
+        {
+          "ordinal": 99,
+          "file": "红楼梦/099.md",
+          "title": "第九十九回 守官箴恶奴同破例 阅邸报老舅自担惊",
+          "chars": 5986,
+          "sha256": "fa5e6b9a14257a084999280499c6b2b8235395a584b767f5744758b06f1cd951"
+        },
+        {
+          "ordinal": 100,
+          "file": "红楼梦/100.md",
+          "title": "第一百回 破好事香菱结深恨 悲远嫁宝玉感离情",
+          "chars": 5608,
+          "sha256": "2e5309612db938c772ba3722a5134a979441d1d91f4d4dd99942ba402120ea2b"
+        },
+        {
+          "ordinal": 101,
+          "file": "红楼梦/101.md",
+          "title": "第一百一回 大观园月夜警幽魂 散花寺神签惊异兆",
+          "chars": 7995,
+          "sha256": "818e835c7146b2be71291134d3310b174387809798ce2a0e03cd44ea347392b6"
+        },
+        {
+          "ordinal": 102,
+          "file": "红楼梦/102.md",
+          "title": "第一百二回 宁国府骨肉病灾祲 大观园符水驱妖孽",
+          "chars": 4941,
+          "sha256": "2a5c813cc2560f8f676099ee5abd8cd1e9fedfc91f712e1360c7882702871c58"
+        },
+        {
+          "ordinal": 103,
+          "file": "红楼梦/103.md",
+          "title": "第一百三回 施毒计金桂自焚身 昧真禅雨村空遇旧",
+          "chars": 6910,
+          "sha256": "b0b2436787adb3dbb68cfe2634391fe17c4a757dddf12e501ff6cd61cb1fbce4"
+        },
+        {
+          "ordinal": 104,
+          "file": "红楼梦/104.md",
+          "title": "第一百四回 醉金刚小鳅生大浪 痴公子馀痛触前情",
+          "chars": 6209,
+          "sha256": "040899f3b508a550df1deeca2c64606189abbe115b1028a6637089f7f0252c39"
+        },
+        {
+          "ordinal": 105,
+          "file": "红楼梦/105.md",
+          "title": "第一百五回 锦衣军查抄宁国府 骢马使弹劾平安州",
+          "chars": 5387,
+          "sha256": "f9959ea27ff9ce06138a887fab2475b07ce94c62ad03e29c11013a0dc06d0051"
+        },
+        {
+          "ordinal": 106,
+          "file": "红楼梦/106.md",
+          "title": "第一百六回 王熙凤致祸抱羞惭 贾太君祷天消祸患",
+          "chars": 5753,
+          "sha256": "83e7ba1d732a4c825cc25f451521eb4e327238245cd11a9cf1338a9be2c5e400"
+        },
+        {
+          "ordinal": 107,
+          "file": "红楼梦/107.md",
+          "title": "第一百七回 散馀资贾母明大义 复世职政老沐天恩",
+          "chars": 6281,
+          "sha256": "acc2a01f102735173a51a95a3cefd2183ebcc07adb6b9b2d6d26aef7489ee1d1"
+        },
+        {
+          "ordinal": 108,
+          "file": "红楼梦/108.md",
+          "title": "第一百八回 强欢笑蘅芜庆生辰 死缠绵潇湘闻鬼哭",
+          "chars": 7055,
+          "sha256": "3de82bb192c2e4bca3a57d29d8a7e60506abef1cba4ff1936987f2ad24dd97a8"
+        },
+        {
+          "ordinal": 109,
+          "file": "红楼梦/109.md",
+          "title": "第一百九回 候芳魂五儿承错爱 还孽债迎女返真元",
+          "chars": 9132,
+          "sha256": "11c894d89711fc1d89e8f8af1e234ff9139fa4687a20ae2b07f6c0db3078e90b"
+        },
+        {
+          "ordinal": 110,
+          "file": "红楼梦/110.md",
+          "title": "第一百十回 史太君寿终归地府 王凤姐力诎失人心",
+          "chars": 6751,
+          "sha256": "5bf7ddc95c511877185728f605d0ca5ba40533d41c84276dc60613e2a13d6a03"
+        },
+        {
+          "ordinal": 111,
+          "file": "红楼梦/111.md",
+          "title": "第一百十一回 鸳鸯女殉主登太虚 狗彘奴欺天招伙盗",
+          "chars": 7374,
+          "sha256": "b66390023d119a825cd53c8fd7808ec093d9609672405d8cf8790cebddf557a4"
+        },
+        {
+          "ordinal": 112,
+          "file": "红楼梦/112.md",
+          "title": "第一百十二回 活冤孽妙姑遭大劫 死雠仇赵妾赴冥曹",
+          "chars": 7027,
+          "sha256": "d60f0ac1eb7f2b207db3302dcbb8119229898b0a3ea659741358fcb02e5d9725"
+        },
+        {
+          "ordinal": 113,
+          "file": "红楼梦/113.md",
+          "title": "第一百十三回 忏宿冤凤姐托村妪 释旧憾情婢感痴郎",
+          "chars": 6971,
+          "sha256": "a8e56a05023ed260a158eeabb7e9b7835c5ee9fe90cd4c677aeaecb080e22cd8"
+        },
+        {
+          "ordinal": 114,
+          "file": "红楼梦/114.md",
+          "title": "第一百十四回 王熙凤历幻返金陵 甄应嘉蒙恩还玉阙",
+          "chars": 4973,
+          "sha256": "f9f50ece9416a9bd8ea382ecf5f3046c118867a000fdf5b841c4f017c712afe7"
+        },
+        {
+          "ordinal": 115,
+          "file": "红楼梦/115.md",
+          "title": "第一百十五回 惑偏私惜春矢素志 证同类宝玉失相知",
+          "chars": 6960,
+          "sha256": "72542e89cee622e46b52ecfa47f3f4da0071a85b1c97bb4b99fe4ee4de7a973c"
+        },
+        {
+          "ordinal": 116,
+          "file": "红楼梦/116.md",
+          "title": "第一百十六回 得通灵幻境悟仙缘 送慈柩故乡全孝道",
+          "chars": 6868,
+          "sha256": "accb96b278da053ebf4c3f57e79ff4834540d59b52c1b9ac75d23ee1937e19ec"
+        },
+        {
+          "ordinal": 117,
+          "file": "红楼梦/117.md",
+          "title": "第一百十七回 阻超凡佳人双护玉 欣聚党恶子独承家",
+          "chars": 2107,
+          "sha256": "a585720306bdefee8e239d39b8c48e9b33015e765c5156f07a942fe5222f453c"
+        },
+        {
+          "ordinal": 118,
+          "file": "红楼梦/118.md",
+          "title": "第一百十八回 记微嫌舅兄欺弱女 惊谜语妻妾谏痴人",
+          "chars": 7558,
+          "sha256": "8d4626b9ecc7bcc949935809fd52639081a38642851565fa9aaf546823af4bbd"
+        },
+        {
+          "ordinal": 119,
+          "file": "红楼梦/119.md",
+          "title": "第一百十九回 中乡魁宝玉却尘缘 沐皇恩贾家延世泽",
+          "chars": 9545,
+          "sha256": "0736dc7f6ccbb29c2fce54263c3b43d04d6dfea5f809f90d996b80f0e5a3a99b"
+        },
+        {
+          "ordinal": 120,
+          "file": "红楼梦/120.md",
+          "title": "第一百二零回 甄士隐详说太虚情 贾雨村归结红楼梦",
+          "chars": 7750,
+          "sha256": "9460f0a177404b95a83d11b922e0c3f709cc9cc15ac8045881c06653bb4fab6a"
+        }
+      ],
+      "source": "hunterhug/china-literary@master",
+      "chapter_count": 120,
+      "total_chars": 842560
+    },
+    {
+      "book": "三国演义",
+      "chapters": [
+        {
+          "ordinal": 1,
+          "file": "三国演义/001.md",
+          "title": "第一回 宴桃园豪杰三结义 斩黄巾英雄首立功",
+          "chars": 4713,
+          "sha256": "a44698bed54d510c92e9d3c9d2c313c06e66dbc8b2a526d3a516c792b5ba48ce"
+        },
+        {
+          "ordinal": 2,
+          "file": "三国演义/002.md",
+          "title": "第二回 张翼德怒鞭督邮 何国舅谋诛宦竖",
+          "chars": 5761,
+          "sha256": "847d8ce36b733e3ad6e4edbe343eccec07db3fdeeabd2c90c67dcc72b8b5dd51"
+        },
+        {
+          "ordinal": 3,
+          "file": "三国演义/003.md",
+          "title": "第三回 议温明董卓叱丁原 馈金珠李肃说吕布",
+          "chars": 4966,
+          "sha256": "fd9dd4100dae94f0379a9358aa86e008d942545cf2e57b09e4ffe27a93ab45b2"
+        },
+        {
+          "ordinal": 4,
+          "file": "三国演义/004.md",
+          "title": "第四回 废汉帝陈留践位 谋董贼孟德献刀",
+          "chars": 4134,
+          "sha256": "6d6e6352bd19ec9ab7210191529387a2fb5bb42fa07cb166f7a134441a6e971c"
+        },
+        {
+          "ordinal": 5,
+          "file": "三国演义/005.md",
+          "title": "第五回 发矫诏诸镇应曹公 破关兵三英战吕布",
+          "chars": 5620,
+          "sha256": "99bf0586dfcbf7b56c0be8eff5ffb8cb93cbea6e223b4e1f708d00027b6179c9"
+        },
+        {
+          "ordinal": 6,
+          "file": "三国演义/006.md",
+          "title": "第六回 焚金阙董卓行凶 匿玉玺孙坚背约",
+          "chars": 4129,
+          "sha256": "363255486b5420ca431fedb48ba30e136a0f79c3cdf41fecbb44b72b752fccf5"
+        },
+        {
+          "ordinal": 7,
+          "file": "三国演义/007.md",
+          "title": "第七回 袁绍磐河战公孙 孙坚跨江击刘表",
+          "chars": 4602,
+          "sha256": "235f50d76fdcb8d54929bafda8ef6cf54370f38dcf7ed170817df41f6fadfef4"
+        },
+        {
+          "ordinal": 8,
+          "file": "三国演义/008.md",
+          "title": "第八回 王司徒巧使连环计 董太师大闹凤仪亭",
+          "chars": 4211,
+          "sha256": "f03103206e16dcbb9ca5bb342d4dc220c3b0100a3aebc62f6067374e298ebe91"
+        },
+        {
+          "ordinal": 9,
+          "file": "三国演义/009.md",
+          "title": "第九回 除暴凶吕布助司徒 犯长安李傕听贾诩",
+          "chars": 5318,
+          "sha256": "4ed1400cbd8cd417e994660dd95ae5df315886b1bcda8c4dbd8dc4f8a640e617"
+        },
+        {
+          "ordinal": 10,
+          "file": "三国演义/010.md",
+          "title": "第十回 勤王室马腾举义 报父仇曹操兴师",
+          "chars": 4183,
+          "sha256": "deb5cf1e13226ed74206e35fe0b6f9b66a9b6f03bf294886f2a4dfcbaa7b1265"
+        },
+        {
+          "ordinal": 11,
+          "file": "三国演义/011.md",
+          "title": "第十一回 刘皇叔北海救孔融 吕温侯濮阳破曹操",
+          "chars": 5754,
+          "sha256": "722a275970a149dc611e4324b4f9070c9188e48b7c1d2a46b0c158997bfc1b6a"
+        },
+        {
+          "ordinal": 12,
+          "file": "三国演义/012.md",
+          "title": "第十二回 陶恭祖三让徐州 曹孟德大战吕布",
+          "chars": 4530,
+          "sha256": "6fb45945f115d5d15b9668c9f143dd0f71434bea5cd1d96ab25f91c73e3fb6fc"
+        },
+        {
+          "ordinal": 13,
+          "file": "三国演义/013.md",
+          "title": "第十三回 李傕郭汜大交兵 杨奉董承双救驾",
+          "chars": 5958,
+          "sha256": "8bcf98b6ae2e7fc49a9636f3789aae6019877721a90991199ff67c57c2a4f619"
+        },
+        {
+          "ordinal": 14,
+          "file": "三国演义/014.md",
+          "title": "第十四回 曹孟德移驾幸许都 吕奉先乘夜袭徐郡",
+          "chars": 6298,
+          "sha256": "21300498a5b56cd5ffca48ebae1bdbfb8c70e684d36eb4177e1d4d6755286729"
+        },
+        {
+          "ordinal": 15,
+          "file": "三国演义/015.md",
+          "title": "第十五回 太史慈酣斗小霸王 孙伯符大战严白虎",
+          "chars": 7186,
+          "sha256": "ac5e2ff1e1e45bfa8ccff57fbc4474e95933322b9fb38f1b545ae0af84680821"
+        },
+        {
+          "ordinal": 16,
+          "file": "三国演义/016.md",
+          "title": "第十六回 吕奉先射戟辕门 曹孟德败师淯水",
+          "chars": 6710,
+          "sha256": "fd0bd67a4ada15f974cb640513751654c431009ae6b0b002e79f2b43dd525522"
+        },
+        {
+          "ordinal": 17,
+          "file": "三国演义/017.md",
+          "title": "第十七回 袁公路大起七军 曹孟德会合三将",
+          "chars": 4331,
+          "sha256": "323a95205d796861fc0e60e141b9a0bd91574b75d77daaf6f37412ebc66c5cfb"
+        },
+        {
+          "ordinal": 18,
+          "file": "三国演义/018.md",
+          "title": "第十八回 贾文和料敌决胜 夏侯惇拔矢啖睛",
+          "chars": 3764,
+          "sha256": "8b058649a9faac18fd3a26c9b2f2540bc2e17d00e5099aa2e532ff1d6e84cffc"
+        },
+        {
+          "ordinal": 19,
+          "file": "三国演义/019.md",
+          "title": "第十九回 下邳城曹操鏖兵 白门楼吕布殒命",
+          "chars": 6460,
+          "sha256": "4b913d5a568f85669fe0dc1e0b1ae285911f82301353d48dbe60b52228053a01"
+        },
+        {
+          "ordinal": 20,
+          "file": "三国演义/020.md",
+          "title": "第二十回 曹阿瞒许田打围 董国舅内阁受诏",
+          "chars": 4519,
+          "sha256": "6439756eb8df9e857361df8a0a0edcf5d4b708d5ddcc7cf241240c161040baf4"
+        },
+        {
+          "ordinal": 21,
+          "file": "三国演义/021.md",
+          "title": "第二十一回 曹操煮酒论英雄 关公赚城斩车胄",
+          "chars": 4753,
+          "sha256": "3a3211a4b8d142f4b4c72e23a344e64f5a76d557c75bc96959fa6734fe1a6eb8"
+        },
+        {
+          "ordinal": 22,
+          "file": "三国演义/022.md",
+          "title": "第二十二回 袁曹各起马步三军 关张共擒王刘二将",
+          "chars": 5451,
+          "sha256": "828dd04ee02668906c176b21c11ee3ab01679aebf0d78ecb476fa23a128994a9"
+        },
+        {
+          "ordinal": 23,
+          "file": "三国演义/023.md",
+          "title": "第二十三回 祢正平裸衣骂贼 吉太医下毒遭刑",
+          "chars": 5655,
+          "sha256": "c42883cdaf45553d6e7de5732f6892747af8e9a47e96a8a7452ba808a31d72cf"
+        },
+        {
+          "ordinal": 24,
+          "file": "三国演义/024.md",
+          "title": "第二十四回 国贼行凶杀贵妃 皇叔败走投袁绍",
+          "chars": 2786,
+          "sha256": "f6ee331f62736fe1b474ba7ecc6d128a08afdec70a16b42bd9cead035b922cdd"
+        },
+        {
+          "ordinal": 25,
+          "file": "三国演义/025.md",
+          "title": "第二十五回 屯土山关公约三事 救白马曹操解重围",
+          "chars": 5013,
+          "sha256": "0db786ef22ef80147b9962d7f07c85e0a5b6f045d45829b57d4d29e20e5c2143"
+        },
+        {
+          "ordinal": 26,
+          "file": "三国演义/026.md",
+          "title": "第二十六回 袁本初败兵折将 关云长挂印封金",
+          "chars": 4101,
+          "sha256": "aebf21d410966fbb270cf2d85bd2ba7c6626d3da37526eb4e4bde69ea2571a3c"
+        },
+        {
+          "ordinal": 27,
+          "file": "三国演义/027.md",
+          "title": "第二十七回 美髯公千里走单骑 汉寿侯五关斩六将",
+          "chars": 5101,
+          "sha256": "20c333832127ee874b7f1927ae99dcac222969aef9384e19f1653b62e56d0988"
+        },
+        {
+          "ordinal": 28,
+          "file": "三国演义/028.md",
+          "title": "第二十八回 斩蔡阳兄弟释疑 会古城主臣聚义",
+          "chars": 6014,
+          "sha256": "e6bdae182b63db1f45768f9d41343a7da0dd113410cdce7cbdebc3b03dbe6b90"
+        },
+        {
+          "ordinal": 29,
+          "file": "三国演义/029.md",
+          "title": "第二十九回 小霸王怒斩于吉 碧眼儿坐领江东",
+          "chars": 4993,
+          "sha256": "0d445d35f783fcf41b347640398887f85d572d188755ca39d2d318c6085c64c1"
+        },
+        {
+          "ordinal": 30,
+          "file": "三国演义/030.md",
+          "title": "第三十回 战官渡本初败绩 劫乌巢孟德烧粮",
+          "chars": 5774,
+          "sha256": "a793f42e9fbf50c9fff984a54f604dbdd45291478d8a1b786ad9cdb7bab33bf5"
+        },
+        {
+          "ordinal": 31,
+          "file": "三国演义/031.md",
+          "title": "第三十一回 曹操仓亭破本初 玄德荆州依刘表",
+          "chars": 4761,
+          "sha256": "c24ec22d1d4cadfe28355e491da3c8d115240c1d9d74316b548641cf8c8da28d"
+        },
+        {
+          "ordinal": 32,
+          "file": "三国演义/032.md",
+          "title": "第三十二回 夺冀州袁尚争锋 决漳河许攸献计",
+          "chars": 5552,
+          "sha256": "0b2ccc9b51e44a6c9dfa328e19dbdfe3ed45d2f246cdcc78e65e52275bae4a1a"
+        },
+        {
+          "ordinal": 33,
+          "file": "三国演义/033.md",
+          "title": "第三十三回 曹丕乘乱纳甄氏 郭嘉遗计定辽东",
+          "chars": 5126,
+          "sha256": "f0cc23c83e1bd1717c5e0adae646c77d66d3ad05146cb95a128c3785c7914fec"
+        },
+        {
+          "ordinal": 34,
+          "file": "三国演义/034.md",
+          "title": "第三十四回 蔡夫人隔屏听密语 刘皇叔跃马过檀溪",
+          "chars": 4338,
+          "sha256": "5822db6d295b3f169b550662fe3a3ae54107d552a5616387ba86696090c9ae03"
+        },
+        {
+          "ordinal": 35,
+          "file": "三国演义/035.md",
+          "title": "第三十五回 玄德南漳逢隐沦 单福新野遇英主",
+          "chars": 3833,
+          "sha256": "1ed494e584f487618eebdddcd2ea813c24179690168e77a795ebc39419485f8a"
+        },
+        {
+          "ordinal": 36,
+          "file": "三国演义/036.md",
+          "title": "第三十六回 玄德用计袭樊城 元直走马荐诸葛",
+          "chars": 4195,
+          "sha256": "9fce93e0ef7508329757b1edd988c85bf12248d0d089e32f2988d825f65c0d76"
+        },
+        {
+          "ordinal": 37,
+          "file": "三国演义/037.md",
+          "title": "第三十七回 司马徽再荐名士 刘玄德三顾草庐",
+          "chars": 4799,
+          "sha256": "ddd78cbff1c93aed3494d01bb6d27f3cf46fbc4d14d412bd419224f708ec4feb"
+        },
+        {
+          "ordinal": 38,
+          "file": "三国演义/038.md",
+          "title": "第三十八回 定三分隆中决策 战长江孙氏报仇",
+          "chars": 5008,
+          "sha256": "61926924fe56661d9ac0f67cdcd5097800bb10e03e29e3e1bb0b33e40c228683"
+        },
+        {
+          "ordinal": 39,
+          "file": "三国演义/039.md",
+          "title": "第三十九回 荆州城公子三求计 博望坡军师初用兵",
+          "chars": 4758,
+          "sha256": "e9c55fbbccd6c111da9723cafbaefbc936f1ac4e287ed14d75af0a11e5147c49"
+        },
+        {
+          "ordinal": 40,
+          "file": "三国演义/040.md",
+          "title": "第四十回 蔡夫人议献荆州 诸葛亮火烧新野",
+          "chars": 4488,
+          "sha256": "08094fb800db17c13c7ccb2efc58ec71401367605e281d9acac4b1f573afffb2"
+        },
+        {
+          "ordinal": 41,
+          "file": "三国演义/041.md",
+          "title": "第四十一回 刘玄德携民渡江 赵子龙单骑救主",
+          "chars": 6038,
+          "sha256": "5587b3a0dad759c09f8f5e92decf655356e867c9b8b0c9ee8e82b35224fdb2a1"
+        },
+        {
+          "ordinal": 42,
+          "file": "三国演义/042.md",
+          "title": "第四十二回 张翼德大闹长坂桥 刘豫州败走汉津口",
+          "chars": 3710,
+          "sha256": "7085773dc1d116ae12e0b162d8065d40fe3bb54da8992b9e7fd24eb54d65a4d7"
+        },
+        {
+          "ordinal": 43,
+          "file": "三国演义/043.md",
+          "title": "第四十三回 诸葛亮舌战群儒 鲁子敬力排众议",
+          "chars": 5338,
+          "sha256": "dd625856f70ffd53b189572a8043e9aba07dafb96d69dff086865a608c07b3ad"
+        },
+        {
+          "ordinal": 44,
+          "file": "三国演义/044.md",
+          "title": "第四十四回 孔明用智激周瑜 孙权决计破曹操",
+          "chars": 4639,
+          "sha256": "13707cad0b9d1166b001a43be68e4396e5e10c174a35ed0e7542890d8c360447"
+        },
+        {
+          "ordinal": 45,
+          "file": "三国演义/045.md",
+          "title": "第四十五回 三江口曹操折兵 群英会蒋干中计",
+          "chars": 5505,
+          "sha256": "40e8554446755651a85187076b54ca3b975a719dc8446be71bd70750ce0b94db"
+        },
+        {
+          "ordinal": 46,
+          "file": "三国演义/046.md",
+          "title": "第四十六回 用奇谋孔明借箭 献密计黄盖受刑",
+          "chars": 4820,
+          "sha256": "d557d91d888dbff9fd56daf5ea5951bd6091699bdf46af131b83b31acebe7ca2"
+        },
+        {
+          "ordinal": 47,
+          "file": "三国演义/047.md",
+          "title": "第四十七回 阚泽密献诈降书 庞统巧授连环计",
+          "chars": 4022,
+          "sha256": "f7ea4bf4419c303eb6eddaa4eb75a8ebe51a7e48d790bd79e9ca51365d593732"
+        },
+        {
+          "ordinal": 48,
+          "file": "三国演义/048.md",
+          "title": "第四十八回 宴长江曹操赋诗 锁战船北军用武",
+          "chars": 3403,
+          "sha256": "f7e7551dc8f148855cca416e388dea60043f19761465d98739bb87414cd4bdd9"
+        },
+        {
+          "ordinal": 49,
+          "file": "三国演义/049.md",
+          "title": "第四十九回 七星坛诸葛祭风 三江口周瑜纵火",
+          "chars": 5294,
+          "sha256": "4f56c17cef99c09f7ab3ae0a05e69ff84c7ee0c41f167043672f0577f8362575"
+        },
+        {
+          "ordinal": 50,
+          "file": "三国演义/050.md",
+          "title": "第五十回 诸葛亮智算华容 关云长义释曹操",
+          "chars": 3890,
+          "sha256": "754e84e5a309ba843d097e21cbe992b5a76ff4780d6ff77d1c69a377a2b5abb9"
+        },
+        {
+          "ordinal": 51,
+          "file": "三国演义/051.md",
+          "title": "第五十一回 曹仁大战东吴兵 孔明一气周公瑾",
+          "chars": 4443,
+          "sha256": "65c5eccab8c568cf2702abb34be9cf9288151ab0399a2aa1760adbc868c2ddca"
+        },
+        {
+          "ordinal": 52,
+          "file": "三国演义/052.md",
+          "title": "第五十二回 诸葛亮智辞鲁肃 赵子龙计取桂阳",
+          "chars": 4588,
+          "sha256": "75359c85edb45635ba7c9cf88ec6e3943e53a58652c6f83bad5fd51306a675d5"
+        },
+        {
+          "ordinal": 53,
+          "file": "三国演义/053.md",
+          "title": "第五十三回 关云长义释黄汉升 孙仲谋大战张文远",
+          "chars": 4701,
+          "sha256": "def4e178b402e88ae5acabd74c4ee3f0310ff40115e084e7a3f71b9753621983"
+        },
+        {
+          "ordinal": 54,
+          "file": "三国演义/054.md",
+          "title": "第五十四回 吴国太佛寺看新郎 刘皇叔洞房续佳偶",
+          "chars": 5143,
+          "sha256": "3e081f3fabb3c2473afd93a7d9507a28859c6692e8988d3b80e26238793ad0d1"
+        },
+        {
+          "ordinal": 55,
+          "file": "三国演义/055.md",
+          "title": "第五十五回 玄德智激孙夫人 孔明二气周公瑾",
+          "chars": 4322,
+          "sha256": "dc5c5202720d3d8e3506de6563506c4addae476cafd582ba7fe22775d1b508f5"
+        },
+        {
+          "ordinal": 56,
+          "file": "三国演义/056.md",
+          "title": "第五十六回 曹操大宴铜雀台 孔明三气周公瑾",
+          "chars": 4827,
+          "sha256": "88540fea2a917b79196107f1e632505878fe162e959cc3dd4fc46cf4c8d694cb"
+        },
+        {
+          "ordinal": 57,
+          "file": "三国演义/057.md",
+          "title": "第五十七回 柴桑口卧龙吊丧 耒阳县凤雏理事",
+          "chars": 5559,
+          "sha256": "b0f141bc1b2d1cc072e86ae6dba55c00d32671bdfa6397276248ea0822133b48"
+        },
+        {
+          "ordinal": 58,
+          "file": "三国演义/058.md",
+          "title": "第五十八回 马孟起兴兵雪恨 曹阿瞒割须弃袍",
+          "chars": 5220,
+          "sha256": "55b9728e47bfcf223009f2dea8292b00374a4f53238a7fb45c38c62a0e35e443"
+        },
+        {
+          "ordinal": 59,
+          "file": "三国演义/059.md",
+          "title": "第五十九回 许褚裸衣斗马超 曹操抹书间韩遂",
+          "chars": 5358,
+          "sha256": "d4b51646b340899c6adf38fbdc339b3e1a4018098a87e7647eb3112588f871cb"
+        },
+        {
+          "ordinal": 60,
+          "file": "三国演义/060.md",
+          "title": "第六十回 张永年反难杨修 庞士元议取西蜀",
+          "chars": 7322,
+          "sha256": "18185348d2b79c6ce9280a4297a5bc3eec02941597e9831673e7014bb31c120c"
+        },
+        {
+          "ordinal": 61,
+          "file": "三国演义/061.md",
+          "title": "第六十一回 赵云截江夺阿斗 孙权遗书退老瞒",
+          "chars": 4765,
+          "sha256": "df5734eb1e6d5e52a6b4f5ed58c6779b9d3f07d12a3f392c793df47303816075"
+        },
+        {
+          "ordinal": 62,
+          "file": "三国演义/062.md",
+          "title": "第六十二回 取涪关杨高授首 攻雒城黄魏争功",
+          "chars": 5459,
+          "sha256": "c4728bc293c9430992408a2fbd3de327262480df479468b3823dc3b949dcd3d2"
+        },
+        {
+          "ordinal": 63,
+          "file": "三国演义/063.md",
+          "title": "第六十三回 诸葛亮痛哭庞统 张翼德义释严颜",
+          "chars": 5391,
+          "sha256": "28ff2e1392cab051fc460353e6e5b1e2b14d87ca3cf23fdd5f5e55f7a5fc09e2"
+        },
+        {
+          "ordinal": 64,
+          "file": "三国演义/064.md",
+          "title": "第六十四回 孔明定计捉张任 杨阜借兵破马超",
+          "chars": 5242,
+          "sha256": "5b958b8c86663e9124af16d50fba5467451e8441acd72958e9011694db62dbac"
+        },
+        {
+          "ordinal": 65,
+          "file": "三国演义/065.md",
+          "title": "第六十五回 马超大战葭萌关 刘备自领益州牧",
+          "chars": 6044,
+          "sha256": "b280d3590e7afcd7bc44040b626e0412a0d4a2fa2658bc3f906a21732c0fb94b"
+        },
+        {
+          "ordinal": 66,
+          "file": "三国演义/066.md",
+          "title": "第六十六回 关云长单刀赴会 伏皇后为国捐生",
+          "chars": 5203,
+          "sha256": "dd997db1b22e4f439f64a9eb0c50d22648f1fd243d6eaa43e8d4d5c223c269eb"
+        },
+        {
+          "ordinal": 67,
+          "file": "三国演义/067.md",
+          "title": "第六十七回 曹操平定汉中地 张辽威震逍遥津",
+          "chars": 5357,
+          "sha256": "1fc601ed0854e9f9a8f1435a20ed752df91e41051a1c371bc81beaedb1823470"
+        },
+        {
+          "ordinal": 68,
+          "file": "三国演义/068.md",
+          "title": "第六十八回 甘宁百骑劫魏营 左慈掷杯戏曹操",
+          "chars": 5030,
+          "sha256": "8931690a85af4c4a5a8442680187230b78608a0d5c71bb9ddb4f0ae3eb9c09c7"
+        },
+        {
+          "ordinal": 69,
+          "file": "三国演义/069.md",
+          "title": "第六十九回 卜周易管辂知机 讨汉贼五臣死节",
+          "chars": 4914,
+          "sha256": "1d04d84f2138d040dde47a87e7a4188cf24623cb1df3c8a35f686961bfa8d9a9"
+        },
+        {
+          "ordinal": 70,
+          "file": "三国演义/070.md",
+          "title": "第七十回 猛张飞智取瓦口隘 老黄忠计夺天荡山",
+          "chars": 5155,
+          "sha256": "64c3eb0d2422ad3bb65cbb61fdd674c771efd80a1d0a2c8aa2813e54c3883fcf"
+        },
+        {
+          "ordinal": 71,
+          "file": "三国演义/071.md",
+          "title": "第七十一回 占对山黄忠逸待劳 据汉水赵云寡胜众",
+          "chars": 5571,
+          "sha256": "13f182e097dbba72d2ca5f21685f5c7dcc83f4ec99b46037b760e303ddd625c2"
+        },
+        {
+          "ordinal": 72,
+          "file": "三国演义/072.md",
+          "title": "第七十二回 诸葛亮智取汉中 曹阿瞒兵退斜谷",
+          "chars": 4231,
+          "sha256": "45031b04cb3cdb8e96492c314420bbe42f293d79c8d345538b02f4327372b907"
+        },
+        {
+          "ordinal": 73,
+          "file": "三国演义/073.md",
+          "title": "第七十三回 玄德进位汉中王 云长攻拔襄阳郡",
+          "chars": 4959,
+          "sha256": "c0eaec8e8d508efaa7a89b0689fff0def8610ff73047d72297175f56444b194a"
+        },
+        {
+          "ordinal": 74,
+          "file": "三国演义/074.md",
+          "title": "第七十四回 庞令明抬榇决死战 关云长放水淹七军",
+          "chars": 4433,
+          "sha256": "db6b072057e67383826e1292ab3964a799dbe10c55353a1d98d0eeb66077274c"
+        },
+        {
+          "ordinal": 75,
+          "file": "三国演义/075.md",
+          "title": "第七十五回 关云长刮骨疗毒 吕子明白衣渡江",
+          "chars": 3976,
+          "sha256": "7b6a61b62c12b54b0f108a5ee0a650a48f699ec9f6c94ec227c09f3cacb7b70a"
+        },
+        {
+          "ordinal": 76,
+          "file": "三国演义/076.md",
+          "title": "第七十六回 徐公明大战沔水 关云长败走麦城",
+          "chars": 4748,
+          "sha256": "fb316440ecf8bb76c99abb3b9c9b53b4d9e003a5f523f61c47e6ff3edef3fe42"
+        },
+        {
+          "ordinal": 77,
+          "file": "三国演义/077.md",
+          "title": "第七十七回 玉泉山关公显圣 洛阳城曹操感神",
+          "chars": 4430,
+          "sha256": "148069630443945e82359c63d94a08646f62d78a7ba463a1f9a7ae13c6943536"
+        },
+        {
+          "ordinal": 78,
+          "file": "三国演义/078.md",
+          "title": "第七十八回 治风疾神医身死 传遗命奸雄数终",
+          "chars": 4073,
+          "sha256": "4a425522490c3b58575407f38d6da28a0d0008ad49819e665cf2f17ba683ae5e"
+        },
+        {
+          "ordinal": 79,
+          "file": "三国演义/079.md",
+          "title": "第七十九回 兄逼弟曹植赋诗 侄陷叔刘封伏法",
+          "chars": 3882,
+          "sha256": "8be2e59a68a9ffb36e4acdc87a376845d15f0f6e191194acd9f5438d36311f59"
+        },
+        {
+          "ordinal": 80,
+          "file": "三国演义/080.md",
+          "title": "第八十回 曹丕废帝篡炎刘 汉王正位续大统",
+          "chars": 4403,
+          "sha256": "e6f610996e5ebd38eb442b3594c2916abccd55767fba6c0c173d1c52dbb0ac8d"
+        },
+        {
+          "ordinal": 81,
+          "file": "三国演义/081.md",
+          "title": "第八十一回 急兄仇张飞遇害 雪弟恨先主兴兵",
+          "chars": 3987,
+          "sha256": "29f0b36b87b1dbc09e0b8359ca48aea99ce606169a5e6aaf91c4e4a20862a986"
+        },
+        {
+          "ordinal": 82,
+          "file": "三国演义/082.md",
+          "title": "第八十二回 孙权降魏受九锡 先主征吴赏六军",
+          "chars": 4372,
+          "sha256": "cf95aee9df104e05f52f31a5a7461a81440b195a199e276366ae247ecc6d7edb"
+        },
+        {
+          "ordinal": 83,
+          "file": "三国演义/083.md",
+          "title": "第八十三回 战猇亭先主得仇人 守江口书生拜大将",
+          "chars": 5748,
+          "sha256": "3bd7f1c717f0d533393e32da70bfc07fd1d09eb10db80b9a77ae323de7675514"
+        },
+        {
+          "ordinal": 84,
+          "file": "三国演义/084.md",
+          "title": "第八十四回 陆逊营烧七百里 孔明巧布八阵图",
+          "chars": 4935,
+          "sha256": "9978339692189e003ae5e039909c91e9aff0c6d39aafeb4664d23601a470ea3c"
+        },
+        {
+          "ordinal": 85,
+          "file": "三国演义/085.md",
+          "title": "第八十五回 刘先主遗诏托孤儿 诸葛亮安居平五路",
+          "chars": 5360,
+          "sha256": "81e58a942ba2eed9dfa9c6f3001c64a94754a436e4cf7309164e25f67165106f"
+        },
+        {
+          "ordinal": 86,
+          "file": "三国演义/086.md",
+          "title": "第八十六回 难张温秦宓逞天辩 破曹丕徐盛用火攻",
+          "chars": 5192,
+          "sha256": "a2782d1e0332897aa088d839adf414712e7fc675a8a1dd97184869716cdcb19c"
+        },
+        {
+          "ordinal": 87,
+          "file": "三国演义/087.md",
+          "title": "第八十七回 征南寇丞相大兴师 抗天兵蛮王初受执",
+          "chars": 5675,
+          "sha256": "1af73946563567e081b53bdab5c06ca8554f8179755e908e08dadde853721413"
+        },
+        {
+          "ordinal": 88,
+          "file": "三国演义/088.md",
+          "title": "第八十八回 渡泸水再缚番王 识诈降三擒孟获",
+          "chars": 4892,
+          "sha256": "4ec6637f8114dc2e3dda00ed2716d713a71b458bd13ca0135f293ea033c30c73"
+        },
+        {
+          "ordinal": 89,
+          "file": "三国演义/089.md",
+          "title": "第八十九回 武乡侯四番用计 南蛮王五次遭擒",
+          "chars": 5447,
+          "sha256": "c0462a028f7b55de5f49f51653f53a0e215dc512db1d1a5942c6fb341fab706a"
+        },
+        {
+          "ordinal": 90,
+          "file": "三国演义/090.md",
+          "title": "第九十回 驱巨兽六破蛮兵 烧藤甲七擒孟获",
+          "chars": 6810,
+          "sha256": "8262e96441257c25f725af8c80ffcc2d62a83a5b3e9f8c9f57e96e07efcf2251"
+        },
+        {
+          "ordinal": 91,
+          "file": "三国演义/091.md",
+          "title": "第九十一回 祭泸水汉相班师 伐中原武侯上表",
+          "chars": 5459,
+          "sha256": "50c1e7483d3c8bc74a95e9b35744403203a2772773110a19bb69142dfdabf129"
+        },
+        {
+          "ordinal": 92,
+          "file": "三国演义/092.md",
+          "title": "第九十二回 赵子龙力斩五将 诸葛亮智取三城",
+          "chars": 4935,
+          "sha256": "e9bd0168bd2d2ba1546a9586ae4f6349ba30a9dd8c8993ff97eaaa0e44c3c961"
+        },
+        {
+          "ordinal": 93,
+          "file": "三国演义/093.md",
+          "title": "第九十三回 姜伯约归降孔明 武乡侯骂死王朗",
+          "chars": 5415,
+          "sha256": "83d59ad7513042834e3929f0c21abea0225912f91cfeb66de088dfdcee1a9087"
+        },
+        {
+          "ordinal": 94,
+          "file": "三国演义/094.md",
+          "title": "第九十四回 诸葛亮乘雪破羌兵 司马懿克日擒孟达",
+          "chars": 5447,
+          "sha256": "e5916c729438805175c02e480fcea08448ce731d67056a1ea302772db1edbec6"
+        },
+        {
+          "ordinal": 95,
+          "file": "三国演义/095.md",
+          "title": "第九十五回 马谡拒谏失街亭 武侯弹琴退仲达",
+          "chars": 5976,
+          "sha256": "bb25144df2e60300e8a8302186de662fc5b1d13dbed7eb68b30e402682775534"
+        },
+        {
+          "ordinal": 96,
+          "file": "三国演义/096.md",
+          "title": "第九十六回 孔明挥泪斩马谡 周鲂断发赚曹休",
+          "chars": 4614,
+          "sha256": "c192e98dc91962e266cee471239d5b5453089cd976256259cf3cb276c95addfb"
+        },
+        {
+          "ordinal": 97,
+          "file": "三国演义/097.md",
+          "title": "第九十七回 讨魏国武侯再上表 破曹兵姜维诈献书",
+          "chars": 4817,
+          "sha256": "7bdfc24febbe180f0b7c95546de0d28ffef3c3aadd94131be4c137728b18a019"
+        },
+        {
+          "ordinal": 98,
+          "file": "三国演义/098.md",
+          "title": "第九十八回 追汉军王双受诛 袭陈仓武侯取胜",
+          "chars": 5078,
+          "sha256": "c74044e42f83fbd98d287bc4c2a1f5a5538009cd944ebcb6466c784beeb974da"
+        },
+        {
+          "ordinal": 99,
+          "file": "三国演义/099.md",
+          "title": "第九十九回 诸葛亮大破魏兵 司马懿入寇西蜀",
+          "chars": 5629,
+          "sha256": "294803bfca45118958cf89cc7d30efeb0f193bf8feb5ba54b965763711bb2cc6"
+        },
+        {
+          "ordinal": 100,
+          "file": "三国演义/100.md",
+          "title": "第一百回 汉兵劫寨破曹真 武侯斗阵辱仲达",
+          "chars": 5269,
+          "sha256": "6089f469b3ca18bc059e1459c825e47ef27c35f4316bd091bdb8f832cc06fd5a"
+        },
+        {
+          "ordinal": 101,
+          "file": "三国演义/101.md",
+          "title": "第一百零一回 出陇上诸葛妆神 奔剑阁张郃中计",
+          "chars": 5681,
+          "sha256": "ccce37277aed2f906b3b65cccbd86f5937192470f8eb0c3556f7813b3062e19e"
+        },
+        {
+          "ordinal": 102,
+          "file": "三国演义/102.md",
+          "title": "第一百零二回 司马懿占北原渭桥 诸葛亮造木牛流马",
+          "chars": 6605,
+          "sha256": "b7b9ee3e157a9fda8e520993a253a77bbf9e4a538e2ea8dc287bfe48b364db86"
+        },
+        {
+          "ordinal": 103,
+          "file": "三国演义/103.md",
+          "title": "第一百零三回 上方谷司马受困 五丈原诸葛禳星",
+          "chars": 5743,
+          "sha256": "785ce35427369306c08d26d3a87c9fda0f759ab990a001f88e7ae9da1c646919"
+        },
+        {
+          "ordinal": 104,
+          "file": "三国演义/104.md",
+          "title": "第一百零四回 陨大星汉丞相归天 见木像魏都督丧胆",
+          "chars": 3827,
+          "sha256": "0c7595554e7449adfd8edd450935905b65e3a8c0822e2d01e4384eda8d0e3141"
+        },
+        {
+          "ordinal": 105,
+          "file": "三国演义/105.md",
+          "title": "第一百零五回 武侯预伏锦囊计 魏主拆取承露盘",
+          "chars": 5424,
+          "sha256": "4a9f715ced090e3bc0062a0676aac176ddc5f181aba2f42ac79586c3db65a979"
+        },
+        {
+          "ordinal": 106,
+          "file": "三国演义/106.md",
+          "title": "第一百零六回 公孙渊兵败死襄平 司马懿诈病赚曹爽",
+          "chars": 5088,
+          "sha256": "566300711370e6beb87eefc5b2ccbed4c3e4daf1ac247ce0c9c62fd7c8f4893d"
+        },
+        {
+          "ordinal": 107,
+          "file": "三国演义/107.md",
+          "title": "第一百零七回 魏主政归司马氏 姜维兵败牛头山",
+          "chars": 5452,
+          "sha256": "bcfc1e1df61b7de4c3d7bd3b7a5055e93d0dab806943c214f533e8c099654fa1"
+        },
+        {
+          "ordinal": 108,
+          "file": "三国演义/108.md",
+          "title": "第一百零八回 丁奉雪中奋短兵 孙峻席间施密计",
+          "chars": 3955,
+          "sha256": "4ade2ae7e11c55bcbceb901c3563484f51683d9ba22bcaca61c68cd21d94aa7b"
+        },
+        {
+          "ordinal": 109,
+          "file": "三国演义/109.md",
+          "title": "第一百零九回 困司马汉将奇谋 废曹芳魏家果报",
+          "chars": 4358,
+          "sha256": "b09852bd06222608b2bdb20ca7b59320bbdc7d61acb45b37c3d71d81543b87cb"
+        },
+        {
+          "ordinal": 110,
+          "file": "三国演义/110.md",
+          "title": "第一百十回 文鸯单骑退雄兵 姜维背水破大敌",
+          "chars": 4537,
+          "sha256": "3fdf013d16f4fcfc5b28666a2db4e1a0957830e36c6ee311b9fa1d39961de684"
+        },
+        {
+          "ordinal": 111,
+          "file": "三国演义/111.md",
+          "title": "第一百十一回 邓士载智败姜伯约 诸葛诞义讨司马昭",
+          "chars": 3848,
+          "sha256": "8454817a31f8749aea33e840c02487a1e4d379b961d88b2924895528058eeaf7"
+        },
+        {
+          "ordinal": 112,
+          "file": "三国演义/112.md",
+          "title": "第一百十二回 救寿春于诠死节 取长城伯约鏖兵",
+          "chars": 3988,
+          "sha256": "4d359566deb2a011e720506c05beab8a916db7bd239cfdb3e6e062d3fed4d112"
+        },
+        {
+          "ordinal": 113,
+          "file": "三国演义/113.md",
+          "title": "第一百十三回 丁奉定计斩孙綝 姜维斗阵破邓艾",
+          "chars": 4504,
+          "sha256": "b6d3fb6c9ea5442ce835dd2740cb59d12a26e68ce0c11abc44e67279bf29b54e"
+        },
+        {
+          "ordinal": 114,
+          "file": "三国演义/114.md",
+          "title": "第一百十四回 曹髦驱车死南阙 姜维弃粮胜魏兵",
+          "chars": 3882,
+          "sha256": "eec4a40367bf347ede2cfc61bdb8a50a989be1df4df6fbda6ab3f9f7e0fc2093"
+        },
+        {
+          "ordinal": 115,
+          "file": "三国演义/115.md",
+          "title": "第一百十五回 诏班师后主信谗 托屯田姜维避祸",
+          "chars": 4100,
+          "sha256": "6c5570a8c4ba0fcc0d873e572c57bbc96baf81d0dcb1b39feca8be5d2758b882"
+        },
+        {
+          "ordinal": 116,
+          "file": "三国演义/116.md",
+          "title": "第一百十六回 钟会分兵汉中道 武侯显圣定军山",
+          "chars": 4305,
+          "sha256": "01df20b7110e80e2cd82710e8f924021131a64e89ff972d02b32c0ee4c6e413d"
+        },
+        {
+          "ordinal": 117,
+          "file": "三国演义/117.md",
+          "title": "第一百十七回 邓士载偷度阴平 诸葛瞻战死绵竹",
+          "chars": 4590,
+          "sha256": "a75be3030fa4bb25b5e393f0ecc7917480d111d31a9d73f7d0c3c023a0d8017e"
+        },
+        {
+          "ordinal": 118,
+          "file": "三国演义/118.md",
+          "title": "第一百十八回 哭祖庙一王死孝 入西川二士争功",
+          "chars": 3607,
+          "sha256": "20cd213c211f4791ea594b398d23b103c933ba2fa52bc32ef3b142008c5097bb"
+        },
+        {
+          "ordinal": 119,
+          "file": "三国演义/119.md",
+          "title": "第一百十九回 假投降巧计成虚话 再受禅依样画葫芦",
+          "chars": 4905,
+          "sha256": "36226b3347625c59179e31e59cbed83677cdbf073c8ce8272316aed2130a9af3"
+        },
+        {
+          "ordinal": 120,
+          "file": "三国演义/120.md",
+          "title": "第一百二十回 荐杜预老将献新谋 降孙皓三分归一统",
+          "chars": 6552,
+          "sha256": "2bfb66fe9147028de01e9e509136285dcc85b436f482cf581f93e1782d5514cc"
+        }
+      ],
+      "source": "hunterhug/china-literary@master",
+      "chapter_count": 120,
+      "total_chars": 595062
+    },
+    {
+      "book": "水浒传",
+      "chapters": [
+        {
+          "ordinal": 1,
+          "file": "水浒传/001.md",
+          "title": "第一回 张天师祈禳瘟疫 洪太尉误走妖魔",
+          "chars": 5689,
+          "sha256": "04bea42ec6843dc72e72b739b23071ce87118f4b00b3b8f13efb3d128ed4c80f"
+        },
+        {
+          "ordinal": 2,
+          "file": "水浒传/002.md",
+          "title": "第二回 王教头私走延安府 九纹龙大闹史家村",
+          "chars": 13779,
+          "sha256": "903d1b84f549cb4b7dbe44156bdd572ed19b62453381901316d2f93dd5b6d782"
+        },
+        {
+          "ordinal": 3,
+          "file": "水浒传/003.md",
+          "title": "第三回 史大郎夜走华阴县 鲁提辖拳打镇关西",
+          "chars": 7845,
+          "sha256": "5bfaf47e34785d137410898bdbcb1c08404e57c5def54d0adbfdf5677551bc23"
+        },
+        {
+          "ordinal": 4,
+          "file": "水浒传/004.md",
+          "title": "第四回 赵员外重修文殊院 鲁智深大闹五台山",
+          "chars": 11240,
+          "sha256": "ba307bb50951422561ff5bbe6b7482f58597ba09579f154a5e5351a621321d81"
+        },
+        {
+          "ordinal": 5,
+          "file": "水浒传/005.md",
+          "title": "第五回 小霸王醉入销金帐 花和尚大闹桃花村",
+          "chars": 7846,
+          "sha256": "c282071b3a1d63fb28e5e4e25b033fa87d1fafbac1860cfa39c7074e7d96a5ab"
+        },
+        {
+          "ordinal": 6,
+          "file": "水浒传/006.md",
+          "title": "第六回 九纹龙剪径赤松林 鲁智深火烧瓦罐寺",
+          "chars": 7688,
+          "sha256": "27398658f1b8d42de90f307502e8363dab1253793b559582ff23b90b6e27f9bd"
+        },
+        {
+          "ordinal": 7,
+          "file": "水浒传/007.md",
+          "title": "第七回 花和尚倒拔垂杨柳 豹子头误入白虎堂",
+          "chars": 7386,
+          "sha256": "04a5b36c733f1b1d0ca554ebc6088d2d8811ae6eb3101a4257304b70a2edc1c3"
+        },
+        {
+          "ordinal": 8,
+          "file": "水浒传/008.md",
+          "title": "第八回 林教头刺配沧州道 鲁智深大闹野猪林",
+          "chars": 5545,
+          "sha256": "c196d6f300d7e6194ac47dc70b034d0c67d0924c6d9a1537ce582f6d7678f474"
+        },
+        {
+          "ordinal": 9,
+          "file": "水浒传/009.md",
+          "title": "第九回 柴进门招天下客 林冲棒打洪教头",
+          "chars": 7809,
+          "sha256": "3436350f4bd6715da59fe209f99db127d0d7513ec38b8a5c7e2dc7811d645ca9"
+        },
+        {
+          "ordinal": 10,
+          "file": "水浒传/010.md",
+          "title": "第十回 林教头风雪山神庙 陆虞候火烧草料场",
+          "chars": 6164,
+          "sha256": "39c3766d3535ac8cd5de1d19a0607af7ace612fc598ba9f13cb1961bcfafc4aa"
+        },
+        {
+          "ordinal": 11,
+          "file": "水浒传/011.md",
+          "title": "第十一回 朱贵水亭施号箭 林冲雪夜上梁山",
+          "chars": 6639,
+          "sha256": "086b51c635efb35c25db641498179286b9d33c2bcc373214e505cb54c11f285e"
+        },
+        {
+          "ordinal": 12,
+          "file": "水浒传/012.md",
+          "title": "第十二回 梁山泊林冲落草 汴京城杨志卖刀",
+          "chars": 5734,
+          "sha256": "05b1d95b530099574d4c652ad715c9f2ae37768d91917e1fddd3bdcf5628237f"
+        },
+        {
+          "ordinal": 13,
+          "file": "水浒传/013.md",
+          "title": "第十三回 急先锋东郭争功 青面兽北京斗武",
+          "chars": 6256,
+          "sha256": "648368441934d2fee5fb3bec59567903e5244a20006bb44f5fd70c193f2d4a3a"
+        },
+        {
+          "ordinal": 14,
+          "file": "水浒传/014.md",
+          "title": "第十四回 赤发鬼醉卧灵官殿 晁天王认义东溪村",
+          "chars": 5534,
+          "sha256": "bc02f535926ae94dc03c9ccf098f19ffa3b6e65a1009f06325f88ef4facedf8b"
+        },
+        {
+          "ordinal": 15,
+          "file": "水浒传/015.md",
+          "title": "第十五回 吴学究说三阮撞筹 公孙胜应七星聚义",
+          "chars": 7409,
+          "sha256": "3376e268b832249148464ed9f85af2ef1e42ff5bff782ceaa5105cbd43df4848"
+        },
+        {
+          "ordinal": 16,
+          "file": "水浒传/016.md",
+          "title": "第十六回 杨志押送金银担 吴用智取生辰纲",
+          "chars": 8257,
+          "sha256": "7034cd3cc0e3c7590c33a01ebbc78d63cded5506954b71baf2d2f9ed15a1d023"
+        },
+        {
+          "ordinal": 17,
+          "file": "水浒传/017.md",
+          "title": "第十七回 花和尚单打二龙山 青面兽双夺宝珠寺",
+          "chars": 8715,
+          "sha256": "7a7f9d2cdd2c23812db8d3d35cecfe8218267d12cfa8fdd5ae2da11d6ab5f762"
+        },
+        {
+          "ordinal": 18,
+          "file": "水浒传/018.md",
+          "title": "第十八回 美髯公智稳插翅虎 宋公明私放晃天王",
+          "chars": 7774,
+          "sha256": "00d85d1866cbd663428f2ba0d2cd89d94398a863c48ae762b56330faac0672f9"
+        },
+        {
+          "ordinal": 19,
+          "file": "水浒传/019.md",
+          "title": "第十九回 林冲水寨大并火 晁盖梁山小夺泊",
+          "chars": 8055,
+          "sha256": "d5e3a98d3afe1098287d62e5d0777a73712f2b09e81df439bb7700f3439bd4c0"
+        },
+        {
+          "ordinal": 20,
+          "file": "水浒传/020.md",
+          "title": "第二十回 梁山泊义士尊晁盖 郓城县月夜走刘唐",
+          "chars": 7183,
+          "sha256": "dac5d604ed8ffdd2d4d20080236459c7c65491224430698c02f91daba5f44ee4"
+        },
+        {
+          "ordinal": 21,
+          "file": "水浒传/021.md",
+          "title": "第二十一回 虔婆醉打唐牛儿 宋江怒杀阎婆惜",
+          "chars": 10998,
+          "sha256": "18c66e3ee92b3b4cdc9b6be63b01fef2d6f9479455bc0e83ddc50558d15b7d7b"
+        },
+        {
+          "ordinal": 22,
+          "file": "水浒传/022.md",
+          "title": "第二十二回 阎婆大闹郓城县 朱仝义释宋公明",
+          "chars": 6715,
+          "sha256": "14cb751e278340dadf2aaced2810fb86bd7dd01daceb0d4db612224be04cefa9"
+        },
+        {
+          "ordinal": 23,
+          "file": "水浒传/023.md",
+          "title": "第二十三回 横海郡柴进留宾 景阳冈武松打虎",
+          "chars": 7464,
+          "sha256": "c6c632437d54c7a65f8638ac434289be4597aa1521825f8b272370c4cccae8a2"
+        },
+        {
+          "ordinal": 24,
+          "file": "水浒传/024.md",
+          "title": "第二十四回 王婆贪贿说风情 郓哥不忿闹茶肆",
+          "chars": 19122,
+          "sha256": "80c8817d96471576afbd33639b9496ad326d3b4342ad6dc5f90a80ff1b37f9d7"
+        },
+        {
+          "ordinal": 25,
+          "file": "水浒传/025.md",
+          "title": "第二十五回 王婆计啜西门庆 淫妇药鸩武大郎",
+          "chars": 6365,
+          "sha256": "e21386fb5c06850be674fd5de80397aa9410a7355daf347475568db9f0c88af5"
+        },
+        {
+          "ordinal": 26,
+          "file": "水浒传/026.md",
+          "title": "第二十六回 郓哥大闹授官厅 武松斗杀西门庆",
+          "chars": 9683,
+          "sha256": "8cb17c666c9e93c04c50e20ce7535afac595e59fbcdfb27f6497a6033a2c4e66"
+        },
+        {
+          "ordinal": 27,
+          "file": "水浒传/027.md",
+          "title": "第二十七回 母夜叉孟州道卖人肉 武都头十字坡遇张青",
+          "chars": 6163,
+          "sha256": "8495919a7cc1cc1d796b5b583a6ee9f664a5b46709a37e7e746b2dbac3174203"
+        },
+        {
+          "ordinal": 28,
+          "file": "水浒传/028.md",
+          "title": "第二十八回 武松威镇安平寨 施恩义夺快活林",
+          "chars": 5752,
+          "sha256": "df378cc246d45bd189223a831419d900a9e1ba369ea4a96bd20109e63c59e494"
+        },
+        {
+          "ordinal": 29,
+          "file": "水浒传/029.md",
+          "title": "第二十九回 施恩重霸孟州道 武松醉打蒋门神",
+          "chars": 5672,
+          "sha256": "19f64f14291c39f0e89b863dfc8f14a44f872913f34f2660885d55a741ee4ed9"
+        },
+        {
+          "ordinal": 30,
+          "file": "水浒传/030.md",
+          "title": "第三十回 施恩三入死囚牢 武松大闹飞云浦",
+          "chars": 7952,
+          "sha256": "fd7f9dd0db71ff01c83adad6521a5449f547126ab33ed45c0daec95b72eeabd6"
+        },
+        {
+          "ordinal": 31,
+          "file": "水浒传/031.md",
+          "title": "第三十一回 张都监血溅鸳鸯楼 武行者夜走蜈蚣岭",
+          "chars": 8152,
+          "sha256": "f0285a3532752c401c2c599ec3a44c348ed681fb19e8556ae43896b4f6da316b"
+        },
+        {
+          "ordinal": 32,
+          "file": "水浒传/032.md",
+          "title": "第三十二回 武行者醉打孔亮 锦毛虎义释宋江",
+          "chars": 11037,
+          "sha256": "e81fb86835e0f94c83f4dbc61fe7faf867488e69ffdf80f060b1e6ac953bc4b1"
+        },
+        {
+          "ordinal": 33,
+          "file": "水浒传/033.md",
+          "title": "第三十三回 宋江夜看小鳌山 花荣大闹清风寨",
+          "chars": 7500,
+          "sha256": "c2cbba44da1526c64b38677ea3001625864c27d7024c07480a72b7edda0207d7"
+        },
+        {
+          "ordinal": 34,
+          "file": "水浒传/034.md",
+          "title": "第三十四回 镇三山大闹青州道 霹雳火夜走瓦砾场",
+          "chars": 8408,
+          "sha256": "c4c4810bb63fb5accac59ac0bb0fd5a788063a9f88be5bad415394d582d74fe6"
+        },
+        {
+          "ordinal": 35,
+          "file": "水浒传/035.md",
+          "title": "第三十五回 石将军村店寄书 小李广梁山射雁",
+          "chars": 8870,
+          "sha256": "9f26aac71700ac6de7f4d69f987ff89fdfd9395e36e6e6e738243f855dfb6238"
+        },
+        {
+          "ordinal": 36,
+          "file": "水浒传/036.md",
+          "title": "第三十六回 梁山泊吴用举戴宗 揭阳岭宋江逢李俊",
+          "chars": 7508,
+          "sha256": "ce31d1ea2a9fd255a6def3ea64a0948a25bed0b423ee4520dd49edf0137dba0a"
+        },
+        {
+          "ordinal": 37,
+          "file": "水浒传/037.md",
+          "title": "第三十七回 没遮拦追赶及时雨 船火儿夜闹浔阳江",
+          "chars": 8857,
+          "sha256": "91bfe59ba2e532528dd2e6c7e988da87782d53c5f9727a1cc28860d78f371215"
+        },
+        {
+          "ordinal": 38,
+          "file": "水浒传/038.md",
+          "title": "第三十八回 及时雨会神行太保 黑旋风斗浪里白跳",
+          "chars": 9589,
+          "sha256": "2215ff3c7ab04f4e130a3b5105e9d7161e01c6067efd2d873636c95dd22de6ba"
+        },
+        {
+          "ordinal": 39,
+          "file": "水浒传/039.md",
+          "title": "第三十九回 浔阳楼宋江吟反诗 梁山泊戴宗传假信",
+          "chars": 12045,
+          "sha256": "9abeecca1dab07657b3c7f3e226d3bd88ca7feeca5cc643d07b5490835426d4d"
+        },
+        {
+          "ordinal": 40,
+          "file": "水浒传/040.md",
+          "title": "第四十回 梁山泊好汉劫法场 白龙庙英雄小聚义",
+          "chars": 6876,
+          "sha256": "9b3f541896cc1b660f1014201b21bc2d6f39d425fc9c0f227c9de25bc7160e61"
+        },
+        {
+          "ordinal": 41,
+          "file": "水浒传/041.md",
+          "title": "第四十一回 宋江智取无为军 张顺活捉黄文炳",
+          "chars": 9852,
+          "sha256": "581ef24b916b89e86c733358142b02629242dc49c237486b28d6ee383ff15121"
+        },
+        {
+          "ordinal": 42,
+          "file": "水浒传/042.md",
+          "title": "第四十二回 还道村受三卷天书 宋公明遇九天玄女",
+          "chars": 8031,
+          "sha256": "16478ba82b734165554448928f0da52dc872c310a2ecf01338983517ef07cd4c"
+        },
+        {
+          "ordinal": 43,
+          "file": "水浒传/043.md",
+          "title": "第四十三回 假李逵剪径劫单人 黑旋风沂岭杀四虎",
+          "chars": 10445,
+          "sha256": "961b5998ac93f60129572649f98e4798ae8cef0a71104eaafab5426349934053"
+        },
+        {
+          "ordinal": 44,
+          "file": "水浒传/044.md",
+          "title": "第四十四回 锦豹子小径逢戴宗 病关索长街遇石秀",
+          "chars": 9607,
+          "sha256": "74ff1fed6ac4944fb4763c6e237dd50c1fae0a77ac34d72742ae408c3e905292"
+        },
+        {
+          "ordinal": 45,
+          "file": "水浒传/045.md",
+          "title": "第四十五回 杨雄醉骂潘巧云 石秀智杀裴如海",
+          "chars": 11156,
+          "sha256": "1a01c6049d71c73d323fdab7fcfe4dd2700dd23058faaff808e0f730a30fbfff"
+        },
+        {
+          "ordinal": 46,
+          "file": "水浒传/046.md",
+          "title": "第四十六回 病关索大闹翠屏山 拚命三火烧祝家庄",
+          "chars": 7750,
+          "sha256": "9969e46f330e32c40929357c36c91500e4a89cc485afea3ade5929ac48396baf"
+        },
+        {
+          "ordinal": 47,
+          "file": "水浒传/047.md",
+          "title": "第四十七回 扑天雕双修生死书 宋公明一打祝家庄",
+          "chars": 8688,
+          "sha256": "c4fc5488e8515c05fa82ad6a4c89cf14586a7c528531ec3df38b82d0b72e684a"
+        },
+        {
+          "ordinal": 48,
+          "file": "水浒传/048.md",
+          "title": "第四十八回 一丈青单捉王矮虎 宋公明两打祝家庄",
+          "chars": 5746,
+          "sha256": "dd79ad6564c97873cd7309bd840f9e6610517b94ff6c8746b8f7a63748084aab"
+        },
+        {
+          "ordinal": 49,
+          "file": "水浒传/049.md",
+          "title": "第四十九回 解珍解宝双越狱 孙立孙新大劫牢",
+          "chars": 8927,
+          "sha256": "8d2d218cd3130798eaee14435404880da75eb82bb6107ee14f91855c995a5901"
+        },
+        {
+          "ordinal": 50,
+          "file": "水浒传/050.md",
+          "title": "第五十回 吴学究双用连环计 宋公明三打祝家庄",
+          "chars": 7066,
+          "sha256": "d6af8634322492c23b4ee36d8985e7a97d34d470af07edbabf0c27fc85c4e0f3"
+        },
+        {
+          "ordinal": 51,
+          "file": "水浒传/051.md",
+          "title": "第五十一回 插翅虎枷打白秀英 美髯公误失小衙内",
+          "chars": 8422,
+          "sha256": "47a7220ef2578fddad7ec4b1b9b6758375446059b9b9c80b07fdc191f8e0f33d"
+        },
+        {
+          "ordinal": 52,
+          "file": "水浒传/052.md",
+          "title": "第五十二回 李逵打死殷天锡 柴进失陷高唐州",
+          "chars": 7689,
+          "sha256": "e0e0f45ac9b1421b36bf396436d7f5f30c23b6c69a45487163518ecf91e34d0e"
+        },
+        {
+          "ordinal": 53,
+          "file": "水浒传/053.md",
+          "title": "第五十三回 戴宗智取公孙胜 李逵斧劈罗真人",
+          "chars": 10143,
+          "sha256": "0a796503beefb2002d0854fc260b662364880eb02a67a783cca26ab984da7be7"
+        },
+        {
+          "ordinal": 54,
+          "file": "水浒传/054.md",
+          "title": "第五十四回 入云龙斗法破高廉 黑旋风探穴救柴进",
+          "chars": 7453,
+          "sha256": "c9ce59fc530b874677f05eeb5581c1bd611a2e4d4b0c4985d34e1a14bd62835e"
+        },
+        {
+          "ordinal": 55,
+          "file": "水浒传/055.md",
+          "title": "第五十五回 高太尉大兴三路兵 呼延灼摆布连环马",
+          "chars": 6943,
+          "sha256": "8fbd9297654539bfb27c62cd1d0684c782a81232bb7245cf922f888a2b22dc51"
+        },
+        {
+          "ordinal": 56,
+          "file": "水浒传/056.md",
+          "title": "第五十六回 吴用使时迁盗甲 汤隆赚徐宁上山",
+          "chars": 7717,
+          "sha256": "58187c1cf406bc9b0cdbf2d82055a49a974a2457d033ef3822605737c601600b"
+        },
+        {
+          "ordinal": 57,
+          "file": "水浒传/057.md",
+          "title": "第五十七回 徐宁教使钩镰枪 宋江大破连环马",
+          "chars": 8021,
+          "sha256": "3b4de1565be96f7726ea89f5048c4f5622d3bf4c58da07f95d06008a484477a9"
+        },
+        {
+          "ordinal": 58,
+          "file": "水浒传/058.md",
+          "title": "第五十八回 三山聚义打青州 众虎同心归水泊",
+          "chars": 7590,
+          "sha256": "46433446849e5bb41e299e7af96379046d0440150b1c4596bf70faaee4ca1314"
+        },
+        {
+          "ordinal": 59,
+          "file": "水浒传/059.md",
+          "title": "第五十九回 吴用赚金铃吊挂 宋江闹西岳华山",
+          "chars": 7547,
+          "sha256": "91d81299bf239576a22b21fff2761f3ead462db91488d4ac30c1a3afa56f8de3"
+        },
+        {
+          "ordinal": 60,
+          "file": "水浒传/060.md",
+          "title": "第六十回 公孙胜芒砀山降魔 晁天王曾头市中箭",
+          "chars": 8235,
+          "sha256": "7c8e3f0d43ba2aedc55656b6758ba62c12c758996ec938c5997c26bc18c0be90"
+        },
+        {
+          "ordinal": 61,
+          "file": "水浒传/061.md",
+          "title": "第六十一回 吴用智赚玉麒麟 张顺夜闹金沙渡",
+          "chars": 9374,
+          "sha256": "1b34ca0122899f219f9778fa5fffa537b641dd09dcd52f0fba7ea0ea3a397782"
+        },
+        {
+          "ordinal": 62,
+          "file": "水浒传/062.md",
+          "title": "第六十二回 放冷箭燕青救主 劫法场石秀跳楼",
+          "chars": 10714,
+          "sha256": "a1a5bba3709858da45c5f72b3d6d4046ae568d0445392385b3a61ce3bc5be188"
+        },
+        {
+          "ordinal": 63,
+          "file": "水浒传/063.md",
+          "title": "第六十三回 宋江兵打北京城 关胜议取梁山泊",
+          "chars": 7305,
+          "sha256": "10c2bf1f28a85b4c458fd44064039039add9528b975be0ed46a4e7318cc3fddb"
+        },
+        {
+          "ordinal": 64,
+          "file": "水浒传/064.md",
+          "title": "第六十四回 呼延灼夜月赚关胜 宋公明雪天擒索超",
+          "chars": 7027,
+          "sha256": "7f1b5297123c22a410361a9cda8d22c4f7f45653515fa18abdc3ea2a45c3cd5d"
+        },
+        {
+          "ordinal": 65,
+          "file": "水浒传/065.md",
+          "title": "第六十五回 托塔天王梦中显圣 浪里白跳水上报冤",
+          "chars": 6425,
+          "sha256": "057afbf63759b7e8ada756952a3fe7261af7e29a7ec6056bdbc9dde78d600972"
+        },
+        {
+          "ordinal": 66,
+          "file": "水浒传/066.md",
+          "title": "第六十六回 时迁火烧翠云楼 吴用智取大名府",
+          "chars": 6550,
+          "sha256": "fc3a695c72a5aa40489a0569fc95674a1674d052b5dec8cbdf7aa6dfd15d7cab"
+        },
+        {
+          "ordinal": 67,
+          "file": "水浒传/067.md",
+          "title": "第六十七回 宋江赏马步三军 关胜降水火二将",
+          "chars": 7960,
+          "sha256": "ad8fa8ee0f06d5f36498f188f196c5919a25cf2979920f93b5465a921a4a014c"
+        },
+        {
+          "ordinal": 68,
+          "file": "水浒传/068.md",
+          "title": "第六十八回 宋公明夜打曾头市 卢俊义活捉史文恭",
+          "chars": 7801,
+          "sha256": "d6909838683b32fb901962381a2aa15ebcced61eaeec7474e72918512e0c1935"
+        },
+        {
+          "ordinal": 69,
+          "file": "水浒传/069.md",
+          "title": "第六十九回 东平府误陷九纹龙 宋公明义释双枪将",
+          "chars": 6119,
+          "sha256": "e715619ad1bfbad90a81640b29a639029a8a5176e527af5364abb3ab361c4245"
+        },
+        {
+          "ordinal": 70,
+          "file": "水浒传/070.md",
+          "title": "第七十回 没羽箭飞石打英雄 宋公明弃粮擒壮士",
+          "chars": 5703,
+          "sha256": "aadc33682344b358191bc8905eacf45c76f3f13b84778d559b867f49f16786f1"
+        },
+        {
+          "ordinal": 71,
+          "file": "水浒传/071.md",
+          "title": "第七十一回 忠义堂石碣受天文 梁山泊英雄排座次",
+          "chars": 7630,
+          "sha256": "6c31f92fb5bd6426ddec07b23a5a63dd2fba8ad9a838388d7525672e928c2539"
+        },
+        {
+          "ordinal": 72,
+          "file": "水浒传/072.md",
+          "title": "第七十二回 柴进簪花入禁院 李逵元夜闹东京",
+          "chars": 7700,
+          "sha256": "cb9072ca497f3ca7c382b8d0e85ceba5c082c6d253f70b21b083c891a97a0ae2"
+        },
+        {
+          "ordinal": 73,
+          "file": "水浒传/073.md",
+          "title": "第七十三回 黑旋风乔捉鬼 梁山泊双献头",
+          "chars": 7581,
+          "sha256": "d4fa62907d9db7e5f00792261206b01d5939a8e3455267674a4dcfa37c9b4164"
+        },
+        {
+          "ordinal": 74,
+          "file": "水浒传/074.md",
+          "title": "第七十四回 燕青智扑擎天柱 李逵寿张乔坐衙",
+          "chars": 7676,
+          "sha256": "35c5885568f1ddbe33bc2ab0c16255b74e47a4a18f385a16693f992609c3f092"
+        },
+        {
+          "ordinal": 75,
+          "file": "水浒传/075.md",
+          "title": "第七十五回 活阎罗倒船偷御酒 黑旋风扯诏谤徽宗",
+          "chars": 5214,
+          "sha256": "ae59feca13f26a43ae6fd83b51d28fca3e0ecc520ea9832578fcdc2ae27b1605"
+        },
+        {
+          "ordinal": 76,
+          "file": "水浒传/076.md",
+          "title": "第七十六回 吴加亮布四斗五方旗 宋公明排九宫八卦阵",
+          "chars": 8112,
+          "sha256": "e73b5d1b70dcf728e3a40680f9d16f64b287cd066eb673699eacfa3484adb0ec"
+        },
+        {
+          "ordinal": 77,
+          "file": "水浒传/077.md",
+          "title": "第七十七回 梁山泊十面埋伏 宋公明两赢童贯",
+          "chars": 6730,
+          "sha256": "e7ad35b505e929cb87fe2e2e31b51a23e27ab4e6abd29766f9a1070e7a6c660c"
+        },
+        {
+          "ordinal": 78,
+          "file": "水浒传/078.md",
+          "title": "第七十八回 十节度议取梁山泊 宋公明一败高太尉",
+          "chars": 6465,
+          "sha256": "878a7a470596438af6dccfe2fb2dbf45ce9e84f209481ff45c7dabfd0f82fc69"
+        },
+        {
+          "ordinal": 79,
+          "file": "水浒传/079.md",
+          "title": "第七十九回 刘唐放火烧战船 宋江两败高太尉",
+          "chars": 6629,
+          "sha256": "8bc9cc49d991f0c6c3f574c26f3ec3771c5b09704a0dde46327096e26b70d16c"
+        },
+        {
+          "ordinal": 80,
+          "file": "水浒传/080.md",
+          "title": "第八十回 张顺凿漏海鳅船 宋江三败高太尉",
+          "chars": 10240,
+          "sha256": "26f519e2fd86e0dbc8541fca61020d16d4468c0e6da630496ace5d766a6c8b86"
+        },
+        {
+          "ordinal": 81,
+          "file": "水浒传/081.md",
+          "title": "第八十一回 燕青月夜遇道君 戴宗定计赚萧让",
+          "chars": 8177,
+          "sha256": "90edec3783e986eb734536c2eacbfe7c11c59da565ca100d5d2c8d066dcad742"
+        },
+        {
+          "ordinal": 82,
+          "file": "水浒传/082.md",
+          "title": "第八十二回 梁山泊分金大买市 宋公明全伙受招安",
+          "chars": 9628,
+          "sha256": "981036023cc545bdad76c368ee7ebe08b469277b9cac8bd5d001f0f745174c7a"
+        },
+        {
+          "ordinal": 83,
+          "file": "水浒传/083.md",
+          "title": "第八十三回 宋公明奉诏破大辽 陈桥驿滴泪斩小卒",
+          "chars": 8263,
+          "sha256": "ebe96fd6f7a9fdb08d4f3986c1fb9973a73c4a552602770c08de5df9fa885dd3"
+        },
+        {
+          "ordinal": 84,
+          "file": "水浒传/084.md",
+          "title": "第八十四回 宋公明兵打蓟州城 卢俊义大战玉田县",
+          "chars": 7731,
+          "sha256": "a330fc5d0b9f0c4ae393c65dcbf8b243391fbeb336b42e302ae623f48d519bfb"
+        },
+        {
+          "ordinal": 85,
+          "file": "水浒传/085.md",
+          "title": "第八十五回 宋公明夜度益津关 吴学究智取文安县",
+          "chars": 8376,
+          "sha256": "7628ef81ae5a52ba44c3de2788b97c225e2fc570bc170bd8dde5a3c6bbbe86b9"
+        },
+        {
+          "ordinal": 86,
+          "file": "水浒传/086.md",
+          "title": "第八十六回 宋公明大战独鹿山 卢俊义兵陷青石峪",
+          "chars": 6525,
+          "sha256": "83c6d4bd0e375682fd290a9eeccbdac4c6c389c11e7f05224fa5ee4f95955318"
+        },
+        {
+          "ordinal": 87,
+          "file": "水浒传/087.md",
+          "title": "第八十七回 宋公明大战幽州 呼延灼力擒番将",
+          "chars": 5576,
+          "sha256": "b94cf928d9e1a8580f57d948c767022232ad3ff8c9670297cce99c40a90b3e35"
+        },
+        {
+          "ordinal": 88,
+          "file": "水浒传/088.md",
+          "title": "第八十八回 颜统军阵列混天象 宋公明梦授玄女法",
+          "chars": 8562,
+          "sha256": "dbac05f7c583191662c55ef11824882ad2dfa7d87f99ce6cc0a121f116a89364"
+        },
+        {
+          "ordinal": 89,
+          "file": "水浒传/089.md",
+          "title": "第八十九回 宋公明破阵成功 宿太尉颁恩降诏",
+          "chars": 7107,
+          "sha256": "1c2709a56a19ee38f9260bfe6122d440c587d9323773ade50a337415529091ce"
+        },
+        {
+          "ordinal": 90,
+          "file": "水浒传/090.md",
+          "title": "第九十回 五台山宋江参禅 双林镇燕青遇故",
+          "chars": 5280,
+          "sha256": "51b0062e7cbf7c9367f0d6cf5e67fdfa51f1aa9e71468807d1dba254ea790b52"
+        },
+        {
+          "ordinal": 91,
+          "file": "水浒传/091.md",
+          "title": "第九十一回 宋公明兵渡黄河 卢俊义赚城黑夜",
+          "chars": 5198,
+          "sha256": "573826c2650e22cd42cd51a2b61af3888b4c3503b71dbe4420fcdb77638c69d0"
+        },
+        {
+          "ordinal": 92,
+          "file": "水浒传/092.md",
+          "title": "第九十二回 振军威小李广神箭 打盖郡智多星密筹",
+          "chars": 5547,
+          "sha256": "983cf26bd0c20bfd3d1133c0bc2816d63a555567790e5c28fba83d7543a20f6a"
+        },
+        {
+          "ordinal": 93,
+          "file": "水浒传/093.md",
+          "title": "第九十三回 李逵梦闹天池 宋江兵分两路",
+          "chars": 4837,
+          "sha256": "75d7f61ba4ab2a001f52f75457d1fc76c5abc36f00ec86b7385159db23f2282c"
+        },
+        {
+          "ordinal": 94,
+          "file": "水浒传/094.md",
+          "title": "第九十四回 关胜义降三将 李逵莽陷众人",
+          "chars": 6786,
+          "sha256": "6ed8cf7860068dfd174ddb5a505539371efe55fd9e474dffff600c06d38bb280"
+        },
+        {
+          "ordinal": 95,
+          "file": "水浒传/095.md",
+          "title": "第九十五回 宋公明忠感后土 乔道清术败宋兵",
+          "chars": 4630,
+          "sha256": "f6ce011fb7d4fb9c5653d79e72dc0e21a9c59e8e214e1e013e638a3132399f5d"
+        },
+        {
+          "ordinal": 96,
+          "file": "水浒传/096.md",
+          "title": "第九十六回 幻魔君术窘五龙山 入云龙兵围百谷岭",
+          "chars": 4033,
+          "sha256": "14b161161c3fa807f3c287b7b06f6bdfb7f9046edf6781d5a73ef257207a49f5"
+        },
+        {
+          "ordinal": 97,
+          "file": "水浒传/097.md",
+          "title": "第九十七回 陈瓘谏官升安抚 琼英处女做先锋",
+          "chars": 3893,
+          "sha256": "9943e03542b3c5bbb552c4f67e6d837a9fb449a9242c494b7350cf27ffe32ff0"
+        },
+        {
+          "ordinal": 98,
+          "file": "水浒传/098.md",
+          "title": "第九十八回 张清缘配琼英 吴用计鸩邬梨",
+          "chars": 8701,
+          "sha256": "39b4d4a119aa814c20239fdc77e4edd4a79eb19831ef8a97c5a818bb896c5a0d"
+        },
+        {
+          "ordinal": 99,
+          "file": "水浒传/099.md",
+          "title": "第九十九回 花和尚解脱缘缠井 混江龙水灌太原城",
+          "chars": 6142,
+          "sha256": "f913efbea586a8713eed7569b5420ccd43dc2ff4c764ce6023993859bb6796f1"
+        },
+        {
+          "ordinal": 100,
+          "file": "水浒传/100.md",
+          "title": "第一百回 张清琼英双建功 陈瓘宋江同奏捷",
+          "chars": 4666,
+          "sha256": "0330d06c6a19c08251e4e96763d5527b4efdde61514dfefb30638ac143f68d80"
+        },
+        {
+          "ordinal": 101,
+          "file": "水浒传/101.md",
+          "title": "第一百零一回 谋坟地阴险产逆 蹈春阳妖艳生奸",
+          "chars": 4484,
+          "sha256": "b269c550b20f2288dcad21bbfac0ef3c93f0a5f32c3e6ce242ea0bad84068d06"
+        },
+        {
+          "ordinal": 102,
+          "file": "水浒传/102.md",
+          "title": "第一百零二回 王庆因奸吃官司 龚端被打师军犯",
+          "chars": 5476,
+          "sha256": "a8a1f14e4412490100dece843479da157c9415ac195070b7788917b6827c103d"
+        },
+        {
+          "ordinal": 103,
+          "file": "水浒传/103.md",
+          "title": "第一百零三回 张管营因妾弟丧身 范节级为表兄医脸",
+          "chars": 5819,
+          "sha256": "6d6f50f0d68cf299401712daad4cb7f3c8331deabe4121bea14d2e4abff77887"
+        },
+        {
+          "ordinal": 104,
+          "file": "水浒传/104.md",
+          "title": "第一百零四回 段家庄重招新女婿 房山寨双并旧强人",
+          "chars": 5636,
+          "sha256": "30cae606ecc5dba4c68d6147dd06c24e1b369ad194a2c19a01d810ce69a479a6"
+        },
+        {
+          "ordinal": 105,
+          "file": "水浒传/105.md",
+          "title": "第一百零五回 宋公明避暑疗军兵 乔道清回风烧贼寇",
+          "chars": 4579,
+          "sha256": "83e6d134e81cf3a19c87cffa18db167b7a54dd5b8083d6ecd1cec8cdf1b07a22"
+        },
+        {
+          "ordinal": 106,
+          "file": "水浒传/106.md",
+          "title": "第一百零六回 书生谈笑却强敌 水军汨没破坚城",
+          "chars": 4979,
+          "sha256": "65e0ef8338dcba0d7cda532b490e3ca0fda107045385e315dede767dd3f09f03"
+        },
+        {
+          "ordinal": 107,
+          "file": "水浒传/107.md",
+          "title": "第一百零七回 宋江大胜纪山军 朱武打破六花阵",
+          "chars": 4226,
+          "sha256": "14ffab3ae2f80b88bc4ce871b47d7f5e1ab0a87579d82ac534056e8943ec34d7"
+        },
+        {
+          "ordinal": 108,
+          "file": "水浒传/108.md",
+          "title": "第一百零八回 乔道清兴雾取城 小旋风藏炮击贼",
+          "chars": 4994,
+          "sha256": "142ed652dcfb2211363eb13b54d3dab652688d159c84df95013a48624a6d69f5"
+        },
+        {
+          "ordinal": 109,
+          "file": "水浒传/109.md",
+          "title": "第一百零九回 王庆渡江被捉 宋江剿寇成功",
+          "chars": 6823,
+          "sha256": "6dad3e1b4bae7863b1cb5bbd76b9e3abe2494e0788536823321e3c6733bb5bf9"
+        },
+        {
+          "ordinal": 110,
+          "file": "水浒传/110.md",
+          "title": "第一百一十回 燕青秋林渡射 宋江东京城献俘",
+          "chars": 8507,
+          "sha256": "8c93a1c5c7224cb3ad7e1b18381f912545c2e9b503bea94a5206cb568abe21f7"
+        },
+        {
+          "ordinal": 111,
+          "file": "水浒传/111.md",
+          "title": "第一百一十一回 张顺夜伏金山寺 宋江智取润州城",
+          "chars": 7671,
+          "sha256": "8452046c997335bfa81a028c1346227ef886c7536c82a35479fe640254f51663"
+        },
+        {
+          "ordinal": 112,
+          "file": "水浒传/112.md",
+          "title": "第一百一十二回 卢俊义分兵宣州道 宋公明大战毗陵郡",
+          "chars": 6627,
+          "sha256": "862dc6b710d24950eeaaee63f9424e078ef317d1c1f5655c35837a7bb59fe205"
+        },
+        {
+          "ordinal": 113,
+          "file": "水浒传/113.md",
+          "title": "第一百一十三回 混江龙太湖小结义 宋公明苏州大会垓",
+          "chars": 7292,
+          "sha256": "e5b652edf3cf6858dd3fcd0f6045840b8922d3830046aab72e28d5ccfa37aefb"
+        },
+        {
+          "ordinal": 114,
+          "file": "水浒传/114.md",
+          "title": "第一百一十四回 宁海军宋江吊孝 涌金门张顺归神",
+          "chars": 8082,
+          "sha256": "b1171447f7fcd00d86addc23a18a68695c98171a0bd2411e8aef5c4ef3fb2a27"
+        },
+        {
+          "ordinal": 115,
+          "file": "水浒传/115.md",
+          "title": "第一百一十五回 张顺魂捉方天定 宋江智取宁海军",
+          "chars": 7583,
+          "sha256": "303513e6e46566b016a79325f397444b3e0aa4e8471e6cd4d66b3d2a05b944e8"
+        },
+        {
+          "ordinal": 116,
+          "file": "水浒传/116.md",
+          "title": "第一百一十六回 卢俊义分兵歙州道 宋公明大战乌龙岭",
+          "chars": 6368,
+          "sha256": "e86f6013823d366b0fd36062dca59f2d7dbe339f7f124395b34d2a23ce506a1d"
+        },
+        {
+          "ordinal": 117,
+          "file": "水浒传/117.md",
+          "title": "第一百一十七回 睦州城箭射邓元觉 乌龙岭神助宋公明",
+          "chars": 6339,
+          "sha256": "4d91488dc17743afab1d8d46878f5d156c9a164dd6095ee7cbae36c36ee3f41e"
+        },
+        {
+          "ordinal": 118,
+          "file": "水浒传/118.md",
+          "title": "第一百一十八回 卢俊义大战昱岭关 宋公明智取清溪洞",
+          "chars": 9649,
+          "sha256": "361a227639131f4c63e9a8313755c2ee0419e27afda70dcc977344fef66a8fda"
+        },
+        {
+          "ordinal": 119,
+          "file": "水浒传/119.md",
+          "title": "第一百一十九回 鲁智深浙江坐化宋公明衣锦还乡",
+          "chars": 9510,
+          "sha256": "b3fee91ba3fc3544ceb4193cd3b90871d917d3bd630e051cdc1992dad31cbd34"
+        },
+        {
+          "ordinal": 120,
+          "file": "水浒传/120.md",
+          "title": "第一百二十回 宋公明神聚蓼儿 徽宗帝梦游梁山泊",
+          "chars": 8482,
+          "sha256": "c940751deb0afef4d2b40fed0f85caa18e73ff5749e8a73edbc534d6a900be18"
+        }
+      ],
+      "source": "hunterhug/china-literary@master",
+      "chapter_count": 120,
+      "total_chars": 906042
+    }
+  ],
+  "total_chars": 2343664
+}
