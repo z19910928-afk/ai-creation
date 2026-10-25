@@ -5,9 +5,10 @@
 
 > 一句话结论：抽取器已落地并离线可跑（确定性规则模式），在 360 章真实语料上抽出
 > **360 条断言 / 0 条 rejected / 2 353 378 字 / 37.9 ms**；LLM 分支的协议、失败降级、
-> 传输与确定性都在 fixture 里用注入 transport 覆盖了，但**真实模型的外部复验仍未完成**
-> （本机无 `MOYU_EXTRACT_*` 凭据，`--mode openai` 缺变量时 `exit 2`，那不算通过）——
-> §6.3 与 §6.4 写清这个缺口，不给假数字。
+> 传输与确定性都在 fixture 里用注入 transport 覆盖了。2026-10-25 又用授权服务跑通
+> **5 章 / 33 120 字 / 23 条断言 / 5 条 empty_value / 0 条 provider_error**，但只有 11 条
+> 逐字证据可见、且是 `repeat=1`；因此**真实召回率/幻觉率仍未验收**，不能写成「真实模型已通过」。
+> §6.3 与 §6.4 写清哪些是链路证据、哪些仍是缺口。
 
 ---
 
@@ -16,7 +17,7 @@
 | 文件 | 作用 | 行数 | sha256（前 12 位） |
 | --- | --- | --- | --- |
 | `backend/moyu_extract.py` | 抽取器本体：schema 校验、逐字证据校验、规则 provider、OpenAI 兼容 provider、curl/urllib 传输 | 1041 | `6b5d43136405` |
-| `benchmarks/real_corpus/extract.py` | 真实语料按章抽取基准：JSON + 统计 + 确定性复跑 | 293 | `a9e230535188` |
+| `benchmarks/real_corpus/extract.py` | 真实语料按章抽取基准：JSON + 统计 + 确定性复跑 + `--audit-limit` 全量证据 | 300 | `a46f89a2cbdb` |
 | `tests/extract_fixtures.py` | 67 个回归用例（schema / 证据定位 / 非有限数值 / 确定性 / provider 失败路径 / 传输与脱敏） | 1372 | `f48b4f191d7f` |
 | `docs/real-corpus-extract-2026-10-24.md` | 本文 | — | — |
 
@@ -169,9 +170,15 @@ quote 闸门当语义保证。
 | --- | --- | --- | --- |
 | 本机 smoke | 注入 transport / 本地假服务，走 CLI 全链路（解析、拒绝码、脱敏、超时矩阵、不重试计数） | 协议与失败路径按设计工作 | 真实网关的行为 |
 | 真实公版语料（规则模式） | 360 章真实文本、2 353 378 字，抽出 360 条断言 | 规则在真实文本上的产量与确定性 | 语义正确性、LLM 召回率 |
-| 外部真实模型（成员环境） | **没有跑**：本机无 `MOYU_EXTRACT_*` 凭据 | 目前只能确认「无凭据时 `--mode openai` 退出 2 并打印缺失项」 | 真实召回率、幻觉率、跨网关兼容性 |
-| 外部真实模型（captain 授权复跑） | 用已授权服务跑当前生产 CLI 2 章：**进程 `rc=0`，业务结果 `provider_error` × 2** | 只能证明失败被如实记账、没有把失败读成成功 | 任何抽取质量；本次未进入模型质量判定 |
+| 外部真实模型（授权服务 5 章） | 2026-10-25 用 `--mode openai --limit 5 --repeat 1`：33 120 字、23 条断言、5 条 `empty_value`、0 条 `provider_error`、172.19s；证据 `/private/tmp/moyu-real-current-5.json`（引擎 sha256 `6b5d4313…`） | 真实请求进入模型并逐条记账；23 条断言中 11 条带逐字证据可复核 | 23 条全量语义质量；`repeat=1` 不证明确定性 |
+| 外部真实模型（授权服务 2 章） | 12 463 字、17 条断言、14 条拒绝（6 `empty_value`、8 `quote_mismatch`）、0 条 `provider_error`、102.68s；`/private/tmp/moyu-real-current-180.json` | 可观察拒绝码与逐字证据失败分类 | 真实召回率/幻觉率；不能写成质量通过 |
+| 旧的一次失败复跑（历史） | 12 463 字、2 条断言、2 条拒绝（1 `provider_error`、1 `quote_mismatch`）、84.52s；`/private/tmp/moyu-real-current.json` | 证明失败被如实记账，未重试 | 当前模型结论；后续已有成功链路 |
 
+- **`repeat=1` 不是确定性证据**：上面两次复跑都用了 `--repeat 1`；`determinism.identical=True`
+  只是单轮 digest 的退化值，不能写成「确定性复跑通过」。要证明确定性必须用默认 `--repeat 2`。
+- **审计证据可见性**：默认 `audit` 每章只写前 3 条断言；5 章 JSON 的 23 条断言只有 11 条带逐字证据，
+  其余 12 条无法逐条核对。需要全量审计时用 `--audit-limit 0` 重新生成；本次没有重跑，故不把 23 条
+  全量语义质量写成已审。旧 JSON 的 `generated_at` 是早先脚本硬编码的旧日期；以文件 mtime 与引擎 hash 为准。
 - **exit 2 不是通过**：`--mode openai` 缺凭据时脚本直接 `exit 2`（打印缺失的环境变量），
   这是「没跑」，不能写进通过项；也不要把它当成「已复验真实模型」。
 - **`rc=0` 也不是通过**：captain 授权的那次复跑退出码为 0，但两章的业务结果都是 `provider_error`。
@@ -181,8 +188,9 @@ quote 闸门当语义保证。
   该域名被解析到 `192.168.8.50` 且 TCP 连接被拒、代理 `CONNECT` 返回 200 之后仍
   `SSL_ERROR_SYSCALL`、以及 Google DNS-over-HTTPS 查询返回 `Status=3`（NXDOMAIN）——同为
   **先前诊断的观察记录**，不作为当前结论使用。
-  **本次未进入模型质量判定，不能据此评价模型**；「成员环境无凭据」与「captain 已授权复跑」
-  是两件事，都要读成**未复验**，不得写成「真实模型已通过」。
+  **那次失败复跑未进入模型质量判定，不能据此评价模型**；后续 5 章/2 章授权服务复跑已进入模型
+  （见上表），但仍是一次 `repeat=1` 且只有部分证据可见，故也只能说明链路与拒绝分布，不能写成
+  「真实模型质量通过」。
 - 旧样本（一次早期真实样本导入，1 章 6 774 字）只证明「CLI → 默认 curl → 解析」闭环，
   样本本身不代表语料规模，本文不拿它当验收数字。
 - Windows 与外部网关行为属静态推断，未复验。
@@ -213,15 +221,21 @@ export MOYU_EXTRACT_BASE_URL=https://api.deepseek.com/v1
 export MOYU_EXTRACT_MODEL=deepseek-chat
 export MOYU_EXTRACT_API_KEY=...
 .venv/bin/python benchmarks/real_corpus/extract.py --mode openai --limit 20 --json /tmp/llm.json
+
+# 全量证据审计（每章所有断言；文件会更大）
+.venv/bin/python benchmarks/real_corpus/extract.py --mode openai --limit 5 --repeat 2 \
+  --audit-limit 0 --json /tmp/llm-audit.json
 ```
 
 `--mode openai` 但三个变量不全时脚本会直接 `exit 2` 并打印缺失项，不会悄悄跑规则模式冒充 LLM。
 
 ## 8. 已知局限（诚实清单）
 
-1. **真实模型外部复验未完成**：本机无 `MOYU_EXTRACT_*` 凭据，`--mode openai` 缺变量时 `exit 2`
-   （见 §6.4，退出码 2 是「没跑」不是「通过」）；已覆盖的只有协议、解析、降级、传输与确定性，
-   真实召回率/幻觉率**未知**。
+1. **真实模型外部复验只完成部分**：已用授权服务跑通 5 章/33 120 字（23 条断言，5 条
+   `empty_value`，0 条 `provider_error`）和 2 章/12 463 字（17 条断言，14 条拒绝，0 条
+   `provider_error`），但两次都是 `repeat=1`；5 章 JSON 的 23 条断言只有 11 条逐字证据可见。
+   因此只能证明「真实请求进入模型并如实记账」，真实召回率/幻觉率与全量语义质量仍**未知**；
+   不得写成「真实模型已通过」。
 2. **规则召回低且偏结构化**：只覆盖六类开场套式；心理、因果、关系类事实抽不到。
 3. **不做指代消解**：`_nearest_subject` 只看前 30 字，跨段回指（「他」「那妇人」）不追。
 4. **字符下标是 Python code point**：与生产端口径一致（`len(text)`），但若未来接 UTF-16 索引需换算。
@@ -234,8 +248,13 @@ export MOYU_EXTRACT_API_KEY=...
    与 `evidence_quote`。主语指错人、取值张冠李戴、`attribute` 槽位名与引文无关——本模块一律放行。
    语义正确性必须靠服务端的断言复用比较与 `backend/moyu_consistency.py` 的一致性检查兜底，
    不要把这个闸门当成「幻觉进不去」的保证。t54 复审之前本文宣称的「防幻觉」是超出代码的承诺，
-   已按实际能力收窄（见 §3 的「保证什么 / 不保证什么」表）。
+   已按实际能力收窄（见 §3 的「保证什么 / 不保证什么」表）。本次真实样本里 `封肃` 被抽成
+   `real_name=封`（引文 `小人姓封` 逐字正确）就是例证；若库里没有 `real_name=封肃` 的竞争值，
+   一致性引擎对 11 条可见真实断言给 100 A、0 findings，补上正确值后才报 high 冲突——它能发现
+   冲突，不能判断哪个对。因此抽取器不是语义校验器，写入端仍需人工/额外语义门；11 条可见断言
+   的 0 findings 不能外推为 23 条全量或生产零误报。
 9. **非法数值已拦但 LLM 语义幻觉仍未验收**：`NaN` / `Infinity` / `-Infinity` 现在在
    `validate_assertion()` 被拒（`non_finite`），`digest()` 与 `strict_json()` 也不会输出非法
-   JSON 字面量；但「模型把甲的事写成乙」这类语义幻觉，本仓库在没有 `MOYU_EXTRACT_*` 凭据的
-   情况下**无法验收**，只能等有凭据时用真实语料单独测召回率与幻觉率。
+   JSON 字面量；但「模型把甲的事写成乙」这类语义幻觉，本次虽已有授权服务部分复跑（5 章/23 条、
+   2 章/17 条），仍只有 11 条证据可见且 `repeat=1`，不能把「链路跑通」当成召回率/幻觉率验收；
+   全量语义质量仍需单独人工审和重复跑。

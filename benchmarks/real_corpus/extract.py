@@ -30,6 +30,7 @@ import json
 import statistics
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Iterable
 
@@ -111,6 +112,7 @@ def run_extraction(
     provider: Any,
     mode_label: str,
     repeat: int = 2,
+    audit_limit: int = 3,
 ) -> dict[str, Any]:
     started = time.perf_counter()
     chapters: list[dict[str, Any]] = []
@@ -154,7 +156,9 @@ def run_extraction(
                 "assertions": len(report["assertions"]),
                 "rejected": len(report["rejected"]),
                 "rejected_reasons": report["rejected_reasons"],
-                "audit": report["assertions"][:3],
+                "audit_total": len(report["assertions"]),
+                "audit": (report["assertions"] if audit_limit <= 0
+                          else report["assertions"][:audit_limit]),
                 "elapsed_ms": round(elapsed_ms, 3),
                 "digest": digest,
             })
@@ -217,6 +221,8 @@ def main() -> int:
                         help="dry-run=确定性规则；openai=走 MOYU_EXTRACT_* 凭据；auto=有凭据就 openai")
     parser.add_argument("--json", default=None, help="输出 JSON 路径（缺省只打印摘要）")
     parser.add_argument("--repeat", type=int, default=2, help="确定性复跑次数（默认 2）")
+    parser.add_argument("--audit-limit", type=int, default=3,
+                        help="每章写入 JSON 的断言证据条数（默认 3；0=全部，供人工审计）")
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args()
 
@@ -240,10 +246,11 @@ def main() -> int:
     result = run_extraction(
         corpus, manifest, books=args.book, limit=args.limit,
         provider=provider, mode_label=mode_label, repeat=max(1, args.repeat),
+        audit_limit=max(0, args.audit_limit),
     )
     totals = result["totals"]
     payload = {
-        "generated_at": "2026-10-24T00:00:00+08:00",
+        "generated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
         "benchmark": "real-corpus-extract",
         "version": "1.0",
         "mode": mode_label,

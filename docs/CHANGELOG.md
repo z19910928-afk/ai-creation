@@ -5,6 +5,13 @@
 - `backend/server.py` 新增 `resolve_host()`：默认只允许 `127.0.0.1`、`localhost`、`::1`；设置 `MOYU_HOST=0.0.0.0` 等非回环地址时必须同时显式设置 `MOYU_ALLOW_REMOTE=1`，否则启动即拒绝，避免无认证本地 API 被误暴露到局域网。
 - `tests/server_bind_fixtures.py` 4 条回归覆盖默认、空值、拒绝、显式放行；报告与残余风险见 `docs/security-audit-current-2026-10-25.md`。显式远程仍无认证，公网/多人部署不放行。
 
+## 2026-10-25 · 审计修复：真实模型证据、Q1 口径与 F1 边界
+
+- `benchmarks/real_corpus/extract.py` 新增 `--audit-limit`（默认每章 3 条，`0`=全部）和 `audit_total` 字段；`generated_at` 从硬编码旧日期改为运行时刻，避免 JSON 时间戳误导。实测 `--mode dry-run --limit 2 --audit-limit 0` 的 `audit` 条数与 `totals.assertions` 一致（9/9）。
+- 授权服务真实复跑已进入模型：5 章 33 120 字、23 条断言、5 条 `empty_value`、0 条 `provider_error`（172.19s，`/private/tmp/moyu-real-current-5.json`）；2 章 12 463 字、17 条断言、14 条拒绝（6 `empty_value`、8 `quote_mismatch`），0 条 `provider_error`。两次都是 `repeat=1`，且 5 章 JSON 只有 11 条逐字证据可见，不能写成真实模型质量通过。
+- Q1 口径保持 **7/9 = 77.8%，`q1_target_met=false`**；3000 字 9 场景不含 `sc-20`，`sc-15` 是 4000 字场景。另列明确标注的诊断指标 7/8=87.5%（剔除 `sc-19` 外部预算中断），不替代 Q1；4000 字仍为 4/6=66.7%。
+- F1 边界写死：抽取器只验逐字证据，不验 subject/value 语义；真实样本 `封肃 → real_name=封` 可通过，只有补上竞争值后才由一致性引擎报 high 冲突。11 条可见真实断言在每章单 revision 下为 100 A、0 findings，但不能外推为 23 条全量或生产零误报。详见 `docs/audit-response-2026-10-25.md`。
+
 ## 2026-10-25 · 检索相关性下限：min_relevance + 词面覆盖率（默认 0，opt-in）
 
 ### 改了什么
