@@ -589,6 +589,49 @@ def main() -> None:
     assert legacy_report["score"] == 92.0, legacy_report["score"]  # 1 × high(8 分)
     assert legacy_report["grade"] == "B", legacy_report["grade"]
 
+    # ---- 同槽位分桶：跨取值才对，同取值重复不放大耗时、也不漏报 ----
+    # 背景：引擎原先在同一（实体, 谓词, 槽位）组内逐对比较，逐章重复抽出的同值断言
+    # 会把耗时放大成 O(组内条数²)（20,111 条同值副本实测 7.31s）。改成按规范化取值
+    # 分桶、只枚举跨桶配对的优化，必须在语义上**逐条等价**：不同取值的配对一条不少，
+    # 同取值的重复一条不多。这一段把这两侧都锁住。
+    add_project(conn, "p9", "b9")
+    add_chapters(conn, "p9", "b9", 3, prefix="x")
+    for key, name in (("e20", "林昭"), ("e21", "沈砚")):
+        conn.execute(
+            "INSERT INTO entity(id,project_id,kind,canonical_name,aliases_json,status)"
+            " VALUES(?,?,?,?,?,?)",
+            (key, "p9", "character", name, "[]", "active"),
+        )
+    # 三个不同取值：排序后两两配对 = 50×40 + 50×30 + 40×30 = 4700 条。
+    bucket_counts = {"青云城": 50, "黑石城": 40, "白鹭洲": 30}
+    serial = 0
+    for value, copies in bucket_counts.items():
+        for _ in range(copies):
+            serial += 1
+            add_assertion(
+                conn, f"bucket{serial}", "p9", "b9", "e20", "has_attribute",
+                {"name": "林昭", "type": "character", "attribute": "home_city", "value": value},
+            )
+    # 另一个实体上堆 2000 条**完全相同**的取值：旧实现要跑 2000×1999/2 次比较，
+    # 新实现跨桶配对为 0；两种实现都必须报 0 条问题。
+    for index in range(2000):
+        add_assertion(
+            conn, f"dup{index}", "p9", "b9", "e21", "has_attribute",
+            {"name": "沈砚", "type": "character", "attribute": "home_city", "value": "云梦泽"},
+        )
+
+    bucket_report = analyze(conn, "p9", "b9")
+    bucket_fact = [item for item in bucket_report["findings"] if item["category"] == "fact"]
+    expected_pairs = 50 * 40 + 50 * 30 + 40 * 30
+    assert len(bucket_fact) == expected_pairs, (len(bucket_fact), expected_pairs)
+    assert all(item["severity"] == "high" for item in bucket_fact), bucket_fact[:3]
+    assert all("沈砚" not in item["title"] for item in bucket_fact)
+    # 每条 finding 的两个断言必须取值不同——这正是「同值不配对」的直接证据。
+    for item in bucket_fact[:50]:
+        left, right = item["evidence"]["objects"]
+        assert left.get("value") != right.get("value"), item
+    assert len({item["id"] for item in bucket_fact}) == expected_pairs, "finding id 必须唯一"
+
     conn.close()
     print("consistency fixtures: OK", {"dirty": report["score"], "clean": clean["score"]})
 

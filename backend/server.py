@@ -59,7 +59,26 @@ from . import moyu_continuation
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND_ROOT = ROOT / "frontend"
 DB_PATH = Path(os.environ.get("MOYU_DB", str(ROOT / "moyu.sqlite3")))
-HOST = os.environ.get("MOYU_HOST", "127.0.0.1")
+def resolve_host(raw: str | None = None) -> str:
+    """Keep the HTTP API loopback-only unless remote exposure is explicit.
+
+    The server has no user authentication; binding to a LAN/Internet address
+    without an explicit opt-in would expose every local project endpoint.
+    """
+    host = (raw if raw is not None else os.environ.get("MOYU_HOST", "127.0.0.1")).strip()
+    if not host:
+        host = "127.0.0.1"
+    if host in {"127.0.0.1", "localhost", "::1"}:
+        return host
+    if os.environ.get("MOYU_ALLOW_REMOTE") == "1":
+        return host
+    raise SystemExit(
+        "Refusing non-loopback MOYU_HOST without MOYU_ALLOW_REMOTE=1: "
+        "this local API has no authentication"
+    )
+
+
+HOST = resolve_host()
 PORT = int(os.environ.get("MOYU_PORT", "4173"))
 PROJECT_ID = os.environ.get("MOYU_PROJECT_ID", "default-project")
 BRANCH_ID = os.environ.get("MOYU_BRANCH_ID", "main")
@@ -228,6 +247,8 @@ CONTEXT_PROFILE_DEFAULTS = {
     "recent_window": 3,
     "memory_top_k": 60,
     "record_top_k": 40,
+    "min_relevance": 0.0,
+    "min_term_coverage": 0.0,
 }
 CONTEXT_PROFILE_LIMITS = {
     "max_tokens": (4_000, 64_000),
@@ -235,11 +256,13 @@ CONTEXT_PROFILE_LIMITS = {
     "recent_window": (0, 10),
     "memory_top_k": (0, 120),
     "record_top_k": (0, 80),
+    "min_relevance": (0.0, math.inf),
+    "min_term_coverage": (0.0, 1.0),
 }
 
 
-def normalize_context_profile(raw: Any = None) -> dict[str, int]:
-    """Normalize a bounded retrieval profile without promising a million-token window."""
+def normalize_context_profile(raw: Any = None) -> dict[str, Any]:
+    """Normalize retrieval limits and optional lexical relevance floors."""
     if raw is None:
         return dict(CONTEXT_PROFILE_DEFAULTS)
     if not isinstance(raw, dict):
@@ -249,6 +272,28 @@ def normalize_context_profile(raw: Any = None) -> dict[str, int]:
     if unknown:
         raise ValueError(f"unsupported retrieval_profile field: {sorted(unknown)[0]}")
     for key, value in raw.items():
+        if key == "min_relevance":
+            if isinstance(value, bool):
+                raise ValueError("retrieval_profile.min_relevance must be a finite non-negative number")
+            try:
+                number = float(value)
+            except (TypeError, ValueError):
+                raise ValueError("retrieval_profile.min_relevance must be a finite non-negative number") from None
+            if not math.isfinite(number) or number < 0:
+                raise ValueError("retrieval_profile.min_relevance must be a finite non-negative number")
+            profile[key] = number
+            continue
+        if key == "min_term_coverage":
+            if isinstance(value, bool):
+                raise ValueError("retrieval_profile.min_term_coverage must be a finite number between 0 and 1")
+            try:
+                number = float(value)
+            except (TypeError, ValueError):
+                raise ValueError("retrieval_profile.min_term_coverage must be a finite number between 0 and 1") from None
+            if not math.isfinite(number) or not 0 <= number <= 1:
+                raise ValueError("retrieval_profile.min_term_coverage must be a finite number between 0 and 1")
+            profile[key] = number
+            continue
         if isinstance(value, bool):
             raise ValueError(f"retrieval_profile.{key} must be an integer")
         try:

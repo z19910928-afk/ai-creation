@@ -171,7 +171,7 @@ API（页面与本机服务交换数据的入口）由页面使用，作者无�
 - `GET/PUT /api/ai/settings`、`POST /api/ai/settings/probe`：作品模型、用途模型、风格、参数和每日次数设置；连接测试是真实模型调用，消耗额度
 - `GET/POST /api/ai/connections`、`POST /api/ai/connections/probe`、`DELETE /api/ai/connections/:id`：模型库的查看、测试、凭测试凭证保存与移除；用途只能新选当前作品已测试保存的有效连接，失效原分配保留并要求作者处理
 - `POST /api/ai/connections/models`：以当前草稿地址和密钥查询模型名称；支持当前作品已存连接或旧连接的密钥，不保存草稿、不占生成配额、不跟随重定向
-- `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；支持 `retrieval_profile` 配置预算、章节召回数、近章窗口和记忆/设定上限，并返回分层计数与证据来源。续写和润色可携带 `reference_selections` 的来源身份、范围和指纹，由服务端重新取原句；不接受客户端自填原文
+- `GET /api/context`、`POST /api/ai/prompt-preview`、`POST /api/ai`：查看有界工作集、预览任务契约并生成候选；支持 `retrieval_profile` 配置预算、章节召回数、近章窗口、记忆/设定上限和词面覆盖率下限 `min_term_coverage`（0–1，默认 0，语义见 [检索相关性下限](retrieval-relevance-threshold-2026-10-25.md)），并返回分层计数与证据来源。续写和润色可携带 `reference_selections` 的来源身份、范围和指纹，由服务端重新取原句；不接受客户端自填原文
 - `GET /api/ai/status`、`GET /api/ai/quota`、`GET /api/ai/runs/:id`、`GET /api/ai/runs/:id/stream?after_seq=N`、`POST /api/ai/runs/:id/retry|cancel`：查看模型、用量和运行审计；SSE（服务持续分段发送文本）支持实时分片与按序号重放，每块先落盘；非流式返回、离线、截断、取消和未知结果分别标记
 - `POST /api/ai/runs/:id/revise`：作者确认整理未采纳的续写或润色原候选；保留父候选全文，冻结原模型、参数、输出预算、字数与稿件范围，为同一父候选建立一个独立计用量的子候选；重复请求返回已有任务，不重复生成
 - `POST /api/ai/queue` 或 `/api/ai` 携带 `async:true`：将请求持久化为队列任务；`GET /api/ai/queue`、`GET /api/ai/jobs/:id` 查看状态，`process|cancel|retry` 控制单个任务，`queue/drain` 恢复人工或重启后的积压任务

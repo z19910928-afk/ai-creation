@@ -26,7 +26,9 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[2]
+BENCH_DIR = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(BENCH_DIR))
 
 from backend import server  # noqa: E402
 from backend.moyu_consistency import analyze  # noqa: E402
@@ -155,8 +157,42 @@ def _evidence_assertion_ids(report: dict) -> set[str]:
     return ids
 
 
-def inject_contradictions(conn: sqlite3.Connection, branch: str, count: int, seed: int) -> list[dict]:
-    """在真实断言里注入已知矛盾：同主语同谓词同槽位、取值不同。"""
+def plan_injections(
+    capacities: list[int], inject_count: int = 40, inject_total: int | None = None
+) -> list[int]:
+    """把注入预算分配到各书；总量模式对小池封顶后再均摊余额。
+
+    奇数余量优先给剩余容量更大的书，容量相同则保持输入顺序。这样分配只依赖
+    容量、总量和书序，不依赖随机抽样，也不会因某书事实池较小而少注入。
+    """
+    if any(capacity < 0 for capacity in capacities):
+        raise ValueError("capacities 不能为负数")
+    if inject_total is None:
+        if inject_count < 0:
+            raise ValueError("--inject 不能为负数")
+        return [min(inject_count, capacity) for capacity in capacities]
+    if inject_total < 0:
+        raise ValueError("--inject-total 不能为负数")
+    if inject_total > sum(capacities):
+        raise ValueError("--inject-total 超过所有书的事实池容量总和")
+
+    plan = [0] * len(capacities)
+    remaining = inject_total
+    while remaining:
+        active = [i for i, capacity in enumerate(capacities) if plan[i] < capacity]
+        share, extra = divmod(remaining, len(active))
+        bonus_order = sorted(active, key=lambda i: (-(capacities[i] - plan[i]), i))
+        bonuses = set(bonus_order[:extra])
+        for i in active:
+            requested = share + (1 if i in bonuses else 0)
+            allocated = min(requested, capacities[i] - plan[i])
+            plan[i] += allocated
+            remaining -= allocated
+    return plan
+
+
+def injection_pool(conn: sqlite3.Connection, branch: str) -> list[tuple[Any, dict]]:
+    """返回与实际注入共用的候选池，避免容量规划与抽样口径漂移。"""
     rows = conn.execute(
         "SELECT id,subject_entity_id,predicate,object_json FROM assertion "
         "WHERE project_id=? AND branch_id=? AND state='canon' ORDER BY id",
@@ -169,6 +205,12 @@ def inject_contradictions(conn: sqlite3.Connection, branch: str, count: int, see
         # 单值谓词（has_name 等）同样「两个取值即冲突」，都能作为注入点。
         if isinstance(payload, dict) and payload.get("value"):
             pool.append((row, payload))
+    return pool
+
+
+def inject_contradictions(conn: sqlite3.Connection, branch: str, count: int, seed: int) -> list[dict]:
+    """在真实断言里注入已知矛盾：同主语同谓词同槽位、取值不同。"""
+    pool = injection_pool(conn, branch)
     if not pool:
         return []
     picked = random.Random(seed).sample(pool, min(count, len(pool)))
@@ -317,7 +359,7 @@ def scale_curve_unique(conn: sqlite3.Connection, branch: str, sizes: list[int], 
 
 
 def run(corpus: Path, books: list[str], db_path: Path, out_path: Path, inject_count: int, seed: int,
-        scale_sizes: list[int] | None = None) -> dict:
+        scale_sizes: list[int] | None = None, inject_total: int | None = None) -> dict:
     conn = build_db(db_path)
     data = extract(corpus, books)
 
@@ -356,8 +398,10 @@ def run(corpus: Path, books: list[str], db_path: Path, out_path: Path, inject_co
         stress = {"basis_book": biggest["book"], "curve": curve, "unique_subject_curve": unique_curve}
 
     recall_rows = []
+    capacities = [len(injection_pool(conn, row["branch"])) for row in per_book]
+    injection_plan = plan_injections(capacities, inject_count, inject_total)
     for index, row in enumerate(per_book, start=1):
-        injected = inject_contradictions(conn, row["branch"], inject_count, seed + index)
+        injected = inject_contradictions(conn, row["branch"], injection_plan[index - 1], seed + index)
         if not injected:
             continue
         report = analyze(conn, PROJECT, row["branch"])
@@ -389,6 +433,12 @@ def run(corpus: Path, books: list[str], db_path: Path, out_path: Path, inject_co
             "analyze_seconds_all_branches": round(elapsed, 4),
         },
         "recall": recall_rows,
+        "injection_plan": [
+            {"book": row["book"], "capacity": capacity, "planned": planned}
+            for row, capacity, planned in zip(per_book, capacities, injection_plan)
+        ],
+        "inject_total_requested": inject_total,
+        "injected_count": len(injected_total),
         "injected": injected_total,
         "db_bytes": db_path.stat().st_size,
     }
@@ -403,12 +453,14 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--db", required=True)
     parser.add_argument("--out", required=True)
     parser.add_argument("--inject", type=int, default=40, help="每部注入多少条已知矛盾")
+    parser.add_argument("--inject-total", type=int, default=None, help="三书合计注入多少条（按事实池容量分配）")
     parser.add_argument("--seed", type=int, default=20261024)
     parser.add_argument("--scale-sizes", default="", help="逗号分隔的断言条数，逐档在独立干净库上压测耗时，例如 2000,5000,10000,20000")
     args = parser.parse_args(argv)
 
     sizes = [int(part) for part in args.scale_sizes.split(",") if part.strip()]
-    result = run(Path(args.corpus), args.book, Path(args.db), Path(args.out), args.inject, args.seed, sizes)
+    result = run(Path(args.corpus), args.book, Path(args.db), Path(args.out), args.inject, args.seed,
+                sizes, args.inject_total)
 
     print("== 抽取与落库 ==")
     for row in result["extraction"]["per_book"]:
@@ -428,6 +480,9 @@ def main(argv: list[str] | None = None) -> int:
     print("== 注入矛盾后的召回 ==")
     for row in result["recall"]:
         print(f"  {row['book']}: 注入 {row['injected']} 检出 {row['detected']} 召回 {row['recall']}")
+    print(f"  合计注入 {result['injected_count']} / 请求 {result['inject_total_requested']}")
+    for row in result["injection_plan"]:
+        print(f"  分配 {row['book']}: 容量 {row['capacity']} 计划 {row['planned']}")
     return 0
 
 

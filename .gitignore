@@ -25,3 +25,6 @@ dist/
 
 # LongFormBench scratch databases
 benchmarks/longform/.work/
+
+# Local agent ontology/verification scratch
+/clear/

@@ -77,6 +77,22 @@ def _parse_object_json(raw: Any) -> tuple[Any, bool]:
 
 
 def _canonical(value: Any) -> str:
+    """生成断言取值的规范化文本：用于分桶和展示，**不是**「语义等价」判定。
+
+    这个键来自 `json.dumps(..., sort_keys=True)`，只抹平 JSON 文本层面的差异
+    （空白、键顺序），比 `_same_value()` 严格：数值 `1` 与 `1.0` 的文本分别是
+    `1` 与 `1.0`，会落进**不同的桶**。
+
+    分桶键与语义等价是两个层次，不能互相替代：
+    - `_canonical` 只决定「哪两条断言需要比一次」；跨桶不等于取值冲突，只说明
+      这一对没有被分桶提前排除。
+    - `_same_value()` 才是语义判定，它把 `1` 与 `1.0` 归一成同一个取值。
+
+    因此 `1` 与 `1.0` 这类跨桶对只会**多走一次比较**，不会直接产生冲突：
+    `_detect_fact()` 枚举跨桶配对，而 `_classify_object_conflict()` 第一步就是
+    `_same_value(left, right)`，命中即判相同、返回 None。反过来也一样——不要把
+    本函数的输出当成「两条断言是否矛盾」的依据。
+    """
     try:
         return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     except (TypeError, ValueError):
@@ -388,47 +404,63 @@ def _detect_fact(conn, project_id, branch_id, ctx) -> tuple[list[dict], int]:
         groups.setdefault((row["subject_entity_id"], row["predicate"], slot), []).append(row)
 
     for (entity_id, predicate, attribute), items in sorted(groups.items()):
-        entity_name = items[0]["canonical_name"]
-        for index in range(len(items)):
-            for other in range(index + 1, len(items)):
-                left, right = items[index], items[other]
-                left_object, left_broken = parsed[left["id"]]
-                right_object, right_broken = parsed[right["id"]]
-                if left_broken or right_broken:
-                    continue
-                # 用规范化比较：`{"a": 1}` 与 `{"a":1}`、`1` 与 `1.0` 都是同一个取值，
-                # 不能因为序列化差异就报矛盾（否则等价断言会被误拦发表）。
-                if _same_value(left_object, right_object):
-                    continue
-                if left["supersedes_id"] == right["id"] or right["supersedes_id"] == left["id"]:
-                    continue
-                if not _overlap(
-                    left["valid_start"], left["valid_end"], right["valid_start"], right["valid_end"]
-                ):
-                    continue
-                if "author_plan" in (left["epistemic_mode"], right["epistemic_mode"]):
-                    continue
-                severity, title, detail = _classify_object_conflict(
-                    predicate, left_object, right_object
-                )
-                if severity is None:
-                    continue
-                findings.append(
-                    _finding(
-                        "fact",
-                        severity,
-                        title,
-                        f"{entity_name}：{detail}",
-                        evidence={
-                            "entity_id": entity_id,
-                            "assertion_ids": [left["id"], right["id"]],
-                            "attribute": attribute or None,
-                            "objects": [_loads(left["object_json"], {}), _loads(right["object_json"], {})],
-                        },
-                        suggestion="保留一条为 canon，另一条改为 superseded 或补充 valid_start/valid_end 区分时段。",
-                        key=f"{left['id']}|{right['id']}",
-                    )
-                )
+        entity_name = items[0]['canonical_name']
+        position = {row['id']: index for index, row in enumerate(items)}
+        # 按规范化取值分桶，只枚举**跨桶**配对。
+        # 同一取值的一对按定义不可能构成取值冲突（_same_value 原本就直接 continue），
+        # 所以跨桶枚举的输出与逐对比较逐条一致，但复杂度从「组内条数²」降到
+        # 「桶大小之积」——逐章重复抽出的同值断言不再把耗时放大成平方。
+        buckets: dict[str, list] = {}
+        for row in items:
+            value, broken = parsed[row["id"]]
+            if broken:
+                continue
+            buckets.setdefault(_canonical(value), []).append(row)
+        bucket_list = list(buckets.values())
+        for first in range(len(bucket_list)):
+            for second in range(first + 1, len(bucket_list)):
+                for left_row in bucket_list[first]:
+                    for right_row in bucket_list[second]:
+                        # 用原始位置还原左右顺序，保证 finding 的 key 与旧实现完全一致。
+                        if position[left_row["id"]] < position[right_row["id"]]:
+                            left, right = left_row, right_row
+                        else:
+                            left, right = right_row, left_row
+                        left_object, left_broken = parsed[left["id"]]
+                        right_object, right_broken = parsed[right["id"]]
+                        if left_broken or right_broken:
+                            continue
+                        # 取值相同的一对已在分桶时排除；跨桶即「规范化后取值不同」，
+                        # 不再需要逐对做 _same_value（这正是原来 O(n²) 的主要成本）。
+                        if left["supersedes_id"] == right["id"] or right["supersedes_id"] == left["id"]:
+                            continue
+                        if not _overlap(
+                            left["valid_start"], left["valid_end"], right["valid_start"], right["valid_end"]
+                        ):
+                            continue
+                        if "author_plan" in (left["epistemic_mode"], right["epistemic_mode"]):
+                            continue
+                        severity, title, detail = _classify_object_conflict(
+                            predicate, left_object, right_object
+                        )
+                        if severity is None:
+                            continue
+                        findings.append(
+                            _finding(
+                                "fact",
+                                severity,
+                                title,
+                                f"{entity_name}：{detail}",
+                                evidence={
+                                    "entity_id": entity_id,
+                                    "assertion_ids": [left["id"], right["id"]],
+                                    "attribute": attribute or None,
+                                    "objects": [_loads(left["object_json"], {}), _loads(right["object_json"], {})],
+                                },
+                                suggestion="保留一条为 canon，另一条改为 superseded 或补充 valid_start/valid_end 区分时段。",
+                                key=f"{left['id']}|{right['id']}",
+                            )
+                        )
     return findings, len(rows)
 
 

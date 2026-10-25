@@ -24,6 +24,11 @@ DEFAULT_PROFILE = {
     "recent_window": 3,
     "memory_top_k": 60,
     "record_top_k": 40,
+    # A non-negative lexical score floor. Zero preserves the historical API.
+    "min_relevance": 0.0,
+    # Fraction of focused query terms that must occur in a hit. This is a
+    # lexical coverage contract, not a semantic probability.
+    "min_term_coverage": 0.0,
 }
 PROFILE_LIMITS = {
     "max_tokens": (4_000, 64_000),
@@ -31,6 +36,8 @@ PROFILE_LIMITS = {
     "recent_window": (0, 10),
     "memory_top_k": (0, 120),
     "record_top_k": (0, 80),
+    "min_relevance": (0.0, math.inf),
+    "min_term_coverage": (0.0, 1.0),
 }
 EPISTEMIC_MODES = {"world_truth", "character_belief", "narrator", "inference", "author_plan"}
 CANDIDATE_KINDS = {"fact", "event", "character_state", "relationship", "foreshadowing"}
@@ -54,14 +61,46 @@ def text_hash(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def normalize_profile(raw: Mapping[str, Any] | None = None) -> dict[str, int]:
+def _normalize_min_relevance(value: Any, *, field: str = "min_relevance") -> float:
+    """Validate a lexical score floor without turning it into a probability."""
+    if value is None:
+        return 0.0
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"invalid {field}")
+    threshold = float(value)
+    if not math.isfinite(threshold) or threshold < 0:
+        raise ValueError(f"invalid {field}")
+    return threshold
+
+
+def _normalize_min_term_coverage(value: Any, *, field: str = "min_term_coverage") -> float:
+    """Validate a query-term coverage floor in the closed interval [0, 1]."""
+    if value is None:
+        return 0.0
+    if isinstance(value, bool) or not isinstance(value, (int, float)):
+        raise ValueError(f"invalid {field}")
+    coverage = float(value)
+    if not math.isfinite(coverage) or not 0 <= coverage <= 1:
+        raise ValueError(f"invalid {field}")
+    return coverage
+
+
+def normalize_profile(raw: Mapping[str, Any] | None = None) -> dict[str, Any]:
     values = dict(DEFAULT_PROFILE)
     if raw is None:
         return values
     if not isinstance(raw, Mapping):
         raise ValueError("retrieval_profile must be an object")
     for name, value in raw.items():
-        if name not in values or isinstance(value, bool) or not isinstance(value, int):
+        if name not in values:
+            raise ValueError(f"invalid retrieval_profile.{name}")
+        if name == "min_relevance":
+            values[name] = _normalize_min_relevance(value, field="retrieval_profile.min_relevance")
+            continue
+        if name == "min_term_coverage":
+            values[name] = _normalize_min_term_coverage(value, field="retrieval_profile.min_term_coverage")
+            continue
+        if isinstance(value, bool) or not isinstance(value, int):
             raise ValueError(f"invalid retrieval_profile.{name}")
         lower, upper = PROFILE_LIMITS[name]
         values[name] = max(lower, min(upper, value))
@@ -343,13 +382,34 @@ def search_materials(
     revisions: Mapping[str, str] | None = None,
     limit: int = 20,
     query_weights: Mapping[str, float] | None = None,
+    min_relevance: float | None = None,
+    min_term_coverage: float | None = None,
+    coverage_query: str | None = None,
 ) -> dict[str, Any]:
-    """Rank permitted paragraph/material documents using local BM25."""
+    """Rank permitted documents using local BM25, optionally filtering low hits.
+
+    ``min_relevance`` is a non-negative lexical score floor, not a semantic
+    probability. ``min_term_coverage`` is the fraction of focused query terms
+    present in a hit; it is also a lexical contract, not a semantic probability.
+    Both filters run before ``limit`` so rejected hits cannot consume the
+    context budget. The default zeros preserve the historical results.
+
+    ``coverage_query`` lets a caller score coverage against the focused
+    instruction instead of a long context query; it defaults to the retrieval
+    query.
+    """
     if isinstance(limit, bool) or not isinstance(limit, int) or limit < 0:
         raise ValueError("limit must be a nonnegative integer")
+    if coverage_query is not None and not isinstance(coverage_query, str):
+        raise ValueError("coverage_query must be a string")
+    threshold = _normalize_min_relevance(min_relevance)
+    coverage_threshold = _normalize_min_term_coverage(min_term_coverage)
     aliases = resolve_aliases(records, query)
     expanded = query + " " + " ".join(aliases["terms"])
     query_terms = set(lexical_terms(expanded))
+    coverage_terms = set(lexical_terms(coverage_query.strip())) if coverage_query and coverage_query.strip() else set(query_terms)
+    if not coverage_terms:
+        coverage_terms = set(query_terms)
     weights = dict(query_weights or {})
     for term in lexical_terms(" ".join(aliases["terms"])):
         weights[term] = max(weights.get(term, 1.0), 2.0)
@@ -364,10 +424,11 @@ def search_materials(
         text = " ".join(str(item.get(key) or "") for key in ("title", "body", "name", "note", "description", "source_quote"))
         visible.append((item, decision, Counter(lexical_terms(text))))
     if not limit or not query_terms or not visible:
-        return {"results": [], "excluded": excluded, "aliases": aliases, "query": expanded, "method": "local_bm25_cjk"}
+        return {"results": [], "excluded": excluded, "aliases": aliases, "query": expanded, "method": "local_bm25_cjk", "min_relevance": threshold, "min_term_coverage": coverage_threshold, "filtered_count": 0}
     frequencies = Counter(term for _, _, terms in visible for term in query_terms.intersection(terms))
     average = sum(sum(terms.values()) for _, _, terms in visible) / len(visible) or 1.0
     ranked: list[dict[str, Any]] = []
+    filtered_count = 0
     for item, decision, terms in visible:
         length = sum(terms.values())
         score = 0.0
@@ -378,12 +439,17 @@ def search_materials(
             score += weights.get(term, 1.0) * inverse * frequency * 2.2 / (frequency + 1.2 * (0.25 + 0.75 * length / average))
         if not score:
             continue
+        relevance = round(score, 6)
+        coverage = round(len(coverage_terms.intersection(terms)) / len(coverage_terms), 6)
+        if relevance < threshold or coverage < coverage_threshold:
+            filtered_count += 1
+            continue
         ranked.append({
-            **item, "relevance": round(score, 6), "retrieval_layer": "lexical",
+            **item, "relevance": relevance, "term_coverage": coverage, "retrieval_layer": "lexical",
             "retrieval_reason": {"method": "local_bm25_cjk", "matched_terms": matched[:30], "source_warnings": decision["warnings"]},
         })
     ranked.sort(key=lambda item: (-item["relevance"], -int(item.get("chapter_number") or 0), str(item.get("id") or "")))
-    return {"results": ranked[:limit], "excluded": excluded, "aliases": aliases, "query": expanded, "method": "local_bm25_cjk"}
+    return {"results": ranked[:limit], "excluded": excluded, "aliases": aliases, "query": expanded, "method": "local_bm25_cjk", "min_relevance": threshold, "min_term_coverage": coverage_threshold, "filtered_count": filtered_count}
 
 
 def _evidence_item(chapter: Mapping[str, Any], start: int, end: int, revision: str, layer: str) -> dict[str, Any]:
@@ -617,9 +683,23 @@ def assemble_context(
     selection: Mapping[str, Any] | None = None,
     guidance: Mapping[str, Any] | None = None,
     reference_passages: list[dict[str, Any]] | None = None,
+    min_relevance: float | None = None,
+    min_term_coverage: float | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any] | None]:
-    """Assemble the exact material later serialized into a provider request."""
+    """Assemble the exact material later serialized into a provider request.
+
+    ``min_relevance`` and ``min_term_coverage`` override the retrieval profile
+    for this call. They only filter lexical historical hits; complete chapters,
+    records and author pins continue through their existing independent paths.
+    Coverage is measured against the instruction, then chapter metadata. Only
+    when both are empty does it fall back to the full retrieval query, which
+    includes the current-manuscript tail; that is a degenerate no-focus path.
+    """
     profile_values = normalize_profile(profile)
+    if min_relevance is not None:
+        profile_values["min_relevance"] = _normalize_min_relevance(min_relevance)
+    if min_term_coverage is not None:
+        profile_values["min_term_coverage"] = _normalize_min_term_coverage(min_term_coverage)
     project = dict(state.get("project") or {})
     project_id = project_id or str(project.get("id") or "")
     branch_id = branch_id or str(state.get("branch_id") or "main")
@@ -654,7 +734,8 @@ def assemble_context(
     weights = {term: 4.0 for term in lexical_terms(instruction)}
     weights.update({term: max(weights.get(term, 1.0), 2.0) for term in lexical_terms(chapter_query)})
     chunks = [chunk for item in chapters for chunk in chapter_chunks(item, revision_map.get(str(item["id"]), ""))]
-    retrieval = search_materials(chunks, query, historical_policy, records=records, chapters=by_id, revisions=revision_map, limit=max(1, profile_values["chapter_top_k"] * 4), query_weights=weights)
+    coverage_focus = instruction.strip() or chapter_query.strip() or query
+    retrieval = search_materials(chunks, query, historical_policy, records=records, chapters=by_id, revisions=revision_map, limit=max(1, profile_values["chapter_top_k"] * 4), query_weights=weights, min_relevance=profile_values["min_relevance"], min_term_coverage=profile_values["min_term_coverage"], coverage_query=coverage_focus)
     retrieved: list[dict[str, Any]] = []
     used_chapters: set[str] = set()
     material_controls = dict(controls or {})

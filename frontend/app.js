@@ -966,10 +966,11 @@ function localAI(task){const c=chapter()||{};const title=c.title||'当前章节'
 function aiAuditKey(runId){return `${KEY}:ai-decision:${runId}`}
 function materialControls(){try{const value=JSON.parse(storage.get(cacheKey(':materials'))||'{}');return value&&typeof value==='object'?value:{}}catch{return {}}}
 function saveMaterialControls(value){storage.set(cacheKey(':materials'),JSON.stringify(value))}
-const CONTEXT_PROFILE_DEFAULTS={max_tokens:24000,chapter_top_k:20,recent_window:3,memory_top_k:60,record_top_k:40};
-const CONTEXT_PROFILE_LIMITS={max_tokens:[4000,64000],chapter_top_k:[0,50],recent_window:[0,10],memory_top_k:[0,120],record_top_k:[0,80]};
-function retrievalProfile(){try{const raw=JSON.parse(storage.get(cacheKey(':retrieval-profile'))||'{}');const value={...CONTEXT_PROFILE_DEFAULTS};for(const [key,[min,max]] of Object.entries(CONTEXT_PROFILE_LIMITS)){const number=Number(raw?.[key]);if(Number.isFinite(number))value[key]=Math.max(min,Math.min(max,Math.round(number)))}return value}catch{return {...CONTEXT_PROFILE_DEFAULTS}}}
-function saveRetrievalProfile(value){const next={...CONTEXT_PROFILE_DEFAULTS};for(const [key,[min,max]] of Object.entries(CONTEXT_PROFILE_LIMITS)){const number=Number(value?.[key]);if(Number.isFinite(number))next[key]=Math.max(min,max<min?min:Math.min(max,Math.round(number)))}storage.set(cacheKey(':retrieval-profile'),JSON.stringify(next));return next}
+const CONTEXT_PROFILE_DEFAULTS={max_tokens:24000,chapter_top_k:20,recent_window:3,memory_top_k:60,record_top_k:40,min_term_coverage:0};
+const CONTEXT_PROFILE_LIMITS={max_tokens:[4000,64000],chapter_top_k:[0,50],recent_window:[0,10],memory_top_k:[0,120],record_top_k:[0,80],min_term_coverage:[0,1]};
+function normalizeProfileValue(key,number){const [min,max]=CONTEXT_PROFILE_LIMITS[key]||[];if(!Number.isFinite(number)||min===undefined)return null;const bounded=Math.max(min,Math.min(max,number));return key==='min_term_coverage'?Number(bounded.toFixed(3)):Math.round(bounded)}
+function retrievalProfile(){try{const raw=JSON.parse(storage.get(cacheKey(':retrieval-profile'))||'{}');const value={...CONTEXT_PROFILE_DEFAULTS};for(const key of Object.keys(CONTEXT_PROFILE_LIMITS)){const normalized=normalizeProfileValue(key,Number(raw?.[key]));if(normalized!==null)value[key]=normalized}return value}catch{return {...CONTEXT_PROFILE_DEFAULTS}}}
+function saveRetrievalProfile(value){const next={...CONTEXT_PROFILE_DEFAULTS};for(const key of Object.keys(CONTEXT_PROFILE_LIMITS)){const normalized=normalizeProfileValue(key,Number(value?.[key]));if(normalized!==null)next[key]=normalized}storage.set(cacheKey(':retrieval-profile'),JSON.stringify(next));return next}
 function profileQuery(){return encodeURIComponent(JSON.stringify(retrievalProfile()))}
 function materialQuery(){const value=JSON.stringify(materialControls());return encodeURIComponent(value)}
 function materialLabel(item){return `${item.title||item.name||'未命名'}${item.chapter?` · 第${item.chapter}章`:''}`}
@@ -1752,7 +1753,7 @@ actions.contextPreview=async()=>{
     const result=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(result.error||`材料预览读取失败（${response.status}）`);
     pack=result;
-   }catch(error){if(snapshot.references.selections.length)throw error;pack=null}
+   }catch(error){if(snapshot.references.selections.length||!isMissingEndpoint(error))throw error;pack=null}
   }
   if(sequence!==aiPreviewSeq||!aiRequestCurrent(snapshot))return;
   if(!pack)pack={budget:{retrieved_count:0,previous_count:0,estimated_tokens:Math.ceil((c.body||'').length/4),
@@ -1766,14 +1767,15 @@ actions.contextPreview=async()=>{
    ...(pack.records||[]).map(x=>({...x,kind:'records',label:`设定：${x.type||'卡片'} · ${x.name}`})),
    ...(pack.memory||[]).map(x=>({...x,kind:'memory',label:`记忆：${x.name}`}))];
   const checked=(item,field)=>controls[item.kind]?.[item.id]?.[field]?'checked':'',shownProfile=b.profile||profile;
-  const fields=[['max_tokens','预算 tokens',4000,64000],['chapter_top_k','召回章节',0,50],
-   ['recent_window','近章窗口',0,10],['memory_top_k','记忆上限',0,120],['record_top_k','设定上限',0,80]];
+  const fields=[['max_tokens','预算 tokens',4000,64000,1],['chapter_top_k','召回章节',0,50,1],
+   ['recent_window','近章窗口',0,10,1],['memory_top_k','记忆上限',0,120,1],['record_top_k','设定上限',0,80,1],
+   ['min_term_coverage','词面覆盖下限',0,1,0.05]];
   const wrap=document.createElement('div');wrap.className='modal-backdrop';wrap.dataset.referencePreview='1';
   wrap.innerHTML=`<div class="modal context-modal"><h3>AI 材料与提示预览</h3><p class="modal-help">估算 ${b.estimated_tokens||0} tokens，
    当前预算 ${b.max_tokens||profile.max_tokens}。${esc(truncationNote)} ${esc(scopeNote)}</p>
    ${referencePassageMarkup(pack.reference_passages)}<section class="context-profile"><div class="profile-heading"><strong>上下文配置</strong></div>
-   <div class="profile-grid">${fields.map(([key,label,min,max])=>`<label>${label}<input type="number" data-profile="${key}"
-    value="${shownProfile[key]??profile[key]}" min="${min}" max="${max}" step="1"></label>`).join('')}</div></section>
+   <div class="profile-grid">${fields.map(([key,label,min,max,step])=>`<label>${label}<input type="number" data-profile="${key}"
+    value="${shownProfile[key]??profile[key]}" min="${min}" max="${max}" step="${step}"></label>`).join('')}</div></section>
    <div class="material-list">${items.length?items.map(x=>`<label class="material-row"><input type="checkbox" data-material-pin data-kind="${x.kind}"
     data-id="${safeId(x.id)}" ${checked(x,'pin')}> 固定 <input type="checkbox" data-material-omit data-kind="${x.kind}" data-id="${safeId(x.id)}"
     ${checked(x,'omit')}> 排除 <input type="number" class="material-order" data-material-order data-kind="${x.kind}" data-id="${safeId(x.id)}"
@@ -1785,8 +1787,8 @@ actions.contextPreview=async()=>{
   document.body.append(wrap);wrap.querySelector('[data-close]').onclick=()=>wrap.remove();
   const readProfile=()=>{
    const next={};wrap.querySelectorAll('[data-profile]').forEach(input=>{
-    const [min,max]=CONTEXT_PROFILE_LIMITS[input.dataset.profile],value=Number(input.value);
-    next[input.dataset.profile]=Number.isFinite(value)?Math.max(min,Math.min(max,Math.round(value))):profile[input.dataset.profile];
+    const key=input.dataset.profile,normalized=normalizeProfileValue(key,Number(input.value));
+    next[key]=normalized!==null?normalized:profile[key];
    });return next;
   };
   const readControls=()=>{

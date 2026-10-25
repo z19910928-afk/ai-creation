@@ -293,6 +293,45 @@ async function main() {
     assert.deepEqual(await databaseFingerprint(), baseline);
     assert.equal(providerRequests.length, calls);
   });
+  await test('词面覆盖率支持005步进小数保存刷新回显且非法值400可见', async () => {
+    const originalProfile = await page.evaluate(() => retrievalProfile());
+    try {
+      await closeModals();
+      if (await page.locator('[data-reference-remove]').isVisible()) {
+        await page.locator('[data-reference-remove]').click();await assertNoSelection();
+      }
+      await page.locator('[data-context-preview]').click();await page.locator('.context-modal').waitFor();
+      const coverage = page.locator('[data-profile="min_term_coverage"]');
+      assert.equal(await coverage.getAttribute('min'), '0');
+      assert.equal(await coverage.getAttribute('max'), '1');
+      assert.equal(await coverage.getAttribute('step'), '0.05');
+      await coverage.fill('0.05');assert.equal(await coverage.inputValue(), '0.05');
+      await page.locator('[data-save-material]').click();
+      assert.equal(await page.evaluate(() => retrievalProfile().min_term_coverage), 0.05);
+      await page.locator('[data-context-preview]').click();await page.locator('.context-modal').waitFor();
+      assert.equal(await coverage.inputValue(), '0.05');
+      await coverage.fill('0.5');await page.locator('[data-save-material]').click();
+      assert.equal(await page.evaluate(() => retrievalProfile().min_term_coverage), 0.5);
+      await page.reload();await page.waitForFunction(() => backendOnline);await editor();
+      const contextRequest = page.waitForRequest(request => new URL(request.url()).pathname === '/api/context');
+      await page.locator('[data-context-preview]').click();await page.locator('.context-modal').waitFor();
+      assert.equal(await coverage.inputValue(), '0.5');
+      const requestedProfile = JSON.parse(new URL((await contextRequest).url()).searchParams.get('retrieval_profile'));
+      assert.equal(requestedProfile.min_term_coverage, 0.5);
+      await closeModals();
+      await page.route('**/api/context?*', route => route.fulfill({
+        status: 400, contentType: 'application/json',
+        body: JSON.stringify({error: 'retrieval_profile.min_term_coverage 必须是 0 到 1 之间的有限数值'}),
+      }));
+      await page.locator('[data-context-preview]').click();
+      await page.locator('#toast').filter({hasText: 'min_term_coverage 必须是 0 到 1'}).waitFor();
+      assert.equal(await page.locator('.context-modal').count(), 0);
+      results.coverage_profile = {step: '0.05', decimal_saved: 0.05, reload_displayed: 0.5, invalid_400_visible: true};
+    } finally {
+      await page.unroute('**/api/context?*');
+      await page.evaluate(profile => saveRetrievalProfile(profile), originalProfile);
+    }
+  });
   await test('单段替换撤回保持完整原句900字符表情边界可选且901字符合成响应禁选', async () => {
     await pick('钟楼原句', quoteB);assert.equal(await selectedQuote(), quoteB);
     await page.locator('[data-reference-remove]').click();await assertNoSelection();

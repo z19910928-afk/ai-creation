@@ -203,3 +203,30 @@ cd benchmarks/real_corpus
 4. **只注入了 fact/attribute 冲突**：时间线、知识越界、关系称谓、伏笔这四类在真实语料上没有
    可用注入点（它们需要从对话里抽，正是 LLM 抽取器要补的部分）。
 5. **单机单进程**：没测并发、没测多项目同时 analyze。
+
+## 9. 2026-10-25 更新：100 条注入补跑
+
+原验收是 83 条（红楼 3 + 三国 40 + 水浒 40），本轮把注入数补到 Q1 口径的 100 条，并把分配逻辑从“每书同一个 `--inject`”改成按事实池容量分配。改动只在 `benchmarks/real_corpus/consistency_acceptance.py`：新增 `--inject-total`，旧的 `--inject` 仍兼容；结果 JSON 增加 `injection_plan`、`inject_total_requested`、`injected_count`。
+
+```bash
+.venv/bin/python benchmarks/real_corpus/consistency_acceptance.py \
+  --corpus /tmp/moyu-real-corpus/corpus \
+  --book 红楼梦 --book 三国演义 --book 水浒传 \
+  --db /tmp/acceptance-100.sqlite3 --out /tmp/acceptance-100.json \
+  --inject-total 100 --seed 20261024
+```
+
+**实测**（exit 0，`/tmp/acceptance-100.json`）：
+
+| 书 | 事实池容量 | 计划注入 | 检出 | 召回 | 干净库 findings |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 红楼梦 | 3 | 3 | 3 | 1.0 | 0（129 核对，100.0/A） |
+| 三国演义 | 91 | 48 | 48 | 1.0 | 0（393 核对，100.0/A） |
+| 水浒传 | 111 | 49 | 49 | 1.0 | 0（453 核对，100.0/A） |
+| 合计 | 205 | 100 | 100 | 1.0 | 0 |
+
+- 三书合计 360 回 / 2,344,024 字；注入矛盾后得分分别 60.0 / 0.0 / 0.0，finding 数 5 / 53 / 82。
+- 当前脚本 490 行，sha256 `2d6457aa6813bff89113420a07961c295b3eac382898abe5cb4fa62815c45d5a`。
+- 复算断言（命令 exit 0）：`sum(injected)==100`、`sum(detected)==100`、`baseline.per_branch.*.findings==0`。
+
+**边界仍然成立**：这不是 AI 抽取链路，抽取器是确定性规则；红楼只有 3 条事实池，3/3 的统计意义弱；只注入 fact/attribute 冲突，时间线、知识越界、关系称谓、伏笔四类仍未在真实语料上覆盖。

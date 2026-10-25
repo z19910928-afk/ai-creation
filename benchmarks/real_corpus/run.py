@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import sqlite3
 import statistics
 import sys
@@ -41,6 +42,8 @@ from backend.moyu_context import ScopePolicy, paragraph_ranges, search_materials
 NOW = "2026-01-01T00:00:00+00:00"
 NEEDLE_CHARS = 24
 ABSENT_PHRASE = "此句在原书中并不存在用来验证检索不会伪造证据"
+DEFAULT_RELEVANCE_THRESHOLDS = (0.0, 0.01, 0.02, 0.04, 0.08, 0.16)
+DEFAULT_COVERAGE_THRESHOLDS = (0.0, 0.1, 0.25, 0.5, 0.75)
 
 
 def sha256_bytes(data: bytes) -> str:
@@ -208,15 +211,36 @@ def pick_needles(chapters: list[dict], bodies: dict[str, str], count: int = 8) -
 
 
 def measure_retrieval(project: str, branch: str, materials: list[dict],
-                      chapter_map: dict, needles: list[dict]) -> dict:
-    """测长程检索：命中率、空查询、延迟。"""
+                      chapter_map: dict, needles: list[dict], *,
+                      thresholds: tuple[float, ...] = DEFAULT_RELEVANCE_THRESHOLDS,
+                      coverage_thresholds: tuple[float, ...] = DEFAULT_COVERAGE_THRESHOLDS,
+                      min_recall: float = 0.95) -> dict:
+    """测词面检索，并把两种下限的取舍写成可复算的 sweep。
+
+    分数阈值是生产 BM25 分数的绝对下限，不是跨查询可比较的概率；
+    coverage 阈值是命中文档覆盖查询词的比例，也只是词面契约。这里的
+    ground truth 只有“针来自哪一章”，所以两边仍是 lexical proxy，
+    不能被读成同义改写或指代消解的语义召回率。
+    """
+    if not math.isfinite(min_recall) or not 0 <= min_recall <= 1:
+        raise ValueError("min_recall must be finite and between 0 and 1")
+    thresholds = tuple(thresholds)
+    if not thresholds or any(not math.isfinite(value) or value < 0 for value in thresholds):
+        raise ValueError("thresholds must contain finite non-negative numbers")
+    coverage_thresholds = tuple(coverage_thresholds)
+    if not coverage_thresholds or any(
+            not math.isfinite(value) or not 0 <= value <= 1 for value in coverage_thresholds):
+        raise ValueError("coverage_thresholds must contain finite numbers between 0 and 1")
     policy = ScopePolicy(project_id=project, branch_id=branch)
     build_started = time.perf_counter()
     _ = search_materials(materials, "预热", policy, chapters=chapter_map, limit=1)
     build_seconds = time.perf_counter() - build_started
 
-    def run(query: str, limit: int) -> dict:
-        return search_materials(materials, query, policy, chapters=chapter_map, limit=limit)
+    def run(query: str, limit: int, min_relevance: float = 0.0,
+            min_term_coverage: float = 0.0) -> dict:
+        return search_materials(materials, query, policy, chapters=chapter_map,
+                                limit=limit, min_relevance=min_relevance,
+                                min_term_coverage=min_term_coverage)
 
     hits = {1: 0, 5: 0, 20: 0}
     latencies: list[float] = []
@@ -242,6 +266,52 @@ def measure_retrieval(project: str, branch: str, materials: list[dict],
     empty_ms = (time.perf_counter() - empty_started) * 1000
 
     total = len(needles) or 1
+    sweep = []
+    for threshold in thresholds:
+        threshold_hits = {1: 0, 20: 0}
+        returned = 0
+        for item in needles:
+            ranked = run(item["needle"], 20, threshold)["results"]
+            returned += len(ranked)
+            for k in threshold_hits:
+                if any(entry.get("source_chapter_id") == item["chapter_id"] for entry in ranked[:k]):
+                    threshold_hits[k] += 1
+        absent_count = len(run(ABSENT_PHRASE, 20, threshold)["results"])
+        recall_20 = round(threshold_hits[20] / total, 4) if needles else None
+        sweep.append({
+            "min_relevance": threshold,
+            "queries": len(needles),
+            "recall_at_1": round(threshold_hits[1] / total, 4) if needles else None,
+            "recall_at_20": recall_20,
+            "min_recall": min_recall,
+            "recall_target_met": recall_20 >= min_recall if needles else None,
+            "returned_results": returned,
+            "avg_results_per_query": round(returned / len(needles), 4) if needles else None,
+            "absent_phrase_result_count": absent_count,
+        })
+    coverage_sweep = []
+    for coverage in coverage_thresholds:
+        threshold_hits = {1: 0, 20: 0}
+        returned = 0
+        for item in needles:
+            ranked = run(item["needle"], 20, min_term_coverage=coverage)["results"]
+            returned += len(ranked)
+            for k in threshold_hits:
+                if any(entry.get("source_chapter_id") == item["chapter_id"] for entry in ranked[:k]):
+                    threshold_hits[k] += 1
+        absent_count = len(run(ABSENT_PHRASE, 20, min_term_coverage=coverage)["results"])
+        recall_20 = round(threshold_hits[20] / total, 4) if needles else None
+        coverage_sweep.append({
+            "min_term_coverage": coverage,
+            "queries": len(needles),
+            "recall_at_1": round(threshold_hits[1] / total, 4) if needles else None,
+            "recall_at_20": recall_20,
+            "min_recall": min_recall,
+            "recall_target_met": recall_20 >= min_recall if needles else None,
+            "returned_results": returned,
+            "avg_results_per_query": round(returned / len(needles), 4) if needles else None,
+            "absent_phrase_result_count": absent_count,
+        })
     return {
         "material_count": len(materials),
         "warmup_seconds": round(build_seconds, 3),
@@ -254,7 +324,43 @@ def measure_retrieval(project: str, branch: str, materials: list[dict],
         "absent_phrase_result_count": len(absent["results"]),
         "absent_phrase_ms": round(empty_ms, 2),
         "misses": misses,
+        "relevance_threshold_sweep": {
+            "metric_scope": "absolute BM25 lexical score; source-chapter proxy, not semantic relevance",
+            "min_recall": min_recall,
+            "thresholds": list(thresholds),
+            "queries": len(needles),
+            "rows": sweep,
+        },
+        "term_coverage_sweep": {
+            "metric_scope": "fraction of query terms present in a hit; lexical proxy, not semantic relevance",
+            "min_recall": min_recall,
+            "thresholds": list(coverage_thresholds),
+            "queries": len(needles),
+            "rows": coverage_sweep,
+        },
     }
+
+
+def parse_relevance_thresholds(raw: str) -> tuple[float, ...]:
+    """Parse a comma-separated, finite and non-negative threshold sweep."""
+    try:
+        values = tuple(float(part.strip()) for part in raw.split(",") if part.strip())
+    except ValueError:
+        raise argparse.ArgumentTypeError("thresholds must be comma-separated numbers") from None
+    if not values or any(not math.isfinite(value) or value < 0 for value in values):
+        raise argparse.ArgumentTypeError("thresholds must be finite non-negative numbers")
+    return values
+
+
+def parse_coverage_thresholds(raw: str) -> tuple[float, ...]:
+    """Parse a comma-separated coverage sweep in the closed interval [0, 1]."""
+    try:
+        values = tuple(float(part.strip()) for part in raw.split(",") if part.strip())
+    except ValueError:
+        raise argparse.ArgumentTypeError("coverage thresholds must be comma-separated numbers") from None
+    if not values or any(not math.isfinite(value) or not 0 <= value <= 1 for value in values):
+        raise argparse.ArgumentTypeError("coverage thresholds must be finite numbers between 0 and 1")
+    return values
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -262,7 +368,17 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--corpus", required=True, help="prepare.py 产出的语料目录")
     parser.add_argument("--db", required=True, help="临时 SQLite 路径（会被重建）")
     parser.add_argument("--out", required=True, help="结果 JSON 输出路径")
+    parser.add_argument("--min-recall", type=float, default=0.95,
+                        help="threshold sweep 的词面针召回下限，默认 0.95")
+    parser.add_argument("--relevance-thresholds", type=parse_relevance_thresholds,
+                        default=DEFAULT_RELEVANCE_THRESHOLDS,
+                        help="逗号分隔的 BM25 绝对分数下限，默认 0,.01,.02,.04,.08,.16")
+    parser.add_argument("--coverage-thresholds", type=parse_coverage_thresholds,
+                        default=DEFAULT_COVERAGE_THRESHOLDS,
+                        help="逗号分隔的查询词覆盖下限，范围 [0,1]，默认 0,.1,.25,.5,.75")
     args = parser.parse_args(argv)
+    if not math.isfinite(args.min_recall) or not 0 <= args.min_recall <= 1:
+        parser.error("--min-recall must be finite and between 0 and 1")
 
     corpus = Path(args.corpus)
     db_path = Path(args.db)
@@ -289,8 +405,12 @@ def main(argv: list[str] | None = None) -> int:
                 raw = row["text"]
                 bodies[chapter["id"]] = raw.decode("utf-8") if isinstance(raw, bytes) else str(raw)
         materials, chapter_map = build_materials(project, branch, result["chapters"], bodies)
-        result["retrieval"] = measure_retrieval(project, branch, materials, chapter_map,
-                                               pick_needles(result["chapters"], bodies))
+        result["retrieval"] = measure_retrieval(
+            project, branch, materials, chapter_map, pick_needles(result["chapters"], bodies),
+            thresholds=args.relevance_thresholds,
+            coverage_thresholds=args.coverage_thresholds,
+            min_recall=args.min_recall,
+        )
         engine_started = time.perf_counter()
         with sqlite3.connect(db_path) as conn:
             conn.row_factory = sqlite3.Row
@@ -316,6 +436,9 @@ def main(argv: list[str] | None = None) -> int:
                    "total_chars": manifest["total_chars"],
                    "chapter_count": sum(entry["chapter_count"] for entry in manifest["books"])},
         "db_bytes": db_path.stat().st_size,
+        "min_recall": args.min_recall,
+        "relevance_thresholds": list(args.relevance_thresholds),
+        "coverage_thresholds": list(args.coverage_thresholds),
         "books": books,
         "not_measured": [
             "一致性引擎召回率/误报率：需要 AI 抽取真实稿件生成 assertion，本机无模型凭据，未执行",

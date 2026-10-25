@@ -54,6 +54,17 @@ def main() -> None:
         assert context["budget"]["profile"]["max_tokens"] == 4_000
         assert context["budget"]["retrieval_tiers"]["lexical"] == 0
         assert context["budget"]["retrieval_tiers"]["recency"] == 0
+        coverage_profile = urllib.parse.quote(json.dumps({"min_term_coverage": 0.5}))
+        with urllib.request.urlopen(base + f"/api/context?chapter_id={chapter['id']}&retrieval_profile={coverage_profile}", timeout=5) as response:
+            covered_context = json.load(response)
+        assert covered_context["budget"]["profile"]["min_term_coverage"] == 0.5
+        invalid_coverage = urllib.parse.quote(json.dumps({"min_term_coverage": 1.5}))
+        try:
+            urllib.request.urlopen(base + f"/api/context?chapter_id={chapter['id']}&retrieval_profile={invalid_coverage}", timeout=5)
+        except urllib.error.HTTPError as exc:
+            assert exc.code == 400
+        else:
+            raise AssertionError("out-of-range coverage floor unexpectedly passed")
         bad_profile = urllib.parse.quote(json.dumps({"unknown": 1}))
         try:
             urllib.request.urlopen(base + f"/api/context?chapter_id={chapter['id']}&retrieval_profile={bad_profile}", timeout=5)

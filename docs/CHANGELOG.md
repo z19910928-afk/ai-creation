@@ -1,6 +1,42 @@
 # 更新记录
 
+## 2026-10-25 · 安全加固：HTTP 非回环绑定需显式 opt-in
+
+- `backend/server.py` 新增 `resolve_host()`：默认只允许 `127.0.0.1`、`localhost`、`::1`；设置 `MOYU_HOST=0.0.0.0` 等非回环地址时必须同时显式设置 `MOYU_ALLOW_REMOTE=1`，否则启动即拒绝，避免无认证本地 API 被误暴露到局域网。
+- `tests/server_bind_fixtures.py` 4 条回归覆盖默认、空值、拒绝、显式放行；报告与残余风险见 `docs/security-audit-current-2026-10-25.md`。显式远程仍无认证，公网/多人部署不放行。
+
+## 2026-10-25 · 检索相关性下限：min_relevance + 词面覆盖率（默认 0，opt-in）
+
+### 改了什么
+
+- `search_materials()` 增加 `min_relevance`（非负 BM25 下限，默认 `0.0`）和 `min_term_coverage`（0–1，默认 `0.0`），并接受 `coverage_query`：在排序后、取 `limit` 前同时过滤；每条结果写入 `term_coverage`，返回体写入 `filtered_count`（只计被阈值/覆盖率拒绝的候选，不含权限排除）。
+- `assemble_context()` 同样暴露 `min_relevance` / `min_term_coverage`，把阈值传给历史检索，不改变预算或其他检索策略。
+- `assemble_context()` 用 `instruction` 作为覆盖率聚焦文本（为空才退到章节元数据；两者都为空才退回完整 query，这是唯一会包含当前正文末尾 700 字的退化路径）。
+- HTTP `retrieval_profile` 与工作台上下文设置均暴露该字段；越界返回 400，旧客户端不传字段仍保持旧行为。
+- 真实基准新增 `--coverage-thresholds` 和 `term_coverage_sweep`。
+
+### 实测
+
+- 三本公版长篇各 120 回，共 360 回 / 2,343,664 字；每书 5/6/7 条 24 字逐字针，R@1 全 1.0。
+- 一致性注入补跑（2026-10-25）：三书 360 回 / 2,344,024 字；按事实池容量分配 3/48/49，注入 100 / 检出 100（recall 全 1.0）；干净库 main/book2/book3 均 100.0/A、0 findings。命令与明细见 `docs/real-corpus-acceptance-2026-10-24.md` §9。
+- absent 句在阈值 0.0 时三书均返回 20 条；0.1 时全部降为 0，平均返回条数分别为 16.6 / 16.1667 / 12.7143；0.25 时降至 6.0 / 2.1667 / 1.7143；0.5 与 0.75 只剩 1.0 条/查询。
+- **关键反例**：把同一条 24 字针包进约 100 字续写指令后，红楼梦第 16/31/46 回相关章节的覆盖率只有 0.345455 / 0.287129 / 0.314286；若默认 0.5，会把这些真实证据全部过滤。因此默认仍为 0.0，0.5 只适合短精确查询，不能读成“语义相关性”。
+- 回归：`tests/context_pipeline_fixtures.py` 18 个测试通过；`tests/ai_contract_fixtures.py` 通过（0.5 回显、1.5 返回 400）；`tests/context_http_fixtures.py` 通过；`tests/context_scope_intersection_fixtures.py` 通过；`tests/reference_passages_http_fixtures.py` 36 个测试通过；`tests/real_corpus_fixtures.py` 通过；`node --check` 通过。
+- 浏览器：`tests/reference_passages_browser_regressions.cjs` 16/16 通过（含 `min_term_coverage` 0.05 步进保存、0.5 回显、1.5 提示）；26 个 CJS 全量 25/26，唯一失败是 `desktop_smoke.cjs` 的 `clipboard-write-from-user-gesture` 在无 GUI 会话中无法取得原生窗口焦点（`TIMEOUT_NATIVE_WINDOW_FOCUS`），其余 25 个 rc=0；不是页面断言失败，但真实桌面焦点仍需在有窗口的会话复验。
+
+### 边界（别读成“语义召回已解决”）
+
+- `term_coverage` 是词面覆盖率，不是语义相似度；同义改写、指代、跨章节因果仍不覆盖。
+- 只有一条 absent 句/书，没有人工标注的“应返回空”查询集；0.1/0.25 是实验值，不是产品定值。
+- 24 字逐字针的 R@1=1.0 只是词面下限；长指令探针只有 3 条，0.25 的普遍安全性未证。
+- 一致性“30 万字 × 3 部”已在 2026-10-25 补跑规则抽取链路：360 回 / 2,344,024 字，注入 100 条检出 100 条、基线 0 误报（见 `docs/real-corpus-acceptance-2026-10-24.md` §9）。但抽取器不是 AI，真实模型链路仍未验证；Q1 的 3000 字 77.8%（7/9）<80% 仍未达成。
+- **3000 字目标复验（未改口径）**：`q1_target_met=false`，3000 子集 7/9；失败场景不是调参能修——sc-18 的 FakeProvider 每轮固定输出 46 字、12 轮上限仍只有约 360 字（<2700），sc-19 在第 3 轮前被外部预算耗尽，二者都不能在不改评分/样本/外部中断语义的前提下通过。详见 `docs/consistency-budget-v1.2-2026-10-23.md` §6 与 `benchmarks/budgeted/run.py:244-245`。
+- 浏览器自动化已跑：参考片段 16/16；26 个 CJS 中 25 个通过，`desktop_smoke.cjs` 只差原生窗口焦点一项（无 GUI 会话限制），其余页面/导出/桌面用例通过。该失败不能算产品通过，也不能算代码断言失败。
+- 细节与复算命令见 [`docs/retrieval-relevance-threshold-2026-10-25.md`](retrieval-relevance-threshold-2026-10-25.md)。
+
 ## 2026-10-24 · 收口：同值去重 + 离线抽取器（仍未达成项照旧）
+
+> 历史口径：本节记录 2026-10-24 当时状态；30 万字 × 3 部已在 2026-10-25 补跑规则抽取链路 100/100，见顶部与 `docs/real-corpus-acceptance-2026-10-24.md` §9；AI 抽取链路仍未验证。
 
 本轮交付两件事：同槽位同值事实不再两两配对、真实稿件的离线抽取器与证据闸门。**两项都不改变 Q1 的未达成记录**——预算续写的 3000 字章一次通过率仍是 77.8%（7/9），未达 ≥80%；「30 万字 × 3 部真实作品」一致性验收仍未执行（见「2026-10-23 · Q1 阶段交付（含未达成项）」）。
 
@@ -26,7 +62,7 @@
 - **真实模型外部复验未完成**：本机无 `MOYU_EXTRACT_*` 凭据，`--mode openai` 缺变量时 `exit 2`（那是「没跑」不是「通过」）；captain 另用已授权服务跑了当前生产 CLI 2 章，**进程 `rc=0` 但两章业务结果均为 `provider_error`**，失败发生在网络层、请求没有进入模型：captain 那次复跑当时，无凭据直连、代理、HTTP/1.1 与 IPv4 四条路径均报 `Could not resolve host`（**当时的观察，不代表此后仍不可达**），即那一轮 DNS / endpoint 未建立真实请求，需要可解析且可达的 base URL 才能复跑；同一轮诊断里另观察到 `192.168.8.50` TCP 连接被拒、`CONNECT 200` 之后的 `SSL_ERROR_SYSCALL`、DoH 返回 `Status=3`（NXDOMAIN），同为**先前观察记录**。**本次未进入模型质量判定，不能据此评价模型**。两种情形都读作**未复验**，不得写成「真实模型已通过」。已覆盖的只有协议、解析、降级、传输与确定性，**真实召回率与语义幻觉率未验收**；默认可用的规则模式是 dry-run 级（只覆盖六类开场套式，心理、因果、关系类事实抽不到）。
 - **证据闸门不验语义**：`subject` 指的是不是引文里那个人、`value` / `attribute` 与引文语义是否相符，闸门一律放行（不做实体链接、指代消解、别名合并）；`tests/extract_fixtures.py::test_quote_gate_does_not_verify_semantics` 用「引文对、主语错」的样本把这个缺口钉成可执行断言。语义正确性靠服务端断言复用比较与 `backend/moyu_consistency.py` 的一致性检查兜底。
 - **残余边界（均 low，不阻塞）**：已关闭——t63 复审的 F1（curl 失败详情先截断再脱敏）由 t64 关闭；t74 复审的「全角分隔符 / 裸 `Basic` 未被识别」与「为脱敏把诊断信息一并吞掉」由 t75/t76 关闭（改为按形状识别 + 保留状态码与错误码）。仍按边界记录——t76 两条 low：中文 token 值会被过度抹除（属诊断信息损失，不是漏抹）、URL / 百分号编码里的凭据形态未覆盖；t60 两条 low：`tests/extract_fixtures.py` 里 `digest(x) == digest(x)` 是自比、对确定性零约束，`strict_json()` 的 `default=str` 会把不可序列化对象静默字符串化（当前 schema 不可达）；Windows 与外部网关行为未复验。
-- **仍未达成的 Q1 项**：预算续写 3000 字子集 77.8%（7/9），未达 ≥80%（差距原因见 `docs/consistency-budget-v1.2-2026-10-23.md` §6 的指标口径缺陷）；「30 万字 × 3 部真实作品」一致性验收仍未执行。
+- **仍未达成的 Q1 项**：预算续写 3000 字子集 77.8%（7/9），未达 ≥80%（差距原因见 `docs/consistency-budget-v1.2-2026-10-23.md` §6 的指标口径缺陷）；「30 万字 × 3 部真实作品」的规则抽取链路已在 2026-10-25 补跑（100/100），但 AI 抽取链路仍未验证，不能算正式 Q1 通过。
 
 ## 2026-10-23 · Q1 阶段交付（含未达成项）
 

@@ -88,6 +88,35 @@ def load_prepare():
     return module
 
 
+def load_acceptance():
+    spec = importlib.util.spec_from_file_location("real_corpus_acceptance", BENCH / "consistency_acceptance.py")
+    module = importlib.util.module_from_spec(spec)
+    assert spec.loader is not None
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_injection_total_allocation() -> None:
+    acceptance = load_acceptance()
+    # 小池先封顶，剩余量继续分配；输入顺序决定同余量时的先后，结果确定可复算。
+    assert acceptance.plan_injections([3, 100, 100], inject_total=100) == [3, 49, 48]
+    assert acceptance.plan_injections([3, 40, 50], inject_total=83) == [3, 40, 40]
+    assert acceptance.plan_injections([0, 2, 5], inject_total=0) == [0, 0, 0]
+
+
+def test_injection_allocation_boundaries() -> None:
+    acceptance = load_acceptance()
+    # 旧 --inject N 仍是每本书最多 N 条，小池按容量截断。
+    assert acceptance.plan_injections([3, 100, 40], inject_count=40) == [3, 40, 40]
+    for capacities, total in (([3, 40], 44), ([3, 40], -1)):
+        try:
+            acceptance.plan_injections(capacities, inject_total=total)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f"非法总量未拒绝：capacities={capacities}, total={total}")
+
+
 def test_repair_typo() -> None:
     """`repair_typo` 只处理**词尾**的零，且只作用于纯数字串。
 
@@ -167,7 +196,8 @@ def test_run_end_to_end(tmp: Path, corpus: Path) -> dict:
     # 检索段：键名与「针数>0」都要在，否则基准静默退化成空跑
     retrieval = book["retrieval"]
     for key in ("material_count", "needles", "recall_at_1", "recall_at_20", "latency_ms_p50",
-                "absent_phrase_result_count", "misses"):
+                "absent_phrase_result_count", "misses", "relevance_threshold_sweep",
+                "term_coverage_sweep"):
         assert key in retrieval, f"检索段缺键：{key}"
     assert retrieval["material_count"] > 0, "没有段落块被索引"
     assert retrieval["needles"] > 0, "没有生成任何针"
@@ -186,16 +216,48 @@ def test_absent_phrase_is_measured(results: dict) -> None:
     遍布全书，一个不存在的句子照样能凑满 limit（3 本书都是 20 条）；而本 fixture
     的三章合成正文用字与那句查询几乎不共享，返回 0 是正确的。
 
-    真正的缺陷证据是代码级的——`backend/moyu_context.py` 的 `assemble_context()`
-    消费 `retrieval["results"]` 时没有任何相关性阈值（`relevance` 只被写进证据
-    记录）。所以这里守住的是「这个观测量不能消失」，而不是它的符号。
+    这里守住的是「这个观测量不能消失」，而不是它的符号；阈值 sweep 另行
+    记录不同 `min_relevance` 下的数量与词面针召回，不把它包装成语义质量。
     """
     count = results["books"][0]["retrieval"]["absent_phrase_result_count"]
     assert isinstance(count, int) and count >= 0, count
     assert count <= 20, f"返回条数超过 limit：{count}"
 
 
+def test_relevance_threshold_sweep(results: dict) -> None:
+    retrieval = results["books"][0]["retrieval"]
+    sweep = retrieval["relevance_threshold_sweep"]
+    assert sweep["queries"] == retrieval["needles"] > 0, sweep
+    assert sweep["min_recall"] == 0.95, sweep
+    assert 0.0 in sweep["thresholds"], sweep
+    assert len(sweep["rows"]) == len(sweep["thresholds"]), sweep
+    for row in sweep["rows"]:
+        assert row["queries"] == retrieval["needles"], row
+        assert 0 <= row["recall_at_20"] <= 1, row
+        assert isinstance(row["recall_target_met"], bool), row
+        assert row["returned_results"] >= 0, row
+        assert 0 <= row["absent_phrase_result_count"] <= 20, row
+    assert results["min_recall"] == 0.95, results["min_recall"]
+    assert any("语义召回" in item for item in results["not_measured"])
+
+
+def test_term_coverage_sweep(results: dict) -> None:
+    retrieval = results["books"][0]["retrieval"]
+    sweep = retrieval["term_coverage_sweep"]
+    assert 0.0 in sweep["thresholds"], sweep
+    assert sweep["queries"] == retrieval["needles"] > 0, sweep
+    assert len(sweep["rows"]) == len(sweep["thresholds"]), sweep
+    for row in sweep["rows"]:
+        assert 0 <= row["min_term_coverage"] <= 1, row
+        assert 0 <= row["recall_at_20"] <= 1, row
+        assert row["returned_results"] >= 0, row
+        assert 0 <= row["absent_phrase_result_count"] <= 20, row
+    assert results["coverage_thresholds"] == list(sweep["thresholds"]), results["coverage_thresholds"]
+
+
 def main() -> int:
+    test_injection_total_allocation()
+    test_injection_allocation_boundaries()
     test_repair_typo()
     test_normalize_rules()
     with tempfile.TemporaryDirectory() as raw_tmp:
@@ -203,6 +265,8 @@ def main() -> int:
         corpus = test_prepare_end_to_end(tmp)
         results = test_run_end_to_end(tmp, corpus)
         test_absent_phrase_is_measured(results)
+        test_relevance_threshold_sweep(results)
+        test_term_coverage_sweep(results)
         summary = {
             "chapters": results["corpus"]["chapter_count"],
             "chars": results["corpus"]["total_chars"],

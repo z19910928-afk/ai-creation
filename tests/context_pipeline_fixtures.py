@@ -165,6 +165,79 @@ class ContextPipelineTests(unittest.TestCase):
             results.append(context["retrieved_chapters"][0]["id"])
         self.assertEqual(results, ["chapter-7", "chapter-9"])
 
+    def test_relevance_threshold_filters_noise_before_context_limit(self):
+        state = {
+            "project": {"id": "book", "title": "夜航", "summary": "", "genre": ""},
+            "branch_id": "main",
+            "chapters": [
+                {"id": "past-relevant", "project_id": "book", "branch_id": "main", "chapter_number": 1,
+                 "title": "第一章", "body": "林岚把月牙密钥藏进渡口旧钟。", "status": "已发布"},
+                {"id": "past-noise", "project_id": "book", "branch_id": "main", "chapter_number": 2,
+                 "title": "第二章", "body": "月牙挂在天上。\n" + "风穿过山口，草木无声。" * 20, "status": "已发布"},
+                {"id": "current", "project_id": "book", "branch_id": "main", "chapter_number": 3,
+                 "title": "第三章", "body": "林岚抬头望向渡口。", "status": "草稿"},
+            ],
+            "records": [], "memory": [], "plot": {},
+        }
+        revisions = {item["id"]: "r-" + item["id"] for item in state["chapters"]}
+        policy = ScopePolicy("book", "main", 3)
+        chunks = [chunk for item in state["chapters"] for chunk in chapter_chunks(item, revisions[item["id"]])]
+        baseline = search_materials(chunks, "月牙密钥", policy, limit=20)
+        by_chapter = {item["chapter_id"]: item for item in baseline["results"]}
+        self.assertIn("past-relevant", by_chapter)
+        self.assertIn("past-noise", by_chapter)
+        relevant_score = by_chapter["past-relevant"]["relevance"]
+        noise_score = by_chapter["past-noise"]["relevance"]
+        self.assertGreater(relevant_score, noise_score)
+        threshold = (relevant_score + noise_score) / 2
+        filtered = search_materials(chunks, "月牙密钥", policy, limit=1, min_relevance=threshold)
+        self.assertEqual([item["chapter_id"] for item in filtered["results"]], ["past-relevant"])
+        self.assertEqual(filtered["min_relevance"], threshold)
+        self.assertGreater(filtered["filtered_count"], 0)
+        self.assertEqual(by_chapter["past-relevant"]["term_coverage"], 1.0)
+        self.assertLess(by_chapter["past-noise"]["term_coverage"], 1.0)
+        covered = search_materials(chunks, "月牙密钥", policy, limit=1, min_term_coverage=0.5)
+        self.assertEqual([item["chapter_id"] for item in covered["results"]], ["past-relevant"])
+        self.assertEqual(covered["min_term_coverage"], 0.5)
+        self.assertGreater(covered["filtered_count"], 0)
+        self.assertGreaterEqual(covered["results"][0]["term_coverage"], 0.5)
+        focused = search_materials(chunks, "月牙密钥 风穿过山口 草木无声", policy, limit=20,
+                                   min_term_coverage=0.8, coverage_query="月牙密钥")
+        self.assertEqual([item["chapter_id"] for item in focused["results"]], ["past-relevant"])
+        self.assertEqual(baseline["filtered_count"], 0)
+        self.assertEqual(
+            [item["id"] for item in baseline["results"]],
+            [item["id"] for item in search_materials(chunks, "月牙密钥", policy, limit=20, min_relevance=0.0)["results"]],
+        )
+        context_threshold, _ = assemble_context(
+            state, "current", instruction="月牙密钥", revisions=revisions,
+            profile={"chapter_top_k": 2, "recent_window": 0, "memory_top_k": 0, "record_top_k": 0},
+            min_relevance=threshold,
+        )
+        self.assertEqual([item["id"] for item in context_threshold["retrieved_chapters"]], ["past-relevant"])
+        context, current = assemble_context(
+            state, "current", instruction="月牙密钥", revisions=revisions,
+            profile={"chapter_top_k": 2, "recent_window": 0, "memory_top_k": 0, "record_top_k": 0,
+                     "min_term_coverage": 0.5},
+        )
+        self.assertEqual(current["chapter_number"], 3)
+        self.assertEqual([item["id"] for item in context["retrieved_chapters"]], ["past-relevant"])
+        self.assertIn("月牙密钥", context["retrieved_chapters"][0]["excerpt"])
+        self.assertNotIn("past-noise", {item["id"] for item in context["retrieved_chapters"]})
+        for invalid in (-0.01, float("nan"), float("inf"), True):
+            with self.assertRaises(ValueError):
+                search_materials(chunks, "月牙密钥", policy, min_relevance=invalid)
+            with self.assertRaises(ValueError):
+                assemble_context(state, "current", revisions=revisions, min_relevance=invalid)
+        for invalid in (-0.01, 1.01, float("nan"), float("inf"), True):
+            with self.assertRaises(ValueError):
+                search_materials(chunks, "月牙密钥", policy, min_term_coverage=invalid)
+            with self.assertRaises(ValueError):
+                assemble_context(state, "current", revisions=revisions, min_term_coverage=invalid)
+        zero = search_materials(chunks, "月牙密钥", policy, limit=0)
+        self.assertEqual(zero["results"], [])
+        self.assertEqual(zero["filtered_count"], 0)
+
     def test_small_budget_preserves_current_revision_and_exact_body(self):
         body = "林岚握住铜匙。\n门外的潮声低了。"
         state = {
