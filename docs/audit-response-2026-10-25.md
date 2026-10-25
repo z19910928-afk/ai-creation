@@ -14,7 +14,7 @@
 | A3 | §1.3 F1 证据只证“引文存在”，不证语义 | 成立。真实样本 `封肃` 的 `real_name=封` 引文 `小人姓封` 逐字正确；无竞争值时一致性引擎给 100 A、0 findings，补上 `real_name=封肃` 后才报 high 冲突 | 文档 §8 第 8 条写死边界；没有伪造语义校验器 |
 | A4 | §2.1 “23 条断言可逐条审” | **不成立**。5 章 JSON 的 `assertions=23`，但每章 `audit` 只存前 3 条，实际可见 **11 条**（3+3+3+2），其余 12 条无逐字证据 | 新增 `--audit-limit`（默认 3，`0`=全部）与 `audit_total`；旧产物仍只有 11 条，未重跑 23 条 |
 | A5 | §2.2 真实世界误报率 | 在**11 条可见**真实断言上，按“每章一个 revision”重建后为 **100 A、0 findings**；不能外推为 23 条或生产零误报。第一次探针每断言一个 revision，制造了 7 条 `old_revision` medium，已确认是探针假象，不是真实数据误报 | 证据 `/private/tmp/audit-realworld-visible.json`；报告保留 11/23 的覆盖边界 |
-| A6 | §3 Q1 口径二选一 | **工单前提有误**：3000 字 9 场景是 `sc-02/03/07/08/12/14/17/18/19`，不含 `sc-20`（`sc-20` 是 4000 字取消）；`sc-15` 是 4000 字场景，已计入 4000 的失败。按原工单 (a)/(b) 都会得到不存在的分母或错位指标 | 不照抄 (a)/(b)；保留 Q1 `7/9=77.8%`、`q1_target_met=false`，另列明确标注的 7/8=87.5% 诊断值（剔除 `sc-19` 外部预算中断），不替代 Q1（`docs/consistency-budget-v1.2-2026-10-23.md:95`） |
+| A6 | §3 Q1 口径二选一 | **工单前提有误**：3000 字 9 场景是 `sc-02/03/07/08/12/14/17/18/19`，不含 `sc-20`（`sc-20` 是 4000 字取消）；`sc-15` 是 4000 字场景，已计入 4000 的失败。按原工单 (a)/(b) 都会得到不存在的分母或错位指标 | 不照抄 (a)/(b)；保留 Q1 `7/9=77.8%`、`q1_target_met=false`，另列明确标注的 7/8=87.5% 诊断值（剔除 `sc-19` 外部预算中断），不替代 Q1（`docs/consistency-budget-v1.2-2026-10-23.md` §6.1） |
 | A7 | §4.4 “当前工作树 12 个修改 + 15 个未跟踪” | **不成立**。审计开始时 `git status --porcelain` 只有 `?? docs/audit-request-2026-10-25.md`；HEAD `c7d2841`，没有 12+15 个改动 | 未按该段提交任何幽灵改动；审计自身的改动在 §6 单独列出 |
 | A8 | JSON `generated_at` 时间戳 | 成立（工单未提，但自审发现）：旧脚本硬编码 `2026-10-24T00:00:00+08:00`，实际 10-25 的产物也写旧日期 | 已改为运行时刻 `datetime.now().astimezone()`（`benchmarks/real_corpus/extract.py:253`）；旧产物时间戳不可信，报告注明以 mtime/hash 为准 |
 
@@ -22,11 +22,11 @@
 
 ### 2.1 三份真实模型产物
 
-| 产物 | 规模 | 断言/拒绝 | 引擎 | 时间 |
+| 产物 | 规模 | 断言/拒绝 | 引擎 | 时间（文件 mtime，非 `generated_at`） |
 | --- | --- | --- | --- | --- |
-| `/private/tmp/moyu-real-current-5.json` | 5 章 / 33 120 字 | 23 / 5，全部 `empty_value`；0 `provider_error`；`wall_s=172.192` | `6b5d43136405…` | 2026-10-25 16:56 |
-| `/private/tmp/moyu-real-current-180.json` | 2 章 / 12 463 字 | 17 / 14（6 `empty_value`、8 `quote_mismatch`）；0 `provider_error`；`wall_s=102.677` | `6b5d43136405…` | 2026-10-25 16:52 |
-| `/private/tmp/moyu-real-current.json` | 2 章 / 12 463 字 | 2 / 2（1 `provider_error`、1 `quote_mismatch`）；`wall_s=84.524` | `6b5d43136405…` | 2026-10-25 16:04（历史失败） |
+| `/private/tmp/moyu-real-current-5.json` | 5 章 / 33 120 字 | 23 / 5，全部 `empty_value`；0 `provider_error`；`wall_s=172.192` | `6b5d43136405…` | 2026-10-25 16:56:21 |
+| `/private/tmp/moyu-real-current-180.json` | 2 章 / 12 463 字 | 17 / 14（6 `empty_value`、8 `quote_mismatch`）；0 `provider_error`；`wall_s=102.677` | `6b5d43136405…` | 2026-10-25 16:52:53 |
+| `/private/tmp/moyu-real-current.json` | 2 章 / 12 463 字 | 2 / 2（1 `provider_error`、1 `quote_mismatch`）；`wall_s=84.524` | `6b5d43136405…` | 2026-10-25 16:50:48（mtime；`generated_at` 为旧硬编码值，不可用） |
 
 三份都是 `repeat=1`；`identical=true` 不是确定性证明。5 章产物每章断言数为 `[0, 7, 7, 7, 2]`，`audit` 可见数为 `[0, 3, 3, 3, 2]`，合计 **11/23**。
 
@@ -72,7 +72,7 @@
 | --- | --- | --- |
 | `benchmarks/real_corpus/extract.py` | 新增 `--audit-limit`（默认 3，0=全部）、`audit_total`；`generated_at` 改为运行时刻 | 已改，待提交 |
 | `docs/real-corpus-extract-2026-10-24.md` | §1 结论、§6.4 真实模型表、`repeat=1`/11-of-23 警告、§7 全量审计命令、§8 第 1/8/9 条 | 已改，待提交 |
-| `docs/consistency-budget-v1.2-2026-10-23.md` | 新增 §6.1：Q1 保留 7/9；诊断 7/8；4000 4/6 | 已改，待提交 |
+| `docs/consistency-budget-v1.2-2026-10-23.md` | §6.1 保持既有口径（Q1 保留 7/9；诊断 7/8；4000 4/6，本节非本轮新增、内容与 HEAD 逐字一致）；本轮真实新增 §6.1.1：`sc-15` 三口径与 continuation-80 归属，不声明已修 | 已改，待提交 |
 | `docs/CHANGELOG.md` | 新增 2026-10-25 审计修复条目 | 已改，待提交 |
 | `docs/audit-response-2026-10-25.md` | 本报告 | 新增，待提交 |
 
@@ -82,13 +82,30 @@
 .venv/bin/python -m py_compile benchmarks/real_corpus/extract.py   -> PASS
 .venv/bin/python tests/extract_fixtures.py                          -> extract fixtures: OK {'cases': 67}
 .venv/bin/python benchmarks/real_corpus/extract.py --mode dry-run --limit 2 --repeat 1 \
-  --audit-limit 0 --json /private/tmp/audit-full-test.json
-  -> totals.assertions=9；audit 可见 9/9；rejected=0
+  --audit-limit 0 --json /private/tmp/audit-full-test-postfix.json
+  -> exit 0；totals.assertions=9；audit 可见 9/9；rejected=0
+  -> generated_at=2026-10-25T18:27:09+08:00（运行时刻，非硬编码）
+  -> 该文件 mtime=2026-10-25 18:27:09，与 generated_at 一致
 .venv/bin/python /private/tmp/audit_realworld.py
   -> 11 visible；100.0 A；0 findings；控制组 92.0 B；1 high
 ```
 
 注意：`--audit-limit 0` 的 9/9 是 **dry-run 合成语料**，不是真实模型 23 条；真实模型的 5 章产物仍是旧的默认 3 条采样。
+
+### 5.1 `generated_at` 证据链说明（先前一处错位，已改正）
+
+本文最初引用的 `/private/tmp/audit-full-test.json` 只能证明 9/9，**不能**证明 `generated_at`
+已改为运行时刻，理由可复算：
+
+- 该文件 mtime = `2026-10-25 17:46:44`，早于本提交 `d477912` 的提交时刻 `2026-10-25 17:52:38`；
+- 它的 `generated_at` 仍是旧硬编码 `2026-10-24T00:00:00+08:00`；
+- 即：它是在「`generated_at` 尚未修复」的代码上跑出来的。
+
+因此 `generated_at` 的修复证据改用**修复后重跑**的
+`/private/tmp/audit-full-test-postfix.json`：`generated_at=2026-10-25T18:27:09+08:00`，
+与 mtime 逐秒吻合；该值由 `benchmarks/real_corpus/extract.py:253`
+（`datetime.now().astimezone().isoformat(timespec="seconds")`）产生。
+旧文件仅保留为 9/9 的旁证，不再充当 `generated_at` 证据。
 
 ## 6. 自审：有没有重复“只信文档不查 /tmp”
 
@@ -108,6 +125,32 @@
 4. **11 条不是 23 条**：真实世界误报率只能报“11 条可见 0 findings”，不能报 0/23。
 5. **Q1 仍未达成**：7/9=77.8% < 80%，`q1_target_met=false`；7/8=87.5% 是诊断值，不是 Q1。
 6. **代码变更尚未跑 CI**：本文的 dry-run/67 用例通过，不等于 GitHub 全量 CI；提交后需要再跑。
+7. **真实模型拒绝率与可用性口径已落地，但数字本身仍受 `repeat=1` 限制**（工单 §2.2 后半段）：
+   口径与数字现已写入 `docs/real-corpus-extract-2026-10-24.md` §6.5——
+   5 章轮拒绝 **5/28 = 17.9%**、2 章轮拒绝 **14/31 = 45.2%**，**两个分母不同源（28 vs 31）、
+   不可合并**；单章均值 **34.4 s（5 章）/ 51.3 s（2 章）**，两轮不同源；
+   360 章单线程 **≈3.4 h（按 34.4 s/章外推）仅为粗估、非实测**（按 51.3 s/章外推则 ≈5.1 h）。
+   **仍未关闭的部分**：这两组数都来自 `repeat=1` 的产物，只能说明「请求进了模型、拒绝被如实记账」，
+   **不是**召回率/幻觉率验收；也没有第二轮独立复跑做方差估计。
+8. **sc-15 的「溢出不可回收」显式失败未做，且不由本提交承接**（工单 §3(b)）：
+   `benchmarks/budgeted/results/budgeted-v1.2-baseline.json` 的 `sc-15` 实测
+   `characters=4661` / `target_characters=4000` / `target_range=3600–4400` /
+   `stop_reason="target_reached"` / `target_reached=true` / `within_tolerance=false` /
+   `overshoot=261` / `rounds=1`。
+   这是**三个不同口径**，必须分开读：`target_reached` 在
+   `backend/moyu_continuation.py:872` 只判下限 `total_characters >= lower`；循环侧 `:794-796`
+   是 `794` `if total_characters >= lower:` → `795` `stop_reason=TARGET_REACHED` → `796` `break`，
+   命中即停、不看上限；而 `within_tolerance`
+   在 `:873` 判的是 `lower <= total <= upper`。所以 `stop_reason=target_reached` 只表示
+   「够到了下限」，**不表示落在 ±10% 带内**；本例越了上限 261 字（超目标 16.5%），
+   引擎仍报「达标停止」。这不是记录错误（`within_tolerance=false` 如实落了盘），
+   而是**停止原因的语义不足以区分「带内达标」与「越界但够下限」**。
+   **处置**：该能力诉求（volatile 档单轮爆字的「溢出不可回收」显式失败语义）
+   **由 continuation-80 / 引擎 owner 承接**（`backend/moyu_continuation.py` 的
+   `stop_reason` / overshoot 语义线），**本提交与本文不覆盖、不声明已修**；
+   `sc-15` 仍计入 4000 字子集的失败（4/6=66.7%），Q1 headline 与 4000 档数字均不变。
+   反向确认：本提交**没有**改动 `backend/moyu_continuation.py`，也没有改基线的
+   `stop_reason` 判定。
 
 ## 8. 结论
 

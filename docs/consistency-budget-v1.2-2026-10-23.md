@@ -105,6 +105,41 @@
 3000 字模型可控场景为 **7/8 = 87.5%**；它只能回答「模型可控场景」，不能写成「Q1 达成」。
 4000 字仍是独立的 **4/6 = 66.7%**，不能套用 77.8% 或 87.5%。
 
+#### 6.1.1 `sc-15` 的「越界但够下限」是已知缺陷，尚未修复
+
+基线 `benchmarks/budgeted/results/budgeted-v1.2-baseline.json` 中 `sc-15` 的实测记录：
+
+| 字段 | 值 |
+| --- | --- |
+| `target_characters` | 4000 |
+| `target_range` | 3600–4400（±10%） |
+| `characters` | **4661**（超上限 **261** 字，超目标 **16.5%**） |
+| `rounds` | 1（单轮直接写出 4661 字） |
+| `stop_reason` | **`target_reached`** |
+| `target_reached` | `true` |
+| `within_tolerance` | **`false`** |
+| `first_pass` | `false` |
+| `engine_flags.overshoot_guard` | `true`（提示已下发，但对抗式 provider 不读） |
+
+**这三个值是三个不同口径，不能互相顶替**：
+
+- `target_reached=true`：`backend/moyu_continuation.py:872` 判 `total_characters >= lower`，
+  即「够到 3600 下限」；
+- `stop_reason=target_reached`：循环体 `:794-796` 一命中下限就 `stop_reason = TARGET_REACHED`
+  并 `break`（`794` = `if total_characters >= lower:`、`795` = 赋值、`796` = `break`），**不看上限**；
+- `within_tolerance=false`：`:873` 判 `lower <= total <= upper`，本例 4661 > 4400 故为假。
+
+因此 `stop_reason=target_reached` **不等价于**「落在预算带内达标」。引擎没有把越界误记为
+`within_tolerance=true`（落盘是诚实的），缺的是**停止原因语义**：它无法区分
+「带内达标」与「越界但够下限」。工单 §3(b) 要求的「溢出不可回收」显式失败
+（volatile 档单轮爆字时给出可区分的停止原因/失败码）属于引擎能力诉求。
+
+**归属与状态**：该诉求**由 continuation-80 / 引擎 owner 承接**
+（`backend/moyu_continuation.py` 的 `stop_reason` 与 overshoot 语义线），
+**本节不声明已修**，也不改变本节任何数字：
+`sc-15` 仍计入 4000 字子集失败（4/6 = 66.7%），Q1 headline 仍为 7/9 = 77.8%。
+本轮审计修复只做了「把差别写清」，没有改引擎、没有改基线、没有把 `sc-15` 移出分母。
+
 ## 7. 附录 A（非计入）：下界 vs 上界
 
 > 本节全部数字均为**敏感性上界**，`first_pass` 口径未改动，headline 只认对抗式 provider。上界高不代表达标。

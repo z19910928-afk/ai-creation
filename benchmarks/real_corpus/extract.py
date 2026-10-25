@@ -222,7 +222,8 @@ def main() -> int:
     parser.add_argument("--json", default=None, help="输出 JSON 路径（缺省只打印摘要）")
     parser.add_argument("--repeat", type=int, default=2, help="确定性复跑次数（默认 2）")
     parser.add_argument("--audit-limit", type=int, default=3,
-                        help="每章写入 JSON 的断言证据条数（默认 3；0=全部，供人工审计）")
+                        help="每章写入 JSON 的断言证据条数（默认 3；0=全部，供人工审计；"
+                             "负数按 max(0, N) 处理，等同 0，即导出全部证据，不报错）")
     parser.add_argument("--quiet", action="store_true")
     args = parser.parse_args()
 

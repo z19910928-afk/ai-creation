@@ -1,5 +1,16 @@
 # 更新记录
 
+## 2026-10-25 · 审计复核修复：F1–F6 文档与证据补齐
+
+复核结论为 `needs_revision`（`docs/audit-review-team-2026-10-25.md`），本轮只做文档与 `--help` 修复，**未改任何产品逻辑、未跑真实模型**。
+
+- **F1 真实模型拒绝率与可用性进文档**：`docs/real-corpus-extract-2026-10-24.md` 新增 §6.5——5 章轮拒绝 **5/28 = 17.9%**、2 章轮拒绝 **14/31 = 45.2%**，两个分母不同源、**不可合并**；单章均值 **34.4 s（5 章，`per_chapter_ms.mean=34437.66`）/ 51.3 s（2 章，`51337.99`）**；360 章单线程 **≈3.4 h 仅为按 34.4 s/章外推的粗估、非实测**。同项状态写入 `docs/audit-response-2026-10-25.md` §7 第 7 条，并注明仍受 `repeat=1` 限制。
+- **F2 `sc-15` 超冲缺陷归属澄清（不声明已修）**：`docs/consistency-budget-v1.2-2026-10-23.md` 新增 §6.1.1，`docs/audit-response-2026-10-25.md` §7 新增第 8 条。写清 `characters=4661` / `target=4000` / `range=3600–4400` / `stop_reason=target_reached` / `target_reached=true` / `within_tolerance=false` / `overshoot=261` 是**三个不同口径**：`target_reached` 只判下限（`backend/moyu_continuation.py:872`、循环侧 `:794-796` = `if` → `stop_reason=TARGET_REACHED` → `break`），`within_tolerance` 才判带宽（`:873`），故 `target_reached` 不等于带内达标。该「溢出不可回收」显式失败语义**由 continuation-80 / 引擎 owner 承接**，本轮不覆盖；`sc-15` 仍计入 4000 子集（4/6=66.7%），Q1 仍 7/9=77.8%。
+- **F3 §6.4 标题数修正**：`四档` → `五档`，并注明表内后 3 行是同一条真实模型链路分 3 次运行拆出，不是三套能力。
+- **F4 `--audit-limit` 负数语义写入 `--help`**：明确负数按 `max(0, N)` 处理、等同 `0` 即导出全部证据、不报错；`docs/real-corpus-extract-2026-10-24.md` §7 同步实测矩阵（缺省 `(5,3)(4,3)`、`0` 与 `-5` 均 `(5,5)(4,4)`、`1.5` → `exit 2`）。
+- **F5 时间口径修正**：`docs/audit-response-2026-10-25.md` §2.1 第三行 `16:04` → **`16:50:48`（mtime）**，并把另两行补齐为 `16:56:21` / `16:52:53`，表头标注「文件 mtime，非 `generated_at`」。
+- **F6 `generated_at` 证据链修正**：原引用的 `/private/tmp/audit-full-test.json`（mtime `17:46:44`，早于提交 `17:52:38`，`generated_at` 仍为旧硬编码）不再充当修复证据；新增 §5.1 说明该错位，并改用修复后重跑的 `/private/tmp/audit-full-test-postfix.json`（`generated_at=2026-10-25T18:27:09+08:00`，与 mtime 逐秒吻合，9/9 可见）。
+
 ## 2026-10-25 · 安全加固：HTTP 非回环绑定需显式 opt-in
 
 - `backend/server.py` 新增 `resolve_host()`：默认只允许 `127.0.0.1`、`localhost`、`::1`；设置 `MOYU_HOST=0.0.0.0` 等非回环地址时必须同时显式设置 `MOYU_ALLOW_REMOTE=1`，否则启动即拒绝，避免无认证本地 API 被误暴露到局域网。
