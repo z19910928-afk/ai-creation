@@ -502,24 +502,34 @@ async function main() {
 
   await test('clipboard-write-from-user-gesture', async () => {
     currentStep = 'activate-native-desktop-window';
-    await application.evaluate(async ({app, BrowserWindow}) => {
+    // 冒烟模式在 ready-to-show 时不显示窗口（desktop/main.cjs:176），本用例是窗口第一次 show，
+    // 因此 macOS 的协作式激活可能丢掉单次 app.focus({steal:true})：窗口 visible=true、isFocused=false。
+    // 在原有 10s 等待窗口内重复请求激活；断言仍要求 isFocused() 为真，不放宽。
+    const activate = () => application.evaluate(async ({app, BrowserWindow}) => {
       const window = BrowserWindow.getAllWindows()[0];
       if (process.platform === 'darwin') {
         await app.dock?.show();
         app.focus({steal: true});
       }
-      window.show();
+      if (!window.isVisible()) window.show();
       window.focus();
+      return {window_focused: window.isFocused(), window_visible: window.isVisible(),
+        window_minimized: window.isMinimized(), application_active: app.isActive?.() ?? null,
+        application_hidden: app.isHidden?.() ?? null};
     });
+    let activation = null;
+    let activationAttempts = 0;
     try {
-      await until(() => application.evaluate(({BrowserWindow}) =>
-        BrowserWindow.getAllWindows()[0].isFocused()), 'NATIVE_WINDOW_FOCUS', 10000);
+      await until(async () => {
+        activationAttempts += 1;
+        activation = await activate();
+        return activation.window_focused;
+      }, 'NATIVE_WINDOW_FOCUS', 10000);
     } catch (error) {
-      report.clipboard_diagnostics = await application.evaluate(({app, BrowserWindow}) => {
-        const window = BrowserWindow.getAllWindows()[0];
-        return {window_focused: window.isFocused(), window_visible: window.isVisible(),
-          window_minimized: window.isMinimized(), application_hidden: app.isHidden?.() ?? null};
-      });
+      report.clipboard_diagnostics = {...(activation || {}),
+        activation_attempts: activationAttempts,
+        ssh_session: !!process.env.SSH_TTY,
+        terminal_program: process.env.TERM_PROGRAM ?? null};
       throw error;
     }
     currentStep = 'preserve-all-clipboard-formats';
