@@ -1,5 +1,33 @@
 # 更新记录
 
+## 2026-10-24 · 收口：同值去重 + 离线抽取器（仍未达成项照旧）
+
+本轮交付两件事：同槽位同值事实不再两两配对、真实稿件的离线抽取器与证据闸门。**两项都不改变 Q1 的未达成记录**——预算续写的 3000 字章一次通过率仍是 77.8%（7/9），未达 ≥80%；「30 万字 × 3 部真实作品」一致性验收仍未执行（见「2026-10-23 · Q1 阶段交付（含未达成项）」）。
+
+### 去重：同值副本不再配对，异值最坏仍是 C(n,2)
+
+- **改了什么**：`_detect_fact()` 先用 `_canonical(取值)` 把同槽位事实分桶，只在跨桶之间枚举配对，canonical 文本相同的副本不再进入 `_classify_object_conflict()`。
+- **配对次数实测**（来源：`docs/verification-dedup-final-2026-10-24.md` §三，探针在执行期替换 `_classify_object_conflict()` 直接计数，非静态估算）：同值 10 / 20 / 40 条 → **0 次配对**、0 findings、100.0/A（旧实现 C(n,2) 分别为 45 / 190 / 780）；互不相同 10 / 20 / 40 条 → 45 / 190 / 780 次、全部 high，n 翻倍 ×4.22 / ×4.11，**最坏仍是 O(n²)，不能宣称所有输入近似线性**；两桶 20/20 → 400、三桶 20/15/5 → 475，等于跨桶大小之积（20×15 + 20×5 + 15×5）。
+- **判定语义没变**（同报告 §四）：同槽位两个不同取值仍 1 条 high/92.0/B；`located_in` 冲突、名字漂移仍各 1 条 high；`1` 与 `1.0` 因 `_canonical`（文本键）与 `_same_value()`（语义等价）层次不同，落在不同桶、多比较 1 次但 0 findings（不误报）；dict 键序不同同桶；`True` 与 `1` 仍判 high。
+- **边界**：`_canonical()` 的输出是分桶键与展示文本，不是「是否矛盾」的依据（t56 只在 docstring 写清这件事，可执行逻辑零变更）；重复密集场景 7.31 s → 0.186 s 是该输入形态的实测结果，不可外推到取值互不相同的库。
+
+### 抽取器：离线规则模式 + 只保证「可逐字定位」的证据闸门
+
+- **交付**：`backend/moyu_extract.py`（抽取与校验）、`benchmarks/real_corpus/extract.py`（CLI）、`tests/extract_fixtures.py`、说明文档 `docs/real-corpus-extract-2026-10-24.md`；接口是 `python -m benchmarks.real_corpus.extract --mode rule|openai`，输出严格 JSON 与 `sha256:` digest。
+- **证据闸门**（`verify_evidence()`）：`char_start >= 0`、`char_end > char_start`、`char_end - char_start == len(evidence_quote)`、`text[char_start:char_end] == evidence_quote`，多一个字、少一个字、整体偏移一个字都拒（`bad_range` / `quote_mismatch`）；字符下标是 Python code point，与生产端口径一致。
+- **严格 JSON 与非法数值**：`validate_assertion()` 用 `math.isfinite()` 拦 `NaN` / `Infinity` / `-Infinity`（原因码 `non_finite`，Python 直传与 JSON 字面量两条路径都拦），`strict_json()`（`digest()` 与去重键同走）用 `allow_nan=False`，不再产出「Python 读得回、浏览器 `JSON.parse` 读不了」的字面量。
+- **确定性**：`--limit 20` 两次 digest 均为 `241b76bb…`、`identical=True`（20 章 / 124,534 字 / 10 条断言 / 0 rejected）；`--limit 400` 全语料 360 章 / 2,353,378 字 / 360 条断言，digest `d4b2d0b5…`（来源：`docs/real-corpus-extract-2026-10-24.md` §5 / §6）。
+- **真实模型传输**：默认走 curl 子进程（请求头经 `--config -` 从 stdin 进、请求体走临时文件、`--max-time` 为超时 + 15 秒余量）；`curl_available()` 为假才回落 urllib；超时 `DEFAULT_TIMEOUT = 180.0`，可用 `MOYU_EXTRACT_TIMEOUT` 覆盖；非 2xx 一律 `provider_error`（实测 403 与 error code 1010 可见），全程不重试，密钥只进 stdin。
+- **落盘脱敏**：要写进报告/异常文本的内容走 `_mask_credentials()`，按**形状**识别而不是按已知 key——Authorization 整段、Digest 参数值、裸 scheme 令牌（`Bearer`/`Token`/`Digest`）、`api_key=`/`token:` 一类键值对、`sk-`/`ghp_`/`AKIA`/`ASIA` 等前缀、≥32 位高熵串，一律换成 `***`；HTTP 状态码、`error code 1010`、`bad_gateway` 这类短标识保留，别把诊断信息一起抹了。
+- **回归**：`tests/extract_fixtures.py` 67 个用例（`grep -c '^def test_'` 实测；`tests/*_fixtures.py` 共 94 个文件），含 urllib 403 → curl 200 优先级、curl 失败与超时、失败只发生 1 次（不重试）、密钥不泄露、非有限数值拒绝。
+
+### 未达成与已知局限（别读成「做完了」）
+
+- **真实模型外部复验未完成**：本机无 `MOYU_EXTRACT_*` 凭据，`--mode openai` 缺变量时 `exit 2`（那是「没跑」不是「通过」）；captain 另用已授权服务跑了当前生产 CLI 2 章，**进程 `rc=0` 但两章业务结果均为 `provider_error`**，失败发生在网络层、请求没有进入模型：captain 那次复跑当时，无凭据直连、代理、HTTP/1.1 与 IPv4 四条路径均报 `Could not resolve host`（**当时的观察，不代表此后仍不可达**），即那一轮 DNS / endpoint 未建立真实请求，需要可解析且可达的 base URL 才能复跑；同一轮诊断里另观察到 `192.168.8.50` TCP 连接被拒、`CONNECT 200` 之后的 `SSL_ERROR_SYSCALL`、DoH 返回 `Status=3`（NXDOMAIN），同为**先前观察记录**。**本次未进入模型质量判定，不能据此评价模型**。两种情形都读作**未复验**，不得写成「真实模型已通过」。已覆盖的只有协议、解析、降级、传输与确定性，**真实召回率与语义幻觉率未验收**；默认可用的规则模式是 dry-run 级（只覆盖六类开场套式，心理、因果、关系类事实抽不到）。
+- **证据闸门不验语义**：`subject` 指的是不是引文里那个人、`value` / `attribute` 与引文语义是否相符，闸门一律放行（不做实体链接、指代消解、别名合并）；`tests/extract_fixtures.py::test_quote_gate_does_not_verify_semantics` 用「引文对、主语错」的样本把这个缺口钉成可执行断言。语义正确性靠服务端断言复用比较与 `backend/moyu_consistency.py` 的一致性检查兜底。
+- **残余边界（均 low，不阻塞）**：已关闭——t63 复审的 F1（curl 失败详情先截断再脱敏）由 t64 关闭；t74 复审的「全角分隔符 / 裸 `Basic` 未被识别」与「为脱敏把诊断信息一并吞掉」由 t75/t76 关闭（改为按形状识别 + 保留状态码与错误码）。仍按边界记录——t76 两条 low：中文 token 值会被过度抹除（属诊断信息损失，不是漏抹）、URL / 百分号编码里的凭据形态未覆盖；t60 两条 low：`tests/extract_fixtures.py` 里 `digest(x) == digest(x)` 是自比、对确定性零约束，`strict_json()` 的 `default=str` 会把不可序列化对象静默字符串化（当前 schema 不可达）；Windows 与外部网关行为未复验。
+- **仍未达成的 Q1 项**：预算续写 3000 字子集 77.8%（7/9），未达 ≥80%（差距原因见 `docs/consistency-budget-v1.2-2026-10-23.md` §6 的指标口径缺陷）；「30 万字 × 3 部真实作品」一致性验收仍未执行。
+
 ## 2026-10-23 · Q1 阶段交付（含未达成项）
 
 Q1 阶段交付记录；每条的细节见对应专项文档。

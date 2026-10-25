@@ -168,13 +168,14 @@ score     = round(max(0, 100 − deduction), 1)
 
 ### 1. 事实矛盾（fact）
 
-读取当前作品、当前分支下 `state='canon'` 的断言（`_detect_fact()` 的 canon 断言查询），按 `(subject_entity_id, predicate, attribute)` 分组后两两比较。`attribute` 来自 `_attribute_slot()`：取 `object.attribute` 去首尾空白；非字符串或缺失记为 `""`（「未分类」是真实槽位，坏 JSON 也落在这里）。**不同槽位之间不比较**——同一实体身上挂多条不同事实是常态，不是矛盾。
+读取当前作品、当前分支下 `state='canon'` 的断言（`_detect_fact()` 的 canon 断言查询），按 `(subject_entity_id, predicate, attribute)` 分组，组内再按 **`_canonical(取值)` 分桶**，只枚举跨桶配对（`_detect_fact()` 的 `buckets` / `bucket_list` 两层循环）。`attribute` 来自 `_attribute_slot()`：取 `object.attribute` 去首尾空白；非字符串或缺失记为 `""`（「未分类」是真实槽位，坏 JSON 也落在这里）。**不同槽位之间不比较**——同一实体身上挂多条不同事实是常态，不是矛盾。
+分桶只消掉「同值副本」那一半比较：跨桶配对数是 `Σ_{i<j} m_i·m_j = (n² − Σ m_i²) / 2`（`m_i` 是第 i 个桶的条数）。全部同值时为 0；**取值全不同时（每桶 1 条）仍是 `C(n,2)`，最坏情形 O(n²)**——独立验收在 n=10/20/40 条互不相同取值上实测 45 / 190 / 780 次配对（来源：`docs/verification-dedup-2026-10-24.md` §二，探针包装 `_classify_object_conflict()` 直接计数）。
 
 先解析两侧 `object_json`（`_parse_object_json()`）：`NULL` / 空串按空对象处理；非空但解析失败时，报一次 **medium**「断言取值不是合法 JSON」，该断言不参与后续配对，不会按配对数重复（`_detect_fact()` 的坏 JSON 分支）。
 
 以下情况**跳过**（`_detect_fact()` 的跳过条件）：
 
-- 两侧取值语义相同（`_same_value()` 会忽略 JSON 空白、键序，并把 `1` 与 `1.0` 视为同一数值；`_canonical()` 只用于展示）；
+- 两侧取值语义相同 —— 这一条**大部分**在分桶阶段就完成了：桶键是 `_canonical(取值)`，同桶的行永远不互相配对。跨桶只保证「canonical 文本不同」，不保证「语义不同」：`1` 与 `1.0` 文本不同、落进不同桶，仍会被比较一次，随后由 `_classify_object_conflict()` 开头的 `_same_value()`（`_normalize_for_compare()` 语义）判为无冲突。代价是常数级的多比较，**不误报**；反方向没有反例——canonical 文本等价强于 `_normalize_for_compare`，不会「同桶但语义不同」而漏报。所以循环里不再逐对调用 `_same_value()` 是对**同桶**成立的省法，跨桶那一对仍要过语义判断；
 - 一条的 `supersedes_id` 指向另一条（新旧取代关系）；
 - 两条断言的有效期不重叠（`_overlap()`）；
 - 任一条的 `epistemic_mode` 为 `author_plan`（作者计划不算矛盾）。
@@ -197,7 +198,12 @@ score     = round(max(0, 100 − deduction), 1)
 
 判定依据是**数据形状 + 谓词是否带槽位语义**，不是「谓词名 → 严重度」的硬编码表：只要 `object` 里带 `attribute` 槽位，`has_attribute`、`has_story_fact` 与将来新增的带槽位谓词一律按「同槽位才比较」处理；两侧都没有槽位时，再按谓词是否带槽位语义分流（注②）。带槽位语义的谓词集合由 `_SLOT_SEMANTIC_PREDICATES = frozenset({"has_attribute", "has_story_fact"})` 定义，**目前只有这两个成员**，判定入口是 `_has_slot_semantics()`；将来新增带槽位谓词时必须同步该常量，否则新谓词会被当成单值谓词、两侧无槽位时直接判 high，假阳会重新出现。`note` 不参与 fact 判定——同槽位、同值、`note` 不同不报，两条不同事实本来就可以有各自的描述。
 
-`evidence` 含 `entity_id`、`assertion_ids`（冲突的两条）、`attribute`（无槽位时为 `null`）与 `objects`（两侧取值）。回归证据（`tests/consistency_fixtures.py`，直接断言 `analyze()` 与 `_classify_object_conflict()`）：同一实体 10 条互不相干的事实 → 0 findings / 100 分 / A；同一实体 5 个不同槽位 → 0 findings / 100 分 / A；同槽位不同取值 → 恰好 1 条 high / 92 分 / B；名字漂移 → 1 条 high；历史无槽位 `has_attribute` 行（3 条、`note` 各不相同）不产生任何 finding——纯净情形为 0 findings / 100 分 / A。最后一条对应 `tests/consistency_fixtures.py` 的 p8 用例：它把这同样的 3 条与一对 `located_in` 单值谓词并列，报告整体是 92 分 / B，那 1 条 high 来自 `located_in 存在冲突取值`；用例同时断言「没有任何以 `has_attribute` 命名的 finding」，锁住的正是「无槽位带槽位语义谓词跳过配对」这一支。
+`evidence` 含 `entity_id`、`assertion_ids`（冲突的两条）、`attribute`（无槽位时为 `null`）与 `objects`（两侧取值）。
+
+**为什么分桶而不是两两比较**：逐对比较时，同一槽位里重复抽出的同值断言会两两进循环、每次都要算一遍规范值（`_canonical()` → `json.dumps`），成本是组内条数的平方。实测在 20,111 条同槽位副本上耗时 7.31 s，而同一批数据分散到独立实体时只要 0.46 s——差别全在组内条数。分桶后同值行根本不进配对循环，复杂度从「组内条数²」降到「桶大小之积」`Σ_{i<j} m_i·m_j`，20,111 条同槽位副本降到 0.186 s，倍数关系也从每次翻倍 ×3.9 变成 ×2.2。
+
+**这个说法有边界，不能读成「同槽位 N 条事实变成线性」**：桶大小之积只有在同值副本占多数时才近似等于 finding 数；取值全不同时每桶 1 条，配对次数仍是 `C(n,2)`，最坏情形仍是 O(n²)（n=10/20/40 → 45/190/780，来源同上）。7.31 s → 0.186 s 是「同槽位塞满同值副本」这一输入形态的实测，不是所有输入的结论。另外分桶键 `_canonical()` 与语义等价 `_same_value()` 不是同一套关系：`1` 与 `1.0` 跨桶、多比较一对，但不会多报冲突（`_classify_object_conflict()` 开头仍走 `_same_value()`）。等价性不是靠推理保证的：新旧实现在 21 个（库, 分支）组合与一个「3 个取值 × 50/40/30 条重复」的最坏用例上逐条比对，finding id 集合、分数、`examined` 全部一致。
+回归证据（`tests/consistency_fixtures.py`，直接断言 `analyze()` 与 `_classify_object_conflict()`）：同一实体 10 条互不相干的事实 → 0 findings / 100 分 / A；同一实体 5 个不同槽位 → 0 findings / 100 分 / A；同槽位不同取值 → 恰好 1 条 high / 92 分 / B；名字漂移 → 1 条 high；历史无槽位 `has_attribute` 行（3 条、`note` 各不相同）不产生任何 finding——纯净情形为 0 findings / 100 分 / A；同槽位 50/40/30 条三取值 → 恰好 4700 条 high（`50×40 + 50×30 + 40×30`），同一实体 2000 条完全相同的取值 → 0 findings。最后一条对应 `tests/consistency_fixtures.py` 的 p8 用例：它把这同样的 3 条与一对 `located_in` 单值谓词并列，报告整体是 92 分 / B，那 1 条 high 来自 `located_in 存在冲突取值`；用例同时断言「没有任何以 `has_attribute` 命名的 finding」，锁住的正是「无槽位带槽位语义谓词跳过配对」这一支。
 
 写入端与此配套：`ensure_memory_assertion()` 在记忆带属性槽位时写 `has_attribute`，否则写 `has_story_fact`（谓词白名单与回落见「已知局限」第 14 条）。
 
