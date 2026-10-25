@@ -29,7 +29,7 @@ from backend import (  # noqa: E402
 PROJECT = "synthetic-prompt-book"
 BRANCH = "synthetic-prompt-branch"
 ACTOR = "synthetic-prompt-author"
-SNAPSHOT_PATH = ROOT / "tests" / "fixtures" / "prompt_workshop_snapshot.json"
+SNAPSHOT_PATH = ROOT / "tests" / "prompt_workshop_snapshot.json"
 
 # 与改造前快照采集脚本完全相同的输入，保证对比的是同一批字节。
 CONFIG = {"base_url": "http://127.0.0.1:9/v1", "model": "offline-synthetic"}
