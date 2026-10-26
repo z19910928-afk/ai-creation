@@ -46,8 +46,8 @@ v1.1 在 v1.0 的循环/记账之上增加三项可控性能力，默认开启�
         target_characters=3000,
         context_builder=build_next_context,
     )
-    if result["stop_reason"] == TARGET_REACHED:
-        ...  # 交给候选箱，等待作者采纳，不自动写正文
+    if result["stop_reason"] in {TARGET_REACHED, OVERSHOOT}:
+        ...  # 达标或超冲都只交给候选箱，等待作者采纳，不自动写正文
 """
 from __future__ import annotations
 
@@ -64,8 +64,9 @@ NO_PROGRESS = "no_progress"            # 重试后单轮增量仍低于 min_roun
 MAX_ROUNDS = "max_rounds"              # 用满轮数上限仍未达标
 BUDGET_EXHAUSTED = "budget_exhausted"  # budget_check 报告预算耗尽
 CANCELED = "canceled"                  # should_cancel 报告作者取消
+OVERSHOOT = "overshoot"                # 累计字数越过目标上限；正文不裁剪
 
-STOP_REASONS = (TARGET_REACHED, NO_PROGRESS, MAX_ROUNDS, BUDGET_EXHAUSTED, CANCELED)
+STOP_REASONS = (TARGET_REACHED, NO_PROGRESS, MAX_ROUNDS, BUDGET_EXHAUSTED, CANCELED, OVERSHOOT)
 
 DEFAULT_TARGET_CHARACTERS = 3000
 DEFAULT_MAX_ROUNDS = 6
@@ -114,6 +115,7 @@ __all__ = [
     "MAX_STALL_RETRIES_LIMITS",
     "MIN_ROUND_BUDGET",
     "NO_PROGRESS",
+    "OVERSHOOT",
     "ROUND_TARGET_RATIO_LIMITS",
     "STALL_STRATEGIES",
     "STOP_REASONS",
@@ -560,11 +562,11 @@ def run_budgeted_continuation(
     返回正文是 ``seed_text`` 与各轮新生成文本的原样拼接（不裁剪、不改写）。
     ``seed_text`` 只改变起点，不改变 ``target_range`` 与 ``within_tolerance`` 的
     定义；``rounds`` / ``round_metrics`` 仍只统计本次新发生的轮次。seed 已达
-    ``target_range`` 下限时不再调度任何轮次（provider 调用数为 0），直接返回
-    ``TARGET_REACHED``。
+    ``target_range`` 下限时不再调度任何轮次（provider 调用数为 0）：在区间内返回
+    ``TARGET_REACHED``，越过上限则返回 ``OVERSHOOT``。
 
     每轮生成后的停止判定顺序：
-    累计字数达到目标下限 → ``TARGET_REACHED``；
+    累计字数达到目标下限 → 区间内为 ``TARGET_REACHED``，越过上限为 ``OVERSHOOT``；
     增量不足且重试预算用尽 → ``NO_PROGRESS``；
     到达轮数上限（含弹性扩展后的 ``hard_max_rounds``）→ ``MAX_ROUNDS``。
 
@@ -574,7 +576,8 @@ def run_budgeted_continuation(
     字符口径：非空白 Unicode 字符（标点计入、空白不计），与
     ``moyu_output.count_characters`` 一致。目标容差为目标字数的 ±10%，
     即 ``[ceil(0.9×目标), floor(1.1×目标)]`` 视为达标；累计字数达到下限即停止，
-    因此可能略超上限，此时 ``within_tolerance`` 为假（本模块不裁剪正文）。
+    因此可能略超上限，此时停止原因是 ``OVERSHOOT``、``within_tolerance`` 为假
+    （本模块不裁剪正文）。
 
     ``target_characters`` 指本次多轮续写累计生成的字数。若调用方希望把已有正文
     计入整章目标，应先自行扣减正文长度再传入（本引擎不读取、也不修改正文）。
@@ -732,7 +735,7 @@ def run_budgeted_continuation(
         # 断点续写：seed 已达下限时不再调度任何轮次（provider 调用数为 0）。
         # 放在取消/预算检查之前：已经写成的东西不需要再问一遍「要不要写」。
         if seed_characters >= lower:
-            stop_reason = TARGET_REACHED
+            stop_reason = OVERSHOOT if seed_characters > upper else TARGET_REACHED
             break
         # 先检查作者取消，再检查预算：作者中止优先于任何预算判断。
         if should_cancel is not None and should_cancel():
@@ -792,7 +795,7 @@ def run_budgeted_continuation(
             extended_rounds += 1
 
         if total_characters >= lower:
-            stop_reason = TARGET_REACHED
+            stop_reason = OVERSHOOT if total_characters > upper else TARGET_REACHED
             break
 
         if characters < min_round_gain:

@@ -42,11 +42,12 @@ v1.0 对照侧把这些参数显式钉死为 `max_stall_retries=0`、`hard_max_r
 
 | 停止原因 | 含义 | v1.0 | v1.1 | 变化 |
 | --- | --- | --- | --- | --- |
-| target_reached | 达标停止 | 15 | 17 | +2 |
+| target_reached | 达标停止 | 14 | 16 | +2 |
 | no_progress | 产出停滞 | 1 | 1 | +0 |
 | max_rounds | 轮数耗尽 | 2 | 0 | -2 |
 | budget_exhausted | 预算耗尽 | 1 | 1 | +0 |
 | canceled | 作者取消 | 1 | 1 | +0 |
+| overshoot | 超冲停止 | 1 | 1 | +0 |
 
 `max_rounds` 归零、`target_reached` 上升，说明弹性轮数把原本「轮数耗尽」的欠量场景真的写到了目标区间，而不是放宽判定把它们算成通过——两列用的是同一个 `within_tolerance` 口径。
 
@@ -54,7 +55,7 @@ v1.0 对照侧把这些参数显式钉死为 `max_stall_retries=0`、`hard_max_r
 
 | 场景 | 档位 | 目标 | 停止原因 | 失败分类 | 字数 | 欠量 | 超冲 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| sc-15 | 无视预算（volatile） | 4000 | target_reached | 超冲（越过 +10% 上限） | 4661 | 0 | 261 |
+| sc-15 | 无视预算（volatile） | 4000 | overshoot | 超冲（越过 +10% 上限） | 4661 | 0 | 261 |
 | sc-18 | 停滞（stalling） | 3000 | no_progress | 产出停滞（单轮增量 < min_round_gain） | 46 | 2654 | 0 |
 | sc-19 | 预算受限（budget_limited） | 3000 | budget_exhausted | 预算中断（外部原因） | 2318 | 382 | 0 |
 | sc-20 | 作者取消（canceled） | 4000 | canceled | 作者取消（外部原因） | 2157 | 1443 | 0 |
@@ -95,4 +96,4 @@ v1.0 对照侧把这些参数显式钉死为 `max_stall_retries=0`、`hard_max_r
 
 v1.0 基线的四个产物（`budgeted-baseline.*` 与 `docs/consistency-budget-baseline-2026-10-23.md`）不会被覆盖。
 
-环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit；引擎 `backend/moyu_continuation.py` sha256 `583059fe2fe989a9…`；v1.1 确定性摘要 `sha256:847d620fd8ffc6eb65064027b591801397849a3cc990c1e11ad85c261c6c99e8`（repeat=2，一致=是）。
+环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit；引擎 `backend/moyu_continuation.py` sha256 `61d170e5cd7bc951…`；v1.1 确定性摘要 `sha256:7349e53888f9145132e7b7d93b2b2fced5208ebf500371a59042af059ae58391`（repeat=2，一致=是）。

@@ -2,162 +2,162 @@
   "note": "墙钟耗时属于观测值，不参与确定性比对。engine_overhead_ms 已扣除 fake provider 自身的文本生成时间，是引擎循环与记账的净开销；两者都不含真实模型推理延迟。",
   "scenarios": 20,
   "total_ms": {
-    "mean": 0.1042,
-    "median": 0.1015,
-    "minimum": 0.0192,
-    "maximum": 0.1467,
-    "sum": 2.0831
+    "mean": 0.1072,
+    "median": 0.1132,
+    "minimum": 0.0238,
+    "maximum": 0.1523,
+    "sum": 2.1439
   },
   "engine_overhead_ms": {
-    "mean": 0.0979,
-    "median": 0.0952,
-    "minimum": 0.0139,
-    "maximum": 0.1446,
-    "sum": 1.9581
+    "mean": 0.0997,
+    "median": 0.1043,
+    "minimum": 0.0172,
+    "maximum": 0.1363,
+    "sum": 1.9932
   },
   "fake_generate_ms": {
-    "mean": 0.0063,
-    "sum": 0.1252
+    "mean": 0.0075,
+    "sum": 0.1509
   },
   "per_scenario": [
     {
       "id": "sc-01",
-      "total_ms": 0.102,
-      "engine_overhead_ms": 0.0945,
-      "fake_generate_ms": 0.0075,
+      "total_ms": 0.1127,
+      "engine_overhead_ms": 0.1059,
+      "fake_generate_ms": 0.0068,
       "rounds": 1
     },
     {
       "id": "sc-02",
-      "total_ms": 0.1014,
-      "engine_overhead_ms": 0.0973,
-      "fake_generate_ms": 0.0042,
+      "total_ms": 0.1035,
+      "engine_overhead_ms": 0.0982,
+      "fake_generate_ms": 0.0053,
       "rounds": 1
     },
     {
       "id": "sc-03",
-      "total_ms": 0.0902,
-      "engine_overhead_ms": 0.088,
-      "fake_generate_ms": 0.0022,
+      "total_ms": 0.0888,
+      "engine_overhead_ms": 0.0868,
+      "fake_generate_ms": 0.002,
       "rounds": 1
     },
     {
       "id": "sc-04",
-      "total_ms": 0.1277,
-      "engine_overhead_ms": 0.1218,
-      "fake_generate_ms": 0.006,
+      "total_ms": 0.1523,
+      "engine_overhead_ms": 0.1363,
+      "fake_generate_ms": 0.016,
       "rounds": 1
     },
     {
       "id": "sc-05",
-      "total_ms": 0.1001,
-      "engine_overhead_ms": 0.0929,
-      "fake_generate_ms": 0.0072,
+      "total_ms": 0.1138,
+      "engine_overhead_ms": 0.1038,
+      "fake_generate_ms": 0.0101,
       "rounds": 4
     },
     {
       "id": "sc-06",
-      "total_ms": 0.0897,
-      "engine_overhead_ms": 0.0851,
-      "fake_generate_ms": 0.0045,
+      "total_ms": 0.1205,
+      "engine_overhead_ms": 0.1105,
+      "fake_generate_ms": 0.01,
       "rounds": 4
     },
     {
       "id": "sc-07",
-      "total_ms": 0.1016,
-      "engine_overhead_ms": 0.0957,
-      "fake_generate_ms": 0.0059,
+      "total_ms": 0.1195,
+      "engine_overhead_ms": 0.1089,
+      "fake_generate_ms": 0.0106,
       "rounds": 4
     },
     {
       "id": "sc-08",
-      "total_ms": 0.1027,
-      "engine_overhead_ms": 0.0949,
-      "fake_generate_ms": 0.0078,
+      "total_ms": 0.1015,
+      "engine_overhead_ms": 0.0945,
+      "fake_generate_ms": 0.007,
       "rounds": 4
     },
     {
       "id": "sc-09",
-      "total_ms": 0.1315,
-      "engine_overhead_ms": 0.1256,
-      "fake_generate_ms": 0.0059,
+      "total_ms": 0.131,
+      "engine_overhead_ms": 0.1243,
+      "fake_generate_ms": 0.0067,
       "rounds": 4
     },
     {
       "id": "sc-10",
-      "total_ms": 0.1265,
-      "engine_overhead_ms": 0.122,
-      "fake_generate_ms": 0.0045,
+      "total_ms": 0.1259,
+      "engine_overhead_ms": 0.1205,
+      "fake_generate_ms": 0.0054,
       "rounds": 4
     },
     {
       "id": "sc-11",
-      "total_ms": 0.0932,
-      "engine_overhead_ms": 0.0845,
-      "fake_generate_ms": 0.0087,
+      "total_ms": 0.094,
+      "engine_overhead_ms": 0.0836,
+      "fake_generate_ms": 0.0104,
       "rounds": 5
     },
     {
       "id": "sc-12",
-      "total_ms": 0.1005,
-      "engine_overhead_ms": 0.0955,
-      "fake_generate_ms": 0.005,
+      "total_ms": 0.0984,
+      "engine_overhead_ms": 0.0933,
+      "fake_generate_ms": 0.0051,
       "rounds": 5
     },
     {
       "id": "sc-13",
-      "total_ms": 0.1334,
-      "engine_overhead_ms": 0.1273,
-      "fake_generate_ms": 0.0061,
+      "total_ms": 0.13,
+      "engine_overhead_ms": 0.1238,
+      "fake_generate_ms": 0.0062,
       "rounds": 6
     },
     {
       "id": "sc-14",
-      "total_ms": 0.097,
-      "engine_overhead_ms": 0.0937,
-      "fake_generate_ms": 0.0033,
+      "total_ms": 0.0947,
+      "engine_overhead_ms": 0.091,
+      "fake_generate_ms": 0.0037,
       "rounds": 3
     },
     {
       "id": "sc-15",
-      "total_ms": 0.1467,
-      "engine_overhead_ms": 0.1446,
+      "total_ms": 0.1359,
+      "engine_overhead_ms": 0.1337,
       "fake_generate_ms": 0.0022,
       "rounds": 1
     },
     {
       "id": "sc-16",
-      "total_ms": 0.1174,
-      "engine_overhead_ms": 0.1038,
-      "fake_generate_ms": 0.0135,
+      "total_ms": 0.1189,
+      "engine_overhead_ms": 0.1048,
+      "fake_generate_ms": 0.0141,
       "rounds": 12
     },
     {
       "id": "sc-17",
-      "total_ms": 0.1282,
-      "engine_overhead_ms": 0.1135,
-      "fake_generate_ms": 0.0147,
+      "total_ms": 0.1296,
+      "engine_overhead_ms": 0.1133,
+      "fake_generate_ms": 0.0164,
       "rounds": 12
     },
     {
       "id": "sc-18",
-      "total_ms": 0.0192,
-      "engine_overhead_ms": 0.0139,
-      "fake_generate_ms": 0.0053,
+      "total_ms": 0.0238,
+      "engine_overhead_ms": 0.0172,
+      "fake_generate_ms": 0.0067,
       "rounds": 2
     },
     {
       "id": "sc-19",
-      "total_ms": 0.0843,
-      "engine_overhead_ms": 0.081,
-      "fake_generate_ms": 0.0033,
+      "total_ms": 0.0783,
+      "engine_overhead_ms": 0.0753,
+      "fake_generate_ms": 0.003,
       "rounds": 2
     },
     {
       "id": "sc-20",
-      "total_ms": 0.0898,
-      "engine_overhead_ms": 0.0825,
-      "fake_generate_ms": 0.0074,
+      "total_ms": 0.0708,
+      "engine_overhead_ms": 0.0675,
+      "fake_generate_ms": 0.0032,
       "rounds": 1
     }
   ]

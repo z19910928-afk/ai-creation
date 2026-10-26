@@ -39,6 +39,7 @@ from backend.moyu_continuation import (  # noqa: E402
     DEFAULT_MAX_STALL_RETRIES,
     MAX_ROUNDS,
     NO_PROGRESS,
+    OVERSHOOT,
     STALL_STRATEGIES,
     STOP_REASONS,
     TARGET_REACHED,
@@ -148,7 +149,7 @@ def test_tolerance_upper_boundary() -> None:
     assert at_limit["within_tolerance"] is True
 
     over_limit = run_budgeted_continuation(FakeGenerator([1101]), target_characters=1000)
-    assert over_limit["stop_reason"] == TARGET_REACHED
+    assert over_limit["stop_reason"] == OVERSHOOT
     assert over_limit["target_reached"] is True
     assert over_limit["within_tolerance"] is False
 
@@ -447,7 +448,7 @@ def test_closing_hint_absent_at_threshold() -> None:
     at_result = run_budgeted_continuation(
         at_threshold, target_characters=2000, max_rounds=2, hard_max_rounds=2
     )
-    assert at_result["stop_reason"] == TARGET_REACHED
+    assert at_result["stop_reason"] == OVERSHOOT
     assert at_threshold.calls[1]["prompt_context"]["remaining_characters"] == 600
     assert "closing_hint" not in at_threshold.calls[1]["prompt_context"]
 
@@ -455,7 +456,7 @@ def test_closing_hint_absent_at_threshold() -> None:
     below_result = run_budgeted_continuation(
         below, target_characters=2000, max_rounds=2, hard_max_rounds=2
     )
-    assert below_result["stop_reason"] == TARGET_REACHED
+    assert below_result["stop_reason"] == OVERSHOOT
     assert below.calls[1]["prompt_context"]["closing_hint"] == (
         "只需再写约 599 字即可收束，不要展开新情节"
     )
@@ -665,11 +666,11 @@ def test_external_body_is_never_mutated() -> None:
 
 
 def test_stop_reason_constants() -> None:
-    """5 个停止原因常量必须齐全且互不重复。"""
-    assert len(STOP_REASONS) == 5
-    assert len(set(STOP_REASONS)) == 5
+    """6 个停止原因常量必须齐全且互不重复。"""
+    assert len(STOP_REASONS) == 6
+    assert len(set(STOP_REASONS)) == 6
     assert set(STOP_REASONS) == {
-        TARGET_REACHED, NO_PROGRESS, MAX_ROUNDS, BUDGET_EXHAUSTED, CANCELED
+        TARGET_REACHED, NO_PROGRESS, MAX_ROUNDS, BUDGET_EXHAUSTED, CANCELED, OVERSHOOT
     }
     assert target_range(3000) == (2700, 3300)
     assert target_range(500) == (450, 550)
@@ -783,7 +784,7 @@ def test_overshoot_is_reported_not_trimmed() -> None:
     fake = FakeGenerator([4661])
     result = run_budgeted_continuation(fake, target_characters=4000)
 
-    assert result["stop_reason"] == TARGET_REACHED
+    assert result["stop_reason"] == OVERSHOOT
     assert result["characters"] == 4661
     assert result["target_reached"] is True
     assert result["within_tolerance"] is False
@@ -1114,7 +1115,7 @@ def test_seed_meeting_lower_bound_skips_provider() -> None:
         fake_over, target_characters=3000, seed_text=over
     )
     assert fake_over.calls == []
-    assert result_over["stop_reason"] == TARGET_REACHED
+    assert result_over["stop_reason"] == OVERSHOOT
     assert result_over["target_reached"] is True
     assert result_over["within_tolerance"] is False
     assert result_over["text"] == over

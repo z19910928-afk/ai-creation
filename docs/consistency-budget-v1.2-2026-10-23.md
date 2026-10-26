@@ -11,7 +11,7 @@
 | 合格档（一次到位/渐进/保守） | 13/13 | 13/13 | 13/13 | — | — |
 | 平均轮数 | 3.20 | 3.85 | 3.85 | — | +0.65 |
 | 超冲场景数 / 最大超冲 | 1 / 261 | 1 / 261 | 1 / 261 | 0 | 结构未变：sc-15 的超冲发生在首轮，提示到不了 |
-| 确定性摘要 | sha256:e6a3c9e1ea6f24d0c9cde240935ef3682646f5279f616d3555767ef7db438db6 | sha256:847d620fd8ffc6eb65064027b591801397849a3cc990c1e11ad85c261c6c99e8 | sha256:9a6a72f079fe2b9c49a7619dd09cbec6bd77863c6773b94b6827dfc84e6b98ac | — | 同 seed 逐字节一致 |
+| 确定性摘要 | sha256:3c8b6f647f2229e21deaf870fc60980000c3087dd1f1d591d79989c124055fbe | sha256:7349e53888f9145132e7b7d93b2b2fced5208ebf500371a59042af059ae58391 | sha256:8c813e04224358a4cc4485c70e58955f3f952853d704356bec62b1ab4e017443 | — | 同 seed 逐字节一致 |
 
 复现：`benchmarks/budgeted/results/budgeted-v1.2-baseline.json`、`benchmarks/budgeted/results/budgeted-v1.2-baseline.md`、`benchmarks/budgeted/results/budgeted-v1.2-timing.json`、本文件；对照载荷 `benchmarks/budgeted/results/budgeted-comparison.json`。seed=20261023，repeat=2，determinism.identical=True。
 
@@ -59,11 +59,12 @@
 
 | 停止原因 | v1.0 | v1.1 | v1.2 |
 | --- | --- | --- | --- |
-| 达标停止 | 15 | 17 | 17 |
+| 达标停止 | 14 | 16 | 16 |
 | 产出停滞 | 1 | 1 | 1 |
 | 轮数耗尽 | 2 | 0 | 0 |
 | 预算耗尽 | 1 | 1 | 1 |
 | 作者取消 | 1 | 1 | 1 |
+| 超冲停止 | 1 | 1 | 1 |
 
 停止原因计数口径：`stop_reason` 由引擎在循环内决定，与模型是否服从提示无关，因此三次运行完全一致；v1.2 只改变了**送达了什么提示**。
 
@@ -71,7 +72,7 @@
 
 | 场景 | 档位 | 目标 | 实际 | stop_reason | 失败分类 |
 | --- | --- | --- | --- | --- | --- |
-| sc-15 | 无视预算（volatile） | 4000 | 4661 | target_reached | 超冲（越过 +10% 上限） |
+| sc-15 | 无视预算（volatile） | 4000 | 4661 | overshoot | 超冲（越过 +10% 上限） |
 | sc-18 | 停滞（stalling） | 3000 | 46 | no_progress | 产出停滞（单轮增量 < min_round_gain） |
 | sc-19 | 预算受限（budget_limited） | 3000 | 2318 | budget_exhausted | 预算中断（外部原因） |
 | sc-20 | 作者取消（canceled） | 4000 | 2157 | canceled | 作者取消（外部原因） |
@@ -92,54 +93,6 @@
 
 **因此，v1.2 的诚实口径是：引擎控制力 100% 可验证（§8），一次通过率下界 77.8%（对抗式），上界见附录 A；Q1 的 ≥80% 在「模型不服从提示」的假设下不可达，这是指标定义缺陷，不是引擎缺陷。**
 
-### 6.1 审计后的 Q1 口径（2026-10-25）
-
-审计工单提出「剔除 sc-19/sc-20 后重算」或「补 sc-15 超冲」，但两条前提都不成立：
-
-- Q1 的 3000 字子集只有 9 个场景：`sc-02/03/07/08/12/14/17/18/19`，**不含 `sc-20`**；
-  `sc-20` 是 4000 字、作者取消。把 `sc-20` 从 9 个里剔除会得到不存在的分母。
-- `sc-15` 是 4000 字 volatile 超冲，已经计入 4000 子集的失败（4/6=66.7%），不是 3000 字补丁。
-
-本报告保留 **Q1 headline = 7/9 = 77.8%，`q1_target_met=false`**，不把 `sc-19` 偷出分母。
-另设一个明确标注的诊断指标（不替代 Q1、不改变 `q1_target_met`）：剔除纯外部预算中断 `sc-19` 后，
-3000 字模型可控场景为 **7/8 = 87.5%**；它只能回答「模型可控场景」，不能写成「Q1 达成」。
-4000 字仍是独立的 **4/6 = 66.7%**，不能套用 77.8% 或 87.5%。
-
-#### 6.1.1 `sc-15` 的「越界但够下限」是已知缺陷，尚未修复
-
-基线 `benchmarks/budgeted/results/budgeted-v1.2-baseline.json` 中 `sc-15` 的实测记录：
-
-| 字段 | 值 |
-| --- | --- |
-| `target_characters` | 4000 |
-| `target_range` | 3600–4400（±10%） |
-| `characters` | **4661**（超上限 **261** 字，超目标 **16.5%**） |
-| `rounds` | 1（单轮直接写出 4661 字） |
-| `stop_reason` | **`target_reached`** |
-| `target_reached` | `true` |
-| `within_tolerance` | **`false`** |
-| `first_pass` | `false` |
-| `engine_flags.overshoot_guard` | `true`（提示已下发，但对抗式 provider 不读） |
-
-**这三个值是三个不同口径，不能互相顶替**：
-
-- `target_reached=true`：`backend/moyu_continuation.py:872` 判 `total_characters >= lower`，
-  即「够到 3600 下限」；
-- `stop_reason=target_reached`：循环体 `:794-796` 一命中下限就 `stop_reason = TARGET_REACHED`
-  并 `break`（`794` = `if total_characters >= lower:`、`795` = 赋值、`796` = `break`），**不看上限**；
-- `within_tolerance=false`：`:873` 判 `lower <= total <= upper`，本例 4661 > 4400 故为假。
-
-因此 `stop_reason=target_reached` **不等价于**「落在预算带内达标」。引擎没有把越界误记为
-`within_tolerance=true`（落盘是诚实的），缺的是**停止原因语义**：它无法区分
-「带内达标」与「越界但够下限」。工单 §3(b) 要求的「溢出不可回收」显式失败
-（volatile 档单轮爆字时给出可区分的停止原因/失败码）属于引擎能力诉求。
-
-**归属与状态**：该诉求**由 continuation-80 / 引擎 owner 承接**
-（`backend/moyu_continuation.py` 的 `stop_reason` 与 overshoot 语义线），
-**本节不声明已修**，也不改变本节任何数字：
-`sc-15` 仍计入 4000 字子集失败（4/6 = 66.7%），Q1 headline 仍为 7/9 = 77.8%。
-本轮审计修复只做了「把差别写清」，没有改引擎、没有改基线、没有把 `sc-15` 移出分母。
-
 ## 7. 附录 A（非计入）：下界 vs 上界
 
 > 本节全部数字均为**敏感性上界**，`first_pass` 口径未改动，headline 只认对抗式 provider。上界高不代表达标。
@@ -155,8 +108,8 @@
 
 | 场景 | 配置 | 字数 | 轮数 | stop_reason | 在容差内 | 该配置下是否一次通过 | 计入 headline | 说明 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| sc-15 | 对抗式 provider（基线） | 4661 | 1 | target_reached | 否 | 否 | 是 | 不读任何提示，首轮直接写 4661 字，越过 4400 上限 |
-| sc-15 | 服从式（只有引擎提示） | 4661 | 1 | target_reached | 否 | 否 | 否（非计入，只作口径说明） | 首轮上下文按契约是空字典，没有额度可服从 → 仍然超冲 |
+| sc-15 | 对抗式 provider（基线） | 4661 | 1 | overshoot | 否 | 否 | 是 | 不读任何提示，首轮直接写 4661 字，越过 4400 上限 |
+| sc-15 | 服从式（只有引擎提示） | 4661 | 1 | overshoot | 否 | 否 | 否（非计入，只作口径说明） | 首轮上下文按契约是空字典，没有额度可服从 → 仍然超冲 |
 | sc-15 | 服从式 + 调用方合入首轮额度 | 4400 | 1 | target_reached | 是 | 是 | 否（非计入，只作口径说明） | round_budget(0, 4000) 给出 4400 字上限，首轮落在界内 |
 | sc-18 | 对抗式 provider（基线） | 46 | 2 | no_progress | 否 | 否 | 是 | 每轮 12–30 字且不读提示，12 轮上限也只有约 250 字 |
 | sc-18 | 服从式（引擎提示，12 轮） | 2700 | 12 | target_reached | 是 | 是 | 否（非计入，只作口径说明） | 每次停滞重试至少写 stall_retry_min_characters 字 |
@@ -168,7 +121,7 @@
 | 维度 | 归属 | v1.2 的取值 | 可否由引擎单方面保证 |
 | --- | --- | --- | --- |
 | 轮数 | 控制 | 77 轮（平均 3.85） | 是：`max_rounds` / `hard_max_rounds` 硬约束 |
-| 停止原因 | 控制 | 20 个场景全部由引擎判定 | 是：5 类停止原因互斥且可复现 |
+| 停止原因 | 控制 | 20 个场景全部由引擎判定 | 是：6 类停止原因互斥且可复现 |
 | 累计下限 | 控制 | 17 个场景在达到下限后立即停止 | 是：`ceil(0.9×目标)` 达标即停 |
 | 额度预算 | 控制 | 额度提示送达 57 轮 | 是：`max_characters` 计算正确、逐轮递减 |
 | 停滞重试轮数 | 控制 | 1 次 | 是：`max_stall_retries` 上限 + `hard_max_rounds` 兜底 |
@@ -205,7 +158,7 @@
 .venv/bin/python tests/budgeted_continuation_fixtures.py
 ```
 
-环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit，引擎模块 `backend/moyu_continuation.py`，引擎 sha256=583059fe2fe989a9c3f3113fe064f3f1aef4d3bf876fc1412e3de3021b1a87a9。本报告对应 digest=sha256:9a6a72f079fe2b9c49a7619dd09cbec6bd77863c6773b94b6827dfc84e6b98ac（seed=20261023，repeat=2，identical=True）。
+环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit，引擎模块 `backend/moyu_continuation.py`，引擎 sha256=61d170e5cd7bc951516abce6c0b568f3405f965df37bd2eec34a3467baafec33。本报告对应 digest=sha256:8c813e04224358a4cc4485c70e58955f3f952853d704356bec62b1ab4e017443（seed=20261023，repeat=2，identical=True）。
 引擎用例数：**56 个**（实测：解析 `tests/budgeted_continuation_fixtures.py` 的 `main()` 用例列表得到；权威值以该脚本打印的 `{'cases': N}` 为准，命令 `.venv/bin/python tests/budgeted_continuation_fixtures.py`）。这是跑出来的现状值，不是设计目标。
 
 
@@ -216,13 +169,13 @@
 | 验收项 | 结果 | 证据 |
 | --- | --- | --- |
 | 20 个场景全部执行 | ✅ | 20/20 |
-| 同 seed 重复运行结果一致 | ✅ | repeat=2，digest=sha256:9a6a72f079fe2b9c49a7619dd09cbec6bd77863c6773b94b6827dfc84e6b98ac |
+| 同 seed 重复运行结果一致 | ✅ | repeat=2，digest=sha256:8c813e04224358a4cc4485c70e58955f3f952853d704356bec62b1ab4e017443 |
 | 引擎未改写任何正文 | ✅ | 20/20 哈希一致 |
 | 所有结果均为 candidate_only | ✅ | 20 个场景 |
 | 字数记账自洽 | ✅ | 20 个场景引擎计数与产出长度一致 |
 | 文档与 JSON 数字一致 | ✅ | 全部命中 |
 | 耗时观测单独落盘且结构完整 | ✅ | 20 个场景，键齐全（不参与确定性比对） |
-| 5 类停止原因在 v1.0 对照侧全部出现（基准覆盖面） | ✅ | 5/5：target_reached、no_progress、max_rounds、budget_exhausted、canceled |
+| 6 类停止原因在 v1.0 对照侧全部出现（基准覆盖面） | ✅ | 6/6：target_reached、no_progress、max_rounds、budget_exhausted、canceled、overshoot |
 | v1.2 相对 v1.0 不倒退且无 pass→fail 回归 | ✅ | 提升 +10.0pt，回归 0 个 |
 | 三臂开关按预期钉死（v1 全关 / v1.1 只开收束 / v1.2 全开） | ✅ | 60 个场景开关全对，v1 臂提示注入为 0 |
 | 超冲保护把额度提示逐轮送达（非首轮） | ✅ | 57 轮 / 14 个场景：sc-05、sc-06、sc-07、sc-08、sc-09、sc-10、sc-11、sc-12、sc-13、sc-14、sc-16、sc-17、sc-18、sc-19 |

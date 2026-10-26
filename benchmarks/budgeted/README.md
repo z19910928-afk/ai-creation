@@ -143,7 +143,7 @@ diff /tmp/a.out /tmp/b.out && diff /tmp/a.json benchmarks/budgeted/results/budge
 3. 引擎未改写任何正文；
 4. 所有结果均为 `candidate_only`；
 5. 字数记账自洽（引擎计数 == provider 产出）；
-6. 5 类停止原因全部出现（覆盖度）；
+6. 6 类停止原因全部出现（覆盖度）；
 7. 文档与 JSON 数字一致（逐 token 比对）；
 8. 耗时观测单独落盘且结构完整。
 

@@ -164,21 +164,22 @@ q1_target_rate = 0.8
 > 24 是附录 A 的**非计入敏感性变体**，不是计入基线的配置。两种轮数下 `24 × 30 = 720 < 2700` 同样不达标，
 > 结论不受影响；引用时请以**基线 12 轮**为准，不要把 24 当成当前配置。
 
-### 4.2 sc-15 超冲：口径已写清，缺陷未修
+### 4.2 sc-15 超冲：已新增 `overshoot` 显式停止
 
 | 字段 | 值 |
 | --- | --- |
 | `target_characters` / `target_range` | 4000 / 3600–4400 |
 | `characters` | **4661**（超上限 **261**，超目标 16.5%） |
-| `rounds` / `stop_reason` | 1 / **`target_reached`** |
+| `rounds` / `stop_reason` | 1 / **`overshoot`**（本轮起；旧报告为 `target_reached`） |
 | `target_reached` / `within_tolerance` | `true` / **`false`** |
+| `overshoot` | **261 字**（`characters - upper`） |
 
-`target_reached` 只判下限（`backend/moyu_continuation.py:872`），循环侧 `:794-796` 一命中即停、不看上限；
-`within_tolerance` 才判带宽（`:873`）。因此「`stop_reason=target_reached`」**不等于带内达标**。
-「溢出不可回收」的显式失败语义**由 continuation-80 / 引擎 owner 承接，本版本不声明已修**；
-`sc-15` 仍计入 4000 字子集失败（4/6）。
+引擎现在在 `total_characters >= lower` 后先比较上限：超过 `upper` 返回 `OVERSHOOT`，否则 `TARGET_REACHED`
+（seed 侧 `backend/moyu_continuation.py:736-737`、循环侧 `:796-797`；常量 `:67`、`STOP_REASONS` `:69`）。
+正文仍不裁剪，`within_tolerance` 仍为 `false`；`sc-15` 仍计入 4000 字子集失败（4/6）。
+旧 `target_reached` 只判下限（`:874`）、`within_tolerance` 才判带宽（`:875`）的口径保留在 v1.2 文档。
 
-依据：`docs/consistency-budget-v1.2-2026-10-23.md` §6.1.1。
+依据：`docs/consistency-budget-v1.2-2026-10-23.md` §6.1.1（历史口径）；当前字节以 `benchmarks/budgeted/results/budgeted-baseline.json` 为准。
 
 ---
 
@@ -321,7 +322,7 @@ q1_target_rate = 0.8
   **t102 独立实跑 2/2、10/10**，`activation_attempts` 由 55–59 收敛到 1–5、`native_activation.ok=true`。
   t101/t102 都只动测试辅助代码，**不是产品缺陷**；边界是同机 GUI + Automation 已授权，
   跨机器 / CI / 无 WindowServer 未证明，**仍不宣称 26/26**。
-- **sc-15 超冲**：`4661/4000`、`target_reached` 与 `within_tolerance=false` 并存，缺陷未修。
+- **sc-15 超冲**：`4661/4000`、`stop_reason=overshoot` 与 `within_tolerance=false`；显式失败已修，正文不裁剪，仍计入 4000 子集失败（4/6）。
 - **真实模型证据**：`repeat=1`、分母 28/31 不可合并、23 条中 11 条可见。
 
 ---
@@ -334,7 +335,7 @@ q1_target_rate = 0.8
 > 被测提交 `d766492` 的 CI（run `40188967438`）34 步全绿（历史基线）；代码基线 `8126778` 的 CI（run `40290743348`）与本文 docs-only `605b895` 的 CI（run `40303229735`）均 `success`。
 > 基准方面：3000 字章一次通过率 **7/9 = 77.8%**（Q1 门槛 80%，**未达成**），4000 字 **4/6 = 66.7%**。
 > 已知限制：`sc-18` 受生成侧字数上限约束，本轮样本下 8/9 数学不可达；`sc-19` 属外部预算中断；
-> `sc-15` 存在越界但停止原因仍报 `target_reached` 的语义缺口（未修）；
+> `sc-15` 的越界已显式标记为 `overshoot`（不再报 `target_reached`），正文不裁剪，仍计入失败；
 > desktop 冒烟在 macOS 上**曾有**窗口焦点竞态（某次会话 7 跑 6 过、另一次独立会话 1 跑 1 挂，`activation_attempts=55`；
 > 历史失败保留）；t101 已加强**测试辅助**激活路径、t102 独立复跑 2/2 与 10/10，
 > 但仅覆盖同机 GUI 会话 + Automation 已授权，**跨机器 / CI / 无 WindowServer 未证明，仍不宣称 26/26**。

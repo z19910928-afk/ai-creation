@@ -6,7 +6,7 @@
     "python": "3.11.17",
     "platform": "macOS-26.6.1-arm64-arm-64bit",
     "engine_module": "backend/moyu_continuation.py",
-    "engine_sha256": "00f6cc1419abb06f0e3b276180946f5524914d6eef083d9088e46b00ea60ebaf"
+    "engine_sha256": "61d170e5cd7bc951516abce6c0b568f3405f965df37bd2eec34a3467baafec33"
   },
   "config": {
     "seed": 20261023,
@@ -25,7 +25,10 @@
     "q1_target_rate": 0.8,
     "engine_variant": "v1",
     "max_stall_retries": 0,
-    "hard_max_rounds": null
+    "hard_max_rounds": null,
+    "closing_hint": false,
+    "overshoot_guard": false,
+    "stall_strategy": false
   },
   "engine": {
     "variant": "v1",
@@ -33,6 +36,9 @@
     "engine_version": "1.0",
     "max_stall_retries": 0,
     "hard_max_rounds": null,
+    "closing_hint": false,
+    "overshoot_guard": false,
+    "stall_strategy": false,
     "hard_max_rounds_note": "None 表示取各场景的 max_rounds，即禁用弹性轮数"
   },
   "assumptions": {
@@ -167,6 +173,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "5341d29781c1817abec412750a3d359352b748cc078bd9847506658062378182",
       "body_unchanged": true,
       "candidate_only": true,
@@ -203,6 +221,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "4a28b0b75124b15bf1b3ce60fbe3d6aab37b692c13ac5861483cadc8441cc936",
       "body_unchanged": true,
       "candidate_only": true,
@@ -239,6 +269,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "b6fed86d1bff0d32eedaa94a4ca851420417605926d16626c699074964cef083",
       "body_unchanged": true,
       "candidate_only": true,
@@ -275,6 +317,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "6ca4c6649c8a2586da3bc4f74a30a6458c3b78ed45ead4a3d1b1ac1b76687a6c",
       "body_unchanged": true,
       "candidate_only": true,
@@ -305,14 +359,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          4
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "06717eed5f3265f887731004a5e03f6a7cb43dcb1e845863f885ef103bac378d",
       "body_unchanged": true,
       "candidate_only": true,
@@ -343,14 +407,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          4
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "379988487d916db812352711f74dc759545d3f0cb7177eacb01070acf1c90fdc",
       "body_unchanged": true,
       "candidate_only": true,
@@ -381,14 +455,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          4
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "9957c1f509c2443b4e08aeaa10c4e10adb991547bdfbcbc748a11bb4dcced369",
       "body_unchanged": true,
       "candidate_only": true,
@@ -419,14 +503,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          4
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "0047887022727f3e2f59fbce56e07e9720b3517070ac20a45bb16a6c8a361a69",
       "body_unchanged": true,
       "candidate_only": true,
@@ -457,14 +551,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          4
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "b88d184a0b028367fbe5a09bbee1ae08cd3464d870e8ae22b5f5f6db23f5daf8",
       "body_unchanged": true,
       "candidate_only": true,
@@ -495,14 +599,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          4
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "2156da8fcb2867905734b8b3bb51c94dede5e5a9f7ac14a29ab07ebcf2192d96",
       "body_unchanged": true,
       "candidate_only": true,
@@ -533,15 +647,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 2,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          4,
-          5
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "583e2ad2aaaae2230494bccb2daa61d06a8a24b62957dce993915b521bac1041",
       "body_unchanged": true,
       "candidate_only": true,
@@ -572,14 +695,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          5
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "93f56e817c599a761cbe2d2e823ab1846979846d09b30ef50b5b90cdae79d29b",
       "body_unchanged": true,
       "candidate_only": true,
@@ -610,14 +743,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          6
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "a32fd8e6e2a6ad3df61b8f089adf53f93912292c0be80a99de209f38af4cab75",
       "body_unchanged": true,
       "candidate_only": true,
@@ -648,14 +791,24 @@
       "retries": 0,
       "extended_rounds": 0,
       "retried_rounds": [],
-      "closing_hint_rounds": 1,
+      "closing_hint_rounds": 0,
       "stall_hint_rounds": 0,
       "hint_rounds": {
-        "closing_hint": [
-          3
-        ],
+        "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "237ac607bbc14ccdccbdf9d203eb0b81475630bd7e6c4d72d9686b3c8ea94cde",
       "body_unchanged": true,
       "candidate_only": true,
@@ -670,8 +823,8 @@
       "min_round_gain": 50,
       "max_stall_retries": 0,
       "hard_max_rounds": 6,
-      "stop_reason": "target_reached",
-      "stop_reason_label": "达标停止",
+      "stop_reason": "overshoot",
+      "stop_reason_label": "超冲停止",
       "rounds": 1,
       "characters": 4661,
       "target_range": {
@@ -692,6 +845,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 261,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "64c4cf20add78eb5345a63767e48e0511f4f23b2b33cc7cb4d136c0d71e8d56a",
       "body_unchanged": true,
       "candidate_only": true,
@@ -730,6 +895,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "f7e4596336ef3d9d22d697c546a86308f3f752660759a74656d597a193592da3",
       "body_unchanged": true,
       "candidate_only": true,
@@ -768,6 +945,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "f287cb714ccb58f6f9cfc55e36405c166bb5358c59c31421c0acff4916ad7297",
       "body_unchanged": true,
       "candidate_only": true,
@@ -806,6 +995,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "eba023a1f8705c1b096da899df99fbdae8ec3d171f1a02741ae468406dbb0f14",
       "body_unchanged": true,
       "candidate_only": true,
@@ -844,6 +1045,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "7844b443c25b09a3447ebc11bb4a68683fffe3ecb31ce4e40f9a0dd6547ae6c8",
       "body_unchanged": true,
       "candidate_only": true,
@@ -882,6 +1095,18 @@
         "closing_hint": [],
         "stall_retry_hint": []
       },
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_round_indexes": [],
+      "characters_over_upper": 0,
+      "stall_min_characters": [],
+      "stall_strategies": [],
+      "engine_flags": {
+        "closing_hint": false,
+        "overshoot_guard": false,
+        "stall_strategy": false
+      },
+      "provider": "fake",
+      "obeyed_rounds": 0,
       "body_sha256": "7dcf17d434c816bb04d74a6e5fadf0b22d1d15b2f622031605ce9dda79cbc9f0",
       "body_unchanged": true,
       "candidate_only": true,
@@ -927,7 +1152,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "steady": {
@@ -941,7 +1167,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "cautious": {
@@ -955,7 +1182,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "volatile": {
@@ -965,11 +1193,12 @@
         "rate": 0.5,
         "mean_rounds": 2.0,
         "stop_reasons": {
-          "target_reached": 2,
+          "target_reached": 1,
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 1
         }
       },
       "underpowered": {
@@ -983,7 +1212,8 @@
           "no_progress": 0,
           "max_rounds": 2,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "stalling": {
@@ -997,7 +1227,8 @@
           "no_progress": 1,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "budget_limited": {
@@ -1011,7 +1242,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 1,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "canceled": {
@@ -1025,7 +1257,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 1
+          "canceled": 1,
+          "overshoot": 0
         }
       }
     },
@@ -1048,11 +1281,12 @@
       "rate": 0.0
     },
     "stop_reasons": {
-      "target_reached": 15,
+      "target_reached": 14,
       "no_progress": 1,
       "max_rounds": 2,
       "budget_exhausted": 1,
-      "canceled": 1
+      "canceled": 1,
+      "overshoot": 1
     },
     "rounds": {
       "mean": 3.2,
@@ -1081,7 +1315,7 @@
         "target_characters": 4000,
         "tier": "volatile",
         "tier_label": "无视预算",
-        "stop_reason": "target_reached",
+        "stop_reason": "overshoot",
         "failure_class": "overshoot",
         "failure_label": "超冲（越过 +10% 上限）",
         "rounds": 1,
@@ -1173,21 +1407,32 @@
       "retried_scenarios": [],
       "extended_rounds": 0,
       "extended_scenarios": [],
-      "closing_hint_rounds": 11,
-      "closing_hint_scenarios": [
-        "sc-05",
-        "sc-06",
-        "sc-07",
-        "sc-08",
-        "sc-09",
-        "sc-10",
-        "sc-11",
-        "sc-12",
-        "sc-13",
-        "sc-14"
-      ],
+      "closing_hint_rounds": 0,
+      "closing_hint_scenarios": [],
       "stall_hint_rounds": 0,
-      "stall_hint_scenarios": []
+      "stall_hint_scenarios": [],
+      "overshoot_hint_rounds": 0,
+      "overshoot_hint_scenarios": [],
+      "stall_min_characters": [],
+      "stall_strategies": []
+    },
+    "engine_control": {
+      "controlled": {
+        "rounds_total": 64,
+        "stop_reason_decided": 20,
+        "lower_bound_hits": 15,
+        "envelope_rounds": 0,
+        "stall_retry_rounds": 0
+      },
+      "observed_only": {
+        "overshoot_characters": 261,
+        "overshoot_scenarios": [
+          "sc-15"
+        ],
+        "stall_scenarios": [],
+        "strategy_switches": 0,
+        "obedience": "对抗式 provider 不读任何提示；模型服从度只能由附录估计"
+      }
     },
     "break_even": {
       "qualified_rate": 1.0,
@@ -1200,7 +1445,7 @@
   "determinism": {
     "repeat": 2,
     "identical": true,
-    "digest": "sha256:f3afbcf9955600e08222d2b3a9e33214c96cad1f587af2fc5fb9417b1949ca8d"
+    "digest": "sha256:3c8b6f647f2229e21deaf870fc60980000c3087dd1f1d591d79989c124055fbe"
   },
   "acceptance": [
     {
@@ -1213,7 +1458,7 @@
       "id": "determinism",
       "label": "同 seed 重复运行结果一致",
       "passed": true,
-      "detail": "repeat=2，digest=sha256:f3afbcf9955600e08222d2b3a9e33214c96cad1f587af2fc5fb9417b1949ca8d"
+      "detail": "repeat=2，digest=sha256:3c8b6f647f2229e21deaf870fc60980000c3087dd1f1d591d79989c124055fbe"
     },
     {
       "id": "body",
@@ -1235,9 +1480,9 @@
     },
     {
       "id": "stop_reasons",
-      "label": "5 类停止原因全部出现",
+      "label": "6 类停止原因全部出现",
       "passed": true,
-      "detail": "target_reached、no_progress、max_rounds、budget_exhausted、canceled"
+      "detail": "target_reached、no_progress、max_rounds、budget_exhausted、canceled、overshoot"
     },
     {
       "id": "doc_numbers",

@@ -6,7 +6,7 @@
     "python": "3.11.17",
     "platform": "macOS-26.6.1-arm64-arm-64bit",
     "engine_module": "backend/moyu_continuation.py",
-    "engine_sha256": "583059fe2fe989a9c3f3113fe064f3f1aef4d3bf876fc1412e3de3021b1a87a9"
+    "engine_sha256": "61d170e5cd7bc951516abce6c0b568f3405f965df37bd2eec34a3467baafec33"
   },
   "config": {
     "seed": 20261023,
@@ -844,8 +844,8 @@
       "min_round_gain": 50,
       "max_stall_retries": 1,
       "hard_max_rounds": 12,
-      "stop_reason": "target_reached",
-      "stop_reason_label": "达标停止",
+      "stop_reason": "overshoot",
+      "stop_reason_label": "超冲停止",
       "rounds": 1,
       "characters": 4661,
       "target_range": {
@@ -1182,7 +1182,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "steady": {
@@ -1196,7 +1197,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "cautious": {
@@ -1210,7 +1212,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "volatile": {
@@ -1220,11 +1223,12 @@
         "rate": 0.5,
         "mean_rounds": 2.0,
         "stop_reasons": {
-          "target_reached": 2,
+          "target_reached": 1,
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 1
         }
       },
       "underpowered": {
@@ -1238,7 +1242,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "stalling": {
@@ -1252,7 +1257,8 @@
           "no_progress": 1,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "budget_limited": {
@@ -1266,7 +1272,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 1,
-          "canceled": 0
+          "canceled": 0,
+          "overshoot": 0
         }
       },
       "canceled": {
@@ -1280,7 +1287,8 @@
           "no_progress": 0,
           "max_rounds": 0,
           "budget_exhausted": 0,
-          "canceled": 1
+          "canceled": 1,
+          "overshoot": 0
         }
       }
     },
@@ -1303,11 +1311,12 @@
       "rate": 0.0
     },
     "stop_reasons": {
-      "target_reached": 17,
+      "target_reached": 16,
       "no_progress": 1,
       "max_rounds": 0,
       "budget_exhausted": 1,
-      "canceled": 1
+      "canceled": 1,
+      "overshoot": 1
     },
     "rounds": {
       "mean": 3.85,
@@ -1336,7 +1345,7 @@
         "target_characters": 4000,
         "tier": "volatile",
         "tier_label": "无视预算",
-        "stop_reason": "target_reached",
+        "stop_reason": "overshoot",
         "failure_class": "overshoot",
         "failure_label": "超冲（越过 +10% 上限）",
         "rounds": 1,
@@ -1462,7 +1471,7 @@
   "determinism": {
     "repeat": 2,
     "identical": true,
-    "digest": "sha256:847d620fd8ffc6eb65064027b591801397849a3cc990c1e11ad85c261c6c99e8"
+    "digest": "sha256:7349e53888f9145132e7b7d93b2b2fced5208ebf500371a59042af059ae58391"
   },
   "acceptance": [
     {
@@ -1475,7 +1484,7 @@
       "id": "determinism",
       "label": "同 seed 重复运行结果一致",
       "passed": true,
-      "detail": "repeat=2，digest=sha256:847d620fd8ffc6eb65064027b591801397849a3cc990c1e11ad85c261c6c99e8"
+      "detail": "repeat=2，digest=sha256:7349e53888f9145132e7b7d93b2b2fced5208ebf500371a59042af059ae58391"
     },
     {
       "id": "body",
@@ -1509,9 +1518,9 @@
     },
     {
       "id": "stop_reasons",
-      "label": "5 类停止原因在 v1.0 对照侧全部出现（基准覆盖面）",
+      "label": "6 类停止原因在 v1.0 对照侧全部出现（基准覆盖面）",
       "passed": true,
-      "detail": "5/5：target_reached、no_progress、max_rounds、budget_exhausted、canceled"
+      "detail": "6/6：target_reached、no_progress、max_rounds、budget_exhausted、canceled、overshoot"
     },
     {
       "id": "v11_improves_without_regression",

@@ -39,15 +39,16 @@
 
 | 停止原因 | 含义 | 场景数 |
 | --- | --- | --- |
-| target_reached | 达标停止 | 15 |
+| target_reached | 达标停止 | 14 |
 | no_progress | 产出停滞 | 1 |
 | max_rounds | 轮数耗尽 | 2 |
 | budget_exhausted | 预算耗尽 | 1 |
 | canceled | 作者取消 | 1 |
+| overshoot | 超冲停止 | 1 |
 
 ## 确定性
 
 - 重复运行：2 次，结果一致：是
-- 确定性摘要：`sha256:f3afbcf9955600e08222d2b3a9e33214c96cad1f587af2fc5fb9417b1949ca8d`
+- 确定性摘要：`sha256:3c8b6f647f2229e21deaf870fc60980000c3087dd1f1d591d79989c124055fbe`
 
 完整方法、参数、失败分类与局限见 `docs/consistency-budget-baseline-2026-10-23.md`。

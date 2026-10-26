@@ -56,6 +56,7 @@ from backend.moyu_continuation import (  # noqa: E402
     DEFAULT_MIN_ROUND_GAIN,
     MAX_ROUNDS,
     NO_PROGRESS,
+    OVERSHOOT,
     STOP_REASONS,
     TARGET_CHARACTERS_LIMITS,
     TARGET_REACHED,
@@ -208,6 +209,7 @@ STOP_REASON_LABELS = {
     MAX_ROUNDS: "轮数耗尽",
     BUDGET_EXHAUSTED: "预算耗尽",
     CANCELED: "作者取消",
+    OVERSHOOT: "超冲停止",
 }
 
 FAILURE_CLASS_LABELS = {
@@ -1479,6 +1481,7 @@ def render_doc(report: dict, paths: dict[str, str] | None = None) -> str:
                 str(row["stop_reasons"][MAX_ROUNDS]),
                 str(row["stop_reasons"][BUDGET_EXHAUSTED]),
                 str(row["stop_reasons"][CANCELED]),
+                str(row["stop_reasons"][OVERSHOOT]),
             ]
         )
     lines.append(
@@ -1495,6 +1498,7 @@ def render_doc(report: dict, paths: dict[str, str] | None = None) -> str:
                 "轮尽",
                 "预算",
                 "取消",
+                "超冲",
             ],
             tier_rows,
         )
@@ -1742,7 +1746,7 @@ def render_doc(report: dict, paths: dict[str, str] | None = None) -> str:
     lines.append(
         "命令会重新生成 JSON / Markdown / 本文件，并在 stdout 打印每个场景的判定与"
         f"确定性摘要 `{determinism['digest']}`。退出码 0 表示**基准完整性验收**通过"
-        "（20 个场景全部执行、重复运行一致、正文未被改写、5 类停止原因全部出现、"
+        "（20 个场景全部执行、重复运行一致、正文未被改写、6 类停止原因全部出现、"
         "报告数字自洽），**不表示一次通过率达标**；指标是否达标见 §1 与 §6。"
     )
     lines.append("")
@@ -1840,7 +1844,7 @@ def evaluate_acceptance(
         ),
         _acceptance_item(
             "stop_reasons",
-            "5 类停止原因全部出现",
+            "6 类停止原因全部出现",
             len(observed_reasons) == len(STOP_REASONS),
             "、".join(observed_reasons) if observed_reasons else "无",
         ),
@@ -2854,7 +2858,7 @@ def render_v12_doc(comparison: dict, after_report: dict) -> str:
                     "停止原因",
                     "控制",
                     f"{control['controlled']['stop_reason_decided']} 个场景全部由引擎判定",
-                    "是：5 类停止原因互斥且可复现",
+                    "是：6 类停止原因互斥且可复现",
                 ],
                 [
                     "累计下限",
@@ -3123,7 +3127,7 @@ def run_comparison(
         v11_acceptance.append(
             _acceptance_item(
                 "stop_reasons",
-                "5 类停止原因在 v1.0 对照侧全部出现（基准覆盖面）",
+                "6 类停止原因在 v1.0 对照侧全部出现（基准覆盖面）",
                 len(covered) == len(STOP_REASONS),
                 f"{len(covered)}/{len(STOP_REASONS)}：" + ("、".join(covered) or "无"),
             )
@@ -3176,13 +3180,13 @@ def run_comparison(
             after_report, doc_text, md_text, timings["v1.2"]
         )
 
-        # 「5 类停止原因全部出现」是**基准覆盖面**检查（场景集是否把所有停止路径都跑到），
+        # 「6 类停止原因全部出现」是**基准覆盖面**检查（场景集是否把所有停止路径都跑到），
         # 不是某一版引擎的指标。正确口径：在 v1.0 对照侧断言覆盖面，新版只报实际分布。
         acceptance = [item for item in acceptance if item["id"] != "stop_reasons"]
         acceptance.append(
             _acceptance_item(
                 "stop_reasons",
-                "5 类停止原因在 v1.0 对照侧全部出现（基准覆盖面）",
+                "6 类停止原因在 v1.0 对照侧全部出现（基准覆盖面）",
                 len(covered) == len(STOP_REASONS),
                 f"{len(covered)}/{len(STOP_REASONS)}：" + ("、".join(covered) or "无"),
             )

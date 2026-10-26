@@ -1,8 +1,13 @@
 # 更新记录
 
+## 2026-10-26 · 修复 sc-15 超冲停止原因：新增 `overshoot`
+
+- `backend/moyu_continuation.py` 新增第 6 个停止原因 `OVERSHOOT`：seed 与循环两处均在累计字数超过目标上限时返回 `overshoot`，不再报 `target_reached`；正文仍不裁剪，`within_tolerance=false` 不变。
+- `tests/budgeted_continuation_fixtures.py` 56 个用例、HTTP 续写 23 个用例通过；预算基准 20/20、6 类停止原因全部出现，`sc-15` 记录为 `overshoot`。
+- `docs/release-readiness-2026-10-25.md` §4.2/§6.4/§7 改为已修口径；Q1 结论不变（真实模型 7/9=77.8%、合成基线 6/9，均未达 80%）。
 ## 2026-10-26 · 发布决定：保持 0.1.3，不打 v0.1.4-rc.1 tag
 
-当前 HEAD `bc4709e` 的 CI（run `40278484458`）已 success。因 B3 独立复核缺位（t89 为 captain 接管、独立性降级）与 B4 Q1 3000 字 **7/9 = 77.8% < 80%** 未解，本轮**不 bump、不打 tag、不发布**；发布边界与未来措辞见 `docs/release-readiness-2026-10-25.md` §6、§7。未改产品代码。
+决策时 HEAD `bc4709e` 的 CI（run `40278484458`）已 success。因 B3 独立复核缺位（t89 为 captain 接管、独立性降级）与 B4 Q1 3000 字 **7/9 = 77.8% < 80%** 未解，本轮**不 bump、不打 tag、不发布**；发布边界与未来措辞见 `docs/release-readiness-2026-10-25.md` §6、§7。未改产品代码。
 
 ## 2026-10-25 · 审计复核修复：F1–F6 文档与证据补齐
 
