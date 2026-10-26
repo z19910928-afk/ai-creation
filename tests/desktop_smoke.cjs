@@ -7,7 +7,7 @@ const http = require('node:http');
 const net = require('node:net');
 const os = require('node:os');
 const path = require('node:path');
-const {spawn} = require('node:child_process');
+const {spawn, execFile} = require('node:child_process');
 const {_electron: electron} = require(process.env.MOYU_PLAYWRIGHT_MODULE || 'playwright');
 
 const root = path.resolve(__dirname, '..');
@@ -503,35 +503,61 @@ async function main() {
   await test('clipboard-write-from-user-gesture', async () => {
     currentStep = 'activate-native-desktop-window';
     // 冒烟模式在 ready-to-show 时不显示窗口（desktop/main.cjs:176），本用例是窗口第一次 show，
-    // 因此 macOS 的协作式激活可能丢掉单次 app.focus({steal:true})：窗口 visible=true、isFocused=false。
-    // 在原有 10s 等待窗口内重复请求激活；断言仍要求 isFocused() 为真，不放宽。
+    // 因此 macOS 的协作式激活会丢掉单次 app.focus({steal:true})：窗口 visible=true、isFocused=false。
+    // 这里叠加三条独立原生路径（激活策略/dock、窗口层级 moveTop、按 PID 置前），断言仍要求
+    // isFocused() 为真，不放宽、不 skip。
+    const frontmostByPid = () => new Promise(resolve => {
+      if (process.platform !== 'darwin') { resolve({skipped: true}); return; }
+      const pid = application?.process?.()?.pid;
+      if (!pid) { resolve({pid: null, error: 'NO_PID'}); return; }
+      execFile('/usr/bin/osascript', ['-e',
+        'tell application "System Events" to set frontmost of (first process whose unix id is ' +
+        pid + ') to true'], {timeout: 1200}, (error, stdout, stderr) => resolve(error ?
+        {pid, error: String(error.code ?? error.message ?? ''), stderr: String(stderr || '').trim().slice(0, 160)} :
+        {pid, ok: true}));
+    });
     const activate = () => application.evaluate(async ({app, BrowserWindow}) => {
       const window = BrowserWindow.getAllWindows()[0];
       if (process.platform === 'darwin') {
-        await app.dock?.show();
-        app.focus({steal: true});
+        // 无 bundle 的开发态启动可能不是 regular 策略，先纠正再抢占前台。
+        try { app.setActivationPolicy?.('regular'); } catch {}
+        try { await app.dock?.show(); } catch {}
       }
+      if (window.isMinimized()) window.restore();
       if (!window.isVisible()) window.show();
+      // 短暂置顶把窗口提到前台层级，随后恢复原状态，避免改变产品窗口语义。
+      const wasAlwaysOnTop = window.isAlwaysOnTop();
+      if (!wasAlwaysOnTop) window.setAlwaysOnTop(true, 'floating');
+      window.moveTop();
       window.focus();
+      if (process.platform === 'darwin') app.focus({steal: true});
+      if (!wasAlwaysOnTop) window.setAlwaysOnTop(false);
       return {window_focused: window.isFocused(), window_visible: window.isVisible(),
         window_minimized: window.isMinimized(), application_active: app.isActive?.() ?? null,
-        application_hidden: app.isHidden?.() ?? null};
+        application_hidden: app.isHidden?.() ?? null,
+        activation_policy: app.getActivationPolicy?.() ?? null,
+        always_on_top_used: !wasAlwaysOnTop};
     });
     let activation = null;
     let activationAttempts = 0;
+    let nativeActivation = null;
     try {
       await until(async () => {
         activationAttempts += 1;
+        nativeActivation = await frontmostByPid();
         activation = await activate();
         return activation.window_focused;
       }, 'NATIVE_WINDOW_FOCUS', 10000);
     } catch (error) {
       report.clipboard_diagnostics = {...(activation || {}),
         activation_attempts: activationAttempts,
+        native_activation: nativeActivation,
         ssh_session: !!process.env.SSH_TTY,
         terminal_program: process.env.TERM_PROGRAM ?? null};
       throw error;
     }
+    report.clipboard_activation = {...(activation || {}),
+      activation_attempts: activationAttempts, native_activation: nativeActivation};
     currentStep = 'preserve-all-clipboard-formats';
     await preserveClipboard();
     try {
