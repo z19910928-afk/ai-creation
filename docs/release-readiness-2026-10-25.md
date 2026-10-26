@@ -10,21 +10,29 @@
 
 **当前状态：本地单用户技术预览可交付；生产上线不通过；多租户不支持。**
 
-判定为「技术预览可交付」的依据是**当前字节的可验证性**（CI 对齐、工作树 clean、关键文件 hash 与复核报告一致），
-不是功能完备性。三项硬阻塞仍然开着（Q1 未达标、t79 数学不可达、独立复核未通过——t91 verdict=`needs_revision`），见 §5。
+判定为「技术预览可交付」的依据是**当前字节的可验证性**（CI 对齐、验收窗口内工作树 clean、关键文件 hash 与复核报告一致），
+不是功能完备性。两项硬阻塞仍然开着（B4/Q1 未达标、t79 数学不可达）；
+B3（独立复核缺位／未通过）**已由 t98 替代独立复核关闭**，但 t91 报告的 `verdict=needs_revision` 原样保留，见 §5.1、§5.6。
+
+> **工作树口径（T97-F1 修正，必读）**：此前这里写「工作树 clean」，不准确。准确口径是：
+> `clean` 只对 **t94 / t97 各自的验收窗口**成立（对 `8126778` 的 11/11 前后字节对账一致、三文件 hash/行数前后一致）；
+> **当前工作树并不 clean**——仍有未提交的验证文档（`docs/verification-current-release-2026-10-26.md`、
+> `docs/verification-release-readiness-current-t97-2026-10-26.md`、`docs/audit-review-b3-closure-2026-10-26.md`）
+> 以及本次对本文档的修订，它们**不属于被测字节**，CI `40290743348` 也不绑定它们。
+> 因此**不得把「CI success」或「验收窗口 clean」扩张成「当前工作树 clean」**。
 
 | 维度 | 结论 | 依据 |
 | --- | --- | --- |
 | 交付范围 | **本地单用户技术预览** | §1 |
 | 生产可上线 | **否** | §1、§5 |
 | 多租户 / 公网 | **不支持** | §1 |
-| CI（被测字节 `d766492`） | run `40188967438`，34 步全绿 | §2 |
-| CI（当前 HEAD `bc4709e`） | run `40278484458`，success；captain 于 2026-10-26 核对 | §2 |
+| CI（**当前 HEAD `8126778`**） | run **`40290743348`**：`status=completed`、`conclusion=success`、headSha 与 HEAD 逐字符一致（t95 实测 `gh run view` 复核） | §2 |
+| CI（历史基线 `d766492`） | run `40188967438`，34 步全绿（**历史**字节，非当前） | §2 |
 | Q1 3000 字 | **7/9 = 77.8%，未达标** | §3 |
 | Q1 4000 字 | 4/6 = 66.7% | §3 |
 | `q1_target_met` | **`false`** | §3 |
-| 独立复核 | **t91 已完成独立复核，verdict=`needs_revision`（未通过）**；t89 仍为 captain 接管、独立性降级 | §5.1 |
-| 版本号 | **仍为 `0.1.3`；2026-10-26 决定不 bump、不打 tag（B3/B4 未解）** | §6.1 |
+| 独立复核 | **B3（独立复核缺位／未通过）已由 t98 替代独立复核关闭**（`B3_CLOSED: true`，只关闭 B3）；t91 原 `verdict=needs_revision` 原样保留、不改写成通过；t89 仍为 captain 接管、独立性降级 | §5.1、§5.6 |
+| 版本号 | **仍为 `0.1.3`；2026-10-26 决定不 bump、不打 tag（B4 未解；B3 虽已于 t98 关闭，Q1 仍未达标）** | §6.1 |
 
 ---
 
@@ -49,36 +57,48 @@
 
 ---
 
-## 2. CI 状态（分两个字节，不能合并表述）
+## 2. CI 状态（当前字节与历史字节分开表述，不得合并）
 
-| 被测字节 | CI run | 结果 | 说明 |
+| 字节 | CI run | 结果 | 定位 |
 | --- | --- | --- | --- |
-| `d766492`（`test: add desktop focus diagnostics and truthful triage`） | **`40188967438`** | `status=completed`、`conclusion=success`、headSha 与 commit 相同、**34 步全绿** | 来自 `docs/audit-review-current-2026-10-25.md` §1 |
-| `10cff13`（当前 HEAD，`docs: record current-byte captain review`） | — | **未宣布通过** | 新 CI **由 captain 等待中**；本文不替它宣布结果 |
+| **`8126778`**（**当前 HEAD**，`docs: record release-readiness verification and t91 findings`） | **`40290743348`** | `status=completed`、`conclusion=success`、**headSha 与 HEAD 逐字符一致** | **当前**；t95 用 `gh run view` 实测复核 |
+| `5d22d8a`（历史） | `40281317350` | `conclusion=success`，headSha 与 commit 一致 | 历史（t91 独立复核的字节） |
+| `bc4709e`（历史） | `40278484458` | `conclusion=success` | 历史 |
+| `10cff13`（历史） | `40193598447` | `conclusion=success` | 历史（此前曾写作「等待中」，现已有结果，按历史记录保留） |
+| `d766492`（历史，审计报告基线字节） | `40188967438` | `conclusion=success`、**34 步全绿** | 历史（来自 `docs/audit-review-current-2026-10-25.md` §1） |
 
-`d766492..10cff13` 的完整差异（`git diff --stat d766492..HEAD`）：
+> 上表前三行为历史记录，**不得当作当前状态引用**。当前状态只有第一行：`8126778` / `40290743348` / success。
 
-```text
- docs/audit-review-current-2026-10-25.md | 75 +++++++++++++++++++++++++++++++++
- 1 file changed, 75 insertions(+)
-```
-
-即**只新增 1 个 docs 文件、75 行**，无产品代码、无测试代码改动。
-配合 §2.1 的 hash 对照，可以说明「被测字节（`d766492`）的产品/测试文件在 `10cff13` 上逐字节未变」——
-但**这不等于 `10cff13` 的 CI 已通过**；二者是两件事，发布前必须等 `10cff13` 自己的 CI 结果。
-
-### 2.1 关键文件 sha256（当前 HEAD `10cff13` 实测，与复核报告逐字一致）
+`d766492..8126778`（当前 HEAD）的完整差异（`git diff --stat d766492..HEAD`，t95 实测）：
 
 ```text
-backend/server.py                 f74c885f3a058c2b82b19907705dc48b2971403e20d71373a9acd78c2403b263
-backend/moyu_consistency.py       b855e9106e1d2b8a144231310bb860752c07cbab1b933c272cba4e5ded463cd2
-backend/moyu_continuation.py      583059fe2fe989a9c3f3113fe064f3f1aef4d3bf876fc1412e3de3021b1a87a9
-backend/moyu_extract.py           6b5d431364057b5a11441b882429993a40036e76e8082f43868baa836126cff8
-tests/desktop_smoke.cjs           c6d13a0ea450a8eb14ba2450f6de6d61ba0c706c70be06e9821c3ba4d81ffaf4
+ docs/CHANGELOG.md                                 |   4 +
+ docs/audit-review-current-2026-10-25.md           |  75 ++++++
+ docs/audit-review-independent-2026-10-26.md       | 175 ++++++++++++++
+ docs/release-readiness-2026-10-25.md              | 267 ++++++++++++++++++++++
+ docs/verification-release-readiness-2026-10-26.md | 134 +++++++++++
+ 5 files changed, 655 insertions(+)
 ```
 
-以上 5 个 hash 与 `docs/audit-review-current-2026-10-25.md` §1 记录的完全一致
-（该报告在 `d766492` 上出具），因此「产品代码自 `85b13fe` 到 `10cff13` 未改」可复算。
+即**只新增/改动 docs 文件**；`git diff --stat d766492..HEAD -- backend/ tests/ frontend/ benchmarks/` **输出为空**（t95 实测），
+说明产品代码、测试、前端与 benchmark 自 `d766492` 到当前 HEAD **零改动**。
+配合 §2.1 的 hash 对照，足以说明「`d766492` 上验过的产品/测试字节，就是当前 HEAD `8126778` 的字节」。
+但这**不等于**把所有旧 verdict 平移到当前：绑定当前字节的独立验收由 t94 完成（见 §5.5），
+t94 当轮**未关闭** B3/B4；B3 其后由 t98 关闭（见 §5.6），B4 仍未关闭。
+
+### 2.1 关键文件 sha256 与行数（**当前 HEAD `8126778`** 实测，t95 复核）
+
+```text
+backend/server.py                 f74c885f3a058c2b82b19907705dc48b2971403e20d71373a9acd78c2403b263   8198 行
+backend/moyu_consistency.py       b855e9106e1d2b8a144231310bb860752c07cbab1b933c272cba4e5ded463cd2   1222 行
+backend/moyu_continuation.py      583059fe2fe989a9c3f3113fe064f3f1aef4d3bf876fc1412e3de3021b1a87a9    896 行
+backend/moyu_extract.py           6b5d431364057b5a11441b882429993a40036e76e8082f43868baa836126cff8   1041 行
+tests/desktop_smoke.cjs           c6d13a0ea450a8eb14ba2450f6de6d61ba0c706c70be06e9821c3ba4d81ffaf4    784 行
+```
+
+以上 5 个 sha256 在**当前 HEAD `8126778` 的磁盘上实测**，与 `docs/audit-review-current-2026-10-25.md` §1
+（该报告在 `d766492` 上出具）以及 t94 报告 §一 均逐字一致；行数为 t95 用 `wc -l` 实测。
+因此「产品/测试代码自 `d766492` 到当前 HEAD `8126778` 未改」可复算，不存在旧 hash 贴到新字节的问题。
 
 ---
 
@@ -157,13 +177,15 @@ q1_target_rate = 0.8
 - 原定独立成员复核**连续 9 次因上游 502/503、同账号并发上限失败**，用户要求继续后由 captain 按恢复手册接管。
 - **「独立」二字对 t89 不成立：该报告不是第三方 verdict。** 报告中的命令、hash、CI 结果真实，但结论主体是执行方。
 - **t91 已由独立成员完成一次真复核**：`docs/audit-review-independent-2026-10-26.md`，复核人 `verifier-flash`
-  （未参与本轮任何实现/修复），对 HEAD `5d22d8ad` 的字节绑定、CI、Q1 双分母、t79 数学不可达、11/23 证据边界
+  （未参与本轮任何实现/修复），对其当时的 HEAD `5d22d8ad` 的字节绑定、CI、Q1 双分母、t79 数学不可达、11/23 证据边界
   五项独立复现且与本文件一致。**但 verdict = `needs_revision`**：desktop 的「7 次 6 过 1 挂」写法被其独立复跑
   （1 跑 1 挂，`activation_attempts=55`）否定，要求按历史观测口径重写。
 - 因此**独立复核不再「完全缺位」，但也绝不等于通过**。该报告按约定**保留原样、不改写、不重开、不洗白**；
   本轮只按它的 F1/F2 修订本文件对应措辞，报告的 verdict 与 findings 原文不动。
 - 状态解除条件：需**替代独立验收**（独立成员或独立账号/路由）对本文件修订后的字节给出新 verdict。
-  拿到 `pass` 之前 **B3 不关闭**，不 bump 版本、不发 rc。
+  该条件已依次由 **t93**（F1/F2 文档收窄的限定 `pass`）、**t94**（当前字节 content-bound `pass`）与
+  **t98**（B3 closure 复核，`B3_CLOSED: true`）满足，**B3 已于 t98 关闭**，见 §5.6。
+  但 **B4/Q1 仍未达标**，因此**仍不 bump 版本、不发 rc**。
 
 ### 5.2 desktop 焦点：环境级失败，不得宣称 26/26（t88）
 
@@ -216,10 +238,43 @@ q1_target_rate = 0.8
 - **禁止表述为「23 条断言已逐条审计」**；正确表述：「23 条断言中 11 条有逐字可见证据，12 条未落盘，
   审计边界见 `docs/real-corpus-extract-2026-10-24.md` §6.5 与 §8」。
 
-### 5.5 历史 content-bound verdict 未重绑
+### 5.5 content-bound verdict 的绑定范围（t93 / t94）
 
 - 此前若干 verdict 绑定的是**旧字节**；对当前 `backend/server.py`、`backend/moyu_consistency.py` 等
   需要重新绑定。本文件**不**把旧 verdict 当作当前通过（依据 t89 §3.5）。
+- **t93**（`docs/verification-release-readiness-2026-10-26.md`）的 `pass` **只覆盖 t92 的 F1/F2 文档收窄**，
+  即「desktop 历史观测口径」与「旧产物 `generated_at` 口径」两处措辞；
+  **它不把 t91 的 `needs_revision` 改写成通过；它当时也不关闭 B3/B4（B3 后由 t98 关闭，见 §5.6）。**
+- **t94**（`docs/verification-current-release-2026-10-26.md`，124 行）对本文件当前字节
+  `81267784857e78b7732ef0e14ff05184bf69cf06` 做了独立 content-bound 验收：`verdict=pass`，
+  95/95 fixture、6/6 evaluation、7/7 py_compile、33/33 文档探针、11/11 前后字节对账通过。
+  **该 pass 只绑定 t94 当轮字节，不代表 Q1 达标、不代表发布放行；它当时也不关闭 B3/B4（B3 后由 t98 关闭，见 §5.6）。**
+  - 报告实测（t95）：`wc -l` = 124；sha256 = `4426769a9fd0413f07953d55cdc6cec3df90cb68758da4cbf9965cf6d418c31b`。
+    （该文件此前未被 git 跟踪，若后续被改写，以该报告的提交版本为准。）
+- 结论（t99 更新）：t93/t94 的 `pass` 本身不关闭 B3/B4；**B3 其后由 t98 关闭**（见 §5.6），
+  **B4（Q1 未达标）仍未关闭**。
+
+### 5.6 B3 关闭依据（t98 替代独立复核）
+
+- 报告：`docs/audit-review-b3-closure-2026-10-26.md`，复核人 `verifier-zz`
+  （未参与 t91/t92/t93/t94/t95/t97 的实现或原验收裁决）。
+  实测（t99）：**96 行**，sha256 `10879f52faa30fd48da63f93c2b31d01e1fa188d66e83b5582eda09b38c33a65`。
+- t98 裁决：**`B3_closable: yes`、`B3_CLOSED: true`**；关闭对象**仅为**「独立复核缺位／未通过」。
+- 关闭链（四段，缺一不可）：
+  1. **t91** 已独立完成字节绑定、CI、Q1 双分母、t79 数学不可达、11/23 边界五项复现；
+     其 `needs_revision` 的 findings **只有 F1/F2**（`docs/audit-review-independent-2026-10-26.md:141`、`:145-146`）。
+  2. **t92** 按 F1/F2 收窄本文件措辞；**t93** 对这两项给出独立、限定范围的 `pass`（只覆盖文档收窄）。
+  3. **t94** 对当轮当前字节 `8126778` 完成独立 content-bound 验收 `pass`；**t95** 把本文件 HEAD/CI 更新到当前并保留全部边界。
+  4. **t98** 复核上述证据链足以闭合「独立复核缺位／未通过」，给出 `B3_CLOSED: true`。
+- **边界（不得越过）**：
+  - t91 报告的 `verdict = needs_revision` **原样保留**；本文件不改写它，也**不得称「t91 通过」**。
+  - t98 的 `B3_CLOSED` **只用于关闭 B3，不是发布放行**；B4/Q1、t79 数学不可达、t88 环境级焦点竞态、
+    真实模型 11/23 证据边界**全部不变**。
+  - t98 §5.3 把 **T97-F1**（本文件原「工作树 clean」措辞）列为**未闭合 low**；本文件已按 §0 的「工作树口径」修正，
+    但不把该修正记作 B3 的关闭理由。
+  - t98 报告内引用本文件的行号，绑定的是 t98 复核时的 **296 行版本**（sha256 `52c7c078…`）；
+    本次 t99 修订后行号会位移，跨文档引用请以**章节号**为准。
+- 已关闭 B3 ≠ 已验收发布：**本轮仍不 bump、不打 tag、不发布**（B4 未达标）。
 
 ---
 
@@ -229,9 +284,9 @@ q1_target_rate = 0.8
 
 | # | 项 | 现状 | 归属 |
 | --- | --- | --- | --- |
-| B1 | 版本号决定：本轮不 bump | `package.json` 保持 **`0.1.3`**；不创建 `v0.1.4-rc.1` tag；B3/B4 未解，避免制造未验证 RC | release owner（2026-10-26 决定） |
-| B2 | 当前 HEAD CI | `bc4709e` run `40278484458` **success** | captain（2026-10-26 核对） |
-| B3 | 独立复核**未通过**（不是「缺位」，也未关闭） | t91 独立复核已出，verdict=`needs_revision`（其 F1/F2 已按本文件修订，待复核确认）；t89 仍为 captain 接管、独立性降级 | 需**替代独立验收**（独立成员或独立账号/路由） |
+| B1 | 版本号决定：本轮不 bump | `package.json` 保持 **`0.1.3`**；不创建 `v0.1.4-rc.1` tag；**B4 未解**（B3 已于 t98 关闭），避免制造未验证 RC | release owner（2026-10-26 决定） |
+| B2 | 当前 HEAD CI | **`8126778`** run **`40290743348`**：`completed` / `success` / headSha 与 HEAD 一致（t95 实测 `gh run view`） | captain + t95 核对（2026-10-26） |
+| B3 | 独立复核缺位／未通过 → **已由 t98 关闭** | `B3_CLOSED: true`（**只关闭 B3**）：t91 五项独立复现已存在、其 F1/F2 经 t92 修复并由 t93 限定 `pass`、t94 对当前字节 `pass`、t98 复核闭合（报告 96 行 / `10879f52…`）。**t91 原 `verdict=needs_revision` 原样保留，不改写、不称通过** | `verifier-zz`（t98，2026-10-26） |
 | B4 | Q1 未达标 | 7/9 = 77.8%，`q1_target_met=false` | 产品/基准 owner |
 
 ### 6.2 已知但不阻断（必须如实写进发布说明）
@@ -245,23 +300,40 @@ q1_target_rate = 0.8
 
 ## 7. 建议发布措辞（未来模板；本轮不发布）
 
-> **本轮决定（2026-10-26）：不发布 v0.1.4-rc.1、不 bump、不打 tag。** 以下措辞仅在 B3/B4 关闭后复用。
+> **本轮决定（2026-10-26）：不发布 v0.1.4-rc.1、不 bump、不打 tag。** B3 已由 t98 关闭，但以下措辞仍需在 **B4（Q1）**关闭后方可复用。
 >
 > 若未来发布，本版为 **v0.1.4-rc.1 候选版本，定位本地单用户技术预览**，不是生产可上线版本，不支持多租户与公网部署。
-> 被测提交 `d766492` 的 CI（run `40188967438`）34 步全绿；当前 HEAD `bc4709e` 的 CI（run `40278484458`）success。
+> 被测提交 `d766492` 的 CI（run `40188967438`）34 步全绿（历史基线）；当前 HEAD `8126778` 的 CI（run `40290743348`）`success`。
 > 基准方面：3000 字章一次通过率 **7/9 = 77.8%**（Q1 门槛 80%，**未达成**），4000 字 **4/6 = 66.7%**。
 > 已知限制：`sc-18` 受生成侧字数上限约束，本轮样本下 8/9 数学不可达；`sc-19` 属外部预算中断；
 > `sc-15` 存在越界但停止原因仍报 `target_reached` 的语义缺口（未修）；
 > desktop 冒烟在 macOS 上存在环境级窗口焦点竞态（某次会话 7 跑 6 过、另一次独立会话 1 跑 1 挂；未修，不宣称 26/26）。
 > 真实模型证据为 `repeat=1` 部分复跑，23 条断言中 11 条有逐字可见证据。
-> 本说明为草稿；独立复核（t91）已出但 verdict=`needs_revision`，须经替代独立验收确认后方可采用上述措辞。
+> 本说明为草稿；独立复核（t91）原 `verdict=needs_revision` 保留不改写，B3 已由 t98 替代独立复核关闭；
+> 采用上述措辞仍须先关闭 **B4（Q1 未达标）**。
 
 ---
 
 ## 8. 本文件的自证
 
-- t90 只新增本文件；captain 于 2026-10-26 更新 CI 与版本决策并提交推送；未改任何代码、未创建 tag、未读取或复述任何 API key、未记录任何评分。
+- t90 只新增本文件；未改任何代码、未创建 tag、未读取或复述任何 API key、未记录任何评分。
 - t92（repair-flash）按 t91 独立复核的 F1/F2 只修订本文件措辞（desktop 历史观测口径、产物 `generated_at` 口径、B3 状态）；
   **未改动 `docs/audit-review-independent-2026-10-26.md`**，其 verdict=`needs_revision` 与 findings 原文完整保留。
+- t95（repair-flash）按 t94 的 T94-F1 只修订本文件的 HEAD/CI 与 §2.1 证据链：
+  §0、§2、§2.1、§5.5、§6.1 B2/B3、§7 的当前 HEAD 统一为 `8126778`，CI 统一为 `40290743348`；
+  旧 `bc4709e` / `40278484458` / `10cff13` / `d766492` 只以**历史**口径出现，不再写成当前；
+  **未改动** `docs/audit-review-independent-2026-10-26.md`、`docs/verification-release-readiness-2026-10-26.md`、
+  `docs/verification-current-release-2026-10-26.md`、代码、测试与 `docs/CHANGELOG.md`。
+- 引用 t94 报告：`docs/verification-current-release-2026-10-26.md`（124 行，t95 实测 sha256
+  `4426769a9fd0413f07953d55cdc6cec3df90cb68758da4cbf9965cf6d418c31b`），其 `verdict=pass` **只绑定当前字节，
+  不关闭 B3/B4、不改写 t91 的 `needs_revision`**。
+- t99（repair-flash）按 t98 关闭 B3、按 T97-F1 修正工作树措辞，**只改本文件**：
+  §0 的「工作树口径」与硬阻塞计数、§0 维度表「独立复核」行与「版本号」行、§2 结论句、§5.1 状态解除条件、
+  §5.5 时态与结论、**新增 §5.6**、§6.1 B1/B3、§7 两处措辞；
+  当前 HEAD/CI 仍为 `8126778` / `40290743348`（未回退），B4/Q1 口径与版本 `0.1.3` 不变；
+  未改代码、测试、`docs/CHANGELOG.md` 与其他任何报告，未 commit/push，未读取或复述任何 key，未记录评分。
+- 引用 t98 报告：`docs/audit-review-b3-closure-2026-10-26.md`（96 行，t99 实测 sha256
+  `10879f52faa30fd48da63f93c2b31d01e1fa188d66e83b5582eda09b38c33a65`），其结论**只关闭 B3**，
+  不关闭 B4、不批准发布、不改写 t91。
 - 数字来源均已标注到文件/章节；未使用记忆值或转述值。
 - 行数与 sha256 以提交后的 `wc -l`、`shasum -a 256` 为准。
