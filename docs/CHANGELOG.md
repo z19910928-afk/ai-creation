@@ -1,5 +1,11 @@
 # 更新记录
 
+## 2026-10-27 · 真实模型复跑：链路可用，确定性未通过
+
+- 在应用数据库 `default-project` 写入 `zzniu` / `deepseek-v4.1-flash` 连接；`moyu_settings.probe_settings()` 返回 `success=true`、`returned_model=deepseek-v4.1-flash`、`finish_reason=stop`、`configuration_stale=false`。key 只存在 `~/.moyu/credentials`（0700），不打印、不提交。
+- 生产 CLI `benchmarks/real_corpus/extract.py --mode openai --limit 5 --repeat 2`：5 章 / 33 120 字 / 43 条断言 / 4 条 rejected（1 `empty_value`、3 `quote_mismatch`）/ 0 `provider_error`；默认每章 audit 3 条，43 条中 10 条逐字证据可见；`determinism.identical=false`，digest 前缀 `9c09f616…`。引擎 1041 行 / `6b5d4313…`，产物 291 行 / `ddc05a21…`。
+- 边界：真实请求链路已证明，但非确定性、未做语义/召回审计；2026-10-25 旧轮 23 条 / 11 条可见仍是历史证据，两轮不可合并。Q1 仍为 7/9=77.8%、`q1_target_met=false`；不关闭 B4、不发布。详见 `docs/verification-real-model-2026-10-27.md`。
+
 ## 2026-10-26 · 修复 sc-15 超冲停止原因：新增 `overshoot`
 
 - `backend/moyu_continuation.py` 新增第 6 个停止原因 `OVERSHOOT`：seed 与循环两处均在累计字数超过目标上限时返回 `overshoot`，不再报 `target_reached`；正文仍不裁剪，`within_tolerance=false` 不变。

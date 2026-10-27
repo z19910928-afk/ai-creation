@@ -8,6 +8,8 @@
 > 传输与确定性都在 fixture 里用注入 transport 覆盖了。2026-10-25 又用授权服务跑通
 > **5 章 / 33 120 字 / 23 条断言 / 5 条 empty_value / 0 条 provider_error**，但只有 11 条
 > 逐字证据可见、且是 `repeat=1`；因此**真实召回率/幻觉率仍未验收**，不能写成「真实模型已通过」。
+> 2026-10-27 另有本机 `zzniu`/`deepseek-v4.1-flash` 复跑，见
+> `docs/verification-real-model-2026-10-27.md`；本文旧数字保留为当时快照。
 > §6.3 与 §6.4 写清哪些是链路证据、哪些仍是缺口。
 
 ---
@@ -246,7 +248,8 @@ quote 闸门当语义保证。
 for f in tests/*_fixtures.py; do .venv/bin/python "$f" || exit 1; done
 ```
 
-真实模型抽取（外部复验未完成，本文数字均不来自这一条路径）：
+真实模型抽取（2026-10-25 旧轮记录；2026-10-27 本机复跑见
+`docs/verification-real-model-2026-10-27.md`；本文旧数字不来自这一条路径）：
 
 ```bash
 export MOYU_EXTRACT_BASE_URL=https://api.deepseek.com/v1
@@ -308,3 +311,7 @@ export MOYU_EXTRACT_API_KEY=...
    JSON 字面量；但「模型把甲的事写成乙」这类语义幻觉，本次虽已有授权服务部分复跑（5 章/23 条、
    2 章/17 条），仍只有 11 条证据可见且 `repeat=1`，不能把「链路跑通」当成召回率/幻觉率验收；
    全量语义质量仍需单独人工审和重复跑。
+10. **2026-10-27 本机复跑补充**：`zzniu` / `deepseek-v4.1-flash` 跑 5 章 / 33 120 字，43 条断言、
+   4 条 rejected（1 `empty_value`、3 `quote_mismatch`）、0 条 `provider_error`；默认每章 audit 3 条，
+   43 条中 10 条逐字证据可见。`repeat=2` 下 `identical=false`，因此仍**不能**写成真实模型质量或
+   确定性通过；详见 `docs/verification-real-model-2026-10-27.md`。

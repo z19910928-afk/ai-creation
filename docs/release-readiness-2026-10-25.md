@@ -1,7 +1,7 @@
 # v0.1.4-rc.1 发布就绪说明（草稿，2026-10-25）
 
 > **文档性质：发布草稿，不是发布公告，也不是验收 verdict。**
-> 本文只汇总「当前字节能证明什么」，不创建 tag、不 push、不改代码、不调用真实模型。
+> 本文只汇总「当前字节能证明什么」；不创建 tag、不改产品代码。真实模型仅在本机外部 CLI 复跑（见 §5.3），密钥不入仓、不复述。
 > 撰写者：repair-flash（t90）。所有数字都指向仓库内可复算的文件或章节，未使用记忆值。
 
 > **HEAD 口径（2026-10-26 sc-15 修订，必读）**：本文「代码/测试基线」指 `68578c9`（`fix: classify continuation overshoot explicitly`），不是 `git rev-parse HEAD`。本次发布说明若随 docs-only 提交更新，HEAD 会前进，但不改变该代码/测试基线；对应 GitHub Actions 以实际推送提交为准。
@@ -226,20 +226,30 @@ q1_target_rate = 0.8
 依据：`docs/browser-focus-triage-2026-10-25.md`（t88/t91 时的历史定性）、
 `docs/verification-desktop-smoke-focus-2026-10-26.md`（t102 独立验收，90 行）。
 
-### 5.3 真实模型证据只到「部分复跑」
+### 5.3 真实模型复跑：链路已通，确定性未过
 
-- 5 章 / 33 120 字、23 条断言、5 条 `empty_value`、0 `provider_error`；
-  2 章 / 12 463 字、17 条、14 条 rejected（6 empty / 8 quote_mismatch）。
-- 均为 **`repeat=1`**，**不能证明确定性，也不能外推召回率**。
-- 真实模型两轮的分母不同（28 vs 31 条断言位），**拒绝率不可合并**：5/28 = 17.9%（5 章）、14/31 = 45.2%（2 章）。
-- **产物时间戳口径（必读）**：`/private/tmp` 下这三份旧产物（`moyu-real-current-5.json`、`-180.json` 等）的
-  `generated_at` 仍是旧脚本的**硬编码值** `2026-10-24T00:00:00+08:00`，**不能当作生成时刻**；
-  引用时以文件 **mtime（10-25 16:50 / 16:52 / 16:56）与 sha256** 为准。当前
-  `benchmarks/real_corpus/extract.py:254` 已改用 `datetime.now()`，重跑产物不再有此问题。
-  该订正属**已披露问题**（`docs/audit-response-2026-10-25.md:19` A8、`docs/audit-review-team-2026-10-25.md:45`），
-  且**不改变**上面的 11/23 证据边界。
+- **2026-10-27 本机复跑（当前证据）**：`zzniu` / `deepseek-v4.1-flash`，`--mode openai --limit 5 --repeat 2`，
+  5 章 / 33 120 字 / 43 条断言 / 4 条 rejected（1 `empty_value`、3 `quote_mismatch`）/ **0 `provider_error`**；
+  默认 `--audit-limit=3`，43 条中 10 条逐字证据可见。`determinism.identical=false`、digest 前缀 `9c09f616…`；
+  产物 291 行 / `ddc05a21…`，引擎 1041 行 / `6b5d4313…`。完整记录：
+  `docs/verification-real-model-2026-10-27.md`。
+- **应用连接 probe**：`moyu_settings.probe_settings()` 返回 `success=true`、`returned_model=deepseek-v4.1-flash`、
+  `finish_reason=stop`、`configuration_stale=false`；key 只存在 `~/.moyu/credentials`（0700），不打印、不提交。
+- **2026-10-25 旧轮（历史）**：5 章 / 33 120 字、23 条断言、5 条 `empty_value`、0 `provider_error`；
+  2 章 / 12 463 字、17 条、14 条 rejected（6 empty / 8 quote_mismatch）；均为 `repeat=1`，
+  5 章 JSON 只有 11 条逐字证据可见。
+- **边界**：真实请求链路已证明，但两轮的分母、参数和模型输出不同，**拒绝率不可合并**；当前轮
+  `identical=false`，不能证明确定性，也不能外推召回率或语义质量。真实模型仍**不是**发布放行条件。
+- **产物时间戳口径（必读）**：`/private/tmp` 下旧产物（`moyu-real-current-5.json`、`-180.json` 等）的
+  `generated_at` 仍是旧脚本硬编码 `2026-10-24T00:00:00+08:00`，不能当作生成时刻；引用时以 mtime 与
+  sha256 为准。当前 `benchmarks/real_corpus/extract.py:254` 已改用 `datetime.now()`，新产物不再有此问题。
+  该订正属已披露问题（`docs/audit-response-2026-10-25.md:19` A8、`docs/audit-review-team-2026-10-25.md:45`），
+  不改变旧轮 11/23 的证据边界。
 
-### 5.4 23 条断言只有 11 条逐字可见
+### 5.4 2026-10-25 旧轮：23 条断言只有 11 条逐字可见
+
+> 本节只指 2026-10-25 旧轮；2026-10-27 轮为 43 条中 10 条可见，见 §5.3 与
+> `docs/verification-real-model-2026-10-27.md`。
 
 | 章 | 断言条数 | 可见 audit 条数 |
 | --- | --- | --- |
@@ -285,7 +295,7 @@ q1_target_rate = 0.8
 - **边界（不得越过）**：
   - t91 报告的 `verdict = needs_revision` **原样保留**；本文件不改写它，也**不得称「t91 通过」**。
   - t98 的 `B3_CLOSED` **只用于关闭 B3，不是发布放行**；B4/Q1、t79 数学不可达、t88 焦点竞态（当前状态见 §5.2）、
-    真实模型 11/23 证据边界**全部不变**。
+    真实模型 11/23 证据边界（2026-10-25 旧轮；2026-10-27 轮见 §5.3）**全部不变**。
   - t98 §5.3 把 **T97-F1**（本文件原「工作树 clean」措辞）列为**未闭合 low**；本文件已按 §0 的「工作树口径」修正，
     但不把该修正记作 B3 的关闭理由。
   - t98 报告内引用本文件的行号，绑定的是 t98 复核时的 **296 行版本**（sha256 `52c7c078…`）；
@@ -315,7 +325,7 @@ q1_target_rate = 0.8
   t101/t102 都只动测试辅助代码，**不是产品缺陷**；边界是同机 GUI + Automation 已授权，
   跨机器 / CI / 无 WindowServer 未证明，**仍不宣称 26/26**。
 - **sc-15 超冲**：`4661/4000`、`stop_reason=overshoot` 与 `within_tolerance=false`；显式失败已修，正文不裁剪，仍计入 4000 子集失败（4/6）。
-- **真实模型证据**：`repeat=1`、分母 28/31 不可合并、23 条中 11 条可见。
+- **真实模型证据**：2026-10-27 轮 `repeat=2`、5 章 / 33 120 字、43 条断言、4 条 rejected、0 `provider_error`、`identical=false`；2026-10-25 旧轮 `repeat=1`、23 条中 11 条可见、分母 28/31 不可合并。两轮不可合并，均不能当质量通过。
 
 ---
 
@@ -331,7 +341,8 @@ q1_target_rate = 0.8
 > desktop 冒烟在 macOS 上**曾有**窗口焦点竞态（某次会话 7 跑 6 过、另一次独立会话 1 跑 1 挂，`activation_attempts=55`；
 > 历史失败保留）；t101 已加强**测试辅助**激活路径、t102 独立复跑 2/2 与 10/10，
 > 但仅覆盖同机 GUI 会话 + Automation 已授权，**跨机器 / CI / 无 WindowServer 未证明，仍不宣称 26/26**。
-> 真实模型证据为 `repeat=1` 部分复跑，23 条断言中 11 条有逐字可见证据。
+> 真实模型证据：2026-10-27 本机复跑 5 章 / 33 120 字、43 条断言 / 4 条 rejected / 0 `provider_error`，
+> 但 `repeat=2` 下 `identical=false`；2026-10-25 旧轮 23 条中 11 条可见。两者均不构成质量、召回或确定性通过。
 > 本说明为草稿；独立复核（t91）原 `verdict=needs_revision` 保留不改写，B3 已由 t98 替代独立复核关闭；
 > 采用上述措辞仍须先关闭 **B4（Q1 未达标）**。
 
@@ -372,5 +383,8 @@ q1_target_rate = 0.8
 - t104（captain 接管，独立性降级）：修正文首 HEAD 口径与 §0/§2/§8 的自引用，明确「代码基线 `8126778`」与「本文 docs-only 提交 `605b895` / CI `40303229735`」；未改代码、测试、`docs/CHANGELOG.md` 或其他报告。
 - 本次 t104 自证修正：上一行原写“t104 未改其他报告”，不准确；t104 实际新增了 `docs/verification-desktop-focus-release-2026-10-26.md`，其最终行数与 hash 见该报告与 t104 完成记录（本文不内嵌其自引用 hash）；该新增只记录验收，不改代码/测试。
 - 本次 sc-15 文档收口（captain）：当前代码/测试基线改为 `68578c9` / CI `40319600547`（completed/success），更新 continuation 的 899 行/hash 与 sc-15 当前行号；`d766492..8126778` 仅保留为历史差异证据；t94/t95/t99/t103/t104 的 pass 与“当前”均按其验收窗口理解，不平移到当前字节。`docs/CHANGELOG.md` 同批修正预算 fake-provider 与真实模型的口径混淆及错误章节引用。本批为 docs-only，不内嵌尚未产生的本批提交号或 CI 号，不构成独立验收或发布放行。
+- 2026-10-27 真实模型复跑（captain，本机）：应用模型连接写入 `default-project`，`probe_settings()` 返回
+  `success=true`；生产 CLI 5 章 / 43 条断言 / 4 条 rejected / 0 `provider_error`，`repeat=2` 下
+  `identical=false`。新增 `docs/verification-real-model-2026-10-27.md`；本次只改文档，不关闭 B4、不发布。
 - 数字来源均已标注到文件/章节；未使用记忆值或转述值。
 - 行数与 sha256 以提交后的 `wc -l`、`shasum -a 256` 为准。
