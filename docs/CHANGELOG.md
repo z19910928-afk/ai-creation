@@ -4,7 +4,8 @@
 
 - `backend/moyu_continuation.py` 新增第 6 个停止原因 `OVERSHOOT`：seed 与循环两处均在累计字数超过目标上限时返回 `overshoot`，不再报 `target_reached`；正文仍不裁剪，`within_tolerance=false` 不变。
 - `tests/budgeted_continuation_fixtures.py` 56 个用例、HTTP 续写 23 个用例通过；预算基准 20/20、6 类停止原因全部出现，`sc-15` 记录为 `overshoot`。
-- `docs/release-readiness-2026-10-25.md` §4.2/§6.4/§7 改为已修口径；Q1 结论不变（真实模型 7/9=77.8%、合成基线 6/9，均未达 80%）。
+- `docs/release-readiness-2026-10-25.md` §4.2/§6.2/§7 已记录修复与未闭合边界；预算 fake-provider 的 3000 字结果为 7/9=77.8%（v1.0 为 6/9=66.7%），`q1_target_met=false`，未达 80%。这不是对真实模型的续写质量验收。
+
 ## 2026-10-26 · 发布决定：保持 0.1.3，不打 v0.1.4-rc.1 tag
 
 决策时 HEAD `bc4709e` 的 CI（run `40278484458`）已 success。因 B3 独立复核缺位（t89 为 captain 接管、独立性降级）与 B4 Q1 3000 字 **7/9 = 77.8% < 80%** 未解，本轮**不 bump、不打 tag、不发布**；发布边界与未来措辞见 `docs/release-readiness-2026-10-25.md` §6、§7。未改产品代码。

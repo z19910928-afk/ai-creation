@@ -4,7 +4,7 @@
 > 本文只汇总「当前字节能证明什么」，不创建 tag、不 push、不改代码、不调用真实模型。
 > 撰写者：repair-flash（t90）。所有数字都指向仓库内可复算的文件或章节，未使用记忆值。
 
-> **HEAD 口径（2026-10-26 修正，必读）**：本文所有「当前 HEAD `8126778`」均指**最后一次改变产品/测试字节的代码基线**，不是 `git rev-parse HEAD`。本文件由 docs-only 提交 `605b895` 推送（CI `40303229735` success），代码/测试字节与 `8126778` 相同；后续 docs-only 提交仍会让 `git rev-parse HEAD` 前进，因此字节基线固定为 `8126778`，不再追写每个文档提交的 HEAD。
+> **HEAD 口径（2026-10-26 sc-15 修订，必读）**：本文「代码/测试基线」指 `68578c9`（`fix: classify continuation overshoot explicitly`），不是 `git rev-parse HEAD`。本次发布说明若随 docs-only 提交更新，HEAD 会前进，但不改变该代码/测试基线；对应 GitHub Actions 以实际推送提交为准。
 
 ---
 
@@ -16,20 +16,14 @@
 不是功能完备性。两项硬阻塞仍然开着（B4/Q1 未达标、t79 数学不可达）；
 B3（独立复核缺位／未通过）**已由 t98 替代独立复核关闭**，但 t91 报告的 `verdict=needs_revision` 原样保留，见 §5.1、§5.6。
 
-> **工作树口径（T97-F1 修正，必读）**：此前这里写「工作树 clean」，不准确。准确口径是：
-> `clean` 只对 **t94 / t97 各自的验收窗口**成立（对代码基线 `8126778` 的 11/11 前后字节对账一致、三文件 hash/行数前后一致）；
-> **当前工作树并不 clean**——仍有未提交的验证文档（`docs/verification-current-release-2026-10-26.md`、
-> `docs/verification-release-readiness-current-t97-2026-10-26.md`、`docs/audit-review-b3-closure-2026-10-26.md`）
-> 以及本次对本文档的修订；另有 **t101 在 HEAD 之后修改的 `tests/desktop_smoke.cjs`（只动测试辅助激活路径与诊断）**。
-> 这些**都不属于被测字节**，CI `40290743348` / `40303229735` 也不绑定它们。
-> 因此**不得把「CI success」或「验收窗口 clean」扩张成「当前工作树 clean」**。
+> **工作树口径（sc-15 修订）**：t94 / t97 的 `clean` 只对各自验收窗口成立；sc-15 的代码、测试、预算产物与文档已随代码基线 `68578c9` 提交并推送。若本说明随后发生 docs-only 修订，应单独核对，不把历史验收窗口的 clean 当成当前工作树状态。CI success 也不等于全量发布放行；B4/Q1 等硬阻塞仍按 §3、§5 执行。
 
 | 维度 | 结论 | 依据 |
 | --- | --- | --- |
 | 交付范围 | **本地单用户技术预览** | §1 |
 | 生产可上线 | **否** | §1、§5 |
 | 多租户 / 公网 | **不支持** | §1 |
-| CI（**代码基线 `8126778`**；本文 docs-only 提交 `605b895`） | 代码基线 run **`40290743348`**、docs-only run **`40303229735`**：均 `completed`/`success`，headSha 与各自 commit 一致 | §2 |
+| CI（代码/测试基线 `68578c9`） | run `40319600547`：`completed` / `success`，headSha 与提交一致 | §2 |
 | CI（历史基线 `d766492`） | run `40188967438`，34 步全绿（**历史**字节，非当前） | §2 |
 | Q1 3000 字 | **7/9 = 77.8%，未达标** | §3 |
 | Q1 4000 字 | 4/6 = 66.7% | §3 |
@@ -64,16 +58,17 @@ B3（独立复核缺位／未通过）**已由 t98 替代独立复核关闭**，
 
 | 字节 | CI run | 结果 | 定位 |
 | --- | --- | --- | --- |
-| **`605b895`**（**本文 docs-only 提交**，`docs: record release decision to hold 0.1.3`） | **`40303229735`** | `status=completed`、`conclusion=success`、headSha 与 commit 一致 | **当前文档提交**；代码字节与 `8126778` 相同 |
-| **`8126778`**（**代码基线**，`docs: record release-readiness verification and t91 findings`） | **`40290743348`** | `status=completed`、`conclusion=success`、**headSha 与 commit 逐字符一致** | **代码基线**；t95 用 `gh run view` 实测复核 |
+| **`68578c9`**（**sc-15 代码/测试基线**，`fix: classify continuation overshoot explicitly`） | **`40319600547`** | `status=completed`、`conclusion=success`、headSha 与 commit 一致 | **当前代码/测试基线**；CI 终态已用 `gh run view` 实测 |
+| `605b895`（历史 docs-only 提交） | `40303229735` | `status=completed`、`conclusion=success`、headSha 与 commit 一致 | 历史文档证据；代码字节与 `8126778` 相同 |
+| `8126778`（历史代码基线） | `40290743348` | `status=completed`、`conclusion=success`、headSha 与 commit 一致 | 历史代码基线；t95 实测 |
 | `5d22d8a`（历史） | `40281317350` | `conclusion=success`，headSha 与 commit 一致 | 历史（t91 独立复核的字节） |
 | `bc4709e`（历史） | `40278484458` | `conclusion=success` | 历史 |
 | `10cff13`（历史） | `40193598447` | `conclusion=success` | 历史（此前曾写作「等待中」，现已有结果，按历史记录保留） |
 | `d766492`（历史，审计报告基线字节） | `40188967438` | `conclusion=success`、**34 步全绿** | 历史（来自 `docs/audit-review-current-2026-10-25.md` §1） |
 
-> 上表前两行分别是「本文 docs-only 提交」与「代码基线」；其余为历史记录，**不得当作当前状态引用**。代码基线固定为 `8126778` / `40290743348`；本文提交为 `605b895` / `40303229735`。
+> 当前代码/测试基线固定为 `68578c9` / `40319600547`；本次文档修订与 `docs/CHANGELOG.md` 同批提交，不内嵌尚未产生的文档提交号或 CI 号。`605b895` / `40303229735`、`8126778` / `40290743348` 均为历史记录，**不得当作当前状态引用**。
 
-`d766492..8126778`（代码基线）的完整差异（`git diff --stat d766492..8126778`，t95 实测）：
+以下是 `d766492..8126778` 的**历史差异证据**（`git diff --stat d766492..8126778`，t95 实测），不是当前 `68578c9` 的完整差异：
 
 ```text
  docs/CHANGELOG.md                                 |   4 +
@@ -84,27 +79,24 @@ B3（独立复核缺位／未通过）**已由 t98 替代独立复核关闭**，
  5 files changed, 655 insertions(+)
 ```
 
-即**只新增/改动 docs 文件**；`git diff --stat d766492..8126778 -- backend/ tests/ frontend/ benchmarks/` **输出为空**（t95 实测），
-说明产品代码、测试、前端与 benchmark 自 `d766492` 到代码基线 `8126778` **零改动**。
-配合 §2.1 的 hash 对照，足以说明「`d766492` 上验过的产品/测试字节，就是代码基线 `8126778` 的字节」。
-这是**HEAD 提交历史的口径**；工作树另有 **t101** 对 `tests/desktop_smoke.cjs` 的未提交测试改动
-（`+32/−6`，只动测试辅助激活路径与诊断），**不属于 HEAD 字节**，见 §0「工作树口径」与 §2.1 的例外说明。
-但这**不等于**把所有旧 verdict 平移到当前：绑定当前字节的独立验收由 t94 完成（见 §5.5），
-t94 当轮**未关闭** B3/B4；B3 其后由 t98 关闭（见 §5.6），B4 仍未关闭。
+这段历史区间只新增/改动 docs 文件；`git diff --stat d766492..8126778 -- backend/ tests/ frontend/ benchmarks/` 当时输出为空（t95 实测）。
+因此它只能证明 `d766492` 与历史基线 `8126778` 的产品/测试字节相同，**不能覆盖后续 t101 或 sc-15 改动**。
+t101 对 `tests/desktop_smoke.cjs` 的测试辅助修改已随 `1bb9151` 提交；sc-15 的引擎、测试、基准产物与文档已随 `68578c9` 提交。
+当前字节以 §2.1 的实测 hash 为准；历史 verdict 不因这段差异证据而平移。
+t94 当轮**未关闭** B3/B4；B3 其后仅由 t98 关闭（见 §5.6），B4 仍未关闭。
 
-### 2.1 关键文件 sha256 与行数（**代码基线 `8126778`** 实测，t95 复核；`tests/desktop_smoke.cjs` 为 t101 后字节）
+### 2.1 关键文件 sha256 与行数（**代码基线 `68578c9`** 实测；历史 t95 复核记录另见 §8）
 
 ```text
 backend/server.py                 f74c885f3a058c2b82b19907705dc48b2971403e20d71373a9acd78c2403b263   8198 行
 backend/moyu_consistency.py       b855e9106e1d2b8a144231310bb860752c07cbab1b933c272cba4e5ded463cd2   1222 行
-backend/moyu_continuation.py      583059fe2fe989a9c3f3113fe064f3f1aef4d3bf876fc1412e3de3021b1a87a9    896 行
+backend/moyu_continuation.py      4486b78398b6c826946083df08c8b888575ae8c3bfb1ca3a1219b4aaca71a874    899 行
 backend/moyu_extract.py           6b5d431364057b5a11441b882429993a40036e76e8082f43868baa836126cff8   1041 行
 tests/desktop_smoke.cjs           b409533e73bddf8e66195ac73dc3e942be5b99db6657b5bbb5a31999a356e22d    810 行（t101 后）
 ```
 
-以上 5 个 sha256 在**当前磁盘**实测；其中 4 个 `backend/*.py` 与 `docs/audit-review-current-2026-10-25.md` §1
-（该报告在 `d766492` 上出具）以及 t94 报告 §一 均逐字一致，其行数为 t95 用 `wc -l` 实测。
-因此「**产品代码**自 `d766492` 到代码基线 `8126778` 未改」可复算，不存在旧 hash 贴到新字节的问题。
+以上 5 个 sha256 在**当前磁盘**实测，行数用 `wc -l` 实测；其中 `backend/moyu_continuation.py` 已包含 sc-15 修复，不能沿用旧 `8126778` 的 896 行/hash。
+其余 `backend/*.py` 与历史审计报告的对照只用于追踪未变文件，**不把历史 verdict 平移到当前字节**。
 
 `tests/desktop_smoke.cjs` 是这项对照的**例外**，必须单独说明：
 该文件在代码基线 `8126778` 之后被 **t101** 修改（单文件 `+32/−6`，只动测试辅助的原生激活路径与诊断输出，
@@ -143,7 +135,7 @@ q1_target_rate = 0.8
 
 ---
 
-## 4. 两个真实失败项的归属（都不是「已修」）
+## 4. sc-18 未达与 sc-15 超冲语义边界
 
 ### 4.1 sc-18 停滞：数学不可达，不再重跑（t79）
 
@@ -164,7 +156,7 @@ q1_target_rate = 0.8
 > 24 是附录 A 的**非计入敏感性变体**，不是计入基线的配置。两种轮数下 `24 × 30 = 720 < 2700` 同样不达标，
 > 结论不受影响；引用时请以**基线 12 轮**为准，不要把 24 当成当前配置。
 
-### 4.2 sc-15 超冲：已新增 `overshoot` 显式停止
+### 4.2 sc-15 超冲：语义已修，场景仍失败
 
 | 字段 | 值 |
 | --- | --- |
@@ -175,9 +167,9 @@ q1_target_rate = 0.8
 | `overshoot` | **261 字**（`characters - upper`） |
 
 引擎现在在 `total_characters >= lower` 后先比较上限：超过 `upper` 返回 `OVERSHOOT`，否则 `TARGET_REACHED`
-（seed 侧 `backend/moyu_continuation.py:736-737`、循环侧 `:796-797`；常量 `:67`、`STOP_REASONS` `:69`）。
+（seed 侧 `backend/moyu_continuation.py:737-739`、循环侧 `:797-799`；常量 `:67`、`STOP_REASONS` `:69`）。
 正文仍不裁剪，`within_tolerance` 仍为 `false`；`sc-15` 仍计入 4000 字子集失败（4/6）。
-旧 `target_reached` 只判下限（`:874`）、`within_tolerance` 才判带宽（`:875`）的口径保留在 v1.2 文档。
+当前 `target_reached` 仍只判下限（`:875`），`within_tolerance` 才判带宽（`:876`）；因此 `target_reached=true` 不等于带内达标，旧报告的 `target_reached` 停止原因仅作历史记录。
 
 依据：`docs/consistency-budget-v1.2-2026-10-23.md` §6.1.1（历史口径）；当前字节以 `benchmarks/budgeted/results/budgeted-baseline.json` 为准。
 
@@ -197,8 +189,8 @@ q1_target_rate = 0.8
 - 因此**独立复核不再「完全缺位」，但也绝不等于通过**。该报告按约定**保留原样、不改写、不重开、不洗白**；
   本轮只按它的 F1/F2 修订本文件对应措辞，报告的 verdict 与 findings 原文不动。
 - 状态解除条件：需**替代独立验收**（独立成员或独立账号/路由）对本文件修订后的字节给出新 verdict。
-  该条件已依次由 **t93**（F1/F2 文档收窄的限定 `pass`）、**t94**（当前字节 content-bound `pass`）与
-  **t98**（B3 closure 复核，`B3_CLOSED: true`）满足，**B3 已于 t98 关闭**，见 §5.6。
+  该条件已依次由 **t93**（F1/F2 文档收窄的限定 `pass`）、**t94**（当轮字节 content-bound `pass`）与
+  **t98**（B3 closure 复核，`B3_CLOSED: true`）满足，**B3 已于 t98 关闭**，见 §5.6；这些 verdict 均不覆盖 sc-15 后的当前文档字节。
   但 **B4/Q1 仍未达标**，因此**仍不 bump 版本、不发 rc**。
 
 ### 5.2 desktop 焦点竞态：t101 修测试辅助激活路径（t88 历史失败保留）
@@ -269,7 +261,7 @@ q1_target_rate = 0.8
 - **t93**（`docs/verification-release-readiness-2026-10-26.md`）的 `pass` **只覆盖 t92 的 F1/F2 文档收窄**，
   即「desktop 历史观测口径」与「旧产物 `generated_at` 口径」两处措辞；
   **它不把 t91 的 `needs_revision` 改写成通过；它当时也不关闭 B3/B4（B3 后由 t98 关闭，见 §5.6）。**
-- **t94**（`docs/verification-current-release-2026-10-26.md`，124 行）对本文件当前字节
+- **t94**（`docs/verification-current-release-2026-10-26.md`，124 行）对当轮本文件字节
   `81267784857e78b7732ef0e14ff05184bf69cf06` 做了独立 content-bound 验收：`verdict=pass`，
   95/95 fixture、6/6 evaluation、7/7 py_compile、33/33 文档探针、11/11 前后字节对账通过。
   **该 pass 只绑定 t94 当轮字节，不代表 Q1 达标、不代表发布放行；它当时也不关闭 B3/B4（B3 后由 t98 关闭，见 §5.6）。**
@@ -288,7 +280,7 @@ q1_target_rate = 0.8
   1. **t91** 已独立完成字节绑定、CI、Q1 双分母、t79 数学不可达、11/23 边界五项复现；
      其 `needs_revision` 的 findings **只有 F1/F2**（`docs/audit-review-independent-2026-10-26.md:141`、`:145-146`）。
   2. **t92** 按 F1/F2 收窄本文件措辞；**t93** 对这两项给出独立、限定范围的 `pass`（只覆盖文档收窄）。
-  3. **t94** 对当轮代码基线 `8126778` 完成独立 content-bound 验收 `pass`；**t95** 把本文件 HEAD/CI 更新到当前并保留全部边界。
+  3. **t94** 对当轮代码基线 `8126778` 完成独立 content-bound 验收 `pass`；**t95** 当时更新 HEAD/CI 并保留全部边界，均属历史记录。
   4. **t98** 复核上述证据链足以闭合「独立复核缺位／未通过」，给出 `B3_CLOSED: true`。
 - **边界（不得越过）**：
   - t91 报告的 `verdict = needs_revision` **原样保留**；本文件不改写它，也**不得称「t91 通过」**。
@@ -309,8 +301,8 @@ q1_target_rate = 0.8
 | # | 项 | 现状 | 归属 |
 | --- | --- | --- | --- |
 | B1 | 版本号决定：本轮不 bump | `package.json` 保持 **`0.1.3`**；不创建 `v0.1.4-rc.1` tag；**B4 未解**（B3 已于 t98 关闭），避免制造未验证 RC | release owner（2026-10-26 决定） |
-| B2 | 代码基线 CI | **`8126778`** run **`40290743348`** + 本文 docs-only **`605b895`** run **`40303229735`**：均 `completed`/`success`，headSha 与各自 commit 一致 | captain + t95/t104 核对（2026-10-26） |
-| B3 | 独立复核缺位／未通过 → **已由 t98 关闭** | `B3_CLOSED: true`（**只关闭 B3**）：t91 五项独立复现已存在、其 F1/F2 经 t92 修复并由 t93 限定 `pass`、t94 对当前字节 `pass`、t98 复核闭合（报告 96 行 / `10879f52…`）。**t91 原 `verdict=needs_revision` 原样保留，不改写、不称通过** | `verifier-zz`（t98，2026-10-26） |
+| B2 | 代码基线 CI | **`68578c9`** run **`40319600547`**：`completed`/`success`，headSha 与 commit 一致；本次 docs-only 提交与 CI 单独核对，不预写未产生的结果 | captain 核对（2026-10-26） |
+| B3 | 独立复核缺位／未通过 → **已由 t98 关闭** | `B3_CLOSED: true`（**只关闭 B3**）：t91 五项独立复现已存在、其 F1/F2 经 t92 修复并由 t93 限定 `pass`、t94 对当轮字节 `pass`、t98 复核闭合（报告 96 行 / `10879f52…`）。**t91 原 `verdict=needs_revision` 原样保留，不改写、不称通过** | `verifier-zz`（t98，2026-10-26） |
 | B4 | Q1 未达标 | 7/9 = 77.8%，`q1_target_met=false` | 产品/基准 owner |
 
 ### 6.2 已知但不阻断（必须如实写进发布说明）
@@ -332,7 +324,7 @@ q1_target_rate = 0.8
 > **本轮决定（2026-10-26）：不发布 v0.1.4-rc.1、不 bump、不打 tag。** B3 已由 t98 关闭，但以下措辞仍需在 **B4（Q1）**关闭后方可复用。
 >
 > 若未来发布，本版为 **v0.1.4-rc.1 候选版本，定位本地单用户技术预览**，不是生产可上线版本，不支持多租户与公网部署。
-> 被测提交 `d766492` 的 CI（run `40188967438`）34 步全绿（历史基线）；代码基线 `8126778` 的 CI（run `40290743348`）与本文 docs-only `605b895` 的 CI（run `40303229735`）均 `success`。
+> 当前代码/测试基线 `68578c9` 的 CI（run `40319600547`）已 `completed`/`success`；`d766492`、`8126778`、`605b895` 及其 run 均为历史证据。本文 docs-only 提交后的 CI 另核，不把代码 CI 绿扩张成全量发布放行。
 > 基准方面：3000 字章一次通过率 **7/9 = 77.8%**（Q1 门槛 80%，**未达成**），4000 字 **4/6 = 66.7%**。
 > 已知限制：`sc-18` 受生成侧字数上限约束，本轮样本下 8/9 数学不可达；`sc-19` 属外部预算中断；
 > `sc-15` 的越界已显式标记为 `overshoot`（不再报 `target_reached`），正文不裁剪，仍计入失败；
@@ -356,7 +348,7 @@ q1_target_rate = 0.8
   **未改动** `docs/audit-review-independent-2026-10-26.md`、`docs/verification-release-readiness-2026-10-26.md`、
   `docs/verification-current-release-2026-10-26.md`、代码、测试与 `docs/CHANGELOG.md`。
 - 引用 t94 报告：`docs/verification-current-release-2026-10-26.md`（124 行，t95 实测 sha256
-  `4426769a9fd0413f07953d55cdc6cec3df90cb68758da4cbf9965cf6d418c31b`），其 `verdict=pass` **只绑定当前字节，
+  `4426769a9fd0413f07953d55cdc6cec3df90cb68758da4cbf9965cf6d418c31b`），其 `verdict=pass` **只绑定 t94 当轮字节，
   不关闭 B3/B4、不改写 t91 的 `needs_revision`**。
 - t99（repair-flash）按 t98 关闭 B3、按 T97-F1 修正工作树措辞，**只改本文件**：
   §0 的「工作树口径」与硬阻塞计数、§0 维度表「独立复核」行与「版本号」行、§2 结论句、§5.1 状态解除条件、
@@ -379,5 +371,6 @@ q1_target_rate = 0.8
   不关闭 B4/Q1、不构成发布放行。
 - t104（captain 接管，独立性降级）：修正文首 HEAD 口径与 §0/§2/§8 的自引用，明确「代码基线 `8126778`」与「本文 docs-only 提交 `605b895` / CI `40303229735`」；未改代码、测试、`docs/CHANGELOG.md` 或其他报告。
 - 本次 t104 自证修正：上一行原写“t104 未改其他报告”，不准确；t104 实际新增了 `docs/verification-desktop-focus-release-2026-10-26.md`，其最终行数与 hash 见该报告与 t104 完成记录（本文不内嵌其自引用 hash）；该新增只记录验收，不改代码/测试。
+- 本次 sc-15 文档收口（captain）：当前代码/测试基线改为 `68578c9` / CI `40319600547`（completed/success），更新 continuation 的 899 行/hash 与 sc-15 当前行号；`d766492..8126778` 仅保留为历史差异证据；t94/t95/t99/t103/t104 的 pass 与“当前”均按其验收窗口理解，不平移到当前字节。`docs/CHANGELOG.md` 同批修正预算 fake-provider 与真实模型的口径混淆及错误章节引用。本批为 docs-only，不内嵌尚未产生的本批提交号或 CI 号，不构成独立验收或发布放行。
 - 数字来源均已标注到文件/章节；未使用记忆值或转述值。
 - 行数与 sha256 以提交后的 `wc -l`、`shasum -a 256` 为准。
