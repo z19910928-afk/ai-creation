@@ -1,11 +1,12 @@
 # 更新记录
 
-## 2026-10-28 · 真实模型 3000 字续写探针：`ratio=1.0` 带内，默认/1.35 超冲
+## 2026-10-28 · 真实模型 3000 字续写探针：`ratio=1.0` 重复 3 次仅 2/3 带内
 
-- 本机生产 HTTP 探针（复制应用库到临时库、重建临时凭据引用）：`zzniu` / `deepseek-v4.1-flash`，目标 3000、目标区间 `[2700,3300]`，三臂各跑 1 次。
+- 本机生产 HTTP 探针（复制应用库到临时库、重建临时凭据引用）：`zzniu` / `deepseek-v4.1-flash`，目标 3000、目标区间 `[2700,3300]`；三臂（默认 / `1.35` / `1.0`）各跑 1 次，`1.0` 另重复 3 次。
 - 默认 `round_target_ratio=None`：3635 字 / `overshoot` / `within_tolerance=false` / 3 轮；`1.35`：3571 字 / `overshoot` / `false` / 2 轮；`1.0`：3176 字 / `target_reached` / `true` / 2 轮。
-- 三个 job 均 `success`、`completion_state=complete`、`output_validation.protocol_complete=true`、`semantic_verified=false`；不构成语义/文风/事实质量通过。默认值未改，既有行为与预算用例不变。
-- 这是单次探针，不是 Q1 fake-provider 的 7/9=77.8%<80%，不关闭 B4、不发布。详见 `docs/verification-real-continuation-2026-10-28.md` 与 `docs/release-readiness-2026-10-25.md` §5.3.1。
+- `1.0` 重复 3 次：2856 / 3134 / 3714 字，`target_reached` / `target_reached` / `overshoot`，`within_tolerance` = `true` / `true` / `false`；**2/3 = 66.7% 带内**。
+- 所有 job 均 `success`、`completion_state=complete`、`output_validation.protocol_complete=true`、`semantic_verified=false`；不构成语义/文风/事实质量通过。默认值未改，既有行为与预算用例不变。
+- 这是小样本探针，不是 Q1 fake-provider 的 7/9=77.8%<80%，不关闭 B4、不发布，也不能把 `1.0` 写成稳定口径。详见 `docs/verification-real-continuation-2026-10-28.md` 与 `docs/release-readiness-2026-10-25.md` §5.3.1。
 
 ## 2026-10-27 · 真实模型复跑：链路可用，确定性未通过
 

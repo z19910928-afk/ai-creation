@@ -64,6 +64,22 @@
 
 ## 5. 结论
 
-- 真实模型 3000 字链路已验证可用，且 `ratio=1.0` 在本次运行中带内到达。
+- 真实模型 3000 字链路已验证可用；单次 `ratio=1.0` 带内到达，但重复运行并不能稳定复现（见 §6）。
 - sc-15 的 `overshoot` 显式标记在真实模型上也被触发，说明停止原因语义与真实超冲一致。
 - Q1 保持未达标；本轮不发布、不 bump、不把真实模型单次探针写成发布放行。
+
+## 6. `ratio=1.0` 重复 3 次：2/3 带内
+
+2026-10-28 21:19–21:21，在同一临时库、同一 `default-project`、同一模型与同一目标区间下，用同一生产 HTTP 探针重复 `round_target_ratio=1.0` 三次：
+
+| 次 | job id | 字数 | `stop_reason` | `within_tolerance` | 轮数 | 12-gram 重复率 | tokens | 耗时 |
+| --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | `aijob_cc79e1530a62412f8fa6329038ca7c2f` | 2856 | `target_reached` | `true` | 2 | 0.004218 | 12,704 | 44.3 s |
+| 2 | `aijob_c422455f2a2e418a836273bceef1c612` | 3134 | `target_reached` | `true` | 2 | 0.000640 | 12,679 | 38.3 s |
+| 3 | `aijob_7963cfb9bcb74177a4ef4d5c2d7e0eec` | 3714 | `overshoot` | `false` | 2 | 0.000270 | 13,522 | 32.3 s |
+
+三个 job 均 `status=success`、`model=returned_model=deepseek-v4.1-flash`、`completion_state=complete`、`protocol_complete=true`、`issues=[]`、`semantic_verified=false`、`safe_to_apply=true`。
+
+- 带内：**2/3 = 66.7%**；第 3 次 3714 字超出上界 414 字，`overshoot` 如实标记，未裁剪正文。
+- 因此 `ratio=1.0` 只能证明“本次/本模型链路可选口径有时能带内”，不能写成稳定通过率，更不能据此改默认值。
+- 样本只有 3 次，不能外推为统计分布；重复结果进一步说明 3000 字目标仍受真实模型波动影响。
