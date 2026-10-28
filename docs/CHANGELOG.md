@@ -1,12 +1,14 @@
 # 更新记录
 
-## 2026-10-28 · 真实模型 3000 字续写探针：`ratio=1.0` 重复 3 次仅 2/3 带内
+## 2026-10-28 · 真实模型 3000 字续写探针：`1.0`/`2.0` 均 2/3，无 3/3 稳定口径
 
 - 本机生产 HTTP 探针（复制应用库到临时库、重建临时凭据引用）：`zzniu` / `deepseek-v4.1-flash`，目标 3000、目标区间 `[2700,3300]`；三臂（默认 / `1.35` / `1.0`）各跑 1 次，`1.0` 另重复 3 次。
 - 默认 `round_target_ratio=None`：3635 字 / `overshoot` / `within_tolerance=false` / 3 轮；`1.35`：3571 字 / `overshoot` / `false` / 2 轮；`1.0`：3176 字 / `target_reached` / `true` / 2 轮。
 - `1.0` 重复 3 次：2856 / 3134 / 3714 字，`target_reached` / `target_reached` / `overshoot`，`within_tolerance` = `true` / `true` / `false`；**2/3 = 66.7% 带内**。
-- 所有 job 均 `success`、`completion_state=complete`、`output_validation.protocol_complete=true`、`semantic_verified=false`；不构成语义/文风/事实质量通过。默认值未改，既有行为与预算用例不变。
-- 这是小样本探针，不是 Q1 fake-provider 的 7/9=77.8%<80%，不关闭 B4、不发布，也不能把 `1.0` 写成稳定口径。详见 `docs/verification-real-continuation-2026-10-28.md` 与 `docs/release-readiness-2026-10-25.md` §5.3.1。
+- `0.9` 三次均被 HTTP 400 拒绝：`每轮额度系数必须在 1 到 10 之间。`；`1.0` 是下限，没有 `0.9` job 或字数结果。
+- `2.0` 三次：2721 / 907（job `failed`，提供方中途报错，`usage=null`）/ 2778 字；两次成功 job 均 `target_reached`、`within_tolerance=true`。**按全部尝试 2/3 成功且带内**，不能只报成功 job 的 2/2。
+- `1.0` 组三个 job 均 `success`、`completion_state=complete`、`output_validation.protocol_complete=true`、`semantic_verified=false`；`2.0` 的第 2 次明确 `failed`。两者都不构成语义/文风/事实质量通过。默认值未改，既有行为与预算用例不变。
+- 这是小样本探针，不是 Q1 fake-provider 的 7/9=77.8%<80%，不关闭 B4、不发布；`1.0` 与 `2.0` 都没有 3/3 稳定口径，不能写成稳定默认。详见 `docs/verification-real-continuation-2026-10-28.md` 与 `docs/release-readiness-2026-10-25.md` §5.3.1。
 
 ## 2026-10-27 · 真实模型复跑：链路可用，确定性未通过
 
