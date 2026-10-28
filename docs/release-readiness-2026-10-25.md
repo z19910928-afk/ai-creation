@@ -246,6 +246,26 @@ q1_target_rate = 0.8
   该订正属已披露问题（`docs/audit-response-2026-10-25.md:19` A8、`docs/audit-review-team-2026-10-25.md:45`），
   不改变旧轮 11/23 的证据边界。
 
+### 5.3.1 真实模型 3000 字续写探针（2026-10-28）
+
+- **范围**：本机一次性生产 HTTP 探针，不是 Q1 fake-provider 基准，不是发布放行，也不证明语义/文风/事实质量。
+  完整记录：`docs/verification-real-continuation-2026-10-28.md`。
+- **方法**：复制应用数据库到临时库并重建临时凭据引用，启动生产服务，`GET /api/ai/status` 为 `mode=provider`；
+  目标 `3000`、`max_rounds=6`、`min_round_gain=50`、`max_stall_retries=1`、`hard_max_rounds=12`，目标区间 `[2700,3300]`。
+- **结果**（三个臂各 1 次，job 均 `success`、`model=deepseek-v4.1-flash`、`completion_state=complete`）：
+
+| 臂 | `round_target_ratio` | 字数 | `stop_reason` | `within_tolerance` | 轮数 |
+| --- | --- | ---: | --- | --- | ---: |
+| 默认 | `null` | 3635 | `overshoot` | `false` | 3 |
+| 旧对照 | `1.35` | 3571 | `overshoot` | `false` | 2 |
+| 收紧 | `1.0` | 3176 | `target_reached` | `true` | 2 |
+
+- **结论**：真实模型在本链路能完成 3000 字；本次单次运行中 `ratio=1.0` 带内到达，默认与 `1.35` 均超上界。
+  `semantic_verified=false`，不能把机械协议通过写成语义质量通过。
+- **边界**：`round_target_ratio` 默认仍为 `None`，既有行为与预算契约不变（本轮未重跑预算套件）；本探针不改变 Q1
+  `7/9=77.8%<80%`、`q1_target_met=false`、t79 数学不可达与 B4 未关闭。探针脚本直接读本机应用库，
+  未入库、不是 CI 基准；job id 与结果保存在本机临时库，未提交。
+
 ### 5.4 2026-10-25 旧轮：23 条断言只有 11 条逐字可见
 
 > 本节只指 2026-10-25 旧轮；2026-10-27 轮为 43 条中 10 条可见，见 §5.3 与
@@ -326,6 +346,7 @@ q1_target_rate = 0.8
   跨机器 / CI / 无 WindowServer 未证明，**仍不宣称 26/26**。
 - **sc-15 超冲**：`4661/4000`、`stop_reason=overshoot` 与 `within_tolerance=false`；显式失败已修，正文不裁剪，仍计入 4000 子集失败（4/6）。
 - **真实模型证据**：2026-10-27 轮 `repeat=2`、5 章 / 33 120 字、43 条断言、4 条 rejected、0 `provider_error`、`identical=false`；2026-10-25 旧轮 `repeat=1`、23 条中 11 条可见、分母 28/31 不可合并。两轮不可合并，均不能当质量通过。
+- **真实模型 3000 字续写探针（2026-10-28）**：默认 `None` 3635/`overshoot`、`1.35` 3571/`overshoot`、`1.0` 3176/`target_reached`（`[2700,3300]` 带内）；三个 job 均 `success`、`semantic_verified=false`。这是单次探针，不是 Q1 的 7/9，不关闭 B4（见 §5.3.1）。
 
 ---
 
@@ -343,6 +364,8 @@ q1_target_rate = 0.8
 > 但仅覆盖同机 GUI 会话 + Automation 已授权，**跨机器 / CI / 无 WindowServer 未证明，仍不宣称 26/26**。
 > 真实模型证据：2026-10-27 本机复跑 5 章 / 33 120 字、43 条断言 / 4 条 rejected / 0 `provider_error`，
 > 但 `repeat=2` 下 `identical=false`；2026-10-25 旧轮 23 条中 11 条可见。两者均不构成质量、召回或确定性通过。
+> 真实模型 3000 字续写单次探针（2026-10-28）：默认 3635 超冲、`1.35` 3571 超冲、`1.0` 3176 带内；
+> 仅证明该次生产 HTTP 链路可完成目标，不改变 Q1 7/9=77.8%<80%，也不构成发布放行。
 > 本说明为草稿；独立复核（t91）原 `verdict=needs_revision` 保留不改写，B3 已由 t98 替代独立复核关闭；
 > 采用上述措辞仍须先关闭 **B4（Q1 未达标）**。
 
@@ -386,5 +409,8 @@ q1_target_rate = 0.8
 - 2026-10-27 真实模型复跑（captain，本机）：应用模型连接写入 `default-project`，`probe_settings()` 返回
   `success=true`；生产 CLI 5 章 / 43 条断言 / 4 条 rejected / 0 `provider_error`，`repeat=2` 下
   `identical=false`。新增 `docs/verification-real-model-2026-10-27.md`；本次只改文档，不关闭 B4、不发布。
+- 2026-10-28 真实模型 3000 字续写探针（captain，本机）：默认 / `1.35` / `1.0` 三臂字数
+  3635 / 3571 / 3176，停止原因 `overshoot` / `overshoot` / `target_reached`；只有 `1.0` 带内。
+  新增 `docs/verification-real-continuation-2026-10-28.md`；只改文档，不关闭 Q1/B4，不改产品默认。
 - 数字来源均已标注到文件/章节；未使用记忆值或转述值。
 - 行数与 sha256 以提交后的 `wc -l`、`shasum -a 256` 为准。
