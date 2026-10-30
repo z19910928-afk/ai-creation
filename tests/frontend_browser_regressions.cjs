@@ -450,8 +450,15 @@ async function main(){
   assert.ok(status.includes('目标 1,200（超出容差）'),`超冲必须显示超出容差：${status}`);
   assert.ok(!status.includes('（达标）'),`不得把超冲说成达标：${status}`);
   assert.ok(status.includes('字数按非空白字符计'),`缺少字数口径说明：${status}`);
+  assert.ok(status.includes('超出目标区间'),`超冲必须显示明确区间警告：${status}`);
+  assert.ok(status.includes('正文未裁剪'),`软目标必须说明正文未裁剪：${status}`);
+  assert.equal(await desktop.page.locator('#aiStatus').getAttribute('data-ai-warning'),'true');
+  const underWarning=await desktop.page.evaluate(()=>continuationWarning({characters:700,target_characters:800,target_range:{minimum:720,maximum:880},within_tolerance:false}));
+  assert.match(underWarning,/未达目标区间/);
+  assert.equal(await desktop.page.evaluate(()=>continuationWarning({characters:800,target_characters:800,target_range:{minimum:720,maximum:880},within_tolerance:true})),'');
   assert.equal(await desktop.page.locator('#aiStatus').getAttribute('data-ai-progress'),'共 1 轮 · 1,414 字 · 目标 1,200（超出容差）');
   await desktop.page.evaluate(()=>displayCandidate(null));
+  assert.equal(await desktop.page.locator('#aiStatus').getAttribute('data-ai-warning'),null);
  });
  let authorBudgetPage=null;
  await test('作者工作台的预算复选框只在续写任务下出现且默认不勾选',async()=>{

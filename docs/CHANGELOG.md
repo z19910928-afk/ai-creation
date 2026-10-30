@@ -1,5 +1,12 @@
 # 更新记录
 
+## 2026-10-30 · 3000 字续写改为 `±10%` 软目标，超冲在界面明确提示
+
+- 作者接受 `±10%` 软目标：目标 3000 字时 `[2700,3300]` 是期望区间，超出不裁剪正文，但必须明确提示。契约与字段见 `docs/product-contract-soft-target-2026-10-30.md`。
+- `frontend/app.js` 新增 `continuationWarning(plan)`：超冲显示“超出目标区间：X 字 > 上限 Y 字，正文未裁剪”，未达显示“未达目标区间：X 字 < 下限 Y 字，正文未裁剪”；`#aiStatus` 设置 `data-ai-warning="true"`，`data-ai-progress` 仍只保留轮数/字数/目标/判定。
+- `frontend/styles.css` 对 `[data-ai-warning="true"]` 使用琥珀色加粗；`tests/frontend_browser_regressions.cjs` 增加超冲/未达警告断言。
+- 这是产品契约，不是 Q1 验收：Q1 仍 `7/9=77.8%<80%`、`q1_target_met=false`；`round_target_ratio` 默认仍为 `None`，`0.9` 仍被 HTTP 400 拒绝。
+
 ## 2026-10-28 · 真实模型 3000 字续写探针：`1.0`/`2.0` 均 2/3，无 3/3 稳定口径
 
 - 本机生产 HTTP 探针（复制应用库到临时库、重建临时凭据引用）：`zzniu` / `deepseek-v4.1-flash`，目标 3000、目标区间 `[2700,3300]`；三臂（默认 / `1.35` / `1.0`）各跑 1 次，`1.0` 另重复 3 次。

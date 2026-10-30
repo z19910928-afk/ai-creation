@@ -369,6 +369,13 @@ function continuationVerdict(plan){
  if(plan?.target_reached===true)return '达标';
  return '未达目标';
 }
+function continuationWarning(plan){
+ const verdict=continuationVerdict(plan),{lower,upper}=continuationRange(plan),characters=Number(plan?.characters);
+ if(!Number.isFinite(characters))return '';
+ if(verdict==='超出容差'&&upper!==null)return `⚠ 超出目标区间：${formatBudgetCount(characters)} 字 > 上限 ${formatBudgetCount(upper)} 字，正文未裁剪`;
+ if(verdict==='未达目标'&&lower!==null)return `⚠ 未达目标区间：${formatBudgetCount(characters)} 字 < 下限 ${formatBudgetCount(lower)} 字，正文未裁剪`;
+ return '';
+}
 function continuationSummary(candidate){
  const plan=continuationPlan(candidate);
  if(!candidate?.complete||!plan||!Number.isInteger(plan.rounds))return '';
@@ -443,12 +450,14 @@ function displayCandidate(candidate){
  const outputIssues=analysis?[]:candidateOutputIssues(candidate);
  // 多轮续写运行中不逐轮落 chunk：只在这里如实报「第几轮 / 已写多少字」，不画进度条。
  const continuation=candidate?.complete?continuationSummary(candidate):continuationProgress(candidate);
+ const budgetWarning=candidate?.complete?continuationWarning(continuationPlan(candidate)):'';
+ const continuationText=continuation?`${continuation} · 字数按非空白字符计${budgetWarning?` · ${budgetWarning}`:''}`:'';
  if(status)status.textContent=candidate?.restored_read_only?'恢复的候选仅供阅读，请按当前稿件生成新候选':decided?`${taskName} · ${candidate.decision==='accepted'?'已采纳':'已拒绝'} · 历史记录`:candidate?.materials_read_only?candidate.material_issue||'使用的资料已变化，候选仅供阅读，请生成新候选':candidate?(candidate.complete?
-  outputIssues.length?`候选需要整理：${outputIssues.join('；')}${continuation?` · ${continuation} · 字数按非空白字符计`:''}`:
-   `${analysis?`${taskName}已生成`:'候选已准备好'} · ${candidate.model||'创作助手'}${candidate.truncated?' · 输出不完整，仅可阅读':''}${continuation?` · ${continuation} · 字数按非空白字符计`:''}`:
+  outputIssues.length?`候选需要整理：${outputIssues.join('；')}${continuationText?` · ${continuationText}`:''}`:
+   `${analysis?`${taskName}已生成`:'候选已准备好'} · ${candidate.model||'创作助手'}${candidate.truncated?' · 输出不完整，仅可阅读':''}${continuationText?` · ${continuationText}`:''}`:
   incomplete?`${taskName}${taskStatus(candidate.completion_state==='unknown'?'unknown':candidate.job_status)} · ${candidate.error||'任务未完整结束'} · ${candidate.text?'已保留片段，仅供阅读和复制':'没有已保存的片段'}`:
    candidate.error?`${taskName}未完成：${candidate.error}`:continuation?`${candidate.job_status==='queued'?'排队中':'正在生成'} · ${continuation}`:`${analysis?`${taskName}正在生成`:'正在生成'} · 已收到 ${Array.from(candidate.text||'').length} 字`):'';
- if(status){if(continuation)status.setAttribute('data-ai-progress',continuation);else status.removeAttribute('data-ai-progress')}
+ if(status){if(continuation)status.setAttribute('data-ai-progress',continuation);else status.removeAttribute('data-ai-progress');if(budgetWarning)status.setAttribute('data-ai-warning','true');else status.removeAttribute('data-ai-warning')}
  const adopt=document.querySelector('#aiAdopt');if(adopt){
   adopt.textContent=analysis?`查看${taskName}`:'比较并采纳';
   adopt.disabled=!candidate?.complete||incomplete||candidate.truncated||outputIssues.length>0||decided||adopting||!!candidate.restored_read_only||!!candidate.materials_read_only&&!analysis;

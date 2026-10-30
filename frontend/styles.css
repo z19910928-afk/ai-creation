@@ -546,3 +546,5 @@ button:disabled{cursor:not-allowed;opacity:.5}
  .plan-scene{padding-left:0;grid-template-columns:18px minmax(0,1fr) auto}
  .scope-summary{grid-template-columns:1fr 1fr}
 }
+
+.ai-status[data-ai-warning="true"]{color:#9a3412;font-weight:600}
