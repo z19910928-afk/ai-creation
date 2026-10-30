@@ -277,6 +277,9 @@ q1_target_rate = 0.8
 - **产品契约（2026-10-30，作者接受）**：`±10%` 作为**软目标**——`[2700,3300]` 外允许保留全文，不裁剪；
   超冲/未达必须在界面明确提示，作者自行决定采纳。契约与字段见
   `docs/product-contract-soft-target-2026-10-30.md`；这不改变 Q1 7/9、t79 或预算台架判定。
+- **复算工具（2026-10-30）**：`benchmarks/real-model/compare_round_target.py` 已允许服务端使用应用内模型
+  配置（无需调用方持有 `MOYU_AI_*`），命令与输出口径见 `benchmarks/real-model/README.md`；汇总同时统计
+  `target_reached` 与 `overshoot` 两种未带内停止原因。本轮没有新增真实模型运行。
 
 ### 5.4 2026-10-25 旧轮：23 条断言只有 11 条逐字可见
 

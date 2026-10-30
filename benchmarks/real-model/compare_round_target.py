@@ -10,15 +10,24 @@
 
 凭据只从环境变量读，**不写入任何文件、不打印**：
 
-    MOYU_AI_BASE_URL   provider 的 base URL（服务端也用同一组变量，脚本只用于回显）
-    MOYU_AI_API_KEY    provider 的 key（脚本只检查「非空」，绝不回显）
-    MOYU_AI_MODEL      provider 的模型名
+    MOYU_AI_BASE_URL   provider 的 base URL（可选，仅用于回显）
+    MOYU_AI_API_KEY    provider 的 key（可选，脚本只检查「非空」，绝不回显）
+    MOYU_AI_MODEL      provider 的模型名（可选，仅用于回显）
 
-服务端必须已经用同一组环境变量启动（``GET /api/ai/status`` 的 mode 为 provider）。
+服务端只需已经配置成 provider 模式（``GET /api/ai/status`` 的 mode 为 provider）：
+可以用应用内的模型设置配置，也可以使用同一组 ``MOYU_AI_*`` 环境变量启动。
+因此本脚本不要求调用方持有 key，也不会因为环境变量缺失而拒绝连接；
+真正的门禁是服务端自己的 ``/api/ai/status``。
 脚本自身连哪个服务端由 ``--server-url`` 指定（默认 http://127.0.0.1:8765）。
 
 典型用法::
 
+    # 服务端已用应用内模型设置配置：不需要 MOYU_AI_*，适合复算真实 3000 字探针
+    .venv/bin/python benchmarks/real-model/compare_round_target.py \\
+      --targets 3000 --runs 3 --ratio 1.0 \\
+      --out /tmp/real-continuation-3000-ratio100.json
+
+    # 或者显式用环境变量启动服务端，再做基线/比例两臂对照
     MOYU_AI_BASE_URL=... MOYU_AI_API_KEY=... MOYU_AI_MODEL=... \\
       .venv/bin/python benchmarks/real-model/compare_round_target.py \\
         --targets 1200,3000 --runs 1 --ratio 1.35 --baseline \\
@@ -160,9 +169,9 @@ def preflight(server: Server, provider: dict[str, str]) -> dict:
         raise Blocked(f"GET /api/ai/status 失败：{status}")
     if status.get("mode") != "provider":
         raise Blocked(
-            "服务端处于离线模式（mode=%s）。请用同一组 MOYU_AI_BASE_URL / "
-            "MOYU_AI_API_KEY / MOYU_AI_MODEL 启动服务端后再跑对照。"
-            % status.get("mode")
+            "服务端处于离线模式（mode=%s）。请先在应用内配置模型，或用同一组 "
+            "MOYU_AI_BASE_URL / MOYU_AI_API_KEY / MOYU_AI_MODEL 启动服务端，"
+            "再跑对照。" % status.get("mode")
         )
     return {
         "server_mode": status.get("mode"),
@@ -171,6 +180,7 @@ def preflight(server: Server, provider: dict[str, str]) -> dict:
             "base_url": provider["base_url"],
             "model": provider["model"],
             "api_key_present": provider["api_key_present"],
+            "env_complete": not provider["missing"],
         },
     }
 
@@ -322,7 +332,8 @@ def summarize(rows: list[dict]) -> dict:
             ),
             "overshoot": [
                 row["target_characters"] for row in arm_rows
-                if row.get("stop_reason") == "target_reached" and not row["first_pass"]
+                if row.get("stop_reason") in {"target_reached", "overshoot"}
+                and not row["first_pass"]
             ],
             "rows": [
                 {
@@ -393,10 +404,11 @@ def main(argv: list[str] | None = None) -> int:
     provider = provider_environment()
     if provider["missing"]:
         print(
-            "缺少 provider 环境变量：" + "、".join(provider["missing"]),
+            "提示：未设置 provider 环境变量（"
+            + "、".join(provider["missing"])
+            + "）；以服务端 /api/ai/status 为准，不读取或打印 key。",
             file=sys.stderr,
         )
-        return 2
 
     server = Server(args.server_url, args.timeout)
     try:

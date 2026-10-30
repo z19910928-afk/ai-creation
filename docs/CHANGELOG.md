@@ -5,7 +5,9 @@
 - 作者接受 `±10%` 软目标：目标 3000 字时 `[2700,3300]` 是期望区间，超出不裁剪正文，但必须明确提示。契约与字段见 `docs/product-contract-soft-target-2026-10-30.md`。
 - `frontend/app.js` 新增 `continuationWarning(plan)`：超冲显示“超出目标区间：X 字 > 上限 Y 字，正文未裁剪”，未达显示“未达目标区间：X 字 < 下限 Y 字，正文未裁剪”；`#aiStatus` 设置 `data-ai-warning="true"`，`data-ai-progress` 仍只保留轮数/字数/目标/判定。
 - `frontend/styles.css` 对 `[data-ai-warning="true"]` 使用琥珀色加粗；`tests/frontend_browser_regressions.cjs` 增加超冲/未达警告断言。
-- 这是产品契约，不是 Q1 验收：Q1 仍 `7/9=77.8%<80%`、`q1_target_met=false`；`round_target_ratio` 默认仍为 `None`，`0.9` 仍被 HTTP 400 拒绝。
+- `benchmarks/real-model/compare_round_target.py` 不再强制 `MOYU_AI_*`：服务端已用应用内模型设置配置成 `mode=provider` 时即可复算；环境变量只作回显，key 不读取、不打印。新增 `benchmarks/real-model/README.md` 与 `tests/real_model_benchmark_fixtures.py`（5 项纯函数检查）。
+- 修复 `summary.overshoot` 只认旧 `target_reached` 的口径：现在同时统计 `target_reached` 与 `overshoot` 中未带内通过的尝试，避免真实超冲在汇总里消失。
+- 这是产品契约与复算工具，不是 Q1 验收：Q1 仍 `7/9=77.8%<80%`、`q1_target_met=false`；`round_target_ratio` 默认仍为 `None`，`0.9` 仍被 HTTP 400 拒绝。
 
 ## 2026-10-28 · 真实模型 3000 字续写探针：`1.0`/`2.0` 均 2/3，无 3/3 稳定口径
 
