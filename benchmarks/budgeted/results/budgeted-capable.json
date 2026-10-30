@@ -1,0 +1,815 @@
+{
+  "benchmark": "q1-capable-continuation",
+  "version": "1.0",
+  "seed": 20261023,
+  "engine_variant": "v1.2",
+  "provider": "obeying_first_round_envelope",
+  "scope": "capable provider: obeys max_characters/min_characters and receives the first-round envelope from the caller; external interruptions are reported but excluded from q1_engine",
+  "definitions": {
+    "q1_engine": "3000-character first-pass rate on scenarios whose tier is not an external interruption (budget_limited/canceled)",
+    "q1_capable_all": "3000-character first-pass rate on every capable-provider scenario, including external interruptions",
+    "legacy_adversarial": "the existing fake-provider headline; it ignores all length hints and remains a robustness lower bound, not this arm"
+  },
+  "q1_engine": {
+    "total": 8,
+    "passed": 8,
+    "rate": 1.0,
+    "ids": [
+      "sc-02",
+      "sc-03",
+      "sc-07",
+      "sc-08",
+      "sc-12",
+      "sc-14",
+      "sc-17",
+      "sc-18"
+    ],
+    "failed_ids": [],
+    "target_rate": 0.9,
+    "met": true
+  },
+  "q1_capable_all": {
+    "total": 9,
+    "passed": 8,
+    "rate": 0.8889,
+    "ids": [
+      "sc-02",
+      "sc-03",
+      "sc-07",
+      "sc-08",
+      "sc-12",
+      "sc-14",
+      "sc-17",
+      "sc-18",
+      "sc-19"
+    ],
+    "failed_ids": [
+      "sc-19"
+    ],
+    "target_rate": 0.9,
+    "met": false
+  },
+  "all_targets": {
+    "total": 20,
+    "passed": 18,
+    "rate": 0.9,
+    "ids": [
+      "sc-01",
+      "sc-02",
+      "sc-03",
+      "sc-04",
+      "sc-05",
+      "sc-06",
+      "sc-07",
+      "sc-08",
+      "sc-09",
+      "sc-10",
+      "sc-11",
+      "sc-12",
+      "sc-13",
+      "sc-14",
+      "sc-15",
+      "sc-16",
+      "sc-17",
+      "sc-18",
+      "sc-19",
+      "sc-20"
+    ],
+    "failed_ids": [
+      "sc-19",
+      "sc-20"
+    ]
+  },
+  "legacy_adversarial": {
+    "available": true,
+    "source": "benchmarks/budgeted/results/budgeted-v1.2-baseline.json",
+    "target_3000": {
+      "total": 9,
+      "first_pass": 7,
+      "failed": 2,
+      "rate": 0.7778
+    },
+    "q1_target_met": false,
+    "engine_digest": null
+  },
+  "sc15": {
+    "id": "sc-15",
+    "tier": "volatile",
+    "target_characters": 4000,
+    "first_pass": true,
+    "stop_reason": "target_reached",
+    "characters": 4400,
+    "rounds": 1,
+    "target_range": {
+      "minimum": 3600,
+      "maximum": 4400
+    },
+    "overshoot": 0,
+    "shortfall": 0
+  },
+  "sc18": {
+    "id": "sc-18",
+    "tier": "stalling",
+    "target_characters": 3000,
+    "first_pass": true,
+    "stop_reason": "target_reached",
+    "characters": 2700,
+    "rounds": 12,
+    "target_range": {
+      "minimum": 2700,
+      "maximum": 3300
+    },
+    "overshoot": 0,
+    "shortfall": 0
+  },
+  "sc19": {
+    "id": "sc-19",
+    "tier": "budget_limited",
+    "target_characters": 3000,
+    "first_pass": false,
+    "stop_reason": "budget_exhausted",
+    "characters": 2318,
+    "rounds": 2,
+    "target_range": {
+      "minimum": 2700,
+      "maximum": 3300
+    },
+    "overshoot": 0,
+    "shortfall": 382
+  },
+  "sc20": {
+    "id": "sc-20",
+    "tier": "canceled",
+    "target_characters": 4000,
+    "first_pass": false,
+    "stop_reason": "canceled",
+    "characters": 2157,
+    "rounds": 1,
+    "target_range": {
+      "minimum": 3600,
+      "maximum": 4400
+    },
+    "overshoot": 0,
+    "shortfall": 1443
+  },
+  "failures": [
+    {
+      "id": "sc-19",
+      "tier": "budget_limited",
+      "stop_reason": "budget_exhausted",
+      "characters": 2318,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      }
+    },
+    {
+      "id": "sc-20",
+      "tier": "canceled",
+      "stop_reason": "canceled",
+      "characters": 2157,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      }
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "sc-01",
+      "tier": "calibrated",
+      "target_characters": 2500,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2387,
+      "rounds": 1,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-02",
+      "tier": "calibrated",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2982,
+      "rounds": 1,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-03",
+      "tier": "calibrated",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2884,
+      "rounds": 1,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-04",
+      "tier": "calibrated",
+      "target_characters": 4000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 4048,
+      "rounds": 1,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-05",
+      "tier": "steady",
+      "target_characters": 2500,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2316,
+      "rounds": 4,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-06",
+      "tier": "steady",
+      "target_characters": 2500,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2364,
+      "rounds": 4,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-07",
+      "tier": "steady",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2788,
+      "rounds": 4,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-08",
+      "tier": "steady",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2788,
+      "rounds": 4,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-09",
+      "tier": "steady",
+      "target_characters": 4000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 3794,
+      "rounds": 4,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-10",
+      "tier": "steady",
+      "target_characters": 4000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 3798,
+      "rounds": 4,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-11",
+      "tier": "cautious",
+      "target_characters": 2500,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2272,
+      "rounds": 5,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-12",
+      "tier": "cautious",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2753,
+      "rounds": 5,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-13",
+      "tier": "cautious",
+      "target_characters": 4000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 3753,
+      "rounds": 6,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-14",
+      "tier": "volatile",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2890,
+      "rounds": 3,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-15",
+      "tier": "volatile",
+      "target_characters": 4000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 4400,
+      "rounds": 1,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 1
+    },
+    {
+      "id": "sc-16",
+      "tier": "underpowered",
+      "target_characters": 2500,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2279,
+      "rounds": 12,
+      "target_range": {
+        "minimum": 2250,
+        "maximum": 2750
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-17",
+      "tier": "underpowered",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2741,
+      "rounds": 12,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-18",
+      "tier": "stalling",
+      "target_characters": 3000,
+      "first_pass": true,
+      "stop_reason": "target_reached",
+      "characters": 2700,
+      "rounds": 12,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 0,
+      "obeyed_rounds": 11
+    },
+    {
+      "id": "sc-19",
+      "tier": "budget_limited",
+      "target_characters": 3000,
+      "first_pass": false,
+      "stop_reason": "budget_exhausted",
+      "characters": 2318,
+      "rounds": 2,
+      "target_range": {
+        "minimum": 2700,
+        "maximum": 3300
+      },
+      "overshoot": 0,
+      "shortfall": 382,
+      "obeyed_rounds": 0
+    },
+    {
+      "id": "sc-20",
+      "tier": "canceled",
+      "target_characters": 4000,
+      "first_pass": false,
+      "stop_reason": "canceled",
+      "characters": 2157,
+      "rounds": 1,
+      "target_range": {
+        "minimum": 3600,
+        "maximum": 4400
+      },
+      "overshoot": 0,
+      "shortfall": 1443,
+      "obeyed_rounds": 0
+    }
+  ],
+  "summary": {
+    "total": 20,
+    "first_pass": 18,
+    "failed": 2,
+    "rate": 0.9,
+    "by_target": {
+      "2500": {
+        "total": 5,
+        "first_pass": 5,
+        "failed": 0,
+        "rate": 1.0
+      },
+      "3000": {
+        "total": 9,
+        "first_pass": 8,
+        "failed": 1,
+        "rate": 0.8889
+      },
+      "4000": {
+        "total": 6,
+        "first_pass": 5,
+        "failed": 1,
+        "rate": 0.8333
+      }
+    },
+    "by_tier": {
+      "calibrated": {
+        "total": 4,
+        "first_pass": 4,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 1.0,
+        "stop_reasons": {
+          "target_reached": 4,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0,
+          "overshoot": 0
+        }
+      },
+      "steady": {
+        "total": 6,
+        "first_pass": 6,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 4.0,
+        "stop_reasons": {
+          "target_reached": 6,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0,
+          "overshoot": 0
+        }
+      },
+      "cautious": {
+        "total": 3,
+        "first_pass": 3,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 5.3333,
+        "stop_reasons": {
+          "target_reached": 3,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0,
+          "overshoot": 0
+        }
+      },
+      "volatile": {
+        "total": 2,
+        "first_pass": 2,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 2.0,
+        "stop_reasons": {
+          "target_reached": 2,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0,
+          "overshoot": 0
+        }
+      },
+      "underpowered": {
+        "total": 2,
+        "first_pass": 2,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 12.0,
+        "stop_reasons": {
+          "target_reached": 2,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0,
+          "overshoot": 0
+        }
+      },
+      "stalling": {
+        "total": 1,
+        "first_pass": 1,
+        "failed": 0,
+        "rate": 1.0,
+        "mean_rounds": 12.0,
+        "stop_reasons": {
+          "target_reached": 1,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 0,
+          "overshoot": 0
+        }
+      },
+      "budget_limited": {
+        "total": 1,
+        "first_pass": 0,
+        "failed": 1,
+        "rate": 0.0,
+        "mean_rounds": 2.0,
+        "stop_reasons": {
+          "target_reached": 0,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 1,
+          "canceled": 0,
+          "overshoot": 0
+        }
+      },
+      "canceled": {
+        "total": 1,
+        "first_pass": 0,
+        "failed": 1,
+        "rate": 0.0,
+        "mean_rounds": 1.0,
+        "stop_reasons": {
+          "target_reached": 0,
+          "no_progress": 0,
+          "max_rounds": 0,
+          "budget_exhausted": 0,
+          "canceled": 1,
+          "overshoot": 0
+        }
+      }
+    },
+    "qualified": {
+      "total": 13,
+      "first_pass": 13,
+      "failed": 0,
+      "rate": 1.0
+    },
+    "deficient": {
+      "total": 5,
+      "first_pass": 5,
+      "failed": 0,
+      "rate": 1.0
+    },
+    "interrupted": {
+      "total": 2,
+      "first_pass": 0,
+      "failed": 2,
+      "rate": 0.0
+    },
+    "stop_reasons": {
+      "target_reached": 18,
+      "no_progress": 0,
+      "max_rounds": 0,
+      "budget_exhausted": 1,
+      "canceled": 1,
+      "overshoot": 0
+    },
+    "rounds": {
+      "mean": 4.35,
+      "median": 4.0,
+      "minimum": 1,
+      "maximum": 12,
+      "total": 87
+    },
+    "characters": {
+      "mean": 2920.6,
+      "minimum": 2157,
+      "maximum": 4400,
+      "total": 58412
+    },
+    "overshoot": {
+      "count": 0,
+      "maximum": 0
+    },
+    "shortfall": {
+      "count": 2,
+      "maximum": 1443
+    },
+    "failures": [
+      {
+        "id": "sc-19",
+        "target_characters": 3000,
+        "tier": "budget_limited",
+        "tier_label": "预算受限",
+        "stop_reason": "budget_exhausted",
+        "failure_class": "budget_exhausted",
+        "failure_label": "预算中断（外部原因）",
+        "rounds": 2,
+        "characters": 2318,
+        "shortfall": 382,
+        "overshoot": 0
+      },
+      {
+        "id": "sc-20",
+        "target_characters": 4000,
+        "tier": "canceled",
+        "tier_label": "作者取消",
+        "stop_reason": "canceled",
+        "failure_class": "canceled",
+        "failure_label": "作者取消（外部原因）",
+        "rounds": 1,
+        "characters": 2157,
+        "shortfall": 1443,
+        "overshoot": 0
+      }
+    ],
+    "body_invariance": {
+      "checked": 20,
+      "unchanged": 20,
+      "all_unchanged": true
+    },
+    "candidate_only": {
+      "checked": 20,
+      "all_candidate_only": true
+    },
+    "accounting": {
+      "checked": 20,
+      "all_consistent": true
+    },
+    "engine_features": {
+      "retries": 1,
+      "retried_scenarios": [
+        "sc-18"
+      ],
+      "extended_rounds": 18,
+      "extended_scenarios": [
+        "sc-16",
+        "sc-17",
+        "sc-18"
+      ],
+      "closing_hint_rounds": 19,
+      "closing_hint_scenarios": [
+        "sc-05",
+        "sc-06",
+        "sc-07",
+        "sc-08",
+        "sc-09",
+        "sc-10",
+        "sc-11",
+        "sc-12",
+        "sc-13",
+        "sc-14",
+        "sc-16",
+        "sc-17",
+        "sc-18"
+      ],
+      "stall_hint_rounds": 1,
+      "stall_hint_scenarios": [
+        "sc-18"
+      ],
+      "overshoot_hint_rounds": 67,
+      "overshoot_hint_scenarios": [
+        "sc-05",
+        "sc-06",
+        "sc-07",
+        "sc-08",
+        "sc-09",
+        "sc-10",
+        "sc-11",
+        "sc-12",
+        "sc-13",
+        "sc-14",
+        "sc-16",
+        "sc-17",
+        "sc-18",
+        "sc-19"
+      ],
+      "stall_min_characters": [
+        243
+      ],
+      "stall_strategies": [
+        "新增一个具体动作、一段对话或一个场景细节"
+      ]
+    },
+    "engine_control": {
+      "controlled": {
+        "rounds_total": 87,
+        "stop_reason_decided": 20,
+        "lower_bound_hits": 18,
+        "envelope_rounds": 67,
+        "stall_retry_rounds": 1
+      },
+      "observed_only": {
+        "overshoot_characters": 0,
+        "overshoot_scenarios": [],
+        "stall_scenarios": [
+          "sc-18"
+        ],
+        "strategy_switches": 1,
+        "obedience": "对抗式 provider 不读任何提示；模型服从度只能由附录估计"
+      }
+    },
+    "break_even": {
+      "qualified_rate": 1.0,
+      "nonqualified_rate": 0.7143,
+      "max_nonqualified_fraction": 0.7,
+      "observed_nonqualified_fraction": 0.35
+    }
+  },
+  "digest": "sha256:eca0f33fb4295a4d2e286186cecd1d097aa837de7ee28db9ad4e8281affeebe3"
+}

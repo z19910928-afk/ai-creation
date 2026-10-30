@@ -133,6 +133,28 @@ q1_target_rate = 0.8
 
 依据：`docs/consistency-budget-v1.2-2026-10-23.md` §6.1（Q1 口径与诊断值分离）。
 
+### 3.2 capable-provider arm（2026-10-30；新增能力口径，不替代 Q1）
+
+旧 Q1 的 provider 故意忽略所有字数提示；它适合当鲁棒性下界，但不能回答“引擎在正常 provider 下能不能做到”。
+新增的 capable 臂固定声明：provider 服从 `max_characters` / `min_characters`，调用方把首轮额度
+`round_budget(0, target)` 合入开场提示；外部中断 `budget_limited` / `canceled` 如实记录并从 `q1_engine` 分母排除。
+
+| 口径 | 通过 / 总数 | 比率 | 说明 |
+| --- | ---: | ---: | --- |
+| **Q1 engine**（3000，排除外部中断） | **8/8** | **100.0%** | 达到 90% 门槛；不含外部预算/取消 |
+| Q1 capable all（3000，含外部中断） | 8/9 | 88.9% | **未达到 90%**，不得写成“全部通过” |
+| 全部目标（含外部中断） | 18/20 | 90.0% | 参考值 |
+| legacy adversarial 3000 | 7/9 | 77.8% | `q1_target_met=false`，保持不变 |
+
+在 capable 契约下，`sc-18` 为 **2700 字 / 12 轮 / `target_reached`（PASS）**，`sc-15` 为
+**4400 字 / 1 轮 / `target_reached`（PASS）**；`sc-19`/`sc-20` 仍因外部中断失败，不计入 engine。
+这只是不同契约下的能力证据：**旧 Q1 7/9=77.8% 仍未达成，B4 不关闭，版本/发布结论不变。**
+报告与可复算产物：`docs/verification-q1-capable-2026-10-30.md`、
+`benchmarks/budgeted/capable.py`、`benchmarks/budgeted/results/budgeted-capable.json`。
+
+旧 adversarial 的数学边界（`12×30=360<2700`、`sc-19` 两轮上限 2471、`sc-15` 4661）仍见 §4；
+capable 臂不是改样本、改评分或绕过外部中断，也不能拿它的 100% 覆盖旧口径。
+
 ---
 
 ## 4. sc-18 未达与 sc-15 超冲语义边界
@@ -156,6 +178,10 @@ q1_target_rate = 0.8
 > 24 是附录 A 的**非计入敏感性变体**，不是计入基线的配置。两种轮数下 `24 × 30 = 720 < 2700` 同样不达标，
 > 结论不受影响；引用时请以**基线 12 轮**为准，不要把 24 当成当前配置。
 
+> capable 补充（2026-10-30）：在 provider 服从 `max_characters` / `min_characters` 且首轮额度合入提示的
+> §3.2 契约下，`sc-18` 可在 **12 轮 / 2700 字 / `target_reached`** 通过；旧 t79 的对抗式失败仍然保留，
+> 不重开、不改写。该通过用满 12 轮硬上限，属于边界通过。
+
 ### 4.2 sc-15 超冲：语义已修，场景仍失败
 
 | 字段 | 值 |
@@ -172,6 +198,9 @@ q1_target_rate = 0.8
 当前 `target_reached` 仍只判下限（`:875`），`within_tolerance` 才判带宽（`:876`）；因此 `target_reached=true` 不等于带内达标，旧报告的 `target_reached` 停止原因仅作历史记录。
 
 依据：`docs/consistency-budget-v1.2-2026-10-23.md` §6.1.1（历史口径）；当前字节以 `benchmarks/budgeted/results/budgeted-baseline.json` 为准。
+
+> capable 补充（2026-10-30）：在 §3.2 契约下 `sc-15` 为 **4400 / 4000 / 1 轮 / `target_reached`**，
+> 恰好落在上限内，计为 PASS；旧 adversarial 的 **4661 超冲 261** 仍保留为失败，不改写旧报告。
 
 ---
 
@@ -301,6 +330,12 @@ q1_target_rate = 0.8
 
 ### 5.5 content-bound verdict 的绑定范围（t93 / t94）
 
+- **2026-10-30 当前字节 manifest**：新增 `docs/current-bytes-manifest-2026-10-30.json`（12 个关键文件）
+  与 `scripts/verify_manifest.py`；`tests/current_bytes_fixtures.py` 在 CI 中重算 sha256/行数，任何漂移硬失败。
+  规则是：历史 verdict 只有在它绑定的文件 sha256 与本 manifest **完全相同**时才可按 content-bound 复用；
+  否则一律视为历史证据，必须重跑，不得写成“当前通过”。该 manifest 覆盖
+  `backend/moyu_continuation.py`、`backend/server.py`、预算基准/产物、Q1 新臂、前端软目标代码与产品契约；
+  不覆盖发布说明等会持续修订的文档本身。
 - 此前若干 verdict 绑定的是**旧字节**；对当前 `backend/server.py`、`backend/moyu_consistency.py` 等
   需要重新绑定。本文件**不**把旧 verdict 当作当前通过（依据 t89 §3.5）。
 - **t93**（`docs/verification-release-readiness-2026-10-26.md`）的 `pass` **只覆盖 t92 的 F1/F2 文档收窄**，
@@ -362,6 +397,10 @@ q1_target_rate = 0.8
 - **sc-15 超冲**：`4661/4000`、`stop_reason=overshoot` 与 `within_tolerance=false`；显式失败已修，正文不裁剪，仍计入 4000 子集失败（4/6）。
 - **真实模型证据**：2026-10-27 轮 `repeat=2`、5 章 / 33 120 字、43 条断言、4 条 rejected、0 `provider_error`、`identical=false`；2026-10-25 旧轮 `repeat=1`、23 条中 11 条可见、分母 28/31 不可合并。两轮不可合并，均不能当质量通过。
 - **真实模型 3000 字续写探针（2026-10-28）**：默认 `None` 3635/`overshoot`、`1.35` 3571/`overshoot`、`1.0` 3176/`target_reached`（`[2700,3300]` 带内）；同一 `1.0` 重复 3 次为 2856/3134/3714，**2/3 带内、1 次 `overshoot`**；`0.9` 被 HTTP 400 拒绝（下限 `1.0`），`2.0` 三次为 2721/907(failed)/2778，**2/3 成功带内 + 1 次提供方中途错误**。成功 job 均 `success`、`semantic_verified=false`。这是小样本探针，不是 Q1 的 7/9，不关闭 B4（见 §5.3.1）。
+- **Q1 capable-provider arm（2026-10-30）**：engine 3000 字 **8/8=100.0%**（外部中断从分母排除），
+  capable all **8/9=88.9%**（未到 90%）；全部目标 18/20=90.0%；`sc-15` 4400/4000 PASS、`sc-18` 2700/12 轮 PASS，
+  `sc-19`/`sc-20` 仍因外部预算/取消失败。旧 adversarial **7/9=77.8%、`q1_target_met=false` 不变**，
+  B4 不关闭；这是 §3.2 的新增能力口径，不能覆盖旧 Q1（见 `docs/verification-q1-capable-2026-10-30.md`）。
 
 ---
 
@@ -372,8 +411,11 @@ q1_target_rate = 0.8
 > 若未来发布，本版为 **v0.1.4-rc.1 候选版本，定位本地单用户技术预览**，不是生产可上线版本，不支持多租户与公网部署。
 > 当前代码/测试基线 `68578c9` 的 CI（run `40319600547`）已 `completed`/`success`；`d766492`、`8126778`、`605b895` 及其 run 均为历史证据。本文 docs-only 提交后的 CI 另核，不把代码 CI 绿扩张成全量发布放行。
 > 基准方面：3000 字章一次通过率 **7/9 = 77.8%**（Q1 门槛 80%，**未达成**），4000 字 **4/6 = 66.7%**。
-> 已知限制：`sc-18` 受生成侧字数上限约束，本轮样本下 8/9 数学不可达；`sc-19` 属外部预算中断；
-> `sc-15` 的越界已显式标记为 `overshoot`（不再报 `target_reached`），正文不裁剪，仍计入失败；
+> Q1 capable-provider arm（provider 服从字数提示、首轮额度合入提示、外部中断排除）为 **8/8 = 100.0%**，
+> 含外部中断的 capable all 为 **8/9 = 88.9%**，全部目标 18/20 = 90.0%；这只是新增能力口径，
+> **不能覆盖或替换 7/9=77.8% 的旧 Q1**，B4 仍未关闭。
+> 已知限制（以下均指旧 adversarial 口径）：`sc-18` 受生成侧字数上限约束，本轮样本下 8/9 数学不可达；`sc-19` 属外部预算中断；
+> `sc-15` 的越界已显式标记为 `overshoot`（不再报 `target_reached`），正文不裁剪，仍计入旧失败；
 > desktop 冒烟在 macOS 上**曾有**窗口焦点竞态（某次会话 7 跑 6 过、另一次独立会话 1 跑 1 挂，`activation_attempts=55`；
 > 历史失败保留）；t101 已加强**测试辅助**激活路径、t102 独立复跑 2/2 与 10/10，
 > 但仅覆盖同机 GUI 会话 + Automation 已授权，**跨机器 / CI / 无 WindowServer 未证明，仍不宣称 26/26**。
@@ -434,5 +476,12 @@ q1_target_rate = 0.8
   `每轮额度系数必须在 1 到 10 之间。` 拒绝（`1.0` 为下限，无 job）；`2.0` 三次为
   2721 / 907（job failed，提供方中途错误）/ 2778 字，**2/3 成功且带内 + 1 次提供方错误**。
   与 `1.0` 的 2/3 带内 + 1 次超冲合并看，没有 3/3 稳定口径；停止调参，不改默认、不碰 Q1 分母。
+- 2026-10-30 Q1 capable-provider arm（captain，本机）：新增 `benchmarks/budgeted/capable.py` 与
+  `tests/q1_capable_fixtures.py`；`q1_engine=8/8=100.0%`、`q1_capable_all=8/9=88.9%`、全部目标 18/20=90.0%，
+  `sc-15`/`sc-18` 在 capable 契约下 PASS，`sc-19`/`sc-20` 外部中断失败；旧 adversarial 7/9=77.8%
+  与 `q1_target_met=false` 原样保留，B4 未关闭。新增 `docs/verification-q1-capable-2026-10-30.md`，
+  并把当前关键字节固定到 `docs/current-bytes-manifest-2026-10-30.json`；`scripts/verify_manifest.py`
+  与 `tests/current_bytes_fixtures.py` 可重算并拒绝漂移。本批只改基准/测试/文档，不改产品引擎默认值，
+  不发布、不记录评分。
 - 数字来源均已标注到文件/章节；未使用记忆值或转述值。
 - 行数与 sha256 以提交后的 `wc -l`、`shasum -a 256` 为准。

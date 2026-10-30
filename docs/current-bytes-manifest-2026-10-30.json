@@ -1,0 +1,67 @@
+{
+  "version": 1,
+  "generated_for": "2026-10-30",
+  "scope": "Q1 capable-provider arm and its current-byte verdict boundary; docs-only changes after this manifest require an explicit refresh",
+  "files": [
+    {
+      "path": "backend/moyu_continuation.py",
+      "lines": 899,
+      "sha256": "4486b78398b6c826946083df08c8b888575ae8c3bfb1ca3a1219b4aaca71a874"
+    },
+    {
+      "path": "backend/server.py",
+      "lines": 8198,
+      "sha256": "f74c885f3a058c2b82b19907705dc48b2971403e20d71373a9acd78c2403b263"
+    },
+    {
+      "path": "benchmarks/budgeted/run.py",
+      "lines": 3782,
+      "sha256": "549a744afbdf49811826af258f2873d694b2cc06a265562f8fa8e4bc64ffa2c6"
+    },
+    {
+      "path": "benchmarks/budgeted/capable.py",
+      "lines": 284,
+      "sha256": "7059326560ee77e20e38f4bae786755fff36c2e0aee6d8b787a2b1105ed949eb"
+    },
+    {
+      "path": "benchmarks/budgeted/results/budgeted-capable.json",
+      "lines": 815,
+      "sha256": "150467607934ad8175e0112371044cb802beaee545c59f6c972afc6cd673c868"
+    },
+    {
+      "path": "benchmarks/budgeted/results/budgeted-capable.md",
+      "lines": 24,
+      "sha256": "c04bb5a1df3716b86da328430a8180b491c78e37aac9415af66b66d068c4c7bf"
+    },
+    {
+      "path": "tests/q1_capable_fixtures.py",
+      "lines": 67,
+      "sha256": "b2557da7cb5a54e547998659e29f307ef9d3992d0892e76ae94716aeac6c49ac"
+    },
+    {
+      "path": "tests/current_bytes_fixtures.py",
+      "lines": 66,
+      "sha256": "1d4562e16ef9724333e8fc31c4f966eddb1d98b8d3405388f423a4fa3501f55d"
+    },
+    {
+      "path": "scripts/verify_manifest.py",
+      "lines": 85,
+      "sha256": "9e383cdf2a5c80e6c1f57d5760eaa803e3b8d2e81e990a45cbd7824be57ee132"
+    },
+    {
+      "path": "frontend/app.js",
+      "lines": 1906,
+      "sha256": "e22c79e857542936b9c272bf36f90b2c142805e61cf009a6297d838291c05b58"
+    },
+    {
+      "path": "frontend/styles.css",
+      "lines": 550,
+      "sha256": "fb2b661f48f80d93218ad29e1306d6ed5c070252c9357b7a816da0c50d4d59b2"
+    },
+    {
+      "path": "docs/product-contract-soft-target-2026-10-30.md",
+      "lines": 38,
+      "sha256": "32841501994469534932924e40a5650faac6102b31e14e14d6efc525810b1016"
+    }
+  ]
+}
