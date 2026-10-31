@@ -59,7 +59,7 @@ q1_engine=8/8 (100.0%) q1_capable_all=8/9 all=18/20 digest=sha256:eca0f33fb429�
 
 ## 4. 当前字节绑定
 
-本报告生成时 HEAD 为 `2a404cc`；下方是当前工作树中本 arm 的字节指纹。
+本报告生成时 HEAD 为 `2a404cc`；提交后本地 `9793db9` / GitHub `4c58a58`（同 tree）。下方是当前工作树中本 arm 与被旧 verdict 点名输入的字节指纹。
 任何历史 verdict 只有在它绑定的文件 sha256 与本表相同，才可按 `content-bound` 复用；
 否则一律视为历史证据，必须重跑，不得写成“当前通过”。
 
@@ -77,6 +77,16 @@ q1_engine=8/8 (100.0%) q1_capable_all=8/9 all=18/20 digest=sha256:eca0f33fb429�
 | `frontend/app.js` | 1906 | `e22c79e857542936b9c272bf36f90b2c142805e61cf009a6297d838291c05b58` |
 | `frontend/styles.css` | 550 | `fb2b661f48f80d93218ad29e1306d6ed5c070252c9357b7a816da0c50d4d59b2` |
 | `docs/product-contract-soft-target-2026-10-30.md` | 38 | `32841501994469534932924e40a5650faac6102b31e14e14d6efc525810b1016` |
+| `backend/moyu_consistency.py` | 1222 | `b855e9106e1d2b8a144231310bb860752c07cbab1b933c272cba4e5ded463cd2` |
+| `backend/moyu_extract.py` | 1041 | `6b5d431364057b5a11441b882429993a40036e76e8082f43868baa836126cff8` |
+| `benchmarks/real_corpus/extract.py` | 301 | `2e046994280e26beaa89c5b9f194c992c341ae057efeb64ed0674f5a5de8e201` |
+| `tests/budgeted_continuation_fixtures.py` | 1284 | `a8cb9cf7070fa425f091c3ea956e4f40ff69ba093ef56e554abc3edc63d47165` |
+| `tests/budgeted_continuation_http_fixtures.py` | 937 | `67e0aa21f6dfe3d9e296f47515f9d07871c31f7f6907bebd3c24d67330cf308a` |
+| `tests/consistency_fixtures.py` | 640 | `043b6ac5da07f69e61cd5d8c09f735b5990c7fab7e1af98b4c3b8075549b8f7a` |
+| `tests/memory_assertion_predicate_fixtures.py` | 355 | `f6eeff0dede105e6e76ea4bef14538eb6534ab65e1e382fed7727723a9c4b3c8` |
+| `tests/extract_fixtures.py` | 1372 | `f48b4f191d7fa390962539dd69c1a49453354351c3615350bf2246db1f2f71b5` |
+| `docs/consistency-budget-v1.2-2026-10-23.md` | 187 | `ee5b8bdbcae258b3297b9c7f0cfe0db0a6999b72cac1e2a9bde4aa3decd07280` |
+| `docs/real-corpus-extract-2026-10-24.md` | 317 | `141a8dce34832587089574d89e366632d010f64c806f84e45d363eb3b6a08710` |
 
 `docs/current-bytes-manifest-2026-10-30.json` 是机器可读版本；
 `scripts/verify_manifest.py` 可按该 manifest 重算并拒绝漂移。

@@ -330,11 +330,11 @@ capable 臂不是改样本、改评分或绕过外部中断，也不能拿它的
 
 ### 5.5 content-bound verdict 的绑定范围（t93 / t94）
 
-- **2026-10-30 当前字节 manifest**：新增 `docs/current-bytes-manifest-2026-10-30.json`（12 个关键文件）
+- **2026-10-30 当前字节 manifest**：新增 `docs/current-bytes-manifest-2026-10-30.json`（22 个关键文件）
   与 `scripts/verify_manifest.py`；`tests/current_bytes_fixtures.py` 在 CI 中重算 sha256/行数，任何漂移硬失败。
   规则是：历史 verdict 只有在它绑定的文件 sha256 与本 manifest **完全相同**时才可按 content-bound 复用；
   否则一律视为历史证据，必须重跑，不得写成“当前通过”。该 manifest 覆盖
-  `backend/moyu_continuation.py`、`backend/server.py`、预算基准/产物、Q1 新臂、前端软目标代码与产品契约；
+  `backend/moyu_continuation.py`、`backend/server.py`、`backend/moyu_consistency.py`、`backend/moyu_extract.py`、预算基准/产物、Q1 新臂、前端软目标代码、产品契约，以及被旧 verdict 点名的 `tests/*_fixtures.py` 与两份历史证据文档；
   不覆盖发布说明等会持续修订的文档本身。
 - 此前若干 verdict 绑定的是**旧字节**；对当前 `backend/server.py`、`backend/moyu_consistency.py` 等
   需要重新绑定。本文件**不**把旧 verdict 当作当前通过（依据 t89 §3.5）。

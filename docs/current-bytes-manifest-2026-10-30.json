@@ -1,7 +1,7 @@
 {
   "version": 1,
   "generated_for": "2026-10-30",
-  "scope": "Q1 capable-provider arm and its current-byte verdict boundary; docs-only changes after this manifest require an explicit refresh",
+  "scope": "Q1 capable-provider arm plus the current-byte inputs named by legacy content-bound verdicts; docs-only changes after this manifest require an explicit refresh",
   "files": [
     {
       "path": "backend/moyu_continuation.py",
@@ -62,6 +62,56 @@
       "path": "docs/product-contract-soft-target-2026-10-30.md",
       "lines": 38,
       "sha256": "32841501994469534932924e40a5650faac6102b31e14e14d6efc525810b1016"
+    },
+    {
+      "path": "backend/moyu_consistency.py",
+      "lines": 1222,
+      "sha256": "b855e9106e1d2b8a144231310bb860752c07cbab1b933c272cba4e5ded463cd2"
+    },
+    {
+      "path": "backend/moyu_extract.py",
+      "lines": 1041,
+      "sha256": "6b5d431364057b5a11441b882429993a40036e76e8082f43868baa836126cff8"
+    },
+    {
+      "path": "benchmarks/real_corpus/extract.py",
+      "lines": 301,
+      "sha256": "2e046994280e26beaa89c5b9f194c992c341ae057efeb64ed0674f5a5de8e201"
+    },
+    {
+      "path": "tests/budgeted_continuation_fixtures.py",
+      "lines": 1284,
+      "sha256": "a8cb9cf7070fa425f091c3ea956e4f40ff69ba093ef56e554abc3edc63d47165"
+    },
+    {
+      "path": "tests/budgeted_continuation_http_fixtures.py",
+      "lines": 937,
+      "sha256": "67e0aa21f6dfe3d9e296f47515f9d07871c31f7f6907bebd3c24d67330cf308a"
+    },
+    {
+      "path": "tests/consistency_fixtures.py",
+      "lines": 640,
+      "sha256": "043b6ac5da07f69e61cd5d8c09f735b5990c7fab7e1af98b4c3b8075549b8f7a"
+    },
+    {
+      "path": "tests/memory_assertion_predicate_fixtures.py",
+      "lines": 355,
+      "sha256": "f6eeff0dede105e6e76ea4bef14538eb6534ab65e1e382fed7727723a9c4b3c8"
+    },
+    {
+      "path": "tests/extract_fixtures.py",
+      "lines": 1372,
+      "sha256": "f48b4f191d7fa390962539dd69c1a49453354351c3615350bf2246db1f2f71b5"
+    },
+    {
+      "path": "docs/consistency-budget-v1.2-2026-10-23.md",
+      "lines": 187,
+      "sha256": "ee5b8bdbcae258b3297b9c7f0cfe0db0a6999b72cac1e2a9bde4aa3decd07280"
+    },
+    {
+      "path": "docs/real-corpus-extract-2026-10-24.md",
+      "lines": 317,
+      "sha256": "141a8dce34832587089574d89e366632d010f64c806f84e45d363eb3b6a08710"
     }
   ]
 }
