@@ -6,6 +6,7 @@
 - 结果：`q1_engine` 3000 字 **8/8=100.0%**，`q1_capable_all` **8/9=88.9%**（未到 90%），全部目标 **18/20=90.0%**；`sc-15` 4400/4000 PASS、`sc-18` 2700/12 轮 PASS，`sc-19`/`sc-20` 外部中断失败。旧 adversarial **7/9=77.8%、`q1_target_met=false` 原样保留**，B4 不关闭。
 - 新增 `tests/q1_capable_fixtures.py`（24 项检查）与产物 `benchmarks/budgeted/results/budgeted-capable.{json,md}`；`docs/verification-q1-capable-2026-10-30.md` 记录口径与字节。
 - 新增 `docs/current-bytes-manifest-2026-10-30.json`、`scripts/verify_manifest.py`、`tests/current_bytes_fixtures.py`：历史 content-bound verdict 只有在绑定 sha256 与当前 manifest（22 个关键输入）相同时才可复用，否则按历史证据重跑；不重写旧 verdict、不冒充当前通过。
+- 新增 `docs/current-bytes-verdict-ledger-2026-10-31.md`：逐族对齐旧 verdict 与 22 个当前输入；本轮检查的所有旧 verdict 均至少有一个绑定文件漂移，因此没有任何旧 pass 被复用；t79/t88/t91/t96 状态不变。
 - 这是能力臂与可复算证据，不是发布放行；Q1 旧口径、t79、sc-15 旧失败、版本 0.1.3/不发布均不变。
 
 ## 2026-10-30 · 3000 字续写改为 `±10%` 软目标，超冲在界面明确提示

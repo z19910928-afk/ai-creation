@@ -336,6 +336,8 @@ capable 臂不是改样本、改评分或绕过外部中断，也不能拿它的
   否则一律视为历史证据，必须重跑，不得写成“当前通过”。该 manifest 覆盖
   `backend/moyu_continuation.py`、`backend/server.py`、`backend/moyu_consistency.py`、`backend/moyu_extract.py`、预算基准/产物、Q1 新臂、前端软目标代码、产品契约，以及被旧 verdict 点名的 `tests/*_fixtures.py` 与两份历史证据文档；
   不覆盖发布说明等会持续修订的文档本身。
+- 逐族可复用性台账见 `docs/current-bytes-verdict-ledger-2026-10-31.md`：本轮检查的旧 verdict 均至少有一个绑定文件漂移，
+  因此**没有任何旧 pass 被复用**；旧任务状态（`t79` failed、`t88` failed、`t91`/`t96` 未完成）不变，台账不是发布放行。
 - 此前若干 verdict 绑定的是**旧字节**；对当前 `backend/server.py`、`backend/moyu_consistency.py` 等
   需要重新绑定。本文件**不**把旧 verdict 当作当前通过（依据 t89 §3.5）。
 - **t93**（`docs/verification-release-readiness-2026-10-26.md`）的 `pass` **只覆盖 t92 的 F1/F2 文档收窄**，
