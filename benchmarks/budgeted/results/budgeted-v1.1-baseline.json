@@ -6,7 +6,7 @@
     "python": "3.11.17",
     "platform": "macOS-26.6.1-arm64-arm-64bit",
     "engine_module": "backend/moyu_continuation.py",
-    "engine_sha256": "61d170e5cd7bc951516abce6c0b568f3405f965df37bd2eec34a3467baafec33"
+    "engine_sha256": "4486b78398b6c826946083df08c8b888575ae8c3bfb1ca3a1219b4aaca71a874"
   },
   "config": {
     "seed": 20261023,

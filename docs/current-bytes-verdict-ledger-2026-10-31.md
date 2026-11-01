@@ -33,7 +33,7 @@
 | `tests/consistency_fixtures.py` | 640 | `043b6ac5da07f69e61cd5d8c09f735b5990c7fab7e1af98b4c3b8075549b8f7a` |
 | `tests/memory_assertion_predicate_fixtures.py` | 355 | `f6eeff0dede105e6e76ea4bef14538eb6534ab65e1e382fed7727723a9c4b3c8` |
 | `tests/extract_fixtures.py` | 1372 | `f48b4f191d7fa390962539dd69c1a49453354351c3615350bf2246db1f2f71b5` |
-| `docs/consistency-budget-v1.2-2026-10-23.md` | 187 | `ee5b8bdbcae258b3297b9c7f0cfe0db0a6999b72cac1e2a9bde4aa3decd07280` |
+| `docs/consistency-budget-v1.2-2026-10-23.md` | 187 | `6ecfbd8e0edca8438ee32d141dcc8d1f1b184956dc07bb1b760a80150907d9f6` |
 | `docs/real-corpus-extract-2026-10-24.md` | 317 | `141a8dce34832587089574d89e366632d010f64c806f84e45d363eb3b6a08710` |
 
 ## 3. 历史 verdict 家族与当前判定
@@ -67,3 +67,6 @@
 ```
 
 相关证据：`docs/verification-q1-capable-2026-10-30.md`、`docs/current-bytes-manifest-2026-10-30.json`。
+
+预算族已按当前字节重验：`docs/verification-budget-current-2026-11-01.md`。该重验只覆盖 continuation/budget 与对应测试；
+它不改变本台账第 3 节的 `stale` 判定，也不改变 `t79` / `t88` / `t91` / `t96` 的历史状态。

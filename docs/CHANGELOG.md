@@ -1,5 +1,11 @@
 # 更新记录
 
+## 2026-11-01 · 重验预算族，绑定当前 continuation 引擎 hash
+
+- `tests/budgeted_continuation_fixtures.py` 56 cases、`tests/budgeted_continuation_http_fixtures.py` 23 tests、`tests/q1_capable_fixtures.py` 24 checks、`tests/current_bytes_fixtures.py` 5 checks 全部通过；`benchmarks/budgeted/run.py --compare --repeat 2` verdict PASS（20/20，6 类停止原因，pass→fail 回归 0）。
+- `benchmarks/budgeted/results/budgeted-v1.1-baseline.json`、`budgeted-v1.2-baseline.json` 与两份预算文档的 `engine_sha256` 从旧 `61d170e5…` 更新为当前 `4486b783…`；确定性 digest 未变，未修改场景结果或判定。
+- 记录见 `docs/verification-budget-current-2026-11-01.md`；只覆盖预算族当前字节，不是 Q1 90–100 达成或发布放行，`t79`/`t88`/`t91`/`t96` 状态不变。
+
 ## 2026-10-30 · 新增 Q1 capable-provider arm，并绑定当前字节 manifest
 
 - 新增 `benchmarks/budgeted/capable.py`：provider 服从 `max_characters` / `min_characters`、调用方把首轮额度合入开场提示；外部中断 `budget_limited` / `canceled` 记录但不计入 `q1_engine`。不改样本、评分、provider 或默认值。

@@ -96,4 +96,4 @@ v1.0 对照侧把这些参数显式钉死为 `max_stall_retries=0`、`hard_max_r
 
 v1.0 基线的四个产物（`budgeted-baseline.*` 与 `docs/consistency-budget-baseline-2026-10-23.md`）不会被覆盖。
 
-环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit；引擎 `backend/moyu_continuation.py` sha256 `61d170e5cd7bc951…`；v1.1 确定性摘要 `sha256:7349e53888f9145132e7b7d93b2b2fced5208ebf500371a59042af059ae58391`（repeat=2，一致=是）。
+环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit；引擎 `backend/moyu_continuation.py` sha256 `4486b78398b6c826…`；v1.1 确定性摘要 `sha256:7349e53888f9145132e7b7d93b2b2fced5208ebf500371a59042af059ae58391`（repeat=2，一致=是）。

@@ -158,7 +158,7 @@
 .venv/bin/python tests/budgeted_continuation_fixtures.py
 ```
 
-环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit，引擎模块 `backend/moyu_continuation.py`，引擎 sha256=61d170e5cd7bc951516abce6c0b568f3405f965df37bd2eec34a3467baafec33。本报告对应 digest=sha256:8c813e04224358a4cc4485c70e58955f3f952853d704356bec62b1ab4e017443（seed=20261023，repeat=2，identical=True）。
+环境：Python 3.11.17，macOS-26.6.1-arm64-arm-64bit，引擎模块 `backend/moyu_continuation.py`，引擎 sha256=4486b78398b6c826946083df08c8b888575ae8c3bfb1ca3a1219b4aaca71a874。本报告对应 digest=sha256:8c813e04224358a4cc4485c70e58955f3f952853d704356bec62b1ab4e017443（seed=20261023，repeat=2，identical=True）。
 引擎用例数：**56 个**（实测：解析 `tests/budgeted_continuation_fixtures.py` 的 `main()` 用例列表得到；权威值以该脚本打印的 `{'cases': N}` 为准，命令 `.venv/bin/python tests/budgeted_continuation_fixtures.py`）。这是跑出来的现状值，不是设计目标。
 
 
