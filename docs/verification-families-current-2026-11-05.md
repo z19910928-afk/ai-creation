@@ -64,6 +64,18 @@
 
 ## 5. 未覆盖
 
-- 没有跑真实三书一致性语料、真实模型 3000 字 Q1、desktop GUI 或浏览器全量回归。
+- 没有跑真实三书一致性语料、真实模型 3000 字 Q1 或 desktop GUI；浏览器全量回归由 CI `42009192670` 覆盖（见 §6），但它不是 desktop 原生焦点。
 - 没有修改样本、评分、provider、默认参数或中断语义。
 - `q1_capable_all` 仍是 **8/9=88.9%**，旧 Q1 仍是 **7/9=77.8%**，版本仍 0.1.3 / 不发布。
+
+## 6. 浏览器 CI 交叉证据（不是 desktop）
+
+| 项目 | 值 |
+| --- | --- |
+| 提交 | `9e027c5` 本地 / `9a7ba9e` GitHub；父提交 `85e4f1b` 的代码树相同，本提交只改文档 |
+| CI | `42009192670` · completed / success |
+| 浏览器步骤 | 24/24 browser/editor 步骤 success（含 real browser、author flow、reference passage、prompt workshop） |
+| 前端字节 | `frontend/app.js` 1906 行 / `e22c79e85754…`；`frontend/styles.css` 550 行 / `fb2b661f48f8…` |
+| 边界 | 不覆盖 desktop 原生窗口焦点；`t88` 历史失败、`t101`/`t102` 同机验收口径不变，不能据此宣称 26/26 |
+
+CI 只证明该提交上的 Web 浏览器回归全绿；它不是发布放行，也不把 `t79`/`t88`/`t91`/`t96` 改成通过。
