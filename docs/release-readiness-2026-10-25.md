@@ -338,6 +338,9 @@ capable 臂不是改样本、改评分或绕过外部中断，也不能拿它的
   不覆盖发布说明等会持续修订的文档本身。
 - 逐族可复用性台账见 `docs/current-bytes-verdict-ledger-2026-10-31.md`：本轮检查的旧 verdict 均至少有一个绑定文件漂移，
   因此**没有任何旧 pass 被复用**；旧任务状态（`t79` failed、`t88` failed、`t91`/`t96` 未完成）不变，台账不是发布放行。
+- `server` / `consistency` / `extract` 三族已按当前字节重验：`docs/verification-families-current-2026-11-05.md`；
+  server bind 4/4、AI contract、context HTTP 3 档 + 3 workflow 全过，consistency fixtures `dirty=13/clean=100`、HTTP 6/6，
+  extract 离线 67 cases。它们只增加当前证据，不改变旧 verdict 的 `stale` 判定，也不把真实模型/全量浏览器/发布放行写成通过。
 - 此前若干 verdict 绑定的是**旧字节**；对当前 `backend/server.py`、`backend/moyu_consistency.py` 等
   需要重新绑定。本文件**不**把旧 verdict 当作当前通过（依据 t89 §3.5）。
 - **t93**（`docs/verification-release-readiness-2026-10-26.md`）的 `pass` **只覆盖 t92 的 F1/F2 文档收窄**，

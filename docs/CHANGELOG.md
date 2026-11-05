@@ -1,5 +1,12 @@
 # 更新记录
 
+## 2026-11-05 · 重验 server / consistency / extract 当前字节
+
+- `tests/server_bind_fixtures.py` 4 tests、`tests/ai_contract_fixtures.py` AI contract、`tests/context_http_fixtures.py` `passed=True`（3 个规模档、workflow 3/3）全部通过；`backend/server.py` 8198 行 / `f74c885f…`。
+- `tests/consistency_fixtures.py` OK（`dirty=13.0`、`clean=100.0`），`tests/consistency_http_fixtures.py` 6 tests OK；`backend/moyu_consistency.py` 1222 行 / `b855e910…`。
+- `tests/extract_fixtures.py` 67 cases OK；`backend/moyu_extract.py` 1041 行 / `6b5d4313…`。离线 fixtures 不代表真实模型抽取质量。
+- 记录见 `docs/verification-families-current-2026-11-05.md`；这是当前族新验收，不把旧 `t18`/`t27`/`t54` 等 verdict 平移，也不关闭 B4/Q1 或发布放行。
+
 ## 2026-11-01 · 重验预算族，绑定当前 continuation 引擎 hash
 
 - `tests/budgeted_continuation_fixtures.py` 56 cases、`tests/budgeted_continuation_http_fixtures.py` 23 tests、`tests/q1_capable_fixtures.py` 24 checks、`tests/current_bytes_fixtures.py` 5 checks 全部通过；`benchmarks/budgeted/run.py --compare --repeat 2` verdict PASS（20/20，6 类停止原因，pass→fail 回归 0）。

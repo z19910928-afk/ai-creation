@@ -70,3 +70,14 @@
 
 预算族已按当前字节重验：`docs/verification-budget-current-2026-11-01.md`。该重验只覆盖 continuation/budget 与对应测试；
 它不改变本台账第 3 节的 `stale` 判定，也不改变 `t79` / `t88` / `t91` / `t96` 的历史状态。
+
+## 6. 当前族重验进度
+
+| 族 | 当前证据 | 结果 | 是否改变旧 verdict |
+| --- | --- | --- | --- |
+| continuation / budget | `docs/verification-budget-current-2026-11-01.md` | 56 cases、23 HTTP tests、24 Q1 checks、20/20 benchmark PASS | 否；旧 t22/t34/t36/t39/t48 仍 stale |
+| server | `docs/verification-families-current-2026-11-05.md` | bind 4/4、AI contract、context HTTP 3 档 + 3 workflow 全过 | 否；旧 t18/t22/... 仍 stale |
+| consistency | 同上 | fixtures dirty 13.0 / clean 100.0；HTTP 6/6 | 否；旧 t27/t34/t38/t43/t48 仍 stale |
+| extract | 同上 | 离线 67 cases | 否；旧 t54...t76 仍 stale；未跑真实模型 |
+
+本表只是当前族重验的进度，不是旧 verdict 的复用；旧任务状态仍由第 3 节决定。
